@@ -3,4 +3,5 @@
 members = [
     "fr",
     "esl",
+    "httpd",
 ]
