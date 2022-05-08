@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 use super::event::*;
 use super::cmd::*;
-use fr;
+use fslib::cdr;
 
 #[derive(Debug)]
 pub struct Bleg {
@@ -144,7 +144,7 @@ impl Esl {
         while i < self.cdr_blegs.len() {
             if self.cdr_blegs[i].a_uuid == uuid.to_string() {
                 let b = self.cdr_blegs.remove(i);
-                fr::cdr::add_bleg(&b.caller_id,
+                cdr::add_bleg(&b.caller_id,
                                   &b.dest,
                                   &b.a_uuid).unwrap();
             } else {
@@ -176,7 +176,7 @@ impl Esl {
             .parse::<i32>()
             .unwrap();
         let uuid = content.get("Unique-ID").unwrap();
-        fr::cdr::add_cdr(caller_id, dest, start_time, duration, uuid).unwrap();
+        cdr::add_cdr(caller_id, dest, start_time, duration, uuid).unwrap();
 
         self.add_leftover_bleg(&uuid);
     }
@@ -200,7 +200,7 @@ impl Esl {
                 None => return
             };
 
-        match fr::cdr::add_bleg(caller_id, dest, uuid) {
+        match cdr::add_bleg(caller_id, dest, uuid) {
             Ok(_) => return,
             Err(_) => {
                 let bleg =  Bleg {

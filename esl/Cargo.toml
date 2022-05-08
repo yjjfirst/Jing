@@ -7,4 +7,4 @@ edition = "2018"
 
 [dependencies]
 urlencoding = "2.1.0"
-fr = { path = "../fr"}
+fslib = { path = "../fslib"}

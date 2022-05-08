@@ -695,7 +695,7 @@ dependencies = [
 name = "esl"
 version = "0.1.0"
 dependencies = [
- "fr",
+ "fslib",
  "urlencoding",
 ]
 
@@ -741,7 +741,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "fr"
+name = "fslib"
 version = "0.1.0"
 dependencies = [
  "chrono",
