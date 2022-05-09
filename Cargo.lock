@@ -741,6 +741,19 @@ dependencies = [
 ]
 
 [[package]]
+name = "fscmd"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "diesel",
+ "dotenv",
+ "fslib",
+ "prettytable-rs",
+ "structopt",
+ "thiserror",
+]
+
+[[package]]
 name = "fslib"
 version = "0.1.0"
 dependencies = [
