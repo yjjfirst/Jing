@@ -1,6 +1,6 @@
 use super::customtable::{Ctable};
 use structopt::StructOpt;
-use super::fr::*;
+use super::fslib::*;
 
 #[derive(StructOpt)]
 #[structopt(about="Manage the ringing group member")]

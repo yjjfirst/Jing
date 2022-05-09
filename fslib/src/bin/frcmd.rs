@@ -4,11 +4,11 @@ mod ivr;
 
 #[macro_use]
 extern crate prettytable;
-extern crate fr;
+extern crate fslib;
 
 use self::customtable::{Ctable};
 use structopt::StructOpt;
-use self::fr::*;
+use self::fslib::*;
 
 #[derive(StructOpt)]
 #[derive(Debug)]
