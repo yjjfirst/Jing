@@ -1,3 +1,5 @@
+use crate::schema::{profile};
+
 #[derive(Queryable)]
 #[derive(Debug)]
 pub struct ProfileParam {
@@ -7,8 +9,8 @@ pub struct ProfileParam {
     pub value: String
 }
 
-#[derive(Queryable)]
-#[derive(Debug)]
+#[derive(Queryable, Identifiable, PartialEq, Debug)]
+#[table_name="profile"]
 pub struct Profile {
     pub id: i32,
     pub name: String

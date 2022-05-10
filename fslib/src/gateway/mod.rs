@@ -5,7 +5,7 @@ use diesel::prelude::*;
 use crate::db_connect;
 use crate::schema::gateway;
 use crate::error::{Result};
-                   
+
 pub fn add_gateway (
     profile_id: i32,
     gateway_name: String,

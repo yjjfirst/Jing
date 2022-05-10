@@ -4,6 +4,7 @@ use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
 use crate::error::{HornetError, Result};
+use super::gateway::models::Gateway;
 
 pub fn all_profiles() -> Result<Vec<Profile>> {
     use crate::schema::profile::dsl::*;
@@ -11,7 +12,7 @@ pub fn all_profiles() -> Result<Vec<Profile>> {
 
     let profiles = profile
         .load::<Profile>(&conn)?;
-    
+
     Ok(profiles)
 }
 
@@ -35,10 +36,21 @@ pub fn profile_params(n: String) -> Result<Vec<ProfileParam>> {
 
     let conn = db_connect();
     let prof_id = get_profile_id_by(&n)?;
-    
+
     let results = profile_param
         .filter(profile_id.eq(prof_id))
         .load::<ProfileParam>(&conn)?;
 
     Ok(results)
+}
+
+pub fn gateways(profile_id: i32) -> Result<Vec<Gateway>> {
+    use crate::schema::profile::dsl::*;
+
+    let conn = db_connect();
+    let prof = profile.find(profile_id).get_result::<Profile>(&conn)?;
+    let gateways = Gateway::belonging_to(&prof).load(&conn)?;
+
+    Ok(gateways)
+
 }

@@ -1,6 +1,9 @@
-use crate::schema::gateway;
+use crate::schema::{gateway};
+use crate::profile::models::Profile;
 
-#[derive(Queryable)]
+#[derive(Queryable, Identifiable, Associations, PartialEq, Debug)]
+#[table_name = "gateway"]
+#[belongs_to(Profile)]
 pub struct Gateway {
     pub id: i32,
     pub profile_id: i32,
