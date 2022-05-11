@@ -1,5 +1,6 @@
 mod xml_utils;
 mod configuration;
+mod directory;
 
 use tide::{Request, StatusCode};
 use tide::prelude::*;
@@ -26,6 +27,8 @@ async fn fs_post(mut req: Request<()>) -> tide::Result {
 
     if conf.section == "configuration" {
         configuration::serve()
+    } else if conf.section == "directory" {
+        directory::serve()
     } else {
         return Err(tide::Error::from_str(StatusCode::NotFound, "Invalidated section"));
     }

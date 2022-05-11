@@ -21,6 +21,18 @@ pub fn add_voicemail(user_id: i32, password: String, email: Option<String>) -> R
     Ok(())
 }
 
+pub fn get_voicemail(a_id: i32) -> Result<Voicemail> {
+    use crate::schema::voicemail::dsl::*;
+
+    let conn = db_connect();
+
+    let results = voicemail
+        .filter(user_id.eq(a_id))
+        .first::<Voicemail>(&conn)?;
+
+    Ok(results)
+}
+
 pub fn all_voicemails() -> Result<Vec<Voicemail>> {
     use crate::schema::voicemail::dsl::*;
 

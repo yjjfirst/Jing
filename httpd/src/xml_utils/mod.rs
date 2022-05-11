@@ -6,6 +6,12 @@ pub struct Attr<'a> {
     pub value: &'a str
 }
 
+impl<'a> Attr<'a> {
+    pub fn new(name: &'a str, value: &'a str) -> Self {
+         Self {name: name, value: value}
+    }
+}
+
 pub fn start_element<W: Write>(w: &mut EventWriter<W>,tag: &str, attrs: Option<Vec<Attr>>) {
     let mut builder: StartElementBuilder = XmlEvent::start_element(tag);
     match attrs {
@@ -29,4 +35,10 @@ pub fn end_element<W: Write>(w: &mut EventWriter<W>) {
 pub fn param<W: Write>(w: &mut EventWriter<W>, name: &str, value: &str) {
     start_element(w, "param", Some(vec![Attr { name: "name", value: name}, Attr {name: "value", value: value}]));
     end_element(w);
+}
+
+pub fn variable<W: Write>(w: &mut EventWriter<W>, name: &str, value: &str) {
+    start_element(w, "variable", Some(vec![Attr::new("name", name), Attr::new("value", value)]));
+    end_element(w);
+
 }
