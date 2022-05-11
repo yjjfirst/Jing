@@ -3,8 +3,7 @@ extern crate fslib;
 use std::io::Write;
 use std::io::BufWriter;
 use xml::writer::{EmitterConfig, EventWriter};
-use std::collections::HashMap;
-use super::xml_utils::{start_element, end_element, param};
+use super::xml_utils::{start_element, end_element, param, Attr};
 use fslib::gateway::models::{Gateway};
 use fslib::profile::models::{Profile};
 
@@ -14,16 +13,11 @@ pub fn serve () -> tide::Result {
     let mut buf = BufWriter::new(Vec::new());
     let mut w = EmitterConfig::new().perform_indent(true).create_writer(&mut buf);
 
-    start_element(&mut w, "document", Some(
-        HashMap::from([("type", "freeswitch/xml")])
-    ));
-    start_element(&mut w, "section", Some(
-        HashMap::from([("name", "configuration")])
-    ));
+    start_element(&mut w, "document", Some(vec![Attr {name: "type", value: "freeswitch/xml"}]));
+    start_element(&mut w, "section", Some(vec![Attr{name: "name", value: "configuration"}]));
     start_element(&mut w, "configuration", Some(
-        HashMap::from([("name", "sofia.conf"),
-                       ("description","sofia Endpoint")])
-    ));
+        vec![Attr {name: "name", value: "sofia.conf"},
+             Attr {name: "description",value: "sofia Endpoint"}]));
 
     profiles(&mut w);
 
@@ -49,7 +43,7 @@ fn profiles<W: Write>(w: &mut EventWriter<W>) {
 }
 
 fn profile<W: Write>(w: &mut EventWriter<W>, profile: Profile) {
-    start_element(w, "profile", Some(HashMap::from([("name", profile.name.as_str())])));
+    start_element(w, "profile", Some(vec![Attr{name: "name", value: profile.name.as_str()}]));
     gateways(w, profile.id);
     settings(w, profile.name.as_str());
     end_element(w);
@@ -66,7 +60,7 @@ fn gateways<W: Write>(w: &mut EventWriter<W>, profile_id: i32) {
 }
 
 fn gateway<W: Write>(w: &mut EventWriter<W>, g: &Gateway) {
-    start_element(w, "gateway", Some(HashMap::from([("name", g.gateway_name.as_str())])));
+    start_element(w, "gateway", Some(vec![Attr {name: "name", value: g.gateway_name.as_str()}]));
 
     param(w, "proxy", g.proxy.as_str());
     param(w, "username", g.username.as_ref().unwrap());

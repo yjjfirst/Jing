@@ -1,13 +1,17 @@
 use std::io::Write;
 use xml::writer::{EventWriter, XmlEvent, events::StartElementBuilder};
-use std::collections::HashMap;
 
-pub fn start_element<W: Write>(w: &mut EventWriter<W>,tag: &str, attrs: Option<HashMap<&str, &str>>) {
+pub struct Attr<'a> {
+    pub name: &'a str,
+    pub value: &'a str
+}
+
+pub fn start_element<W: Write>(w: &mut EventWriter<W>,tag: &str, attrs: Option<Vec<Attr>>) {
     let mut builder: StartElementBuilder = XmlEvent::start_element(tag);
     match attrs {
         Some(attrs) => {
-            for (key, value) in &attrs {
-                builder = builder.attr(&key[..], &value[..]);
+            for attr in &attrs {
+                builder = builder.attr(attr.name, attr.value);
             }
         },
         None => {}
@@ -23,6 +27,6 @@ pub fn end_element<W: Write>(w: &mut EventWriter<W>) {
 }
 
 pub fn param<W: Write>(w: &mut EventWriter<W>, name: &str, value: &str) {
-    start_element(w, "param", Some(HashMap::from([("name", name), ("value", value)])));
+    start_element(w, "param", Some(vec![Attr { name: "name", value: name}, Attr {name: "value", value: value}]));
     end_element(w);
 }
