@@ -1,7 +1,7 @@
 use crate::schema::extension;
 use diesel::prelude::*;
 use crate::db_connect;
-use crate::error::{Result};
+use crate::error::{Result, HornetError};
 
 #[derive(Queryable, Debug)]
 pub struct Extension {
@@ -48,4 +48,22 @@ pub fn ls_extension() -> Result<Vec<Extension>> {
         .load::<Extension>(&conn)?;
 
     Ok(result)
+}
+
+pub fn get_extension(e: &str) -> Result<Extension> {
+    use crate::schema::extension::dsl::*;
+    let conn = db_connect();
+
+    let mut result = extension
+        .filter(exten.eq(e))
+        .load::<Extension>(&conn)?;
+
+    match result.pop() {
+        Some(e) => {
+            Ok(e)
+        },
+        None => {
+            Err(HornetError::DestNonExist)
+        }
+    }
 }

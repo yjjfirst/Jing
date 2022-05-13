@@ -42,3 +42,8 @@ pub fn variable<W: Write>(w: &mut EventWriter<W>, name: &str, value: &str) {
     end_element(w);
 
 }
+
+pub fn action<W: Write>(w: &mut EventWriter<W>, app: &str, data: &str) {
+    start_element(w, "action", Some(vec![Attr::new("application", app), Attr::new("data", data)]));
+    end_element(w);
+}
