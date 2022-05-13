@@ -9,6 +9,7 @@ pub mod cdr;
 pub mod voicemail;
 pub mod ringgroup;
 pub mod ivr;
+pub mod extension;
 
 #[macro_use]
 extern crate diesel;
@@ -27,4 +28,3 @@ pub fn db_connect() -> MysqlConnection {
     MysqlConnection::establish(&database_url)
         .expect(&format!("Error connecting to {}", database_url))
 }
-

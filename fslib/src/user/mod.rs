@@ -4,6 +4,7 @@ use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
 use crate::error::{Result};
+use crate::extension::{add_extension, del_extension};
 
 pub fn add_user<'a> (
     domain_id: i32,
@@ -23,7 +24,7 @@ pub fn add_user<'a> (
     uservar1: Option<&'a str>,
     uservar2: Option<&'a str>,
     uservar3: Option<&'a str>) -> Result<()> {
-    
+
     use crate::schema::user;
     let conn = db_connect();
     let new_user = NewUser {
@@ -44,12 +45,14 @@ pub fn add_user<'a> (
         uservar1,
         uservar2,
         uservar3,
-        
+
     };
 
     diesel::insert_into(user::table)
         .values(&new_user)
         .execute(&conn)?;
+
+    add_extension(user_id, "user")?;
 
     Ok(())
 }
@@ -65,13 +68,14 @@ pub fn del_user(user: &str) -> Result<()> {
         .filter(user_id.eq(user))
         .execute(&conn)?;
 
+    del_extension(user)?;
     Ok(())
 }
 
 pub fn all_users_with_domain() -> Result<Vec<(i32, String, String, String)>>{
     use crate::schema::user;
     use crate::schema::domain;
-    
+
     let conn = db_connect();
 
     let results: Vec<(i32, String, String, String)> = user::table.inner_join(domain::table)
@@ -89,7 +93,7 @@ pub fn all_users() -> Result<Vec<User>> {
     let results = user
         .load::<User>(&conn)?;
 
-    
+
     Ok(results)
 }
 
@@ -113,6 +117,6 @@ pub fn get_user_id(db_id: i32) -> Result<String>{
         .select(user_id)
         .filter(id.eq(db_id))
         .load::<String>(&conn)?;
-    
+
     Ok(users[0].to_string())
 }

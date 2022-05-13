@@ -1,0 +1,51 @@
+use crate::schema::extension;
+use diesel::prelude::*;
+use crate::db_connect;
+use crate::error::{Result};
+
+#[derive(Queryable, Debug)]
+pub struct Extension {
+    pub id: i32,
+    pub exten: String,
+    pub exten_type: String
+}
+
+#[derive(Insertable)]
+#[table_name="extension"]
+pub struct NewExtension<'a> {
+    pub exten: &'a str,
+    pub exten_type: &'a str
+}
+
+pub fn add_extension(exten :&str, exten_type: &str) -> Result<()>{
+    let conn = db_connect();
+    let new_extension = NewExtension {
+        exten, exten_type
+    };
+
+    diesel::insert_into(extension::table)
+        .values(&new_extension)
+        .execute(&conn)?;
+
+    Ok(())
+}
+
+pub fn del_extension(ext: &str) -> Result<()>{
+    use crate::schema::extension::columns::*;
+
+    let conn = db_connect();
+    diesel::delete(extension::table)
+        .filter(exten.eq(ext))
+        .execute(&conn)?;
+
+    Ok(())
+}
+
+pub fn ls_extension() -> Result<Vec<Extension>> {
+    use crate::schema::extension::dsl::*;
+    let conn = db_connect();
+    let result = extension
+        .load::<Extension>(&conn)?;
+
+    Ok(result)
+}

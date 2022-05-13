@@ -2,7 +2,7 @@
 CREATE TABLE `extension` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `exten` VARCHAR(128) NOT NULL UNIQUE,
-  `exten_type` VARCHAR(64),
+  `exten_type` VARCHAR(64) NOT NULL,
   PRIMARY KEY(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 

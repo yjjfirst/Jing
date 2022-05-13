@@ -22,7 +22,7 @@ table! {
     extension (id) {
         id -> Integer,
         exten -> Varchar,
-        exten_type -> Nullable<Varchar>,
+        exten_type -> Varchar,
     }
 }
 
