@@ -146,9 +146,7 @@ enum InRouteCli {
         #[structopt(short, long)]
         condition: String,
         #[structopt(short = "t", long)]
-        dest_type: String,
-        #[structopt(short, long)]
-        dest: i32,
+        dest_extension: String,
     },
     Del {
         #[structopt(short, long)]
@@ -409,10 +407,10 @@ fn exec_gateway_cmd(gateway: GatewayCli) {
 fn print_inbounds(routes: Vec<route::inbound_models::InboundRoute>) {
 
     let mut table = Ctable::new();
-    table.set_titles(row!["Id", "Context", "Condition", "Dest Type", "Dest"]);
+    table.set_titles(row!["Id", "Context", "Condition", "Dest"]);
 
     for r in routes {
-        table.add_row(row![r.id, r.context, r.condition,r.dest_type, r.dest]);
+        table.add_row(row![r.id, r.context, r.condition, r.dest_extension]);
     }
 
     table.print();
@@ -421,8 +419,8 @@ fn print_inbounds(routes: Vec<route::inbound_models::InboundRoute>) {
 
 fn exec_inbound_cmd(inbound: InRouteCli) {
     match inbound {
-        InRouteCli::Add {context, condition, dest_type, dest} => {
-            route::add_inboud(&context, &condition, &dest_type, dest)
+        InRouteCli::Add {context, condition, dest_extension} => {
+            route::add_inboud(&context, &condition, &dest_extension)
                 .unwrap_or_else(|err| println!("{}",err));
         },
         InRouteCli::Del {id} => {

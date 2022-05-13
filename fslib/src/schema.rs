@@ -12,16 +12,17 @@ table! {
 }
 
 table! {
-    dest_type (id) {
+    domain (id) {
         id -> Integer,
-        dest_name -> Varchar,
+        domain_name -> Varchar,
     }
 }
 
 table! {
-    domain (id) {
+    extension (id) {
         id -> Integer,
-        domain_name -> Varchar,
+        exten -> Varchar,
+        exten_type -> Nullable<Varchar>,
     }
 }
 
@@ -42,8 +43,7 @@ table! {
         id -> Integer,
         context -> Varchar,
         condition -> Varchar,
-        dest_type -> Varchar,
-        dest -> Integer,
+        dest_extension -> Varchar,
     }
 }
 
@@ -166,8 +166,8 @@ joinable!(voicemail -> user (user_id));
 
 allow_tables_to_appear_in_same_query!(
     cdr,
-    dest_type,
     domain,
+    extension,
     gateway,
     inbound_route,
     ivr,

@@ -58,26 +58,25 @@ pub fn all_inbound() -> Result<Vec<InboundRoute>>{
    Ok(result)
 }
 
-pub fn add_inboud(context: &str, condition: &str, dest_type: &str, dest: i32) -> Result<()> {
-    let exist = dest_exists(dest_type)?;
+pub fn add_inboud(context: &str, condition: &str, dest_extension: &str) -> Result<()> {
+    let exist = true;
 
     match exist {
         false => return Err(HornetError::DestNonExist),
         _ => (),
     }
-    
+
     let conn = db_connect();
     let new_route = NewInboundRoute {
         context,
         condition,
-        dest_type,
-        dest
+        dest_extension
     };
 
     diesel::insert_into(inbound_route::table)
         .values(&new_route)
         .execute(&conn)?;
-    
+
     Ok(())
 }
 
@@ -93,13 +92,5 @@ pub fn del_inbound(inbound_id: i32) -> Result<()>{
 }
 
 pub fn dest_exists(dest: &str) -> Result<bool> {
-    use crate::schema::dest_type::dsl::*;
-    
-    let conn = db_connect();
-
-    let count = dest_type
-        .filter(dest_name.eq(dest))
-        .execute(&conn)?;
-    
-    Ok(count == 1)
+    Ok(true)
 }

@@ -25,6 +25,5 @@ CREATE TABLE `ivr_option` (
   `dest_type` INT,
   `dest_id` INT,
   PRIMARY KEY(id),
-  FOREIGN KEY(ivr_id) REFERENCES ivr(id),
-  FOREIGN KEY(dest_type) REFERENCES dest_type(id),
+  FOREIGN KEY(ivr_id) REFERENCES ivr(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

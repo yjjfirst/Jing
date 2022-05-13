@@ -1,14 +1,8 @@
 -- Your SQL goes here
-CREATE TABLE `extension_type` (
-  `id` INT NOT NULL AUTO_INCREMENT,
-  `name` VARCHAR(128) NOT NULL,
-  PRIMARY KEY(id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
-
 CREATE TABLE `extension` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `exten` VARCHAR(128) NOT NULL UNIQUE,
-  `exten_type` INT NOT NULL,
+  `exten_type` VARCHAR(64),
   PRIMARY KEY(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
