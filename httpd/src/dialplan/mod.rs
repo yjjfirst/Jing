@@ -5,8 +5,9 @@ use std::io::BufWriter;
 use xml::writer::{EmitterConfig, EventWriter};
 use super::xml_utils::{start_element, end_element, action, Attr};
 use fslib::extension::{get_extension};
-use fslib::route::{all_outbounds};
+use fslib::route::{all_outbounds, all_inbound};
 use fslib::route::outbound_models::{OutboundRoute};
+use fslib::route::inbound_models::{InboundRoute};
 use fslib::gateway::{get_gateway};
 
 use super::FsRequest;
@@ -31,21 +32,23 @@ pub fn serve (fs_req: FsRequest) -> tide::Result {
 
 fn dialplan<W: Write>(w: &mut EventWriter<W>, fs_req: FsRequest) {
     let context = fs_req.context.unwrap();
-    let dest_number = fs_req.dest_number.unwrap();
-    let domain = fs_req.dest_domain.unwrap();
 
     if context == "internal" {
+        let dest_number = fs_req.dest_number.unwrap();
+
         if let Ok(e) = get_extension(dest_number.as_str()) {
             if e.exten_type == "user" {
-                user(w, e.exten.as_str(), domain.as_str());
+                user(w);
             }
         } else {
             outbounds(w);
         }
+    } else if context == "public" {
+        inbounds(w);
     }
 }
 
-fn user<W: Write>(w: &mut EventWriter<W>, _user: &str, _domain: &str)  {
+fn user<W: Write>(w: &mut EventWriter<W>)  {
     start_element(w, "context", Some(vec![Attr::new("name", "internal")]));
     start_element(w, "extension", Some(vec![Attr::new("name", "local_user")]));
     start_element(w, "condition", Some(vec![Attr::new("field", "destination_number"),
@@ -82,4 +85,25 @@ fn outbound<W: Write>(w: &mut EventWriter<W>, route: OutboundRoute) {
     }
     end_element(w);
     end_element(w);
+}
+
+fn inbounds<W: Write>(w: &mut EventWriter<W>) {
+    start_element(w, "context", Some(vec![Attr::new("name", "public")]));
+    for r in all_inbound().unwrap() {
+        inbound(w, r);
+    }
+    end_element(w);
+}
+
+fn inbound<W: Write>(w: &mut EventWriter<W>, route: InboundRoute) {
+    start_element(w, "extension", Some(vec![Attr::new("name", format!("inbound_route_{}", route.id).as_str())]));
+    start_element(w, "condition", Some(vec![Attr::new("field", "destination_number"),
+                                            Attr::new("expression", route.condition.as_str())
+    ]));
+
+    action(w, "transfer", format!("{} XML internal", route.dest_extension).as_str());
+
+    end_element(w);
+    end_element(w);
+
 }

@@ -13,3 +13,6 @@
 
 #add outbound route
 ./target/debug/fscmd route out add --condition "(1\d{10})" --gateway-id 1 --priority 100
+
+#add inbound route
+./target/debug/fscmd route in add --condition 1002 --context public --dest-extension 1000
