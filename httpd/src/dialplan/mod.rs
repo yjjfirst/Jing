@@ -5,6 +5,9 @@ use std::io::BufWriter;
 use xml::writer::{EmitterConfig, EventWriter};
 use super::xml_utils::{start_element, end_element, action, Attr};
 use fslib::extension::{get_extension};
+use fslib::route::{all_outbounds};
+use fslib::route::outbound_models::{OutboundRoute};
+use fslib::gateway::{get_gateway};
 
 use super::FsRequest;
 
@@ -36,6 +39,8 @@ fn dialplan<W: Write>(w: &mut EventWriter<W>, fs_req: FsRequest) {
             if e.exten_type == "user" {
                 user(w, e.exten.as_str(), domain.as_str());
             }
+        } else {
+            outbounds(w);
         }
     }
 }
@@ -54,6 +59,27 @@ fn user<W: Write>(w: &mut EventWriter<W>, _user: &str, _domain: &str)  {
     action(w, "bridge", "user/${dialed_extension}@${domain_name}");
 
     end_element(w);
+    end_element(w);
+    end_element(w);
+}
+
+fn outbounds<W: Write>(w: &mut EventWriter<W>) {
+    start_element(w, "context", Some(vec![Attr::new("name", "internal")]));
+    for route in all_outbounds().unwrap() {
+        outbound(w, route);
+    }
+    end_element(w);
+}
+
+fn outbound<W: Write>(w: &mut EventWriter<W>, route: OutboundRoute) {
+    start_element(w, "extension", Some(vec![Attr::new("name", format!("outbound_route_{}", route.id).as_str())]));
+    start_element(w, "condition", Some(vec![Attr::new("field", "destination_number"),
+                                            Attr::new("expression", route.condition.as_str())
+    ]));
+
+    if let Ok(g) = get_gateway(route.gateway_id) {
+        action(w,"bridge", format!("sofia/gateway/{}/$1",g.gateway_name).as_str());
+    }
     end_element(w);
     end_element(w);
 }

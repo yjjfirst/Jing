@@ -4,7 +4,7 @@ use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
 use crate::schema::gateway;
-use crate::error::{Result};
+use crate::error::{Result, HornetError};
 
 pub fn add_gateway (
     profile_id: i32,
@@ -52,4 +52,19 @@ pub fn all_gateways() -> Result<Vec<Gateway>> {
         .load::<Gateway>(&conn)?;
 
     Ok(results)
+}
+
+pub fn get_gateway(gateway_id: i32) -> Result<Gateway> {
+    use crate::schema::gateway::dsl::*;
+    let conn = db_connect();
+
+    let mut result = gateway
+        .filter(id.eq(gateway_id))
+        .load::<Gateway>(&conn)?;
+
+    if let Some(g) = result.pop() {
+        Ok(g)
+    } else {
+        Err(HornetError::DestNonExist)
+    }
 }

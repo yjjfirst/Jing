@@ -10,3 +10,6 @@
 #add gateways
 ./target/debug/fscmd gateway add --name kamailio_1001 --profile 2 --password 0z1*7CSUOj96nV5 --proxy 45.76.77.24 --register 45.76.77.24 --username 1001
 ./target/debug/fscmd gateway add --name kamailio_1002 --profile 2 --password j1U4NyRN6LtTGzp --proxy 45.76.77.24 --register 45.76.77.24 --username 1002
+
+#add outbound route
+./target/debug/fscmd route out add --condition "(1\d{10})" --gateway-id 1 --priority 100
