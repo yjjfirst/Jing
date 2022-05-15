@@ -16,3 +16,8 @@
 
 #add inbound route
 ./target/debug/fscmd route in add --condition 1002 --context public --dest-extension 1000
+
+#add ringgroup
+./target/debug/fscmd rg add --domain-id 1 --group-id 6000 --name "ringgroup_1"
+./target/debug/fscmd rg member add --group 2 --user 1
+./target/debug/fscmd rg member add --group 2 --user 1

@@ -3,6 +3,7 @@ pub mod models;
 use models::*;
 use super::user::{get_user_domain, get_user_id};
 use super::domain::{get_domain_name};
+use super::extension::{add_extension, del_extension};
 use diesel::prelude::*;
 use crate::db_connect;
 use crate::error::{Result, HornetError};
@@ -22,6 +23,8 @@ pub fn add_ringgroup(name: String, group_id: String, domain_id: i32, ring_time: 
         .values(&new_group)
         .execute(&conn)?;
 
+    add_extension(group_id.as_str(), "ringgroup")?;
+
     Ok(())
 }
 
@@ -29,11 +32,15 @@ pub fn del_ringgroup(i: i32) -> Result<()>{
     use crate::schema::ringing_group;
     use crate::schema::ringing_group::columns::id;
 
+    let group = get_ringgroup(i).unwrap();
+    let extension = group.group_id.clone();
     let conn = db_connect();
 
     diesel::delete(ringing_group::table)
         .filter(id.eq(i))
         .execute(&conn)?;
+
+    del_extension(extension.as_str())?;
 
     Ok(())
 }
@@ -51,15 +58,16 @@ pub fn all_ringgroup() -> Result<Vec<Ringgroup>>{
 
 pub fn add_ringgroup_member(group: i32, user: i32) -> Result<()> {
     use crate::schema::ringing_group_member::dsl::*;
-    
+
     let conn = db_connect();
     let user_domain = get_user_domain(user)?;
-    let ringgroup_domain = get_ringgroup_domain(group)?;
+    let ringgroup = get_ringgroup(group)?;
+    let ringgroup_domain = ringgroup.domain_id;
 
     if let Ok(1) = member_exists(group, user) {
         return Err(HornetError::LogicError("User exist in ringing group".to_string()));
     }
-    
+
     if user_domain == ringgroup_domain {
         diesel::insert_into(ringing_group_member)
             .values((ringing_group_id.eq(group), user_id.eq(user)))
@@ -98,26 +106,29 @@ pub fn all_ringgroup_member(group: i32) -> Result<Vec<(i32,String,String)>> {
         .into_iter()
         .map(|x| {
             let u = get_user_id(x.2).unwrap();
-            let dn = get_domain_name(get_ringgroup_domain(x.1).unwrap()).unwrap();
-            
+            let dn = get_domain_name(get_ringgroup(x.1).unwrap().domain_id).unwrap();
+
             (x.0, u, dn)
         })
         .collect();
-             
+
     Ok(results)
 }
 
-fn get_ringgroup_domain(target_ringgroup_id: i32) -> Result<i32> {
+fn get_ringgroup(target_ringgroup_id: i32) -> Result<Ringgroup> {
     use crate::schema::ringing_group::dsl::*;
 
     let conn = db_connect();
 
-    let domain = ringing_group
-        .select(domain_id)
+    let mut groups = ringing_group
         .filter(id.eq(target_ringgroup_id))
-        .load::<i32>(&conn)?;
-    
-    Ok(domain[0])
+        .load::<Ringgroup>(&conn)?;
+
+    if let Some(g) = groups.pop() {
+        Ok(g)
+    } else {
+        Err(HornetError::DestNonExist)
+    }
 }
 
 fn member_exists(group: i32, user: i32) -> Result<usize> {

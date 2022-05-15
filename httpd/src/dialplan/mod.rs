@@ -9,7 +9,8 @@ use fslib::route::{all_outbounds, all_inbound};
 use fslib::route::outbound_models::{OutboundRoute};
 use fslib::route::inbound_models::{InboundRoute};
 use fslib::gateway::{get_gateway};
-
+use fslib::ringgroup::{all_ringgroup, all_ringgroup_member};
+use fslib::ringgroup::models::{Ringgroup};
 use super::FsRequest;
 
 pub fn serve (fs_req: FsRequest) -> tide::Result {
@@ -39,7 +40,10 @@ fn dialplan<W: Write>(w: &mut EventWriter<W>, fs_req: FsRequest) {
         if let Ok(e) = get_extension(dest_number.as_str()) {
             if e.exten_type == "user" {
                 user(w);
+            } else if e.exten_type == "ringgroup" {
+                ringgroups(w);
             }
+
         } else {
             outbounds(w);
         }
@@ -106,4 +110,29 @@ fn inbound<W: Write>(w: &mut EventWriter<W>, route: InboundRoute) {
     end_element(w);
     end_element(w);
 
+}
+
+fn ringgroups<W: Write>(w: &mut EventWriter<W>) {
+    start_element(w, "context", Some(vec![Attr::new("name", "internal")]));
+    for rg in all_ringgroup().unwrap() {
+        ringgroup(w, rg);
+    }
+    end_element(w);
+}
+
+fn ringgroup<W: Write>(w: &mut EventWriter<W>, rg: Ringgroup) {
+    start_element(w, "extension", Some(vec![Attr::new("name", format!("ringgroup_{}", rg.id).as_str())]));
+    start_element(w, "condition", Some(vec![Attr::new("field", "destination_number"),
+                                            Attr::new("expression", rg.group_id.as_str())
+    ]));
+
+    let members = all_ringgroup_member(rg.id).unwrap();
+    let members: Vec<String> = members.iter().map(|m| format!("user/{}@${{domain_name}}",m.1)).collect();
+    let members = members.join(",");
+
+    action(w, "set", "call_timeout=30");
+    action(w, "bridge", format!("{{ignore_early_media=true}}{}", members).as_str());
+
+    end_element(w);
+    end_element(w);
 }
