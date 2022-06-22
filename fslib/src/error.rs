@@ -1,22 +1,12 @@
-use thiserror::Error;
+use thiserror;
 
-#[derive(Error, Debug)]
-pub enum HornetError {
-    #[error("Dest type doesn't exist")]
-    DestNonExist,
-    
-    #[error("Profile doesn't exist")]
-    ProfileNonExist,
-
+#[derive(thiserror::Error, Debug)]
+pub enum Error {
     #[error("Database error")]
     Database(#[from] diesel::result::Error),
 
-    #[error("Aleg doesn't exist")]
-    AlegNonExist,
-    
-    #[error("Logic error")]
-    LogicError(String),
+    #[error("FS library error")]
+    Fslib(String),
 }
 
-pub type Result<T> =  std::result::Result<T, HornetError>;
-
+pub type Result<T> =  std::result::Result<T, Error>;

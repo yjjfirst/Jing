@@ -4,7 +4,7 @@ use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
 use crate::schema::gateway;
-use crate::error::{Result, HornetError};
+use crate::error::{Result, Error};
 
 pub fn add_gateway (
     profile_id: i32,
@@ -65,6 +65,6 @@ pub fn get_gateway(gateway_id: i32) -> Result<Gateway> {
     if let Some(g) = result.pop() {
         Ok(g)
     } else {
-        Err(HornetError::DestNonExist)
+        Err(Error::Fslib("Gateway doesn't exist".to_string()))
     }
 }

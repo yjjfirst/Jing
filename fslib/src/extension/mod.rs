@@ -1,7 +1,7 @@
 use crate::schema::extension;
 use diesel::prelude::*;
 use crate::db_connect;
-use crate::error::{Result, HornetError};
+use crate::error::{Result, Error};
 
 #[derive(Queryable, Debug)]
 pub struct Extension {
@@ -63,7 +63,7 @@ pub fn get_extension(e: &str) -> Result<Extension> {
             Ok(e)
         },
         None => {
-            Err(HornetError::DestNonExist)
+            Err(Error::Fslib("Extension doesn't exist".to_string()))
         }
     }
 }

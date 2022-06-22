@@ -3,7 +3,7 @@ pub mod models;
 use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
-use crate::error::{Result};
+use crate::error::{Error, Result};
 use crate::extension::{add_extension, del_extension};
 
 pub fn add_user<'a> (
@@ -97,16 +97,20 @@ pub fn all_users() -> Result<Vec<User>> {
     Ok(results)
 }
 
-pub fn get_user_domain(db_id: i32) -> Result<i32>{
+pub fn get_user_domain(a_user_id: i32) -> Result<i32>{
     use crate::schema::user::dsl::*;
 
     let conn = db_connect();
-    let domains = user
+    let mut domains = user
         .select(domain_id)
-        .filter(id.eq(db_id))
+        .filter(id.eq(a_user_id))
         .load::<i32>(&conn)?;
 
-    Ok(domains[0])
+    if let Some(d) = domains.pop() {
+        Ok(d)
+    } else {
+        Err(Error::Fslib("User doesn't exist".to_string()))
+    }
 }
 
 pub fn get_user_id(db_id: i32) -> Result<String>{

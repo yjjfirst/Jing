@@ -6,7 +6,7 @@ use super::domain::{get_domain};
 use super::extension::{add_extension, del_extension};
 use diesel::prelude::*;
 use crate::db_connect;
-use crate::error::{Result, HornetError};
+use crate::error::{Result, Error};
 
 pub fn add_ringgroup(name: String, group_id: String, domain_id: i32, ring_time: Option<i32>, strategy: Option<String>) -> Result<()>{
     use crate::schema::ringing_group;
@@ -65,7 +65,7 @@ pub fn add_ringgroup_member(group: i32, user: i32) -> Result<()> {
     let ringgroup_domain = ringgroup.domain_id;
 
     if let Ok(1) = member_exists(group, user) {
-        return Err(HornetError::LogicError("User exist in ringing group".to_string()));
+        return Err(Error::Fslib("User exist in ringing group".to_string()));
     }
 
     if user_domain == ringgroup_domain {
@@ -73,7 +73,7 @@ pub fn add_ringgroup_member(group: i32, user: i32) -> Result<()> {
             .values((ringing_group_id.eq(group), user_id.eq(user)))
             .execute(&conn)?;
     } else {
-        return Err(HornetError::LogicError("User doamin and ringing group domain don't match.".to_string()));
+        return Err(Error::Fslib("User doamin and ringing group domain don't match.".to_string()));
     }
 
     Ok(())
@@ -127,7 +127,7 @@ fn get_ringgroup(target_ringgroup_id: i32) -> Result<Ringgroup> {
     if let Some(g) = groups.pop() {
         Ok(g)
     } else {
-        Err(HornetError::DestNonExist)
+        Err(Error::Fslib("Ringgroup doesn't exist".to_string()))
     }
 }
 

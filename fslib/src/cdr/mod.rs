@@ -5,7 +5,7 @@ use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use crate::db_connect;
 use crate::schema::cdr;
-use crate::error::{Result, HornetError};
+use crate::error::{Result, Error};
 
 pub fn all_cdrs() -> Result<Vec<Cdr>> {
     use crate::schema::cdr::dsl::*;
@@ -37,17 +37,17 @@ pub fn add_cdr<'a>(
     diesel::insert_into(cdr::table)
         .values(&new_cdr)
         .execute(&conn)?;
-    
+
     Ok(())
 }
 
 pub fn add_bleg<'a> (
     caller_id : &'a str,
     dest: &'a str,
-    a_uuid: &'a str    
+    a_uuid: &'a str
 ) -> Result<()> {
     use crate::schema::cdr::dsl::*;
-    
+
     let conn = db_connect();
 
 
@@ -59,14 +59,14 @@ pub fn add_bleg<'a> (
         diesel::update(cdr.filter(uuid.eq(a_uuid)))
             .set(b_caller_id.eq(caller_id))
             .execute(&conn)?;
-        
+
         diesel::update(cdr.filter(uuid.eq(a_uuid)))
             .set(b_dest.eq(dest))
             .execute(&conn)?;
-        
+
         Ok(())
-            
+
     } else {
-       Err(HornetError::AlegNonExist)
+       Err(Error::Fslib("Aleg doesn't exist".to_string()))
     }
 }

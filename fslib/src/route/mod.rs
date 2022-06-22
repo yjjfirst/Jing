@@ -8,7 +8,7 @@ use diesel::prelude::*;
 use crate::db_connect;
 use crate::schema::outbound_route;
 use crate::schema::inbound_route;
-use crate::error::{HornetError, Result};
+use crate::error::{Error, Result};
 
 pub fn all_outbounds() -> Result<Vec<OutboundRoute>>{
     use crate::schema::outbound_route::dsl::*;
@@ -62,7 +62,7 @@ pub fn add_inboud(context: &str, condition: &str, dest_extension: &str) -> Resul
     let exist = true;
 
     match exist {
-        false => return Err(HornetError::DestNonExist),
+        false => return Err(Error::Fslib("Route destination doesn't exist".to_string())),
         _ => (),
     }
 

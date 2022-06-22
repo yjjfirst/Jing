@@ -3,7 +3,7 @@ pub mod models;
 use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
-use crate::error::{HornetError, Result};
+use crate::error::{Error, Result};
 use super::gateway::models::Gateway;
 
 pub fn all_profiles() -> Result<Vec<Profile>> {
@@ -25,7 +25,7 @@ pub fn get_profile_id_by(profile_name: &str) -> Result<i32> {
         .limit(1)
         .load::<Profile>(&conn)?;
     if ids.len() == 0 {
-       return Err(HornetError::ProfileNonExist);
+       return Err(Error::Fslib("Profile doesn't exist".to_string()));
     }
 
     Ok(ids[0].id)
