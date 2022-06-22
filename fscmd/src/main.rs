@@ -100,7 +100,7 @@ enum DomainCli {
     },
     Active {
         #[structopt(short, long)]
-        id: i32,
+        id: Option<i32>,
     }
 }
 #[derive(StructOpt)]
@@ -354,8 +354,12 @@ fn exec_domain_cmd(domain: DomainCli) {
         },
 
         DomainCli::Active { id } => {
-            domain::set_active(id)
-                .unwrap_or_else(|err| println!("{}", err));
+            if let Some(id) = id {
+                domain::set_active(id)
+                    .unwrap_or_else(|err| println!("{}", err));
+            } else {
+                println!("Active domain: {}", domain::get_active().unwrap().id);
+            }
         },
 
         DomainCli::Ls => {
