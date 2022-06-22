@@ -6,10 +6,11 @@ use crate::db_connect;
 use crate::schema::domain;
 use crate::error::{Result};
 
-pub fn add_domain(domain_name: &str) -> Result<()>{
+pub fn add_domain(domain_name: &str, active: bool) -> Result<()>{
     let conn = db_connect();
     let new_domain = NewDomain {
-        domain_name
+        domain_name,
+        active
     };
     diesel::insert_into(domain::table)
         .values(&new_domain)
@@ -40,14 +41,40 @@ pub fn list_domains() -> Result<Vec<Domain>> {
 }
 
 
-pub fn get_domain_name(db_id: i32) -> Result<String> {
+pub fn get_domain(domain_id: i32) -> Result<Domain> {
     use crate::schema::domain::dsl::*;
 
     let conn = db_connect();
-    let names = domain
-        .select(domain_name)
-        .filter(id.eq(db_id))
-        .load::<String>(&conn)?;
+    let domains = domain
+        .filter(id.eq(domain_id))
+        .load::<Domain>(&conn)?;
 
-    Ok(names[0].to_string())
+    Ok(domains[0].clone())
+}
+
+pub fn set_active(domain_id: i32) -> Result<()> {
+    use crate::schema::domain::dsl::*;
+    let conn = db_connect();
+
+    diesel::update(domain.filter(active.eq(true)))
+        .set(active.eq(false))
+        .execute(&conn)?;
+
+    diesel::update(domain.filter(id.eq(domain_id)))
+        .set(active.eq(true))
+        .execute(&conn)?;
+
+    Ok(())
+}
+
+pub fn get_active() -> Result<Domain> {
+    use crate::schema::domain::dsl::*;
+
+    let conn = db_connect();
+    let domains = domain
+        .filter(active.eq(true))
+        .load::<Domain>(&conn)?;
+
+    Ok(domains[0].clone())
+
 }

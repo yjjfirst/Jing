@@ -98,6 +98,10 @@ enum DomainCli {
         #[structopt(short, long)]
         id: i32,
     },
+    Active {
+        #[structopt(short, long)]
+        id: i32,
+    }
 }
 #[derive(StructOpt)]
 #[derive(Debug)]
@@ -340,12 +344,17 @@ fn print_domains(domains: Vec<domain::models::Domain>) {
 fn exec_domain_cmd(domain: DomainCli) {
     match domain {
         DomainCli::Add { name }=> {
-            domain::add_domain(&name)
+            domain::add_domain(&name, false)
                 .unwrap_or_else(|err| println!("{}", err));
         },
 
         DomainCli::Del { id } => {
             domain::del_domain(id)
+                .unwrap_or_else(|err| println!("{}", err));
+        },
+
+        DomainCli::Active { id } => {
+            domain::set_active(id)
                 .unwrap_or_else(|err| println!("{}", err));
         },
 
