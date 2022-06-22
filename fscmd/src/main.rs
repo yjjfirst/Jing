@@ -1,6 +1,7 @@
 mod customtable;
 mod ringgroup;
 mod ivr;
+mod domain;
 
 #[macro_use]
 extern crate prettytable;
@@ -23,7 +24,7 @@ enum Cli {
     },
     Domain {
         #[structopt(subcommand)]
-        domain: DomainCli,
+        domain: domain::DomainCli,
     },
     Gateway {
         #[structopt(subcommand)]
@@ -86,23 +87,6 @@ enum ProfileCli {
     }
 }
 
-#[derive(StructOpt)]
-#[derive(Debug)]
-enum DomainCli {
-    Ls,
-    Add {
-        #[structopt(short, long)]
-        name: String,
-    },
-    Del {
-        #[structopt(short, long)]
-        id: i32,
-    },
-    Active {
-        #[structopt(short, long)]
-        id: Option<i32>,
-    }
-}
 #[derive(StructOpt)]
 #[derive(Debug)]
 enum GatewayCli {
@@ -212,7 +196,7 @@ fn main() {
             exec_profile_cmd(profile);
         },
         Cli::Domain { domain } => {
-            exec_domain_cmd(domain);
+            domain::exec_domain_cmd(domain);
         },
         Cli::Gateway { gateway } => {
             exec_gateway_cmd(gateway);
@@ -326,48 +310,6 @@ fn exec_profile_cmd(profile: ProfileCli) {
                 Err(err) => println!("{}", err),
             }
        }
-    }
-}
-
-fn print_domains(domains: Vec<domain::models::Domain>) {
-    let mut table = Ctable::new();
-
-    table.set_titles(row!["Id", "Domain Name"]);
-    for d in domains {
-        table.add_row(row![d.id, d.domain_name]);
-    }
-
-    table.print();
-
-}
-
-fn exec_domain_cmd(domain: DomainCli) {
-    match domain {
-        DomainCli::Add { name }=> {
-            domain::add_domain(&name, false)
-                .unwrap_or_else(|err| println!("{}", err));
-        },
-
-        DomainCli::Del { id } => {
-            domain::del_domain(id)
-                .unwrap_or_else(|err| println!("{}", err));
-        },
-
-        DomainCli::Active { id } => {
-            if let Some(id) = id {
-                domain::set_active(id)
-                    .unwrap_or_else(|err| println!("{}", err));
-            } else {
-                println!("Active domain: {}", domain::get_active().unwrap().id);
-            }
-        },
-
-        DomainCli::Ls => {
-            match domain::list_domains() {
-                Ok(domains) => print_domains(domains),
-                Err(err) => println!("{}", err),
-            }
-        }
     }
 }
 

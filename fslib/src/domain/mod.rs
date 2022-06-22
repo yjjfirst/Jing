@@ -4,7 +4,7 @@ use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
 use crate::schema::domain;
-use crate::error::{Result};
+use crate::error::{Result, Error};
 
 pub fn add_domain(domain_name: &str, active: bool) -> Result<()>{
     let conn = db_connect();
@@ -45,11 +45,15 @@ pub fn get_domain(domain_id: i32) -> Result<Domain> {
     use crate::schema::domain::dsl::*;
 
     let conn = db_connect();
-    let domains = domain
+    let mut domains = domain
         .filter(id.eq(domain_id))
         .load::<Domain>(&conn)?;
 
-    Ok(domains[0].clone())
+    if let Some(d) = domains.pop() {
+        Ok(d)
+    } else {
+        Err(Error::Fslib("No active domain found".to_string()))
+    }
 }
 
 pub fn set_active(domain_id: i32) -> Result<()> {
@@ -71,10 +75,13 @@ pub fn get_active() -> Result<Domain> {
     use crate::schema::domain::dsl::*;
 
     let conn = db_connect();
-    let domains = domain
+    let mut domains = domain
         .filter(active.eq(true))
         .load::<Domain>(&conn)?;
 
-    Ok(domains[0].clone())
-
+    if let Some(d) = domains.pop() {
+        Ok(d)
+    } else {
+        Err(Error::Fslib("No active domain found".to_string()))
+    }
 }

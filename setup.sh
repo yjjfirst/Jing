@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #add domain and users
-./target/debug/fscmd domain add --name 45.76.77.24
+./target/debug/fscmd domain add --name teleman.me
 ./target/debug/fscmd user add -d 1 -u 1000 -p gxGB418oc2TVU9rt
 ./target/debug/fscmd user add -d 1 -u 1001 -p gxGB418oc2TVU9rt
 ./target/debug/fscmd user add -d 2 -u 2000 -p gxGB418oc2TVU9rt
