@@ -52,7 +52,7 @@ pub fn get_domain(domain_id: i32) -> Result<Domain> {
     if let Some(d) = domains.pop() {
         Ok(d)
     } else {
-        Err(Error::Fslib("No active domain found".to_string()))
+        Err(Error::Fslib("No such domain found".to_string()))
     }
 }
 

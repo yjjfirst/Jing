@@ -1,6 +1,7 @@
 use super::customtable::{Ctable};
 use structopt::StructOpt;
 use super::fslib::*;
+use super::fslib::rt::{eval, is_var};
 
 #[derive(StructOpt)]
 #[derive(Debug)]
@@ -25,7 +26,13 @@ fn print_domains(domains: Vec<domain::models::Domain>) {
 
     table.set_titles(row!["Id", "Domain Name"]);
     for d in domains {
-        table.add_row(row![d.id, d.domain_name]);
+        let domain_name = if is_var(&d.domain_name) {
+            eval(&d.domain_name)
+        } else {
+            d.domain_name
+        };
+
+        table.add_row(row![d.id, domain_name]);
     }
 
     table.print();

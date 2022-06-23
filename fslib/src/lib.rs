@@ -10,6 +10,7 @@ pub mod voicemail;
 pub mod ringgroup;
 pub mod ivr;
 pub mod extension;
+pub mod rt;
 
 #[macro_use]
 extern crate diesel;
