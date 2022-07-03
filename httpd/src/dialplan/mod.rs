@@ -11,6 +11,7 @@ use fslib::route::inbound_models::{InboundRoute};
 use fslib::gateway::{get_gateway};
 use fslib::ringgroup::{all_ringgroup, all_ringgroup_member};
 use fslib::ringgroup::models::{Ringgroup};
+use fslib::domain::{get_domain_by_name};
 use super::FsRequest;
 
 pub fn serve (fs_req: FsRequest) -> tide::Result {
@@ -36,8 +37,10 @@ fn dialplan<W: Write>(w: &mut EventWriter<W>, fs_req: FsRequest) {
 
     if context == "internal" {
         let dest_number = fs_req.dest_number.unwrap();
+        let domain_name = fs_req.dest_domain.unwrap();
+        let domain = get_domain_by_name(domain_name).unwrap();
 
-        if let Ok(e) = get_extension(dest_number.as_str()) {
+        if let Ok(e) = get_extension(dest_number.as_str(), domain.id) {
             if e.exten_type == "user" {
                 user(w);
             } else if e.exten_type == "ringgroup" {

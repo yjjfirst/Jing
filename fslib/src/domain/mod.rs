@@ -41,6 +41,22 @@ pub fn list_domains() -> Result<Vec<Domain>> {
 }
 
 
+pub fn get_domain_by_name(dn: String) -> Result<Domain> {
+    use crate::schema::domain::dsl::*;
+
+    let conn = db_connect();
+    let mut domains = domain
+        .filter(domain_name.eq(dn))
+        .load::<Domain>(&conn)?;
+
+    if let Some(d) = domains.pop() {
+        Ok(d)
+    } else {
+        Err(Error::Fslib("No such domain found".to_string()))
+    }
+
+}
+
 pub fn get_domain(domain_id: i32) -> Result<Domain> {
     use crate::schema::domain::dsl::*;
 

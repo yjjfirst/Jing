@@ -52,12 +52,13 @@ pub fn ls_extension() -> Result<Vec<Extension>> {
     Ok(result)
 }
 
-pub fn get_extension(e: &str) -> Result<Extension> {
+pub fn get_extension(e: &str, d_id: i32) -> Result<Extension> {
     use crate::schema::extension::dsl::*;
     let conn = db_connect();
 
     let mut result = extension
         .filter(exten.eq(e))
+        .filter(domain_id.eq(d_id))
         .load::<Extension>(&conn)?;
 
     match result.pop() {
