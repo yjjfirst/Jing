@@ -7,20 +7,22 @@ use crate::error::{Result, Error};
 pub struct Extension {
     pub id: i32,
     pub exten: String,
-    pub exten_type: String
+    pub exten_type: String,
+    pub domain_id: i32
 }
 
 #[derive(Insertable)]
 #[table_name="extension"]
 pub struct NewExtension<'a> {
     pub exten: &'a str,
-    pub exten_type: &'a str
+    pub exten_type: &'a str,
+    pub domain_id: i32
 }
 
-pub fn add_extension(exten :&str, exten_type: &str) -> Result<()>{
+pub fn add_extension(exten :&str, exten_type: &str, domain_id: i32) -> Result<()>{
     let conn = db_connect();
     let new_extension = NewExtension {
-        exten, exten_type
+        exten, exten_type, domain_id
     };
 
     diesel::insert_into(extension::table)

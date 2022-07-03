@@ -36,8 +36,6 @@ pub enum RgCli {
         #[structopt(short, long)]
         group_id: String,
         #[structopt(short, long)]
-        domain_id: i32,
-        #[structopt(short, long)]
         ring_time: Option<i32>,
         #[structopt(short, long)]
         strategy: Option<String>,
@@ -104,8 +102,8 @@ pub fn exec_rg_member_cmd(member: RgMemberCli) {
 
 pub fn exec_rg_cmd(rg: RgCli) {
     match rg {
-        RgCli::Add {name, group_id, domain_id, ring_time, strategy} => {
-            ringgroup::add_ringgroup(name, group_id, domain_id, ring_time, strategy)
+        RgCli::Add {name, group_id, ring_time, strategy} => {
+            ringgroup::add_ringgroup(name, group_id, ring_time, strategy)
                 .unwrap();
         },
         RgCli::Del { id } => {

@@ -2,10 +2,12 @@
 
 #add domain and users
 ./target/debug/fscmd domain add --name teleman.me
-./target/debug/fscmd user add -d 1 -u 1000 -p gxGB418oc2TVU9rt
-./target/debug/fscmd user add -d 1 -u 1001 -p gxGB418oc2TVU9rt
-./target/debug/fscmd user add -d 2 -u 2000 -p gxGB418oc2TVU9rt
-./target/debug/fscmd user add -d 2 -u 2001 -p gxGB418oc2TVU9rt
+./target/debug/fscmd user add  -u 1000 -p gxGB418oc2TVU9rt
+./target/debug/fscmd user add  -u 1001 -p gxGB418oc2TVU9rt
+./target/debug/fscmd domain active -i 2
+./target/debug/fscmd user add -u 2000 -p gxGB418oc2TVU9rt
+./target/debug/fscmd user add -u 2001 -p gxGB418oc2TVU9rt
+./target/debug/fscmd domain active -i 1
 
 #add gateways
 ./target/debug/fscmd gateway add --name kamailio_1001 --profile 2 --password 0z1*7CSUOj96nV5 --proxy 45.76.77.24 --register 45.76.77.24 --username 1001
@@ -18,6 +20,6 @@
 ./target/debug/fscmd route in add --condition 1002 --context public --dest-extension 1000
 
 #add ringgroup
-./target/debug/fscmd rg add --domain-id 1 --group-id 6000 --name "ringgroup_1"
+./target/debug/fscmd rg add --group-id 6000 --name "ringgroup_1"
 ./target/debug/fscmd rg member add --group 1 --user 1
 ./target/debug/fscmd rg member add --group 1 --user 2

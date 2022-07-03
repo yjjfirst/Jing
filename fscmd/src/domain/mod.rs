@@ -24,7 +24,7 @@ pub enum DomainCli {
 fn print_domains(domains: Vec<domain::models::Domain>) {
     let mut table = Ctable::new();
 
-    table.set_titles(row!["Id", "Domain Name"]);
+    table.set_titles(row!["Id", "Domain Name", "Active"]);
     for d in domains {
         let domain_name = if is_var(&d.domain_name) {
             eval(&d.domain_name)
@@ -32,7 +32,7 @@ fn print_domains(domains: Vec<domain::models::Domain>) {
             d.domain_name
         };
 
-        table.add_row(row![d.id, domain_name]);
+        table.add_row(row![d.id, domain_name, d.active]);
     }
 
     table.print();

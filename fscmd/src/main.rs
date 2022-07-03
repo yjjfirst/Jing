@@ -62,8 +62,6 @@ enum Cli {
 enum UserCli {
     Add {
         #[structopt(short, long)]
-        domain: String,
-        #[structopt(short, long)]
         user_id: String,
         #[structopt(short, long)]
         password: String
@@ -232,10 +230,8 @@ fn exec_user_ls_cmd(users: Vec<(i32, String, String, String)>) {
 
 fn exec_user_cmd(user: UserCli) {
     match user {
-        UserCli::Add {domain, user_id, password} => {
-            let domain_id: i32 = domain.parse().expect("Domain Id is wrong.");
+        UserCli::Add {user_id, password} => {
             user::add_user(
-                domain_id,
                 &user_id,
                 &password,
                 None,

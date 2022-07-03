@@ -7,23 +7,28 @@ use super::extension::{add_extension, del_extension};
 use diesel::prelude::*;
 use crate::db_connect;
 use crate::error::{Result, Error};
+use crate::domain;
 
-pub fn add_ringgroup(name: String, group_id: String, domain_id: i32, ring_time: Option<i32>, strategy: Option<String>) -> Result<()>{
+pub fn add_ringgroup(name: String, group_id: String, ring_time: Option<i32>, strategy: Option<String>) -> Result<()>{
     use crate::schema::ringing_group;
+
+    let active_domain = domain::get_active()?;
+
     let conn = db_connect();
     let new_group = NewRinggroup {
         name: &name,
         group_id: &group_id,
-        domain_id,
+        domain_id: active_domain.id,
         ring_time,
         ring_strategy: strategy.as_deref()
     };
+
 
     diesel::insert_into(ringing_group::table)
         .values(&new_group)
         .execute(&conn)?;
 
-    add_extension(group_id.as_str(), "ringgroup")?;
+    add_extension(group_id.as_str(), "ringgroup", active_domain.id)?;
 
     Ok(())
 }

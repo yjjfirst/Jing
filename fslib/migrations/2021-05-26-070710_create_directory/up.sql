@@ -3,6 +3,7 @@ CREATE TABLE `extension` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `exten` VARCHAR(128) NOT NULL UNIQUE,
   `exten_type` VARCHAR(64) NOT NULL,
+  `domain_id` INT NOT NULL,
   PRIMARY KEY(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
@@ -13,7 +14,7 @@ CREATE TABLE `domain` (
   PRIMARY KEY(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
-INSERT INTO `domain` (`domain_name`) VALUE ("$${domain}");
+INSERT INTO `domain` (`domain_name`, `active`) VALUE ("$${domain}", 1);
 
 CREATE TABLE `user` (
   `id` INT NOT NULL AUTO_INCREMENT,

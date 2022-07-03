@@ -24,6 +24,7 @@ table! {
         id -> Integer,
         exten -> Varchar,
         exten_type -> Varchar,
+        domain_id -> Integer,
     }
 }
 
