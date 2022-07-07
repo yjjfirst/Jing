@@ -5,6 +5,7 @@ use diesel::prelude::*;
 use crate::db_connect;
 use crate::schema::domain;
 use crate::error::{Result, Error};
+use crate::rt::{is_var, eval};
 
 pub fn add_domain(domain_name: &str, active: bool) -> Result<()>{
     let conn = db_connect();
@@ -45,9 +46,19 @@ pub fn get_domain_by_name(dn: String) -> Result<Domain> {
     use crate::schema::domain::dsl::*;
 
     let conn = db_connect();
-    let mut domains = domain
-        .filter(domain_name.eq(dn))
+    let domains = domain
         .load::<Domain>(&conn)?;
+
+    let mut domains: Vec<Domain> = domains.into_iter().map(|d| {
+        Domain {
+            domain_name: if is_var(&d.domain_name) {
+                eval(&d.domain_name)
+            } else {
+                d.domain_name
+            },
+            ..d
+        }
+    }).filter(|d| d.domain_name == dn).collect();
 
     if let Some(d) = domains.pop() {
         Ok(d)
