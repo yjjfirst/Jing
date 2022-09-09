@@ -17,7 +17,7 @@ pub struct FsRequest {
     dest_number: Option<String>,
     #[serde(rename = "Caller-Context")]
     context: Option<String>,
-    #[serde(rename = "variable_requested_domain_name")]
+    #[serde(rename = "variable_sip_to_host")]
     dest_domain: Option<String>
 }
 
