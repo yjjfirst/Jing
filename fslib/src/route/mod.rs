@@ -90,7 +90,3 @@ pub fn del_inbound(inbound_id: i32) -> Result<()>{
 
     Ok(())
 }
-
-pub fn dest_exists(dest: &str) -> Result<bool> {
-    Ok(true)
-}

@@ -8,7 +8,12 @@ use super::fslib::*;
 pub enum IvrOptionCli {
     #[structopt(about="Add IVR option")]
     Add {
-
+        #[structopt(short, long, help="IVR id")]
+        ivr_id: i32,
+        #[structopt(long, help="Digits")]
+        digits: String,
+        #[structopt(long, help="Dest extension")]
+        dest_exten: String,
     },
     #[structopt(about="Delete IVR option")]
     Del {
@@ -76,6 +81,18 @@ pub fn print_ivrs(ivrs: Vec<ivr::models::Ivr>) {
     table.print();
 }
 
+pub fn exec_ivr_option_cmd(option: IvrOptionCli) {
+    match option {
+        IvrOptionCli::Add {ivr_id, digits, dest_exten} =>  {
+            ivr::add_ivr_option(ivr_id, digits, dest_exten).unwrap();
+        },
+        IvrOptionCli::Del {} => {},
+        IvrOptionCli::Ls {} => {
+        }
+    }
+
+}
+
 pub fn exec_ivr_cmd(ivr: IvrCli) {
     match ivr {
         IvrCli::Add {name, exten, domain_id, greet_long, greet_short, invalid_sound, exit_sound} => {
@@ -97,6 +114,7 @@ pub fn exec_ivr_cmd(ivr: IvrCli) {
             print_ivrs(ivrs);
         },
         IvrCli::Option { option } => {
+            exec_ivr_option_cmd(option);
         }
     }
 }

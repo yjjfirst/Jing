@@ -23,3 +23,6 @@
 ./target/debug/fscmd rg add --group-id 6000 --name "ringgroup_1"
 ./target/debug/fscmd rg member add --group 1 --user 1
 ./target/debug/fscmd rg member add --group 1 --user 2
+
+./target/debug/fscmd ivr add --domain-id 1 --exten 8000 --name martin_test
+./target/debug/fscmd ivr option add --digits 1 --ivr-id 1 --dest-exten 1000

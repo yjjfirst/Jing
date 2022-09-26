@@ -22,8 +22,8 @@ CREATE TABLE `ivr_option` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `ivr_id` INT,
   `digits` VARCHAR(8) NOT NULL,
-  `dest_type` INT,
-  `dest_id` INT,
+  `dest_type` VARCHAR(64) NOT NULL,
+  `dest_exten` VARCHAR(64) NOT NULL,
   PRIMARY KEY(id),
   FOREIGN KEY(ivr_id) REFERENCES ivr(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;

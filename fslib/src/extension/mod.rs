@@ -1,5 +1,6 @@
-use crate::schema::extension;
+use crate::schema::{extension};
 use diesel::prelude::*;
+use diesel::dsl::*;
 use crate::db_connect;
 use crate::error::{Result, Error};
 
@@ -17,6 +18,12 @@ pub struct NewExtension<'a> {
     pub exten: &'a str,
     pub exten_type: &'a str,
     pub domain_id: i32
+}
+
+#[derive(Queryable, Debug)]
+pub struct ExtensionType {
+    pub id:i32,
+    pub name: String
 }
 
 pub fn add_extension(exten :&str, exten_type: &str, domain_id: i32) -> Result<()>{
@@ -69,4 +76,12 @@ pub fn get_extension(e: &str, d_id: i32) -> Result<Extension> {
             Err(Error::Fslib("Extension doesn't exist".to_string()))
         }
     }
+}
+
+pub fn type_exists(n: &str) -> Result<bool> {
+    use crate::schema::extension_type::dsl::*;
+    let conn = db_connect();
+
+    let exists = select(exists(extension_type.filter(name.eq(n)))).get_result::<bool>(&conn)?;
+    return Ok(exists);
 }

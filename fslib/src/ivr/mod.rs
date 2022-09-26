@@ -2,8 +2,16 @@ pub mod models;
 
 use models::*;
 use diesel::prelude::*;
+use diesel::dsl::*;
 use crate::db_connect;
-use crate::error::{Result};
+use crate::extension;
+use crate::domain;
+use crate::error::{Result, Error};
+
+pub enum DestType {
+    User(i32),
+    Ringgroup(i32)
+}
 
 pub fn add(new_ivr: NewIvr) -> Result<()> {
     use crate::schema::ivr;
@@ -12,8 +20,17 @@ pub fn add(new_ivr: NewIvr) -> Result<()> {
     diesel::insert_into(ivr::table)
         .values(&new_ivr)
         .execute(&conn)?;
-    
+
     Ok(())
+}
+
+pub fn ivr_exists(i: i32) -> Result<bool> {
+    use crate::schema::ivr::dsl::*;
+    let  conn = db_connect();
+
+    let result = select(exists(ivr.filter(id.eq(i)))).get_result::<bool>(&conn)?;
+
+    Ok(result)
 }
 
 pub fn del(i: i32) -> Result<()> {
@@ -40,8 +57,24 @@ pub fn all() -> Result<Vec<Ivr>> {
     Ok(results)
 }
 
-pub fn add_ivr_option(digits: String, dest_type: i32, dest_id: i32) {
-}
+pub fn add_ivr_option(a_ivr_id: i32, ds: String, exten: String) -> Result<()> {
+    use crate::schema::ivr_option::dsl::*;
+    use crate::schema::ivr_option;
+    let conn = db_connect();
+    let domain = domain::get_active()?;
 
-pub fn del_ivr_option(i: i32) {
+    if !ivr_exists(a_ivr_id)? {
+        return Err(Error::Fslib("IVR doesn't exist".to_string()));
+    }
+
+    let exten = extension::get_extension(&exten, domain.id)?;
+
+    diesel::insert_into(ivr_option::table)
+        .values((&ivr_id.eq(a_ivr_id),
+                 &digits.eq(ds),
+                 &dest_type.eq(exten.exten_type),
+                 &dest_exten.eq(exten.exten)))
+        .execute(&conn)?;
+
+    Ok(())
 }

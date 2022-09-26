@@ -29,6 +29,13 @@ table! {
 }
 
 table! {
+    extension_type (id) {
+        id -> Integer,
+        name -> Varchar,
+    }
+}
+
+table! {
     gateway (id) {
         id -> Integer,
         profile_id -> Integer,
@@ -73,8 +80,8 @@ table! {
         id -> Integer,
         ivr_id -> Nullable<Integer>,
         digits -> Varchar,
-        dest_type -> Nullable<Integer>,
-        dest_id -> Nullable<Integer>,
+        dest_type -> Varchar,
+        dest_exten -> Varchar,
     }
 }
 
@@ -170,6 +177,7 @@ allow_tables_to_appear_in_same_query!(
     cdr,
     domain,
     extension,
+    extension_type,
     gateway,
     inbound_route,
     ivr,
