@@ -25,11 +25,10 @@ pub fn print_sounds(sounds: Vec<sound::models::Sound>)
 {
     let mut table = Ctable::new();
 
-    table.set_titles(row!["id", "name", "path", "domain id","description"]);
+    table.set_titles(row!["id", "name", "domain id","description"]);
     for s in sounds {
         table.add_row(row![s.id,
                            s.name,
-                           s.path,
                            s.domain_id,
                            s.desc.unwrap_or("".to_string())]);
     }

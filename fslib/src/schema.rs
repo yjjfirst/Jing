@@ -134,7 +134,6 @@ table! {
     sound (id) {
         id -> Integer,
         name -> Varchar,
-        path -> Varchar,
         domain_id -> Integer,
         description -> Nullable<Varchar>,
     }
