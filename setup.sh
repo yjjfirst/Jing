@@ -26,3 +26,5 @@
 
 ./target/debug/fscmd ivr add --domain-id 1 --exten 8000 --name martin_test
 ./target/debug/fscmd ivr option add --digits 1 --ivr-id 1 --dest-exten 1000
+
+./target/debug/fscmd sound-file add --name ttt.wav --path /root/play-profiles.mp3 --desc "test"

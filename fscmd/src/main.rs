@@ -2,7 +2,7 @@ mod customtable;
 mod ringgroup;
 mod ivr;
 mod domain;
-mod sound;
+mod sound_file;
 
 #[macro_use]
 extern crate prettytable;
@@ -56,9 +56,9 @@ enum Cli {
         #[structopt(subcommand)]
         ivr: ivr::IvrCli
     },
-    Sound {
+    SoundFile {
         #[structopt(subcommand)]
-        sound: sound::SoundCli
+        soundfile: sound_file::SoundFileCli
     }
 }
 
@@ -219,8 +219,8 @@ fn main() {
         Cli::Ivr { ivr } => {
             ivr::exec_ivr_cmd(ivr);
         },
-        Cli::Sound {sound} => {
-            sound::exec_sound_cmd(sound);
+        Cli::SoundFile {soundfile} => {
+            sound_file::exec_sound_cmd(soundfile);
         }
     }
 }

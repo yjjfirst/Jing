@@ -1,8 +1,8 @@
-use crate::schema::sound;
+use crate::schema::sound_file;
 
 #[derive(Queryable, Debug)]
 #[derive(Clone)]
-pub struct Sound {
+pub struct SoundFile {
     pub id: i32,
     pub name: String,
     pub domain_id: i32,
@@ -10,8 +10,8 @@ pub struct Sound {
 }
 
 #[derive(Insertable)]
-#[table_name="sound"]
-pub struct NewSound<'a> {
+#[table_name="sound_file"]
+pub struct NewSoundFile<'a> {
     pub name: &'a str,
     pub domain_id: i32,
     #[column_name="description"]

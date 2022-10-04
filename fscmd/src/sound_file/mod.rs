@@ -5,7 +5,7 @@ use super::fslib::*;
 #[derive(StructOpt)]
 #[derive(Debug)]
 
-pub enum SoundCli {
+pub enum SoundFileCli {
     Ls,
     Add {
         #[structopt(short, long)]
@@ -21,7 +21,7 @@ pub enum SoundCli {
     }
 }
 
-pub fn print_sounds(sounds: Vec<sound::models::Sound>)
+pub fn print_sounds(sounds: Vec<sound_file::models::SoundFile>)
 {
     let mut table = Ctable::new();
 
@@ -36,16 +36,16 @@ pub fn print_sounds(sounds: Vec<sound::models::Sound>)
     table.print();
 }
 
-pub fn exec_sound_cmd(sound: SoundCli) {
-    match sound {
-        SoundCli::Add {name, path, desc} => {
-            sound::add(name, path, desc).unwrap();
+pub fn exec_sound_cmd(soundfile: SoundFileCli) {
+    match soundfile {
+        SoundFileCli::Add {name, path, desc} => {
+            sound_file::add(name, path, desc).unwrap();
         },
-        SoundCli::Del {id} =>{
-            sound::del(id).unwrap();
+        SoundFileCli::Del {id} =>{
+            sound_file::del(id).unwrap();
         },
-        SoundCli::Ls => {
-            let sounds = sound::all().unwrap();
+        SoundFileCli::Ls => {
+            let sounds = sound_file::all().unwrap();
             print_sounds(sounds);
         }
     }

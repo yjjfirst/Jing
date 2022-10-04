@@ -7,3 +7,4 @@ CREATE TABLE `extension_type` (
 INSERT INTO extension_type (name) VALUES ('user');
 INSERT INTO extension_type (name) VALUES ('ringgroup');
 INSERT INTO extension_type (name) VALUES ('ivr');
+INSERT INTO extension_type (name) VALUES ('sound');

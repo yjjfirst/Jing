@@ -131,7 +131,7 @@ table! {
 }
 
 table! {
-    sound (id) {
+    sound_file (id) {
         id -> Integer,
         name -> Varchar,
         domain_id -> Integer,
@@ -179,7 +179,7 @@ joinable!(profile_param -> profile (profile_id));
 joinable!(ringing_group -> domain (domain_id));
 joinable!(ringing_group_member -> ringing_group (ringing_group_id));
 joinable!(ringing_group_member -> user (user_id));
-joinable!(sound -> domain (domain_id));
+joinable!(sound_file -> domain (domain_id));
 joinable!(user -> domain (domain_id));
 joinable!(voicemail -> user (user_id));
 
@@ -197,7 +197,7 @@ allow_tables_to_appear_in_same_query!(
     profile_param,
     ringing_group,
     ringing_group_member,
-    sound,
+    sound_file,
     user,
     voicemail,
 );

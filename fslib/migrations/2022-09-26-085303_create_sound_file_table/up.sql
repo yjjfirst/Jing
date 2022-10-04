@@ -1,4 +1,4 @@
-CREATE TABLE `sound` (
+CREATE TABLE `sound_file` (
        `id` INT NOT NULL AUTO_INCREMENT,
        `name` VARCHAR(32) NOT NULL UNIQUE,
        `domain_id` INT NOT NULL,

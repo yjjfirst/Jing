@@ -7,7 +7,7 @@ use uuid::Uuid;
 use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
-use crate::schema::sound;
+use crate::schema::sound_file;
 use crate::domain;
 use crate::rt;
 use crate::error::{Result, Error};
@@ -19,12 +19,12 @@ pub fn add(name: String, path: String, desc: String) -> Result<()>{
 
     match install_file(&path, &name) {
         Ok(()) => {
-            let new_sound = NewSound {
+            let new_sound = NewSoundFile {
                 name: &name,
                 domain_id: domain.id,
                 desc: Some(&desc)
             };
-            diesel::insert_into(sound::table)
+            diesel::insert_into(sound_file::table)
                 .values(&new_sound)
                 .execute(&conn)?;
         },
@@ -36,21 +36,21 @@ pub fn add(name: String, path: String, desc: String) -> Result<()>{
     Ok(())
 }
 
-pub fn all() -> Result<Vec<Sound>>{
-    use crate::schema::sound::dsl::*;
+pub fn all() -> Result<Vec<SoundFile>>{
+    use crate::schema::sound_file::dsl::*;
 
     let conn = db_connect();
-    let result = sound
-        .load::<Sound>(&conn)?;
+    let result = sound_file
+        .load::<SoundFile>(&conn)?;
 
     Ok(result)
 }
 
 pub fn del(a_id: i32) -> Result<()>{
-    use crate::schema::sound::columns::id;
+    use crate::schema::sound_file::columns::id;
 
     let conn = db_connect();
-    diesel::delete(sound::table)
+    diesel::delete(sound_file::table)
         .filter(id.eq(a_id))
         .execute(&conn)?;
 
