@@ -21,7 +21,7 @@ pub enum SoundFileCli {
     }
 }
 
-pub fn print_sounds(sounds: Vec<sound_file::models::SoundFile>)
+pub fn print_soundfiles(sounds: Vec<sound_file::models::SoundFile>)
 {
     let mut table = Ctable::new();
 
@@ -36,7 +36,7 @@ pub fn print_sounds(sounds: Vec<sound_file::models::SoundFile>)
     table.print();
 }
 
-pub fn exec_sound_cmd(soundfile: SoundFileCli) {
+pub fn exec_soundfile_cmd(soundfile: SoundFileCli) {
     match soundfile {
         SoundFileCli::Add {name, path, desc} => {
             sound_file::add(name, path, desc).unwrap();
@@ -45,8 +45,8 @@ pub fn exec_sound_cmd(soundfile: SoundFileCli) {
             sound_file::del(id).unwrap();
         },
         SoundFileCli::Ls => {
-            let sounds = sound_file::all().unwrap();
-            print_sounds(sounds);
+            let soundfiles = sound_file::all().unwrap();
+            print_soundfiles(soundfiles);
         }
     }
 }

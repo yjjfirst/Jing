@@ -45,8 +45,8 @@ fn dialplan<W: Write>(w: &mut EventWriter<W>, fs_req: FsRequest) {
                 user(w);
             } else if e.exten_type == "ringgroup" {
                 ringgroups(w);
+            } else if e.exten_type == "sound" {
             }
-
         } else {
             outbounds(w);
         }

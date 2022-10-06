@@ -12,6 +12,7 @@ pub mod ivr;
 pub mod extension;
 pub mod rt;
 pub mod sound_file;
+pub mod sound;
 
 #[macro_use]
 extern crate diesel;

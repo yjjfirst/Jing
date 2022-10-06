@@ -19,13 +19,13 @@ pub fn add(name: String, path: String, desc: String) -> Result<()>{
 
     match install_file(&path, &name) {
         Ok(()) => {
-            let new_sound = NewSoundFile {
+            let new_soundfile = NewSoundFile {
                 name: &name,
                 domain_id: domain.id,
                 desc: Some(&desc)
             };
             diesel::insert_into(sound_file::table)
-                .values(&new_sound)
+                .values(&new_soundfile)
                 .execute(&conn)?;
         },
         Err(_) => {
