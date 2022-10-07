@@ -11,7 +11,7 @@ pub struct Sound {
 }
 
 #[derive(Insertable)]
-#[table_name="sound"]
+#[diesel(table_name=sound)]
 pub struct NewSound {
     pub exten: String,
     pub name: String,

@@ -9,7 +9,7 @@ pub struct Domain {
 }
 
 #[derive(Insertable)]
-#[table_name="domain"]
+#[diesel(table_name=domain)]
 pub struct NewDomain<'a> {
     pub domain_name: &'a str,
     pub active: bool,

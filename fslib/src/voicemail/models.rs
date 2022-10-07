@@ -9,7 +9,7 @@ pub struct Voicemail {
 }
 
 #[derive(Insertable)]
-#[table_name="voicemail"]
+#[diesel(table_name=voicemail)]
 pub struct NewVoicemail<'a> {
     pub user_id: i32,
     pub password: &'a str,

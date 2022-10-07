@@ -10,7 +10,7 @@ pub struct OutboundRoute {
 }
 
 #[derive(Insertable)]
-#[table_name="outbound_route"]
+#[diesel(table_name=outbound_route)]
 pub struct NewOutboundRoute<'a>{
     pub gateway_id: i32,
     pub priority: i32,

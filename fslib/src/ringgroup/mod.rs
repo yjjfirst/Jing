@@ -14,7 +14,7 @@ pub fn add_ringgroup(name: String, group_id: String, ring_time: Option<i32>, str
 
     let active_domain = domain::get_active()?;
 
-    let conn = db_connect();
+    let mut conn = db_connect();
     let new_group = NewRinggroup {
         name: &name,
         group_id: &group_id,
@@ -26,7 +26,7 @@ pub fn add_ringgroup(name: String, group_id: String, ring_time: Option<i32>, str
 
     diesel::insert_into(ringing_group::table)
         .values(&new_group)
-        .execute(&conn)?;
+        .execute(&mut conn)?;
 
     add_extension(group_id.as_str(), "ringgroup", active_domain.id)?;
 
@@ -39,11 +39,11 @@ pub fn del_ringgroup(i: i32) -> Result<()>{
 
     let group = get_ringgroup(i).unwrap();
     let extension = group.group_id.clone();
-    let conn = db_connect();
+    let mut conn = db_connect();
 
     diesel::delete(ringing_group::table)
         .filter(id.eq(i))
-        .execute(&conn)?;
+        .execute(&mut conn)?;
 
     del_extension(extension.as_str())?;
 
@@ -53,10 +53,10 @@ pub fn del_ringgroup(i: i32) -> Result<()>{
 pub fn all_ringgroup() -> Result<Vec<Ringgroup>>{
     use crate::schema::ringing_group::dsl::*;
 
-    let conn = db_connect();
+    let mut conn = db_connect();
 
     let results = ringing_group
-        .load::<Ringgroup>(&conn)?;
+        .load::<Ringgroup>(&mut conn)?;
 
     Ok(results)
 }
@@ -64,7 +64,7 @@ pub fn all_ringgroup() -> Result<Vec<Ringgroup>>{
 pub fn add_ringgroup_member(group: i32, user: i32) -> Result<()> {
     use crate::schema::ringing_group_member::dsl::*;
 
-    let conn = db_connect();
+    let mut conn = db_connect();
     let user_domain = get_user_domain(user)?;
     let ringgroup = get_ringgroup(group)?;
     let ringgroup_domain = ringgroup.domain_id;
@@ -76,7 +76,7 @@ pub fn add_ringgroup_member(group: i32, user: i32) -> Result<()> {
     if user_domain == ringgroup_domain {
         diesel::insert_into(ringing_group_member)
             .values((ringing_group_id.eq(group), user_id.eq(user)))
-            .execute(&conn)?;
+            .execute(&mut conn)?;
     } else {
         return Err(Error::Fslib("User doamin and ringing group domain don't match.".to_string()));
     }
@@ -88,12 +88,12 @@ pub fn del_ringgroup_member(group: i32, user: i32) -> Result<()> {
     use crate::schema::ringing_group_member;
     use crate::schema::ringing_group_member::dsl::*;
 
-    let conn = db_connect();
+    let mut conn = db_connect();
 
     diesel::delete(ringing_group_member::table)
         .filter(ringing_group_id.eq(group))
         .filter(user_id.eq(user))
-        .execute(&conn)?;
+        .execute(&mut conn)?;
 
     Ok(())
 }
@@ -101,11 +101,11 @@ pub fn del_ringgroup_member(group: i32, user: i32) -> Result<()> {
 pub fn all_ringgroup_member(group: i32) -> Result<Vec<(i32,String,String)>> {
     use crate::schema::ringing_group_member::dsl::*;
 
-    let conn = db_connect();
+    let mut conn = db_connect();
 
     let query_results = ringing_group_member
         .filter(ringing_group_id.eq(group))
-        .load::<(i32, i32, i32)>(&conn)
+        .load::<(i32, i32, i32)>(&mut conn)
         .unwrap();
     let results: Vec<(i32,String,String)> = query_results
         .into_iter()
@@ -123,11 +123,11 @@ pub fn all_ringgroup_member(group: i32) -> Result<Vec<(i32,String,String)>> {
 fn get_ringgroup(target_ringgroup_id: i32) -> Result<Ringgroup> {
     use crate::schema::ringing_group::dsl::*;
 
-    let conn = db_connect();
+    let mut conn = db_connect();
 
     let mut groups = ringing_group
         .filter(id.eq(target_ringgroup_id))
-        .load::<Ringgroup>(&conn)?;
+        .load::<Ringgroup>(&mut conn)?;
 
     if let Some(g) = groups.pop() {
         Ok(g)
@@ -138,13 +138,13 @@ fn get_ringgroup(target_ringgroup_id: i32) -> Result<Ringgroup> {
 
 fn member_exists(group: i32, user: i32) -> Result<usize> {
     use crate::schema::ringing_group_member::dsl::*;
-    let conn = db_connect();
+    let mut conn = db_connect();
 
     let result = ringing_group_member
         .filter(ringing_group_id.eq(group))
         .filter(user_id.eq(user))
         .select(user_id)
-        .execute(&conn)?;
+        .execute(&mut conn)?;
 
     Ok(result)
 }

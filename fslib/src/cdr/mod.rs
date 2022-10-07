@@ -10,10 +10,10 @@ use crate::error::{Result, Error};
 pub fn all_cdrs() -> Result<Vec<Cdr>> {
     use crate::schema::cdr::dsl::*;
 
-    let conn = db_connect();
+    let mut conn = db_connect();
 
     let results = cdr
-        .load::<Cdr>(&conn)?;
+        .load::<Cdr>(&mut conn)?;
 
     Ok(results)
 }
@@ -25,7 +25,7 @@ pub fn add_cdr<'a>(
     duration: i32,
     uuid: &'a str
 ) -> Result<()>{
-    let conn = db_connect();
+    let mut conn = db_connect();
     let new_cdr = NewCdr {
         a_caller_id,
         a_dest,
@@ -36,7 +36,7 @@ pub fn add_cdr<'a>(
 
     diesel::insert_into(cdr::table)
         .values(&new_cdr)
-        .execute(&conn)?;
+        .execute(&mut conn)?;
 
     Ok(())
 }
@@ -48,21 +48,21 @@ pub fn add_bleg<'a> (
 ) -> Result<()> {
     use crate::schema::cdr::dsl::*;
 
-    let conn = db_connect();
+    let mut conn = db_connect();
 
 
     let count = cdr
         .filter(uuid.eq(a_uuid))
-        .execute(&conn)?;
+        .execute(&mut conn)?;
 
     if count == 1  {
         diesel::update(cdr.filter(uuid.eq(a_uuid)))
             .set(b_caller_id.eq(caller_id))
-            .execute(&conn)?;
+            .execute(&mut conn)?;
 
         diesel::update(cdr.filter(uuid.eq(a_uuid)))
             .set(b_dest.eq(dest))
-            .execute(&conn)?;
+            .execute(&mut conn)?;
 
         Ok(())
 

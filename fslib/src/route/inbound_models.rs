@@ -10,7 +10,7 @@ pub struct InboundRoute {
 }
 
 #[derive(Insertable)]
-#[table_name="inbound_route"]
+#[diesel(table_name=inbound_route)]
 pub struct NewInboundRoute<'a> {
     pub context: &'a str,
     pub condition: &'a str,

@@ -634,9 +634,24 @@ checksum = "b28135ecf6b7d446b43e27e225622a038cc4e2930a1022f51cdb97ada19b8e4d"
 dependencies = [
  "byteorder",
  "chrono",
- "diesel_derives",
+ "diesel_derives 1.4.1",
  "mysqlclient-sys",
  "url 1.7.2",
+]
+
+[[package]]
+name = "diesel"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "01e2adfd0a7a81070ed7beec0c62636458926326c16fedb77796d41e447b282d"
+dependencies = [
+ "bitflags",
+ "byteorder",
+ "chrono",
+ "diesel_derives 2.0.0",
+ "mysqlclient-sys",
+ "percent-encoding 2.2.0",
+ "url 2.3.1",
 ]
 
 [[package]]
@@ -645,6 +660,18 @@ version = "1.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "45f5098f628d02a7a0f68ddba586fb61e80edec3bdc1be3b921f4ceec60858d3"
 dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "diesel_derives"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "22a7ab9d7967e6a1a247ea38aedf88ab808b4ac0c159576bc71866ab8f9f9250"
+dependencies = [
+ "proc-macro-error",
  "proc-macro2",
  "quote",
  "syn",
@@ -750,7 +777,7 @@ name = "fscmd"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "diesel",
+ "diesel 1.4.8",
  "dotenv",
  "fslib",
  "prettytable-rs",
@@ -763,7 +790,7 @@ name = "fslib"
 version = "0.1.0"
 dependencies = [
  "chrono",
- "diesel",
+ "diesel 2.0.0",
  "dotenv",
  "prettytable-rs",
  "regex",

@@ -12,16 +12,16 @@ use crate::error::{Error, Result};
 
 pub fn all_outbounds() -> Result<Vec<OutboundRoute>>{
     use crate::schema::outbound_route::dsl::*;
-    let conn = db_connect();
+    let mut conn = db_connect();
 
     let result = outbound_route
-        .load::<OutboundRoute>(&conn)?;
+        .load::<OutboundRoute>(&mut conn)?;
 
     Ok(result)
 }
 
 pub fn add_outbound(gateway_id: i32, priority: i32, condition: &str) -> Result<()>{
-    let conn = db_connect();
+    let mut conn = db_connect();
 
     let new_route = NewOutboundRoute {
         gateway_id,
@@ -31,7 +31,7 @@ pub fn add_outbound(gateway_id: i32, priority: i32, condition: &str) -> Result<(
 
     diesel::insert_into(outbound_route::table)
         .values(&new_route)
-        .execute(&conn)?;
+        .execute(&mut conn)?;
 
     Ok(())
 
@@ -40,20 +40,20 @@ pub fn add_outbound(gateway_id: i32, priority: i32, condition: &str) -> Result<(
 pub fn del_outbound(outbound_id: i32) -> Result<()>{
     use crate::schema::outbound_route::columns::id;
 
-    let conn = db_connect();
+    let mut conn = db_connect();
     diesel::delete(outbound_route::table)
         .filter(id.eq(outbound_id))
-        .execute(&conn)?;
+        .execute(&mut conn)?;
 
     Ok(())
 }
 
 pub fn all_inbound() -> Result<Vec<InboundRoute>>{
     use crate::schema::inbound_route::dsl::*;
-    let conn = db_connect();
+    let mut conn = db_connect();
 
     let result = inbound_route
-        .load::<InboundRoute>(&conn)?;
+        .load::<InboundRoute>(&mut conn)?;
 
    Ok(result)
 }
@@ -66,7 +66,7 @@ pub fn add_inboud(context: &str, condition: &str, dest_extension: &str) -> Resul
         _ => (),
     }
 
-    let conn = db_connect();
+    let mut conn = db_connect();
     let new_route = NewInboundRoute {
         context,
         condition,
@@ -75,18 +75,18 @@ pub fn add_inboud(context: &str, condition: &str, dest_extension: &str) -> Resul
 
     diesel::insert_into(inbound_route::table)
         .values(&new_route)
-        .execute(&conn)?;
+        .execute(&mut conn)?;
 
     Ok(())
 }
 
 pub fn del_inbound(inbound_id: i32) -> Result<()>{
     use crate::schema::inbound_route::columns::id;
-    let conn = db_connect();
+    let mut conn = db_connect();
 
     diesel::delete(inbound_route::table)
         .filter(id.eq(inbound_id))
-        .execute(&conn)?;
+        .execute(&mut conn)?;
 
     Ok(())
 }

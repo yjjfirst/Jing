@@ -10,10 +10,10 @@ pub struct SoundFile {
 }
 
 #[derive(Insertable)]
-#[table_name="sound_file"]
+#[diesel(table_name=sound_file)]
 pub struct NewSoundFile<'a> {
     pub name: &'a str,
     pub domain_id: i32,
-    #[column_name="description"]
+    #[diesel(column_name = description)]
     pub desc: Option<&'a str>,
 }

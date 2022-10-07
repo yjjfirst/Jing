@@ -14,7 +14,7 @@ use crate::error::{Result, Error};
 
 pub fn add(name: String, path: String, desc: String) -> Result<()>{
     let domain = domain::get_active().unwrap();
-    let conn = db_connect();
+    let mut conn = db_connect();
     let name = format!("{}-{}", name, domain.id);
 
     match install_file(&path, &name) {
@@ -26,7 +26,7 @@ pub fn add(name: String, path: String, desc: String) -> Result<()>{
             };
             diesel::insert_into(sound_file::table)
                 .values(&new_soundfile)
-                .execute(&conn)?;
+                .execute(&mut conn)?;
         },
         Err(_) => {
             return Err(Error::Fslib("Add sound failed".to_string()));
@@ -39,9 +39,9 @@ pub fn add(name: String, path: String, desc: String) -> Result<()>{
 pub fn all() -> Result<Vec<SoundFile>>{
     use crate::schema::sound_file::dsl::*;
 
-    let conn = db_connect();
+    let mut conn = db_connect();
     let result = sound_file
-        .load::<SoundFile>(&conn)?;
+        .load::<SoundFile>(&mut conn)?;
 
     Ok(result)
 }
@@ -49,10 +49,10 @@ pub fn all() -> Result<Vec<SoundFile>>{
 pub fn del(a_id: i32) -> Result<()>{
     use crate::schema::sound_file::columns::id;
 
-    let conn = db_connect();
+    let mut conn = db_connect();
     diesel::delete(sound_file::table)
         .filter(id.eq(a_id))
-        .execute(&conn)?;
+        .execute(&mut conn)?;
 
     Ok(())
 }

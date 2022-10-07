@@ -14,7 +14,7 @@ pub fn add_gateway (
     username: Option<String>,
     password: Option<String>) -> Result<()> {
 
-    let conn = db_connect();
+    let mut conn = db_connect();
 
     let new_gateway = NewGateway {
         profile_id,
@@ -27,7 +27,7 @@ pub fn add_gateway (
 
     diesel::insert_into(gateway::table)
         .values(&new_gateway)
-        .execute(&conn)?;
+        .execute(&mut conn)?;
 
     Ok(())
 }
@@ -35,32 +35,32 @@ pub fn add_gateway (
 pub fn del_gateway(gateway_id: i32) -> Result<()>{
     use crate::schema::gateway::columns::id;
 
-    let conn = db_connect();
+    let mut conn = db_connect();
 
     diesel::delete(gateway::table)
         .filter(id.eq(gateway_id))
-        .execute(&conn)?;
+        .execute(&mut conn)?;
 
     Ok(())
 }
 
 pub fn all_gateways() -> Result<Vec<Gateway>> {
     use crate::schema::gateway::dsl::*;
-    let conn = db_connect();
+    let mut conn = db_connect();
 
     let results = gateway
-        .load::<Gateway>(&conn)?;
+        .load::<Gateway>(&mut conn)?;
 
     Ok(results)
 }
 
 pub fn get_gateway(gateway_id: i32) -> Result<Gateway> {
     use crate::schema::gateway::dsl::*;
-    let conn = db_connect();
+    let mut conn = db_connect();
 
     let mut result = gateway
         .filter(id.eq(gateway_id))
-        .load::<Gateway>(&conn)?;
+        .load::<Gateway>(&mut conn)?;
 
     if let Some(g) = result.pop() {
         Ok(g)

@@ -12,7 +12,7 @@ pub struct Ringgroup {
 }
 
 #[derive(Insertable)]
-#[table_name="ringing_group"]
+#[diesel(table_name=ringing_group)]
 pub struct NewRinggroup<'a> {
     pub name: &'a str,
     pub group_id: &'a str,

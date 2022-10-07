@@ -1,4 +1,6 @@
-table! {
+// @generated automatically by Diesel CLI.
+
+diesel::table! {
     cdr (id) {
         id -> Integer,
         a_caller_id -> Varchar,
@@ -11,7 +13,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     domain (id) {
         id -> Integer,
         domain_name -> Varchar,
@@ -19,7 +21,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     extension (id) {
         id -> Integer,
         exten -> Varchar,
@@ -28,14 +30,14 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     extension_type (id) {
         id -> Integer,
         name -> Varchar,
     }
 }
 
-table! {
+diesel::table! {
     gateway (id) {
         id -> Integer,
         profile_id -> Integer,
@@ -47,7 +49,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     inbound_route (id) {
         id -> Integer,
         context -> Varchar,
@@ -56,7 +58,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     ivr (id) {
         id -> Integer,
         exten -> Varchar,
@@ -75,7 +77,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     ivr_option (id) {
         id -> Integer,
         ivr_id -> Nullable<Integer>,
@@ -85,7 +87,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     outbound_route (id) {
         id -> Integer,
         gateway_id -> Integer,
@@ -94,14 +96,14 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     profile (id) {
         id -> Integer,
         name -> Varchar,
     }
 }
 
-table! {
+diesel::table! {
     profile_param (id) {
         id -> Integer,
         profile_id -> Integer,
@@ -110,7 +112,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     ringing_group (id) {
         id -> Integer,
         name -> Varchar,
@@ -122,7 +124,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     ringing_group_member (id) {
         id -> Integer,
         ringing_group_id -> Integer,
@@ -130,7 +132,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     sound (id) {
         id -> Integer,
         exten -> Varchar,
@@ -140,7 +142,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     sound_file (id) {
         id -> Integer,
         name -> Varchar,
@@ -149,7 +151,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     user (id) {
         id -> Integer,
         domain_id -> Integer,
@@ -172,7 +174,7 @@ table! {
     }
 }
 
-table! {
+diesel::table! {
     voicemail (id) {
         id -> Integer,
         user_id -> Integer,
@@ -181,21 +183,21 @@ table! {
     }
 }
 
-joinable!(gateway -> profile (profile_id));
-joinable!(ivr -> domain (domain_id));
-joinable!(ivr_option -> ivr (ivr_id));
-joinable!(outbound_route -> gateway (gateway_id));
-joinable!(profile_param -> profile (profile_id));
-joinable!(ringing_group -> domain (domain_id));
-joinable!(ringing_group_member -> ringing_group (ringing_group_id));
-joinable!(ringing_group_member -> user (user_id));
-joinable!(sound -> domain (domain_id));
-joinable!(sound -> sound_file (sound_file_id));
-joinable!(sound_file -> domain (domain_id));
-joinable!(user -> domain (domain_id));
-joinable!(voicemail -> user (user_id));
+diesel::joinable!(gateway -> profile (profile_id));
+diesel::joinable!(ivr -> domain (domain_id));
+diesel::joinable!(ivr_option -> ivr (ivr_id));
+diesel::joinable!(outbound_route -> gateway (gateway_id));
+diesel::joinable!(profile_param -> profile (profile_id));
+diesel::joinable!(ringing_group -> domain (domain_id));
+diesel::joinable!(ringing_group_member -> ringing_group (ringing_group_id));
+diesel::joinable!(ringing_group_member -> user (user_id));
+diesel::joinable!(sound -> domain (domain_id));
+diesel::joinable!(sound -> sound_file (sound_file_id));
+diesel::joinable!(sound_file -> domain (domain_id));
+diesel::joinable!(user -> domain (domain_id));
+diesel::joinable!(voicemail -> user (user_id));
 
-allow_tables_to_appear_in_same_query!(
+diesel::allow_tables_to_appear_in_same_query!(
     cdr,
     domain,
     extension,

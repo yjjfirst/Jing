@@ -23,7 +23,7 @@ pub struct User {
 }
 
 #[derive(Insertable)]
-#[table_name="user"]
+#[diesel(table_name=user)]
 pub struct NewUser<'a> {
     pub domain_id: i32,
     pub number_alias: Option<&'a str>,

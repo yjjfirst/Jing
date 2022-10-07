@@ -19,7 +19,7 @@ pub struct Ivr {
 }
 
 #[derive(Insertable)]
-#[table_name="ivr"]
+#[diesel(table_name=ivr)]
 pub struct NewIvr<'a> {
     pub exten: &'a str,
     pub name: &'a str,

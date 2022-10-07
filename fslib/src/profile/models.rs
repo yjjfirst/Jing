@@ -10,7 +10,7 @@ pub struct ProfileParam {
 }
 
 #[derive(Queryable, Identifiable, PartialEq, Debug)]
-#[table_name="profile"]
+#[diesel(table_name=profile)]
 pub struct Profile {
     pub id: i32,
     pub name: String

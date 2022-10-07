@@ -14,7 +14,7 @@ pub struct Cdr {
 }
 
 #[derive(Insertable)]
-#[table_name="cdr"]
+#[diesel(table_name=cdr)]
 pub struct NewCdr<'a> {
     pub a_caller_id: &'a str,
     pub a_dest: &'a str,

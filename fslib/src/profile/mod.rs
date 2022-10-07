@@ -8,10 +8,10 @@ use super::gateway::models::Gateway;
 
 pub fn all_profiles() -> Result<Vec<Profile>> {
     use crate::schema::profile::dsl::*;
-    let conn = db_connect();
+    let mut conn = db_connect();
 
     let profiles = profile
-        .load::<Profile>(&conn)?;
+        .load::<Profile>(&mut conn)?;
 
     Ok(profiles)
 }
@@ -19,11 +19,11 @@ pub fn all_profiles() -> Result<Vec<Profile>> {
 pub fn get_profile_id_by(profile_name: &str) -> Result<i32> {
     use crate::schema::profile::dsl::*;
 
-    let conn = db_connect();
+    let mut conn = db_connect();
     let ids = profile
         .filter(name.eq(profile_name))
         .limit(1)
-        .load::<Profile>(&conn)?;
+        .load::<Profile>(&mut conn)?;
     if ids.len() == 0 {
        return Err(Error::Fslib("Profile doesn't exist".to_string()));
     }
@@ -34,12 +34,12 @@ pub fn get_profile_id_by(profile_name: &str) -> Result<i32> {
 pub fn profile_params(n: String) -> Result<Vec<ProfileParam>> {
     use crate::schema::profile_param::dsl::*;
 
-    let conn = db_connect();
+    let mut conn = db_connect();
     let prof_id = get_profile_id_by(&n)?;
 
     let results = profile_param
         .filter(profile_id.eq(prof_id))
-        .load::<ProfileParam>(&conn)?;
+        .load::<ProfileParam>(&mut conn)?;
 
     Ok(results)
 }
@@ -47,9 +47,9 @@ pub fn profile_params(n: String) -> Result<Vec<ProfileParam>> {
 pub fn gateways(profile_id: i32) -> Result<Vec<Gateway>> {
     use crate::schema::profile::dsl::*;
 
-    let conn = db_connect();
-    let prof = profile.find(profile_id).get_result::<Profile>(&conn)?;
-    let gateways = Gateway::belonging_to(&prof).load(&conn)?;
+    let mut conn = db_connect();
+    let prof = profile.find(profile_id).get_result::<Profile>(&mut conn)?;
+    let gateways = Gateway::belonging_to(&prof).load(&mut conn)?;
 
     Ok(gateways)
 
