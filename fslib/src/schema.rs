@@ -1,7 +1,7 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
-    cdr (id) {
+    cdrs (id) {
         id -> Integer,
         a_caller_id -> Varchar,
         a_dest -> Varchar,
@@ -14,7 +14,7 @@ diesel::table! {
 }
 
 diesel::table! {
-    domain (id) {
+    domains (id) {
         id -> Integer,
         domain_name -> Varchar,
         active -> Bool,
@@ -22,7 +22,14 @@ diesel::table! {
 }
 
 diesel::table! {
-    extension (id) {
+    extension_types (id) {
+        id -> Integer,
+        name -> Varchar,
+    }
+}
+
+diesel::table! {
+    extensions (id) {
         id -> Integer,
         exten -> Varchar,
         exten_type -> Varchar,
@@ -31,14 +38,7 @@ diesel::table! {
 }
 
 diesel::table! {
-    extension_type (id) {
-        id -> Integer,
-        name -> Varchar,
-    }
-}
-
-diesel::table! {
-    gateway (id) {
+    gateways (id) {
         id -> Integer,
         profile_id -> Integer,
         gateway_name -> Varchar,
@@ -50,7 +50,7 @@ diesel::table! {
 }
 
 diesel::table! {
-    inbound_route (id) {
+    inbound_routes (id) {
         id -> Integer,
         context -> Varchar,
         condition -> Varchar,
@@ -59,7 +59,17 @@ diesel::table! {
 }
 
 diesel::table! {
-    ivr (id) {
+    ivr_options (id) {
+        id -> Integer,
+        ivr_id -> Nullable<Integer>,
+        digits -> Varchar,
+        dest_type -> Varchar,
+        dest_exten -> Varchar,
+    }
+}
+
+diesel::table! {
+    ivrs (id) {
         id -> Integer,
         exten -> Varchar,
         name -> Varchar,
@@ -78,17 +88,7 @@ diesel::table! {
 }
 
 diesel::table! {
-    ivr_option (id) {
-        id -> Integer,
-        ivr_id -> Nullable<Integer>,
-        digits -> Varchar,
-        dest_type -> Varchar,
-        dest_exten -> Varchar,
-    }
-}
-
-diesel::table! {
-    outbound_route (id) {
+    outbound_routes (id) {
         id -> Integer,
         gateway_id -> Integer,
         priority -> Integer,
@@ -97,14 +97,7 @@ diesel::table! {
 }
 
 diesel::table! {
-    profile (id) {
-        id -> Integer,
-        name -> Varchar,
-    }
-}
-
-diesel::table! {
-    profile_param (id) {
+    profile_params (id) {
         id -> Integer,
         profile_id -> Integer,
         name -> Varchar,
@@ -113,7 +106,22 @@ diesel::table! {
 }
 
 diesel::table! {
-    ringing_group (id) {
+    profiles (id) {
+        id -> Integer,
+        name -> Varchar,
+    }
+}
+
+diesel::table! {
+    ringing_group_members (id) {
+        id -> Integer,
+        ringing_group_id -> Integer,
+        user_id -> Integer,
+    }
+}
+
+diesel::table! {
+    ringing_groups (id) {
         id -> Integer,
         name -> Varchar,
         group_id -> Varchar,
@@ -125,15 +133,16 @@ diesel::table! {
 }
 
 diesel::table! {
-    ringing_group_member (id) {
+    sound_files (id) {
         id -> Integer,
-        ringing_group_id -> Integer,
-        user_id -> Integer,
+        name -> Varchar,
+        domain_id -> Integer,
+        description -> Nullable<Varchar>,
     }
 }
 
 diesel::table! {
-    sound (id) {
+    sounds (id) {
         id -> Integer,
         exten -> Varchar,
         name -> Varchar,
@@ -143,16 +152,7 @@ diesel::table! {
 }
 
 diesel::table! {
-    sound_file (id) {
-        id -> Integer,
-        name -> Varchar,
-        domain_id -> Integer,
-        description -> Nullable<Varchar>,
-    }
-}
-
-diesel::table! {
-    user (id) {
+    users (id) {
         id -> Integer,
         domain_id -> Integer,
         number_alias -> Nullable<Varchar>,
@@ -175,7 +175,7 @@ diesel::table! {
 }
 
 diesel::table! {
-    voicemail (id) {
+    voicemails (id) {
         id -> Integer,
         user_id -> Integer,
         password -> Varchar,
@@ -183,36 +183,36 @@ diesel::table! {
     }
 }
 
-diesel::joinable!(gateway -> profile (profile_id));
-diesel::joinable!(ivr -> domain (domain_id));
-diesel::joinable!(ivr_option -> ivr (ivr_id));
-diesel::joinable!(outbound_route -> gateway (gateway_id));
-diesel::joinable!(profile_param -> profile (profile_id));
-diesel::joinable!(ringing_group -> domain (domain_id));
-diesel::joinable!(ringing_group_member -> ringing_group (ringing_group_id));
-diesel::joinable!(ringing_group_member -> user (user_id));
-diesel::joinable!(sound -> domain (domain_id));
-diesel::joinable!(sound -> sound_file (sound_file_id));
-diesel::joinable!(sound_file -> domain (domain_id));
-diesel::joinable!(user -> domain (domain_id));
-diesel::joinable!(voicemail -> user (user_id));
+diesel::joinable!(gateways -> profiles (profile_id));
+diesel::joinable!(ivr_options -> ivrs (ivr_id));
+diesel::joinable!(ivrs -> domains (domain_id));
+diesel::joinable!(outbound_routes -> gateways (gateway_id));
+diesel::joinable!(profile_params -> profiles (profile_id));
+diesel::joinable!(ringing_group_members -> ringing_groups (ringing_group_id));
+diesel::joinable!(ringing_group_members -> users (user_id));
+diesel::joinable!(ringing_groups -> domains (domain_id));
+diesel::joinable!(sound_files -> domains (domain_id));
+diesel::joinable!(sounds -> domains (domain_id));
+diesel::joinable!(sounds -> sound_files (sound_file_id));
+diesel::joinable!(users -> domains (domain_id));
+diesel::joinable!(voicemails -> users (user_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
-    cdr,
-    domain,
-    extension,
-    extension_type,
-    gateway,
-    inbound_route,
-    ivr,
-    ivr_option,
-    outbound_route,
-    profile,
-    profile_param,
-    ringing_group,
-    ringing_group_member,
-    sound,
-    sound_file,
-    user,
-    voicemail,
+    cdrs,
+    domains,
+    extension_types,
+    extensions,
+    gateways,
+    inbound_routes,
+    ivr_options,
+    ivrs,
+    outbound_routes,
+    profile_params,
+    profiles,
+    ringing_group_members,
+    ringing_groups,
+    sound_files,
+    sounds,
+    users,
+    voicemails,
 );

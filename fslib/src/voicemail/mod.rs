@@ -3,7 +3,7 @@ pub mod models;
 use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
-use crate::schema::voicemail;
+use crate::schema::voicemails;
 use crate::error::{Result};
 
 pub fn add_voicemail(user_id: i32, password: String, email: Option<String>) -> Result<()> {
@@ -14,7 +14,7 @@ pub fn add_voicemail(user_id: i32, password: String, email: Option<String>) -> R
         email: email.as_deref(),
     };
 
-    diesel::insert_into(voicemail::table)
+    diesel::insert_into(voicemails::table)
         .values(&new_voicemail)
         .execute(&mut conn)?;
 
@@ -22,11 +22,11 @@ pub fn add_voicemail(user_id: i32, password: String, email: Option<String>) -> R
 }
 
 pub fn get_voicemail(a_id: i32) -> Result<Voicemail> {
-    use crate::schema::voicemail::dsl::*;
+    use crate::schema::voicemails::dsl::*;
 
     let mut conn = db_connect();
 
-    let results = voicemail
+    let results = voicemails
         .filter(user_id.eq(a_id))
         .first::<Voicemail>(&mut conn)?;
 
@@ -34,22 +34,22 @@ pub fn get_voicemail(a_id: i32) -> Result<Voicemail> {
 }
 
 pub fn all_voicemails() -> Result<Vec<Voicemail>> {
-    use crate::schema::voicemail::dsl::*;
+    use crate::schema::voicemails::dsl::*;
 
     let mut conn = db_connect();
 
-    let results = voicemail
+    let results = voicemails
         .load::<Voicemail>(&mut conn)?;
 
     Ok(results)
 }
 
 pub fn del_voicemail(vm_id: i32) -> Result<()>{
-    use crate::schema::voicemail::columns::*;
+    use crate::schema::voicemails::columns::*;
 
     let mut conn = db_connect();
 
-    diesel::delete(voicemail::table)
+    diesel::delete(voicemails::table)
         .filter(id.eq(vm_id))
         .execute(&mut conn)?;
 

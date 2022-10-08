@@ -1,4 +1,4 @@
-use crate::schema::ringing_group;
+use crate::schema::ringing_groups;
 
 #[derive(Queryable)]
 pub struct Ringgroup {
@@ -12,7 +12,7 @@ pub struct Ringgroup {
 }
 
 #[derive(Insertable)]
-#[diesel(table_name=ringing_group)]
+#[diesel(table_name=ringing_groups)]
 pub struct NewRinggroup<'a> {
     pub name: &'a str,
     pub group_id: &'a str,

@@ -3,7 +3,7 @@ pub mod models;
 use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
-use crate::schema::gateway;
+use crate::schema::gateways;
 use crate::error::{Result, Error};
 
 pub fn add_gateway (
@@ -25,7 +25,7 @@ pub fn add_gateway (
         password
     };
 
-    diesel::insert_into(gateway::table)
+    diesel::insert_into(gateways::table)
         .values(&new_gateway)
         .execute(&mut conn)?;
 
@@ -33,11 +33,11 @@ pub fn add_gateway (
 }
 
 pub fn del_gateway(gateway_id: i32) -> Result<()>{
-    use crate::schema::gateway::columns::id;
+    use crate::schema::gateways::columns::id;
 
     let mut conn = db_connect();
 
-    diesel::delete(gateway::table)
+    diesel::delete(gateways::table)
         .filter(id.eq(gateway_id))
         .execute(&mut conn)?;
 
@@ -45,20 +45,20 @@ pub fn del_gateway(gateway_id: i32) -> Result<()>{
 }
 
 pub fn all_gateways() -> Result<Vec<Gateway>> {
-    use crate::schema::gateway::dsl::*;
+    use crate::schema::gateways::dsl::*;
     let mut conn = db_connect();
 
-    let results = gateway
+    let results = gateways
         .load::<Gateway>(&mut conn)?;
 
     Ok(results)
 }
 
 pub fn get_gateway(gateway_id: i32) -> Result<Gateway> {
-    use crate::schema::gateway::dsl::*;
+    use crate::schema::gateways::dsl::*;
     let mut conn = db_connect();
 
-    let mut result = gateway
+    let mut result = gateways
         .filter(id.eq(gateway_id))
         .load::<Gateway>(&mut conn)?;
 

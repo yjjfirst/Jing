@@ -10,7 +10,7 @@ use crate::error::{Result, Error};
 use crate::domain;
 
 pub fn add_ringgroup(name: String, group_id: String, ring_time: Option<i32>, strategy: Option<String>) -> Result<()>{
-    use crate::schema::ringing_group;
+    use crate::schema::ringing_groups;
 
     let active_domain = domain::get_active()?;
 
@@ -24,7 +24,7 @@ pub fn add_ringgroup(name: String, group_id: String, ring_time: Option<i32>, str
     };
 
 
-    diesel::insert_into(ringing_group::table)
+    diesel::insert_into(ringing_groups::table)
         .values(&new_group)
         .execute(&mut conn)?;
 
@@ -34,14 +34,14 @@ pub fn add_ringgroup(name: String, group_id: String, ring_time: Option<i32>, str
 }
 
 pub fn del_ringgroup(i: i32) -> Result<()>{
-    use crate::schema::ringing_group;
-    use crate::schema::ringing_group::columns::id;
+    use crate::schema::ringing_groups;
+    use crate::schema::ringing_groups::columns::id;
 
     let group = get_ringgroup(i).unwrap();
     let extension = group.group_id.clone();
     let mut conn = db_connect();
 
-    diesel::delete(ringing_group::table)
+    diesel::delete(ringing_groups::table)
         .filter(id.eq(i))
         .execute(&mut conn)?;
 
@@ -51,18 +51,18 @@ pub fn del_ringgroup(i: i32) -> Result<()>{
 }
 
 pub fn all_ringgroup() -> Result<Vec<Ringgroup>>{
-    use crate::schema::ringing_group::dsl::*;
+    use crate::schema::ringing_groups::dsl::*;
 
     let mut conn = db_connect();
 
-    let results = ringing_group
+    let results = ringing_groups
         .load::<Ringgroup>(&mut conn)?;
 
     Ok(results)
 }
 
 pub fn add_ringgroup_member(group: i32, user: i32) -> Result<()> {
-    use crate::schema::ringing_group_member::dsl::*;
+    use crate::schema::ringing_group_members::dsl::*;
 
     let mut conn = db_connect();
     let user_domain = get_user_domain(user)?;
@@ -74,7 +74,7 @@ pub fn add_ringgroup_member(group: i32, user: i32) -> Result<()> {
     }
 
     if user_domain == ringgroup_domain {
-        diesel::insert_into(ringing_group_member)
+        diesel::insert_into(ringing_group_members)
             .values((ringing_group_id.eq(group), user_id.eq(user)))
             .execute(&mut conn)?;
     } else {
@@ -85,12 +85,12 @@ pub fn add_ringgroup_member(group: i32, user: i32) -> Result<()> {
 }
 
 pub fn del_ringgroup_member(group: i32, user: i32) -> Result<()> {
-    use crate::schema::ringing_group_member;
-    use crate::schema::ringing_group_member::dsl::*;
+    use crate::schema::ringing_group_members;
+    use crate::schema::ringing_group_members::dsl::*;
 
     let mut conn = db_connect();
 
-    diesel::delete(ringing_group_member::table)
+    diesel::delete(ringing_group_members::table)
         .filter(ringing_group_id.eq(group))
         .filter(user_id.eq(user))
         .execute(&mut conn)?;
@@ -99,11 +99,11 @@ pub fn del_ringgroup_member(group: i32, user: i32) -> Result<()> {
 }
 
 pub fn all_ringgroup_member(group: i32) -> Result<Vec<(i32,String,String)>> {
-    use crate::schema::ringing_group_member::dsl::*;
+    use crate::schema::ringing_group_members::dsl::*;
 
     let mut conn = db_connect();
 
-    let query_results = ringing_group_member
+    let query_results = ringing_group_members
         .filter(ringing_group_id.eq(group))
         .load::<(i32, i32, i32)>(&mut conn)
         .unwrap();
@@ -121,11 +121,11 @@ pub fn all_ringgroup_member(group: i32) -> Result<Vec<(i32,String,String)>> {
 }
 
 fn get_ringgroup(target_ringgroup_id: i32) -> Result<Ringgroup> {
-    use crate::schema::ringing_group::dsl::*;
+    use crate::schema::ringing_groups::dsl::*;
 
     let mut conn = db_connect();
 
-    let mut groups = ringing_group
+    let mut groups = ringing_groups
         .filter(id.eq(target_ringgroup_id))
         .load::<Ringgroup>(&mut conn)?;
 
@@ -137,10 +137,10 @@ fn get_ringgroup(target_ringgroup_id: i32) -> Result<Ringgroup> {
 }
 
 fn member_exists(group: i32, user: i32) -> Result<usize> {
-    use crate::schema::ringing_group_member::dsl::*;
+    use crate::schema::ringing_group_members::dsl::*;
     let mut conn = db_connect();
 
-    let result = ringing_group_member
+    let result = ringing_group_members
         .filter(ringing_group_id.eq(group))
         .filter(user_id.eq(user))
         .select(user_id)

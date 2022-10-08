@@ -3,7 +3,7 @@ pub mod models;
 use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
-use crate::schema::domain;
+use crate::schema::domains;
 use crate::error::{Result, Error};
 use crate::rt::{is_var, eval};
 
@@ -13,7 +13,7 @@ pub fn add_domain(domain_name: &str, active: bool) -> Result<()>{
         domain_name,
         active
     };
-    diesel::insert_into(domain::table)
+    diesel::insert_into(domains::table)
         .values(&new_domain)
         .execute(&mut conn)?;
 
@@ -21,10 +21,10 @@ pub fn add_domain(domain_name: &str, active: bool) -> Result<()>{
 }
 
 pub fn del_domain(domain_id: i32) -> Result<()>{
-    use crate::schema::domain::columns::id;
+    use crate::schema::domains::columns::id;
 
     let mut conn = db_connect();
-    diesel::delete(domain::table)
+    diesel::delete(domains::table)
         .filter(id.eq(domain_id))
         .execute(&mut conn)?;
 
@@ -32,10 +32,10 @@ pub fn del_domain(domain_id: i32) -> Result<()>{
 }
 
 pub fn list_domains() -> Result<Vec<Domain>> {
-    use crate::schema::domain::dsl::*;
+    use crate::schema::domains::dsl::*;
 
     let mut conn = db_connect();
-    let result = domain
+    let result = domains
         .load::<Domain>(&mut conn)?;
 
     Ok(result)
@@ -43,13 +43,13 @@ pub fn list_domains() -> Result<Vec<Domain>> {
 
 
 pub fn get_domain_by_name(dn: String) -> Result<Domain> {
-    use crate::schema::domain::dsl::*;
+    use crate::schema::domains::dsl::*;
 
     let mut conn = db_connect();
-    let domains = domain
+    let dms = domains
         .load::<Domain>(&mut conn)?;
 
-    let mut domains: Vec<Domain> = domains.into_iter().map(|d| {
+    let mut dms: Vec<Domain> = dms.into_iter().map(|d| {
         Domain {
             domain_name: if is_var(&d.domain_name) {
                 eval(&d.domain_name)
@@ -60,7 +60,7 @@ pub fn get_domain_by_name(dn: String) -> Result<Domain> {
         }
     }).filter(|d| d.domain_name == dn).collect();
 
-    if let Some(d) = domains.pop() {
+    if let Some(d) = dms.pop() {
         Ok(d)
     } else {
         Err(Error::Fslib("No such domain found".to_string()))
@@ -69,14 +69,14 @@ pub fn get_domain_by_name(dn: String) -> Result<Domain> {
 }
 
 pub fn get_domain(domain_id: i32) -> Result<Domain> {
-    use crate::schema::domain::dsl::*;
+    use crate::schema::domains::dsl::*;
 
     let mut conn = db_connect();
-    let mut domains = domain
+    let mut dms = domains
         .filter(id.eq(domain_id))
         .load::<Domain>(&mut conn)?;
 
-    if let Some(d) = domains.pop() {
+    if let Some(d) = dms.pop() {
         Ok(d)
     } else {
         Err(Error::Fslib("No such domain found".to_string()))
@@ -84,14 +84,14 @@ pub fn get_domain(domain_id: i32) -> Result<Domain> {
 }
 
 pub fn set_active(domain_id: i32) -> Result<()> {
-    use crate::schema::domain::dsl::*;
+    use crate::schema::domains::dsl::*;
     let mut conn = db_connect();
 
-    diesel::update(domain.filter(active.eq(true)))
+    diesel::update(domains.filter(active.eq(true)))
         .set(active.eq(false))
         .execute(&mut conn)?;
 
-    diesel::update(domain.filter(id.eq(domain_id)))
+    diesel::update(domains.filter(id.eq(domain_id)))
         .set(active.eq(true))
         .execute(&mut conn)?;
 
@@ -99,14 +99,14 @@ pub fn set_active(domain_id: i32) -> Result<()> {
 }
 
 pub fn get_active() -> Result<Domain> {
-    use crate::schema::domain::dsl::*;
+    use crate::schema::domains::dsl::*;
 
     let mut conn = db_connect();
-    let mut domains = domain
+    let mut dms = domains
         .filter(active.eq(true))
         .load::<Domain>(&mut conn)?;
 
-    if let Some(d) = domains.pop() {
+    if let Some(d) = dms.pop() {
         Ok(d)
     } else {
         Err(Error::Fslib("No active domain found".to_string()))

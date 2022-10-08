@@ -1,4 +1,4 @@
-use crate::schema::ivr;
+use crate::schema::ivrs;
 
 #[derive(Queryable)]
 pub struct Ivr {
@@ -19,7 +19,7 @@ pub struct Ivr {
 }
 
 #[derive(Insertable)]
-#[diesel(table_name=ivr)]
+#[diesel(table_name=ivrs)]
 pub struct NewIvr<'a> {
     pub exten: &'a str,
     pub name: &'a str,
@@ -27,5 +27,5 @@ pub struct NewIvr<'a> {
     pub greet_long: Option<&'a str>,
     pub greet_short: Option<&'a str>,
     pub invalid_sound: Option<&'a str>,
-    pub exit_sound: Option<&'a str>,    
+    pub exit_sound: Option<&'a str>,
 }

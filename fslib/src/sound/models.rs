@@ -1,4 +1,4 @@
-use crate::schema::sound;
+use crate::schema::sounds;
 
 #[derive(Queryable, Debug)]
 #[derive(Clone)]
@@ -11,7 +11,7 @@ pub struct Sound {
 }
 
 #[derive(Insertable)]
-#[diesel(table_name=sound)]
+#[diesel(table_name=sounds)]
 pub struct NewSound {
     pub exten: String,
     pub name: String,

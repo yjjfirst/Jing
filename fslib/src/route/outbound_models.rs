@@ -1,4 +1,4 @@
-use crate::schema::outbound_route;
+use crate::schema::outbound_routes;
 
 #[derive(Queryable)]
 #[derive(Debug)]
@@ -10,7 +10,7 @@ pub struct OutboundRoute {
 }
 
 #[derive(Insertable)]
-#[diesel(table_name=outbound_route)]
+#[diesel(table_name=outbound_routes)]
 pub struct NewOutboundRoute<'a>{
     pub gateway_id: i32,
     pub priority: i32,

@@ -1,4 +1,4 @@
-use crate::schema::voicemail;
+use crate::schema::voicemails;
 
 #[derive(Queryable)]
 pub struct Voicemail {
@@ -9,7 +9,7 @@ pub struct Voicemail {
 }
 
 #[derive(Insertable)]
-#[diesel(table_name=voicemail)]
+#[diesel(table_name=voicemails)]
 pub struct NewVoicemail<'a> {
     pub user_id: i32,
     pub password: &'a str,

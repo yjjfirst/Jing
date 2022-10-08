@@ -1,4 +1,4 @@
-use crate::schema::{profile};
+use crate::schema::{profiles};
 
 #[derive(Queryable)]
 #[derive(Debug)]
@@ -10,7 +10,7 @@ pub struct ProfileParam {
 }
 
 #[derive(Queryable, Identifiable, PartialEq, Debug)]
-#[diesel(table_name=profile)]
+#[diesel(table_name=profiles)]
 pub struct Profile {
     pub id: i32,
     pub name: String

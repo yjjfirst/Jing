@@ -1,4 +1,4 @@
-use crate::schema::domain;
+use crate::schema::domains;
 
 #[derive(Queryable, Debug)]
 #[derive(Clone)]
@@ -9,7 +9,7 @@ pub struct Domain {
 }
 
 #[derive(Insertable)]
-#[diesel(table_name=domain)]
+#[diesel(table_name=domains)]
 pub struct NewDomain<'a> {
     pub domain_name: &'a str,
     pub active: bool,

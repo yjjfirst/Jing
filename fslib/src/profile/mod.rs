@@ -7,20 +7,20 @@ use crate::error::{Error, Result};
 use super::gateway::models::Gateway;
 
 pub fn all_profiles() -> Result<Vec<Profile>> {
-    use crate::schema::profile::dsl::*;
+    use crate::schema::profiles::dsl::*;
     let mut conn = db_connect();
 
-    let profiles = profile
+    let profs = profiles
         .load::<Profile>(&mut conn)?;
 
-    Ok(profiles)
+    Ok(profs)
 }
 
 pub fn get_profile_id_by(profile_name: &str) -> Result<i32> {
-    use crate::schema::profile::dsl::*;
+    use crate::schema::profiles::dsl::*;
 
     let mut conn = db_connect();
-    let ids = profile
+    let ids = profiles
         .filter(name.eq(profile_name))
         .limit(1)
         .load::<Profile>(&mut conn)?;
@@ -32,12 +32,12 @@ pub fn get_profile_id_by(profile_name: &str) -> Result<i32> {
 }
 
 pub fn profile_params(n: String) -> Result<Vec<ProfileParam>> {
-    use crate::schema::profile_param::dsl::*;
+    use crate::schema::profile_params::dsl::*;
 
     let mut conn = db_connect();
     let prof_id = get_profile_id_by(&n)?;
 
-    let results = profile_param
+    let results = profile_params
         .filter(profile_id.eq(prof_id))
         .load::<ProfileParam>(&mut conn)?;
 
@@ -45,10 +45,10 @@ pub fn profile_params(n: String) -> Result<Vec<ProfileParam>> {
 }
 
 pub fn gateways(profile_id: i32) -> Result<Vec<Gateway>> {
-    use crate::schema::profile::dsl::*;
+    use crate::schema::profiles::dsl::*;
 
     let mut conn = db_connect();
-    let prof = profile.find(profile_id).get_result::<Profile>(&mut conn)?;
+    let prof = profiles.find(profile_id).get_result::<Profile>(&mut conn)?;
     let gateways = Gateway::belonging_to(&prof).load(&mut conn)?;
 
     Ok(gateways)

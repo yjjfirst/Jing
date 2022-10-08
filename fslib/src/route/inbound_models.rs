@@ -1,4 +1,4 @@
-use crate::schema::inbound_route;
+use crate::schema::inbound_routes;
 
 #[derive(Queryable)]
 #[derive(Debug)]
@@ -10,7 +10,7 @@ pub struct InboundRoute {
 }
 
 #[derive(Insertable)]
-#[diesel(table_name=inbound_route)]
+#[diesel(table_name=inbound_routes)]
 pub struct NewInboundRoute<'a> {
     pub context: &'a str,
     pub condition: &'a str,

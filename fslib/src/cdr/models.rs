@@ -1,4 +1,4 @@
-use crate::schema::cdr;
+use crate::schema::cdrs;
 use chrono;
 
 #[derive(Queryable)]
@@ -14,7 +14,7 @@ pub struct Cdr {
 }
 
 #[derive(Insertable)]
-#[diesel(table_name=cdr)]
+#[diesel(table_name=cdrs)]
 pub struct NewCdr<'a> {
     pub a_caller_id: &'a str,
     pub a_dest: &'a str,

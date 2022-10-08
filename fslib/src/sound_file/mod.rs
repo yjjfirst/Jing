@@ -7,7 +7,7 @@ use uuid::Uuid;
 use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
-use crate::schema::sound_file;
+use crate::schema::sound_files;
 use crate::domain;
 use crate::rt;
 use crate::error::{Result, Error};
@@ -24,7 +24,7 @@ pub fn add(name: String, path: String, desc: String) -> Result<()>{
                 domain_id: domain.id,
                 desc: Some(&desc)
             };
-            diesel::insert_into(sound_file::table)
+            diesel::insert_into(sound_files::table)
                 .values(&new_soundfile)
                 .execute(&mut conn)?;
         },
@@ -37,20 +37,20 @@ pub fn add(name: String, path: String, desc: String) -> Result<()>{
 }
 
 pub fn all() -> Result<Vec<SoundFile>>{
-    use crate::schema::sound_file::dsl::*;
+    use crate::schema::sound_files::dsl::*;
 
     let mut conn = db_connect();
-    let result = sound_file
+    let result = sound_files
         .load::<SoundFile>(&mut conn)?;
 
     Ok(result)
 }
 
 pub fn del(a_id: i32) -> Result<()>{
-    use crate::schema::sound_file::columns::id;
+    use crate::schema::sound_files::columns::id;
 
     let mut conn = db_connect();
-    diesel::delete(sound_file::table)
+    diesel::delete(sound_files::table)
         .filter(id.eq(a_id))
         .execute(&mut conn)?;
 

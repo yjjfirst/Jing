@@ -25,7 +25,7 @@ pub fn add_user<'a> (
     uservar2: Option<&'a str>,
     uservar3: Option<&'a str>) -> Result<()> {
 
-    use crate::schema::user;
+    use crate::schema::users;
 
     let active_domain = domain::get_active()?;
 
@@ -53,7 +53,7 @@ pub fn add_user<'a> (
     };
 
     add_extension(user_id, "user", active_domain.id)?;
-    diesel::insert_into(user::table)
+    diesel::insert_into(users::table)
         .values(&new_user)
         .execute(&mut conn)?;
 
@@ -62,12 +62,12 @@ pub fn add_user<'a> (
 
 
 pub fn del_user(user: &str) -> Result<()> {
-    use crate::schema::user;
-    use crate::schema::user::columns::user_id;
+    use crate::schema::users;
+    use crate::schema::users::columns::user_id;
 
     let mut conn = db_connect();
 
-    diesel::delete(user::table)
+    diesel::delete(users::table)
         .filter(user_id.eq(user))
         .execute(&mut conn)?;
 
@@ -76,24 +76,24 @@ pub fn del_user(user: &str) -> Result<()> {
 }
 
 pub fn all_users_with_domain() -> Result<Vec<(i32, String, String, String)>>{
-    use crate::schema::user;
-    use crate::schema::domain;
+    use crate::schema::users;
+    use crate::schema::domains;
 
     let mut conn = db_connect();
 
-    let results: Vec<(i32, String, String, String)> = user::table.inner_join(domain::table)
-        .select((user::id, user::user_id, user::password, domain::domain_name))
+    let results: Vec<(i32, String, String, String)> = users::table.inner_join(domains::table)
+        .select((users::id, users::user_id, users::password, domains::domain_name))
         .load(&mut conn)?;
 
     Ok(results)
 }
 
 pub fn all_users() -> Result<Vec<User>> {
-    use crate::schema::user::dsl::*;
+    use crate::schema::users::dsl::*;
 
     let mut conn = db_connect();
 
-    let results = user
+    let results = users
         .load::<User>(&mut conn)?;
 
 
@@ -101,10 +101,10 @@ pub fn all_users() -> Result<Vec<User>> {
 }
 
 pub fn get_user_domain(a_user_id: i32) -> Result<i32>{
-    use crate::schema::user::dsl::*;
+    use crate::schema::users::dsl::*;
 
     let mut conn = db_connect();
-    let mut domains = user
+    let mut domains = users
         .select(domain_id)
         .filter(id.eq(a_user_id))
         .load::<i32>(&mut conn)?;
@@ -117,13 +117,13 @@ pub fn get_user_domain(a_user_id: i32) -> Result<i32>{
 }
 
 pub fn get_user_id(db_id: i32) -> Result<String>{
-    use crate::schema::user::dsl::*;
+    use crate::schema::users::dsl::*;
 
     let mut conn = db_connect();
-    let users = user
+    let us = users
         .select(user_id)
         .filter(id.eq(db_id))
         .load::<String>(&mut conn)?;
 
-    Ok(users[0].to_string())
+    Ok(us[0].to_string())
 }

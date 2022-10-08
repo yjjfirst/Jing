@@ -1,4 +1,4 @@
-use crate::schema::user;
+use crate::schema::users;
 
 #[derive(Queryable)]
 pub struct User {
@@ -23,7 +23,7 @@ pub struct User {
 }
 
 #[derive(Insertable)]
-#[diesel(table_name=user)]
+#[diesel(table_name=users)]
 pub struct NewUser<'a> {
     pub domain_id: i32,
     pub number_alias: Option<&'a str>,

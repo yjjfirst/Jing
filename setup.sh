@@ -28,3 +28,4 @@
 ./target/debug/fscmd ivr option add --digits 1 --ivr-id 1 --dest-exten 1000
 
 ./target/debug/fscmd sound-file add --name ttt.wav --path /root/play-profiles.mp3 --desc "test"
+./target/debug/fscmd sound add --exten 3000 --name test --sound-file-id 1
