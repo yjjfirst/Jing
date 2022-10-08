@@ -23,7 +23,19 @@ pub enum SoundCli {
 }
 
 pub fn print_sounds(sounds: Vec<sound::models::Sound>) {
+    let mut table = Ctable::new();
+    table.set_titles(row!["id", "name", "exten", "doamin_id", "sound_file_id"]);
+    for s in sounds {
+        table.add_row(row![
+            s.id,
+            s.name,
+            s.exten,
+            s.domain_id,
+            s.sound_file_id
+        ]);
+    }
 
+    table.print();
 }
 
 pub fn exec_sound_cmd(sound: SoundCli) {
