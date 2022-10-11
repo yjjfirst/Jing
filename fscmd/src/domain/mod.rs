@@ -49,35 +49,39 @@ pub fn exec_domain_cmd(domain: DomainCli) {
             domain::add_domain(&name)
                 .unwrap_or_else(|err| println!("{}", err));
         },
-
         DomainCli::Del { id } => {
             domain::del_domain(id)
                 .unwrap_or_else(|err| println!("{}", err));
         },
-
         DomainCli::Active { id } => {
-            if let Some(id) = id {
-                env::set_var(ENV_VAR_NAME, id.to_string());
-            } else {
-                let active = env::var(ENV_VAR_NAME);
-                match active {
-                    Ok(domain) => {
-                        println!("Active domain: {}", domain);
-                    },
-                    Err(_) => {
-                        println!("Please execute next command to setup active domain");
-                        println!("export {}={{DOMAIN_ID}}", ENV_VAR_NAME);
-                    }
-                }
-            }
+            active(id);
         },
-
         DomainCli::Ls => {
-            match domain::list_domains() {
-                Ok(domains) => print_domains(domains),
-                Err(err) => println!("{}", err),
+            ls();
+        }
+    }
+}
+
+fn active(id: Option<i32>) {
+    if let Some(id) = id {
+        env::set_var(ENV_VAR_NAME, id.to_string());
+    } else {
+        let active = env::var(ENV_VAR_NAME);
+        match active {
+            Ok(domain) => {
+                println!("Active domain: {}", domain);
+            },
+            Err(_) => {
+                no_active_domain();
             }
         }
+    }
+}
+
+fn ls() {
+    match domain::list_domains() {
+        Ok(domains) => print_domains(domains),
+        Err(err) => println!("{}", err),
     }
 }
 
@@ -86,4 +90,11 @@ pub fn get_active() -> Result<i32, Box<dyn std::error::Error>> {
     let domain: i32 = domain.parse()?;
 
     Ok(domain)
+}
+
+pub fn no_active_domain() {
+    println!("Available domains:");
+    ls();
+    println!("Please execute next command to setup active domain:");
+    println!("export {}={{DOMAIN_ID}}", ENV_VAR_NAME);
 }
