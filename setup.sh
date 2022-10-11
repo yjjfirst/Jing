@@ -1,13 +1,10 @@
 #!/bin/bash
 
+export FS_ACTIVE_DOMAIN=1
 #add domain and users
 ./target/debug/fscmd domain add --name teleman.me
 ./target/debug/fscmd user add  -u 1000 -p gxGB418oc2TVU9rt
 ./target/debug/fscmd user add  -u 1001 -p gxGB418oc2TVU9rt
-./target/debug/fscmd domain active -i 2
-./target/debug/fscmd user add -u 2000 -p gxGB418oc2TVU9rt
-./target/debug/fscmd user add -u 2001 -p gxGB418oc2TVU9rt
-./target/debug/fscmd domain active -i 1
 
 #add gateways
 ./target/debug/fscmd gateway add --name kamailio_1001 --profile 2 --password 0z1*7CSUOj96nV5 --proxy 45.76.77.24 --register 45.76.77.24 --username 1001
@@ -24,8 +21,13 @@
 ./target/debug/fscmd rg member add --group 1 --user 1
 ./target/debug/fscmd rg member add --group 1 --user 2
 
-./target/debug/fscmd ivr add --domain-id 1 --exten 8000 --name martin_test
+./target/debug/fscmd ivr add  --exten 8000 --name martin_test
 ./target/debug/fscmd ivr option add --digits 1 --ivr-id 1 --dest-exten 1000
 
 ./target/debug/fscmd sound-file add --name ttt.wav --path /root/play-profiles.mp3 --desc "test"
 ./target/debug/fscmd sound add --exten 3000 --name test --sound-file-id 1
+
+export FS_ACTIVE_DOMAIN=2
+./target/debug/fscmd user add -u 2000 -p gxGB418oc2TVU9rt
+./target/debug/fscmd user add -u 2001 -p gxGB418oc2TVU9rt
+

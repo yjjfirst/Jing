@@ -245,9 +245,11 @@ fn exec_user_ls_cmd(users: Vec<(i32, String, String, String)>) {
 }
 
 fn exec_user_cmd(user: UserCli) {
+    let domain_id = domain::get_active().expect("Please set active domain");
     match user {
         UserCli::Add {user_id, password} => {
             user::add_user(
+                domain_id,
                 &user_id,
                 &password,
                 None,

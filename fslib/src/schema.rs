@@ -17,7 +17,6 @@ diesel::table! {
     domains (id) {
         id -> Integer,
         domain_name -> Varchar,
-        active -> Bool,
     }
 }
 

@@ -1,6 +1,7 @@
 use super::customtable::{Ctable};
 use structopt::StructOpt;
 use super::fslib::*;
+use super::domain;
 
 #[derive(StructOpt)]
 #[structopt(about="Manage IVR")]
@@ -34,8 +35,6 @@ pub enum IvrCli {
         #[structopt(short, long, help="Extension of the IVR")]
         exten: String,
         #[structopt(short, long, help="Domain of the IVR")]
-        domain_id: i32,
-        #[structopt(short="l", long, help="Long greet")]
         greet_long: Option<String>,
         #[structopt(short="s", long, help="Short greet")]
         greet_short: Option<String>,
@@ -82,9 +81,10 @@ pub fn print_ivrs(ivrs: Vec<ivr::models::Ivr>) {
 }
 
 pub fn exec_ivr_option_cmd(option: IvrOptionCli) {
+    let domain_id = domain::get_active().expect("Please set active domain");
     match option {
         IvrOptionCli::Add {ivr_id, digits, dest_exten} =>  {
-            ivr::add_ivr_option(ivr_id, digits, dest_exten).unwrap();
+            ivr::add_ivr_option(domain_id, ivr_id, digits, dest_exten).unwrap();
         },
         IvrOptionCli::Del {} => {},
         IvrOptionCli::Ls {} => {
@@ -94,8 +94,9 @@ pub fn exec_ivr_option_cmd(option: IvrOptionCli) {
 }
 
 pub fn exec_ivr_cmd(ivr: IvrCli) {
+    let domain_id = domain::get_active().expect("Please set active domain");
     match ivr {
-        IvrCli::Add {name, exten, domain_id, greet_long, greet_short, invalid_sound, exit_sound} => {
+        IvrCli::Add {name, exten, greet_long, greet_short, invalid_sound, exit_sound} => {
             use ivr::models::NewIvr;
             ivr::add(NewIvr {
                 name: &name,

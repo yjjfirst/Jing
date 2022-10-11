@@ -7,11 +7,10 @@ use crate::schema::domains;
 use crate::error::{Result, Error};
 use crate::rt::{is_var, eval};
 
-pub fn add_domain(domain_name: &str, active: bool) -> Result<()>{
+pub fn add_domain(domain_name: &str) -> Result<()>{
     let mut conn = db_connect();
     let new_domain = NewDomain {
         domain_name,
-        active
     };
     diesel::insert_into(domains::table)
         .values(&new_domain)
@@ -80,35 +79,5 @@ pub fn get_domain(domain_id: i32) -> Result<Domain> {
         Ok(d)
     } else {
         Err(Error::Fslib("No such domain found".to_string()))
-    }
-}
-
-pub fn set_active(domain_id: i32) -> Result<()> {
-    use crate::schema::domains::dsl::*;
-    let mut conn = db_connect();
-
-    diesel::update(domains.filter(active.eq(true)))
-        .set(active.eq(false))
-        .execute(&mut conn)?;
-
-    diesel::update(domains.filter(id.eq(domain_id)))
-        .set(active.eq(true))
-        .execute(&mut conn)?;
-
-    Ok(())
-}
-
-pub fn get_active() -> Result<Domain> {
-    use crate::schema::domains::dsl::*;
-
-    let mut conn = db_connect();
-    let mut dms = domains
-        .filter(active.eq(true))
-        .load::<Domain>(&mut conn)?;
-
-    if let Some(d) = dms.pop() {
-        Ok(d)
-    } else {
-        Err(Error::Fslib("No active domain found".to_string()))
     }
 }

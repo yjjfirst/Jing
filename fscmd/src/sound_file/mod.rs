@@ -1,6 +1,7 @@
 use super::customtable::{Ctable};
 use structopt::StructOpt;
 use super::fslib::*;
+use super::domain;
 
 #[derive(StructOpt)]
 #[derive(Debug)]
@@ -37,9 +38,10 @@ pub fn print_soundfiles(sounds: Vec<sound_file::models::SoundFile>)
 }
 
 pub fn exec_soundfile_cmd(soundfile: SoundFileCli) {
+    let domain_id = domain::get_active().expect("Please set active domain");
     match soundfile {
         SoundFileCli::Add {name, path, desc} => {
-            sound_file::add(name, path, desc).unwrap();
+            sound_file::add(domain_id, name, path, desc).unwrap();
         },
         SoundFileCli::Del {id} =>{
             sound_file::del(id).unwrap();

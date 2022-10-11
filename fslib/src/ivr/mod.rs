@@ -5,7 +5,6 @@ use diesel::prelude::*;
 use diesel::dsl::*;
 use crate::db_connect;
 use crate::extension;
-use crate::domain;
 use crate::error::{Result, Error};
 
 pub enum DestType {
@@ -57,17 +56,16 @@ pub fn all() -> Result<Vec<Ivr>> {
     Ok(results)
 }
 
-pub fn add_ivr_option(a_ivr_id: i32, ds: String, exten: String) -> Result<()> {
+pub fn add_ivr_option(domain: i32, a_ivr_id: i32, ds: String, exten: String) -> Result<()> {
     use crate::schema::ivr_options::dsl::*;
     use crate::schema::ivr_options;
     let mut conn = db_connect();
-    let domain = domain::get_active()?;
 
     if !ivr_exists(a_ivr_id)? {
         return Err(Error::Fslib("IVR doesn't exist".to_string()));
     }
 
-    let exten = extension::get_extension(&exten, domain.id)?;
+    let exten = extension::get_extension(&exten, domain)?;
 
     diesel::insert_into(ivr_options::table)
         .values((&ivr_id.eq(a_ivr_id),

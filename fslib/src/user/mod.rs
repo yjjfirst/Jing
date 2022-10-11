@@ -5,9 +5,9 @@ use diesel::prelude::*;
 use crate::db_connect;
 use crate::error::{Error, Result};
 use crate::extension::{add_extension, del_extension};
-use crate::domain;
 
 pub fn add_user<'a> (
+    domain: i32,
     user_id: &'a str,
     password: &'a str,
     number_alias: Option<&'a str> ,
@@ -26,13 +26,10 @@ pub fn add_user<'a> (
     uservar3: Option<&'a str>) -> Result<()> {
 
     use crate::schema::users;
-
-    let active_domain = domain::get_active()?;
-
     let mut conn = db_connect();
 
     let new_user = NewUser {
-        domain_id: active_domain.id,
+        domain_id: domain,
         number_alias,
         mailbox,
         cidr,
@@ -52,7 +49,7 @@ pub fn add_user<'a> (
 
     };
 
-    add_extension(user_id, "user", active_domain.id)?;
+    add_extension(user_id, "user", domain)?;
     diesel::insert_into(users::table)
         .values(&new_user)
         .execute(&mut conn)?;

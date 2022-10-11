@@ -1,3 +1,5 @@
+use std::env;
+
 use super::customtable::{Ctable};
 use structopt::StructOpt;
 use super::fslib::*;
@@ -21,10 +23,12 @@ pub enum DomainCli {
     }
 }
 
+const ENV_VAR_NAME: &str = "FS_ACTIVE_DOMAIN";
+
 fn print_domains(domains: Vec<domain::models::Domain>) {
     let mut table = Ctable::new();
 
-    table.set_titles(row!["Id", "Domain Name", "Active"]);
+    table.set_titles(row!["Id", "Domain Name"]);
     for d in domains {
         let domain_name = if is_var(&d.domain_name) {
             eval(&d.domain_name)
@@ -32,7 +36,7 @@ fn print_domains(domains: Vec<domain::models::Domain>) {
             d.domain_name
         };
 
-        table.add_row(row![d.id, domain_name, d.active]);
+        table.add_row(row![d.id, domain_name]);
     }
 
     table.print();
@@ -42,7 +46,7 @@ fn print_domains(domains: Vec<domain::models::Domain>) {
 pub fn exec_domain_cmd(domain: DomainCli) {
     match domain {
         DomainCli::Add { name }=> {
-            domain::add_domain(&name, false)
+            domain::add_domain(&name)
                 .unwrap_or_else(|err| println!("{}", err));
         },
 
@@ -53,10 +57,18 @@ pub fn exec_domain_cmd(domain: DomainCli) {
 
         DomainCli::Active { id } => {
             if let Some(id) = id {
-                domain::set_active(id)
-                    .unwrap_or_else(|err| println!("{}", err));
+                env::set_var(ENV_VAR_NAME, id.to_string());
             } else {
-                println!("Active domain: {}", domain::get_active().unwrap().id);
+                let active = env::var(ENV_VAR_NAME);
+                match active {
+                    Ok(domain) => {
+                        println!("Active domain: {}", domain);
+                    },
+                    Err(_) => {
+                        println!("Please execute next command to setup active domain");
+                        println!("export {}={{DOMAIN_ID}}", ENV_VAR_NAME);
+                    }
+                }
             }
         },
 
@@ -67,4 +79,11 @@ pub fn exec_domain_cmd(domain: DomainCli) {
             }
         }
     }
+}
+
+pub fn get_active() -> Result<i32, Box<dyn std::error::Error>> {
+    let domain = env::var(ENV_VAR_NAME)?;
+    let domain: i32 = domain.parse()?;
+
+    Ok(domain)
 }

@@ -8,20 +8,18 @@ use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
 use crate::schema::sound_files;
-use crate::domain;
 use crate::rt;
 use crate::error::{Result, Error};
 
-pub fn add(name: String, path: String, desc: String) -> Result<()>{
-    let domain = domain::get_active().unwrap();
+pub fn add(domain: i32,name: String, path: String, desc: String) -> Result<()>{
     let mut conn = db_connect();
-    let name = format!("{}-{}.wav", name, domain.id);
+    let name = format!("{}-{}.wav", name, domain);
 
     match install_file(&path, &name) {
         Ok(()) => {
             let new_soundfile = NewSoundFile {
                 name: &name,
-                domain_id: domain.id,
+                domain_id: domain,
                 desc: Some(&desc)
             };
             diesel::insert_into(sound_files::table)
@@ -82,8 +80,7 @@ fn install_file(path: &str, name: &str) -> std::io::Result<()> {
 
     let tmp_file = make_tmp_name();
     let sound_dir = rt::eval("$${sounds_dir}");
-    let domain = domain::get_active().unwrap();
-    let target_path = format!("{}/{}.wav", sound_dir, name);
+    let target_path = format!("{}/{}", sound_dir, name);
 
     Command::new("mpg123")
         .arg("-w")
