@@ -53,6 +53,18 @@ pub fn get(a_id: i32) -> Result<Sound> {
     Ok(result)
 }
 
+pub fn get_by(domain: i32, ext: &str) -> Result<Sound> {
+    use crate::schema::sounds::dsl::*;
+    let mut conn = db_connect();
+
+    let result = sounds
+        .filter(domain_id.eq(domain))
+        .filter(exten.eq(ext))
+        .first(&mut conn)?;
+
+    Ok(result)
+}
+
 pub fn all() -> Result<Vec<Sound>> {
     use crate::schema::sounds::dsl::*;
     let mut conn = db_connect();

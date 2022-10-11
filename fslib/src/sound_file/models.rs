@@ -1,6 +1,6 @@
 use crate::schema::sound_files;
 
-#[derive(Queryable, Debug)]
+#[derive(Identifiable, Queryable, Debug)]
 #[derive(Clone)]
 pub struct SoundFile {
     pub id: i32,

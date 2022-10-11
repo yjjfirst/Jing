@@ -12,6 +12,9 @@ use fslib::gateway::{get_gateway};
 use fslib::ringgroup::{all_ringgroup, all_ringgroup_member};
 use fslib::ringgroup::models::{Ringgroup};
 use fslib::domain::{get_domain_by_name};
+use fslib::sound;
+use fslib::sound_file;
+
 use super::FsRequest;
 
 pub fn serve (fs_req: FsRequest) -> tide::Result {
@@ -36,16 +39,17 @@ fn dialplan<W: Write>(w: &mut EventWriter<W>, fs_req: FsRequest) {
     let context = fs_req.context.unwrap();
 
     if context == "internal" {
-        let dest_number = fs_req.dest_number.unwrap();
+        let dest_exten = fs_req.dest_number.unwrap();
         let domain_name = fs_req.dest_domain.unwrap();
         let domain = get_domain_by_name(domain_name).unwrap();
 
-        if let Ok(e) = get_extension(dest_number.as_str(), domain.id) {
+        if let Ok(e) = get_extension(dest_exten.as_str(), domain.id) {
             if e.exten_type == "user" {
                 user(w);
             } else if e.exten_type == "ringgroup" {
                 ringgroups(w);
             } else if e.exten_type == "sound" {
+                sound(w, domain.id, dest_exten);
             }
         } else {
             outbounds(w);
@@ -138,4 +142,35 @@ fn ringgroup<W: Write>(w: &mut EventWriter<W>, rg: Ringgroup) {
 
     end_element(w);
     end_element(w);
+}
+
+fn sound_file<W: Write>(w: &mut EventWriter<W>,
+                        sound_file: sound_file::models::SoundFile,
+                        sound: sound::models::Sound)
+{
+    let name = format!("sound_{}", sound.id);
+    start_element(w, "context", Some(vec![Attr::new("name", "internal")]));
+    start_element(w, "extension", Some(vec![Attr::new("name", &name)]));
+    start_element(w, "condition", Some(vec![Attr::new("field","destination_number"),
+                                            Attr::new("expression", &sound.exten)
+    ]));
+
+    action(w, "answer","");
+    action(w, "sleep", "1000");
+    action(w, "playback", &sound_file.name);
+
+    end_element(w);
+    end_element(w);
+    end_element(w);
+
+}
+
+fn sound<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
+    let sound = sound::get_by(domain_id, &exten);
+    if let Ok(s) = sound {
+        let file = sound_file::get(s.sound_file_id);
+        if let Ok(f) = file {
+            sound_file(w, f, s);
+        }
+    };
 }

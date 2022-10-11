@@ -15,7 +15,7 @@ use crate::error::{Result, Error};
 pub fn add(name: String, path: String, desc: String) -> Result<()>{
     let domain = domain::get_active().unwrap();
     let mut conn = db_connect();
-    let name = format!("{}-{}", name, domain.id);
+    let name = format!("{}-{}.wav", name, domain.id);
 
     match install_file(&path, &name) {
         Ok(()) => {
@@ -58,6 +58,17 @@ pub fn del(a_id: i32) -> Result<()>{
 }
 
 
+pub fn get(a_id: i32) -> Result<SoundFile> {
+    use crate::schema::sound_files::dsl::*;
+    let mut conn = db_connect();
+
+    let result = sound_files
+        .find(a_id)
+        .first(&mut conn)?;
+
+    Ok(result)
+}
+
 fn make_tmp_name() -> String {
     let tmp_dir = temp_dir();
     let file_name = format!("{}/{}.wav",
@@ -72,7 +83,7 @@ fn install_file(path: &str, name: &str) -> std::io::Result<()> {
     let tmp_file = make_tmp_name();
     let sound_dir = rt::eval("$${sounds_dir}");
     let domain = domain::get_active().unwrap();
-    let target_path = format!("{}/{}-{}.wav", sound_dir, name, domain.id);
+    let target_path = format!("{}/{}.wav", sound_dir, name);
 
     Command::new("mpg123")
         .arg("-w")

@@ -1,7 +1,8 @@
 use crate::schema::sounds;
 
-#[derive(Queryable, Debug)]
+#[derive(Identifiable,Queryable, Debug)]
 #[derive(Clone)]
+#[diesel(belongs_to(SoundFile))]
 pub struct Sound {
     pub id: i32,
     pub exten: String,
