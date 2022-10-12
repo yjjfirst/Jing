@@ -34,7 +34,7 @@ async fn fs_post(mut req: Request<()>) -> tide::Result {
 
     println!("{:?}", fs_req);
     if fs_req.section == "configuration" {
-        configuration::serve()
+        configuration::serve(fs_req)
     } else if fs_req.section == "directory" {
         directory::serve()
     } else if fs_req.section == "dialplan" {
