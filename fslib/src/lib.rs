@@ -13,6 +13,7 @@ pub mod extension;
 pub mod rt;
 pub mod sound_file;
 pub mod sound;
+pub mod conference;
 
 #[macro_use]
 extern crate diesel;

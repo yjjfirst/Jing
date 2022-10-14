@@ -14,6 +14,23 @@ diesel::table! {
 }
 
 diesel::table! {
+    conference_control_details (id) {
+        id -> Integer,
+        conference_control_id -> Integer,
+        action -> Varchar,
+        digits -> Varchar,
+    }
+}
+
+diesel::table! {
+    conference_controls (id) {
+        id -> Integer,
+        name -> Varchar,
+        description -> Nullable<Varchar>,
+    }
+}
+
+diesel::table! {
     domains (id) {
         id -> Integer,
         domain_name -> Varchar,
@@ -182,6 +199,7 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(conference_control_details -> conference_controls (conference_control_id));
 diesel::joinable!(gateways -> profiles (profile_id));
 diesel::joinable!(ivr_options -> ivrs (ivr_id));
 diesel::joinable!(ivrs -> domains (domain_id));
@@ -198,6 +216,8 @@ diesel::joinable!(voicemails -> users (user_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
     cdrs,
+    conference_control_details,
+    conference_controls,
     domains,
     extension_types,
     extensions,
