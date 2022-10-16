@@ -63,3 +63,6 @@ INSERT INTO conference_profile_params (`conference_profile_id`, `name`, `value`)
 
 INSERT INTO conference_profile_params (`conference_profile_id`, `name`, `value`)
        VALUES (1, "comfort-noise", "true");
+
+INSERT INTO conference_profile_params (`conference_profile_id`, `name`, `value`)
+       VALUES (1, "caller-controls", "default");
