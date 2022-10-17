@@ -4,6 +4,7 @@ mod ivr;
 mod domain;
 mod sound_file;
 mod sound;
+mod conference;
 
 #[macro_use]
 extern crate prettytable;
@@ -64,6 +65,10 @@ enum Cli {
     Sound {
         #[structopt(subcommand)]
         sound: sound::SoundCli
+    },
+    Conference {
+        #[structopt(subcommand)]
+        conference: conference::ConferenceCli
     }
 }
 
@@ -229,6 +234,9 @@ fn main() {
         },
         Cli::Sound {sound} => {
             sound::exec_sound_cmd(sound);
+        },
+        Cli::Conference {conference} => {
+            conference::exec_conference_cmd(conference);
         }
     }
 }
