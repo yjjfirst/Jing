@@ -86,3 +86,15 @@ pub fn get(a_id: i32) -> Result<Conference> {
 
     Ok(result)
 }
+
+pub fn get_by(domain: i32, ext: &str) -> Result<Conference> {
+    use crate::schema::conferences::dsl::*;
+    let mut conn = db_connect();
+
+    let result = conferences
+        .filter(domain_id.eq(domain))
+        .filter(exten.eq(ext))
+        .first(&mut conn)?;
+
+    Ok(result)
+}

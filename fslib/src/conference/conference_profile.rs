@@ -41,3 +41,14 @@ pub fn params(profile_id: i32) -> Result<Vec<ConferenceProfileParam>>{
 
     Ok(params)
 }
+
+pub fn get(profile_id: i32) -> Result<ConferenceProfile> {
+    use crate::schema::conference_profiles::dsl::*;
+    let mut conn = db_connect();
+
+    let result = conference_profiles
+        .find(profile_id)
+        .first(&mut conn)?;
+
+    Ok(result)
+}

@@ -3,7 +3,7 @@ extern crate fslib;
 use std::io::Write;
 use std::io::BufWriter;
 use xml::writer::{EmitterConfig, EventWriter};
-use super::xml_utils::{start_element, end_element, action, Attr};
+use super::xml_utils::{start_element, end_element, action, Attr, attrs};
 use fslib::extension::{get_extension};
 use fslib::route::{all_outbounds, all_inbound};
 use fslib::route::outbound_models::{OutboundRoute};
@@ -14,6 +14,8 @@ use fslib::ringgroup::models::{Ringgroup};
 use fslib::domain::{get_domain_by_name};
 use fslib::sound;
 use fslib::sound_file;
+use fslib::conference;
+use fslib::conference::conference_profile;
 
 use super::FsRequest;
 
@@ -50,6 +52,8 @@ fn dialplan<W: Write>(w: &mut EventWriter<W>, fs_req: FsRequest) {
                 ringgroups(w);
             } else if e.exten_type == "sound" {
                 sound(w, domain.id, dest_exten);
+            } else if e.exten_type == "conference" {
+                conference(w, domain.id, dest_exten);
             }
         } else {
             outbounds(w);
@@ -173,4 +177,30 @@ fn sound<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
             sound_file(w, f, s);
         }
     };
+}
+
+
+fn conference<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
+    let conference = conference::get_by(domain_id, &exten);
+
+    if let Ok(c) = conference {
+        let name = format!("conference_{}", c.id);
+        let profile = conference_profile::get(c.conference_profile_id).unwrap();
+
+        start_element(w, "context", attrs(vec![("name", "internal")]));
+        start_element(w, "extension", attrs(vec![("name", &name)]));
+        start_element(w, "condition", attrs(vec![("field", "destination_number"),
+                                                 ("expression", &c.exten)
+        ]));
+
+        action(w, "Answer", "");
+
+        let data = format!("{}-${{domain_name}}@{}",&c.exten, &profile.name);
+        action(w, "conference",  &data);
+
+        end_element(w);
+        end_element(w);
+        end_element(w);
+    }
+
 }
