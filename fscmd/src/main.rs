@@ -5,6 +5,7 @@ mod domain;
 mod sound_file;
 mod sound;
 mod conference;
+mod queue;
 
 #[macro_use]
 extern crate prettytable;
@@ -69,6 +70,10 @@ enum Cli {
     Conference {
         #[structopt(subcommand)]
         conference: conference::ConferenceCli
+    },
+    Queue {
+        #[structopt(subcommand)]
+        queue: queue::QueueCli
     }
 }
 
@@ -237,6 +242,9 @@ fn main() {
         },
         Cli::Conference {conference} => {
             conference::exec_conference_cmd(conference);
+        },
+        Cli::Queue {queue} => {
+            queue::exec_queue_cmd(queue);
         }
     }
 }

@@ -157,6 +157,15 @@ diesel::table! {
 }
 
 diesel::table! {
+    queues (id) {
+        id -> Integer,
+        name -> Varchar,
+        exten -> Varchar,
+        domain_id -> Integer,
+    }
+}
+
+diesel::table! {
     ringing_group_members (id) {
         id -> Integer,
         ringing_group_id -> Integer,
@@ -236,6 +245,7 @@ diesel::joinable!(ivr_options -> ivrs (ivr_id));
 diesel::joinable!(ivrs -> domains (domain_id));
 diesel::joinable!(outbound_routes -> gateways (gateway_id));
 diesel::joinable!(profile_params -> profiles (profile_id));
+diesel::joinable!(queues -> domains (domain_id));
 diesel::joinable!(ringing_group_members -> ringing_groups (ringing_group_id));
 diesel::joinable!(ringing_group_members -> users (user_id));
 diesel::joinable!(ringing_groups -> domains (domain_id));
@@ -262,6 +272,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     outbound_routes,
     profile_params,
     profiles,
+    queues,
     ringing_group_members,
     ringing_groups,
     sound_files,

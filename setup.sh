@@ -27,6 +27,9 @@ export FS_ACTIVE_DOMAIN=1
 ./target/debug/fscmd sound-file add --name ttt.wav --path /root/play-profiles.mp3 --desc "test"
 ./target/debug/fscmd sound add --exten 3000 --name test --sound-file-id 1
 
+#add conference
+./target/debug/fscmd conference add --name test --exten 4000 --conference-profile-id 1
+
 export FS_ACTIVE_DOMAIN=2
 ./target/debug/fscmd user add -u 2000 -p gxGB418oc2TVU9rt
 ./target/debug/fscmd user add -u 2001 -p gxGB418oc2TVU9rt

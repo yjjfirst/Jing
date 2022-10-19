@@ -1,5 +1,7 @@
 mod sofia;
 mod conference;
+mod callcenter;
+
 extern crate fslib;
 
 use std::io::BufWriter;
@@ -16,6 +18,8 @@ pub fn serve (fs_req: FsRequest) -> tide::Result {
         sofia::serve(&mut w);
     } else if fs_req.key_value == "conference.conf" {
         conference::serve(&mut w);
+    } else if fs_req.key_value == "callcenter.conf" {
+        callcenter::serve(&mut w);
     }
 
     let response = buf.into_inner().unwrap();
