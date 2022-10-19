@@ -102,7 +102,7 @@ pub fn exec_rg_member_cmd(member: RgMemberCli) {
 }
 
 pub fn exec_rg_cmd(rg: RgCli) {
-    let domain_id = domain::get_active().expect("Please set active domain");
+    let domain_id = domain::get_active().unwrap();
     match rg {
         RgCli::Add {name, group_id, ring_time, strategy} => {
             ringgroup::add_ringgroup(domain_id, name, group_id, ring_time, strategy)

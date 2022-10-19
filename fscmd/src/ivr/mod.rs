@@ -81,7 +81,7 @@ pub fn print_ivrs(ivrs: Vec<ivr::models::Ivr>) {
 }
 
 pub fn exec_ivr_option_cmd(option: IvrOptionCli) {
-    let domain_id = domain::get_active().expect("Please set active domain");
+    let domain_id = domain::get_active().unwrap();
     match option {
         IvrOptionCli::Add {ivr_id, digits, dest_exten} =>  {
             ivr::add_ivr_option(domain_id, ivr_id, digits, dest_exten).unwrap();
@@ -94,7 +94,7 @@ pub fn exec_ivr_option_cmd(option: IvrOptionCli) {
 }
 
 pub fn exec_ivr_cmd(ivr: IvrCli) {
-    let domain_id = domain::get_active().expect("Please set active domain");
+    let domain_id = domain::get_active().unwrap();
     match ivr {
         IvrCli::Add {name, exten, greet_long, greet_short, invalid_sound, exit_sound} => {
             use ivr::models::NewIvr;

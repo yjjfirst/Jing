@@ -38,7 +38,7 @@ pub fn print_soundfiles(sounds: Vec<sound_file::models::SoundFile>)
 }
 
 pub fn exec_soundfile_cmd(soundfile: SoundFileCli) {
-    let domain_id = domain::get_active().expect("Please set active domain");
+    let domain_id = domain::get_active().unwrap();
     match soundfile {
         SoundFileCli::Add {name, path, desc} => {
             sound_file::add(domain_id, name, path, desc).unwrap();

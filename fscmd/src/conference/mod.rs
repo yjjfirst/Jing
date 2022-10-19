@@ -24,8 +24,7 @@ pub enum ConferenceCli {
 }
 
 pub fn exec_conference_cmd(conference: ConferenceCli) {
-    let domain_id = domain::get_active()
-        .expect("Please set active domain");
+    let domain_id = domain::get_active().unwrap();
     match conference {
         ConferenceCli::Add {name, exten, conference_profile_id, description} => {
             conference::add(domain_id,

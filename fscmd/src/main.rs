@@ -206,6 +206,11 @@ enum VoicemailCli {
 fn main() {
     let args = Cli::from_args();
 
+    if let Cli::Domain{..} = args {
+    } else {
+        domain::get_active().expect("Please set active domain");
+    }
+
     match args {
         Cli::User { user } => {
             exec_user_cmd(user);
@@ -261,7 +266,7 @@ fn exec_user_ls_cmd(users: Vec<(i32, String, String, String)>) {
 }
 
 fn exec_user_cmd(user: UserCli) {
-    let domain_id = domain::get_active().expect("Please set active domain");
+    let domain_id = domain::get_active().unwrap();
     match user {
         UserCli::Add {user_id, password} => {
             user::add_user(
