@@ -5,6 +5,7 @@ use crate::error::{Result};
 use crate::db_connect;
 use crate::schema::{queues};
 use super::extension::{add_extension, del_extension};
+use queue_param::{QueueParam};
 
 #[derive(Identifiable,Queryable,Debug,PartialEq)]
 #[derive(Clone)]
@@ -91,4 +92,17 @@ pub fn get_by(d_id: i32, ext: &str) -> Result<Queue>{
         .first(&mut conn)?;
 
     Ok(result)
+}
+
+pub fn params(d_id: i32) -> Result<Vec<QueueParam>> {
+    use crate::schema::queues::dsl::*;
+    let mut conn = db_connect();
+    let queue = queues
+        .find(d_id)
+        .first::<Queue>(&mut conn)?;
+
+    let params = QueueParam::belonging_to(&queue)
+        .load::<QueueParam>(&mut conn)?;
+
+    Ok(params)
 }
