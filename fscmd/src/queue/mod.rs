@@ -37,8 +37,7 @@ pub fn print_queues(queues: Vec<Queue>) {
 }
 
 pub fn exec_queue_cmd(queue: QueueCli) {
-    let domain_id = domain::get_active()
-        .expect("Please set active domain");
+    let domain_id = domain::get_active().unwrap();
 
     match queue {
         QueueCli::Add {exten, name} => {

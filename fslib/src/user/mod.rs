@@ -113,14 +113,13 @@ pub fn get_user_domain(a_user_id: i32) -> Result<i32>{
     }
 }
 
-pub fn get_user_id(db_id: i32) -> Result<String>{
+pub fn get_user(db_id: i32) -> Result<User>{
     use crate::schema::users::dsl::*;
 
     let mut conn = db_connect();
-    let us = users
-        .select(user_id)
-        .filter(id.eq(db_id))
-        .load::<String>(&mut conn)?;
+    let user = users
+        .find(db_id)
+        .first::<User>(&mut conn)?;
 
-    Ok(us[0].to_string())
+    Ok(user)
 }

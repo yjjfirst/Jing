@@ -1,7 +1,7 @@
 pub mod models;
 
 use models::*;
-use super::user::{get_user_domain, get_user_id};
+use super::user::{get_user_domain, get_user};
 use super::domain::{get_domain};
 use super::extension::{add_extension, del_extension};
 use diesel::prelude::*;
@@ -111,10 +111,10 @@ pub fn all_ringgroup_member(group: i32) -> Result<Vec<(i32,String,String)>> {
     let results: Vec<(i32,String,String)> = query_results
         .into_iter()
         .map(|x| {
-            let u = get_user_id(x.2).unwrap();
+            let u = get_user(x.2).unwrap();
             let dn = get_domain(get_ringgroup(x.1).unwrap().domain_id).unwrap();
 
-            (x.0, u, dn.domain_name)
+            (x.0, u.user_id, dn.domain_name)
         })
         .collect();
 

@@ -1,6 +1,24 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    agent_params (id) {
+        id -> Integer,
+        agent_id -> Integer,
+        name -> Varchar,
+        value -> Varchar,
+    }
+}
+
+diesel::table! {
+    agents (id) {
+        id -> Integer,
+        domain_id -> Integer,
+        user_id -> Integer,
+        name -> Varchar,
+    }
+}
+
+diesel::table! {
     cdrs (id) {
         id -> Integer,
         a_caller_id -> Varchar,
@@ -245,6 +263,9 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(agent_params -> agents (agent_id));
+diesel::joinable!(agents -> domains (domain_id));
+diesel::joinable!(agents -> users (user_id));
 diesel::joinable!(conference_control_details -> conference_controls (conference_control_id));
 diesel::joinable!(conference_profile_params -> conference_profiles (conference_profile_id));
 diesel::joinable!(conferences -> conference_profiles (conference_profile_id));
@@ -266,6 +287,8 @@ diesel::joinable!(users -> domains (domain_id));
 diesel::joinable!(voicemails -> users (user_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
+    agent_params,
+    agents,
     cdrs,
     conference_control_details,
     conference_controls,

@@ -1,4 +1,6 @@
 pub mod queue_param;
+pub mod agent;
+pub mod agent_param;
 
 use diesel::prelude::*;
 use crate::error::{Result};

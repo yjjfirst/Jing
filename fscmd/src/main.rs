@@ -6,6 +6,7 @@ mod sound_file;
 mod sound;
 mod conference;
 mod queue;
+mod agent;
 
 #[macro_use]
 extern crate prettytable;
@@ -74,6 +75,10 @@ enum Cli {
     Queue {
         #[structopt(subcommand)]
         queue: queue::QueueCli
+    },
+    Agent {
+        #[structopt(subcommand)]
+        agent: agent::AgentCli
     }
 }
 
@@ -250,6 +255,9 @@ fn main() {
         },
         Cli::Queue {queue} => {
             queue::exec_queue_cmd(queue);
+        },
+        Cli::Agent {agent} => {
+            agent::exec_agent_cmd(agent);
         }
     }
 }
