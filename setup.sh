@@ -32,8 +32,8 @@ export FS_ACTIVE_DOMAIN=1
 
 #add queue
 ./target/debug/fscmd queue add --exten 5002 --name test
+./target/debug/fscmd agent add  --name test --user-id 1
 
 export FS_ACTIVE_DOMAIN=2
 ./target/debug/fscmd user add -u 2000 -p gxGB418oc2TVU9rt
 ./target/debug/fscmd user add -u 2001 -p gxGB418oc2TVU9rt
-

@@ -38,16 +38,9 @@ pub fn add(domain_id: i32, name: String, user_id: i32) -> Result<()> {
 
     let inserted = diesel::insert_into(agents::table)
         .values(&agent)
-        .get_result::<Agent>(&mut conn);
+        .get_result::<Agent>(&mut conn)?;
 
-    match inserted {
-        Ok(inserted) => {
-            agent_param::add_defaults(inserted.id)?;
-        },
-        Err(_) => {
-            return Err(Error::Fslib("Insert agent failed".to_string()));
-        }
-    }
+    agent_param::add_defaults(inserted.id)?;
 
     Ok(())
 }

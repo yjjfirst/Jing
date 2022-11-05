@@ -40,11 +40,10 @@ pub fn add(domain_id: i32,
         name: &name
     };
 
-    diesel::insert_into(queues::table)
+    let queue = diesel::insert_into(queues::table)
         .values(&new_queue)
-        .execute(&mut conn)?;
+        .get_result::<Queue>(&mut conn)?;
 
-    let queue = get_by(domain_id, &exten)?;
     queue_param::add_defaults(queue.id)?;
 
     Ok(())
@@ -79,18 +78,6 @@ pub fn get(a_id: i32) -> Result<Queue> {
 
     let result = queues
         .find(a_id)
-        .first(&mut conn)?;
-
-    Ok(result)
-}
-
-pub fn get_by(d_id: i32, ext: &str) -> Result<Queue>{
-    use crate::schema::queues::dsl::*;
-    let mut conn = db_connect();
-
-    let result = queues
-        .filter(domain_id.eq(d_id))
-        .filter(exten.eq(ext))
         .first(&mut conn)?;
 
     Ok(result)
