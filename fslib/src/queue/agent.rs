@@ -1,5 +1,7 @@
+use super::agent_param;
+
 use diesel::prelude::*;
-use crate::error::{Result};
+use crate::error::{Result,Error};
 use crate::db_connect;
 use crate::schema::{agents};
 use crate::domain;
@@ -22,21 +24,30 @@ pub struct NewAgent<'a> {
     pub name: &'a str,
 }
 
-pub fn add(d_id: i32, name: String, user_id: i32) -> Result<()> {
-    let domain = domain::get_domain(d_id)?;
+pub fn add(domain_id: i32, name: String, user_id: i32) -> Result<()> {
+    let domain = domain::get_domain(domain_id)?;
     let user = user::get_user(user_id)?;
 
     let mut conn = db_connect();
 
     let agent = NewAgent {
-        domain_id: d_id,
+        domain_id: domain_id,
         user_id: user_id,
         name: &name,
     };
 
-    diesel::insert_into(agents::table)
+    let inserted = diesel::insert_into(agents::table)
         .values(&agent)
-        .execute(&mut conn)?;
+        .get_result::<Agent>(&mut conn);
+
+    match inserted {
+        Ok(inserted) => {
+            agent_param::add_defaults(inserted.id)?;
+        },
+        Err(_) => {
+            return Err(Error::Fslib("Insert agent failed".to_string()));
+        }
+    }
 
     Ok(())
 }
