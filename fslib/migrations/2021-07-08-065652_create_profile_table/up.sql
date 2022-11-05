@@ -1,9 +1,9 @@
 -- Your SQL goes here
-CREATE TABLE `profiles` (
-`id` INT NOT NULL AUTO_INCREMENT,
-`name` VARCHAR(256) NOT NULL,
+CREATE TABLE profiles (
+id SERIAL,
+name VARCHAR(256) NOT NULL,
 PRIMARY KEY (id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+);
 
-INSERT INTO `profiles` (`name`) VALUE ("internal");
-INSERT INTO `profiles` (`name`) VALUE ("external");
+INSERT INTO profiles (name) VALUES ('internal');
+INSERT INTO profiles (name) VALUES ('external');

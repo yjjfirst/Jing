@@ -1,1 +1,1 @@
-DROP TABLE `conference_profiles`;
+DROP TABLE conference_profiles;

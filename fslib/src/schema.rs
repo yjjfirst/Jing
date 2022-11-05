@@ -2,8 +2,8 @@
 
 diesel::table! {
     agent_params (id) {
-        id -> Integer,
-        agent_id -> Integer,
+        id -> Int4,
+        agent_id -> Int4,
         name -> Varchar,
         value -> Varchar,
     }
@@ -11,20 +11,20 @@ diesel::table! {
 
 diesel::table! {
     agents (id) {
-        id -> Integer,
-        domain_id -> Integer,
-        user_id -> Integer,
+        id -> Int4,
+        domain_id -> Int4,
+        user_id -> Int4,
         name -> Varchar,
     }
 }
 
 diesel::table! {
     cdrs (id) {
-        id -> Integer,
+        id -> Int4,
         a_caller_id -> Varchar,
         a_dest -> Varchar,
-        start_time -> Datetime,
-        duration -> Integer,
+        start_time -> Timestamp,
+        duration -> Int4,
         b_caller_id -> Nullable<Varchar>,
         b_dest -> Nullable<Varchar>,
         uuid -> Nullable<Varchar>,
@@ -33,8 +33,8 @@ diesel::table! {
 
 diesel::table! {
     conference_control_details (id) {
-        id -> Integer,
-        conference_control_id -> Integer,
+        id -> Int4,
+        conference_control_id -> Int4,
         action -> Varchar,
         digits -> Varchar,
     }
@@ -42,7 +42,7 @@ diesel::table! {
 
 diesel::table! {
     conference_controls (id) {
-        id -> Integer,
+        id -> Int4,
         name -> Varchar,
         description -> Nullable<Varchar>,
     }
@@ -50,8 +50,8 @@ diesel::table! {
 
 diesel::table! {
     conference_profile_params (id) {
-        id -> Integer,
-        conference_profile_id -> Integer,
+        id -> Int4,
+        conference_profile_id -> Int4,
         name -> Varchar,
         value -> Varchar,
     }
@@ -59,7 +59,7 @@ diesel::table! {
 
 diesel::table! {
     conference_profiles (id) {
-        id -> Integer,
+        id -> Int4,
         name -> Varchar,
         description -> Nullable<Varchar>,
     }
@@ -67,42 +67,42 @@ diesel::table! {
 
 diesel::table! {
     conferences (id) {
-        id -> Integer,
+        id -> Int4,
         exten -> Varchar,
         name -> Varchar,
-        domain_id -> Integer,
-        conference_profile_id -> Integer,
+        domain_id -> Int4,
+        conference_profile_id -> Int4,
         description -> Nullable<Varchar>,
     }
 }
 
 diesel::table! {
     domains (id) {
-        id -> Integer,
+        id -> Int4,
         domain_name -> Varchar,
     }
 }
 
 diesel::table! {
     extension_types (id) {
-        id -> Integer,
+        id -> Int4,
         name -> Varchar,
     }
 }
 
 diesel::table! {
     extensions (id) {
-        id -> Integer,
+        id -> Int4,
         exten -> Varchar,
         exten_type -> Varchar,
-        domain_id -> Integer,
+        domain_id -> Int4,
     }
 }
 
 diesel::table! {
     gateways (id) {
-        id -> Integer,
-        profile_id -> Integer,
+        id -> Int4,
+        profile_id -> Int4,
         gateway_name -> Varchar,
         proxy -> Varchar,
         register -> Varchar,
@@ -113,7 +113,7 @@ diesel::table! {
 
 diesel::table! {
     inbound_routes (id) {
-        id -> Integer,
+        id -> Int4,
         context -> Varchar,
         condition -> Varchar,
         dest_extension -> Varchar,
@@ -122,8 +122,8 @@ diesel::table! {
 
 diesel::table! {
     ivr_options (id) {
-        id -> Integer,
-        ivr_id -> Nullable<Integer>,
+        id -> Int4,
+        ivr_id -> Nullable<Int4>,
         digits -> Varchar,
         dest_type -> Varchar,
         dest_exten -> Varchar,
@@ -132,36 +132,36 @@ diesel::table! {
 
 diesel::table! {
     ivrs (id) {
-        id -> Integer,
+        id -> Int4,
         exten -> Varchar,
         name -> Varchar,
-        domain_id -> Integer,
+        domain_id -> Int4,
         greet_long -> Nullable<Varchar>,
         greet_short -> Nullable<Varchar>,
         invalid_sound -> Nullable<Varchar>,
         exit_sound -> Nullable<Varchar>,
-        confirm_attempts -> Nullable<Integer>,
-        timeout -> Nullable<Integer>,
-        inter_digit_timeout -> Nullable<Integer>,
-        max_failures -> Nullable<Integer>,
-        max_timeouts -> Nullable<Integer>,
-        digit_len -> Nullable<Integer>,
+        confirm_attempts -> Nullable<Int4>,
+        timeout -> Nullable<Int4>,
+        inter_digit_timeout -> Nullable<Int4>,
+        max_failures -> Nullable<Int4>,
+        max_timeouts -> Nullable<Int4>,
+        digit_len -> Nullable<Int4>,
     }
 }
 
 diesel::table! {
     outbound_routes (id) {
-        id -> Integer,
-        gateway_id -> Integer,
-        priority -> Integer,
+        id -> Int4,
+        gateway_id -> Int4,
+        priority -> Int4,
         condition -> Varchar,
     }
 }
 
 diesel::table! {
     profile_params (id) {
-        id -> Integer,
-        profile_id -> Integer,
+        id -> Int4,
+        profile_id -> Int4,
         name -> Varchar,
         value -> Varchar,
     }
@@ -169,15 +169,15 @@ diesel::table! {
 
 diesel::table! {
     profiles (id) {
-        id -> Integer,
+        id -> Int4,
         name -> Varchar,
     }
 }
 
 diesel::table! {
     queue_params (id) {
-        id -> Integer,
-        queue_id -> Integer,
+        id -> Int4,
+        queue_id -> Int4,
         name -> Varchar,
         value -> Varchar,
     }
@@ -185,56 +185,56 @@ diesel::table! {
 
 diesel::table! {
     queues (id) {
-        id -> Integer,
+        id -> Int4,
         name -> Varchar,
         exten -> Varchar,
-        domain_id -> Integer,
+        domain_id -> Int4,
     }
 }
 
 diesel::table! {
     ringing_group_members (id) {
-        id -> Integer,
-        ringing_group_id -> Integer,
-        user_id -> Integer,
+        id -> Int4,
+        ringing_group_id -> Int4,
+        user_id -> Int4,
     }
 }
 
 diesel::table! {
     ringing_groups (id) {
-        id -> Integer,
+        id -> Int4,
         name -> Varchar,
         group_id -> Varchar,
-        domain_id -> Integer,
+        domain_id -> Int4,
         description -> Nullable<Varchar>,
-        ring_time -> Integer,
+        ring_time -> Int4,
         ring_strategy -> Varchar,
     }
 }
 
 diesel::table! {
     sound_files (id) {
-        id -> Integer,
+        id -> Int4,
         name -> Varchar,
-        domain_id -> Integer,
+        domain_id -> Int4,
         description -> Nullable<Varchar>,
     }
 }
 
 diesel::table! {
     sounds (id) {
-        id -> Integer,
+        id -> Int4,
         exten -> Varchar,
         name -> Varchar,
-        domain_id -> Integer,
-        sound_file_id -> Integer,
+        domain_id -> Int4,
+        sound_file_id -> Int4,
     }
 }
 
 diesel::table! {
     users (id) {
-        id -> Integer,
-        domain_id -> Integer,
+        id -> Int4,
+        domain_id -> Int4,
         number_alias -> Nullable<Varchar>,
         mailbox -> Nullable<Varchar>,
         cidr -> Nullable<Varchar>,
@@ -256,8 +256,8 @@ diesel::table! {
 
 diesel::table! {
     voicemails (id) {
-        id -> Integer,
-        user_id -> Integer,
+        id -> Int4,
+        user_id -> Int4,
         password -> Varchar,
         email -> Nullable<Varchar>,
     }

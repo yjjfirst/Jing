@@ -1,1 +1,1 @@
-DROP TABLE `sounds`;
+DROP TABLE sounds;

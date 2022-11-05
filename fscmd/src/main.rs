@@ -213,7 +213,7 @@ fn main() {
 
     if let Cli::Domain{..} = args {
     } else {
-        domain::get_active().expect("Please set active domain");
+        domain::get_active().expect("Please set FS_ACTIVE_DOMAIN environment variable");
     }
 
     match args {
