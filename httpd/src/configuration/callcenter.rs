@@ -3,6 +3,8 @@ use std::io::Write;
 use crate::xml_utils::{start_element, end_element, attrs, param};
 
 use fslib::queue;
+use fslib::queue::agent;
+use fslib::user;
 
 pub fn serve<W: Write>(w: &mut EventWriter<W>) {
     start_element(w, "document", attrs(vec![("type", "freeswitch/xml")]));
@@ -31,8 +33,32 @@ pub fn settings <W: Write>(w: &mut EventWriter<W>) {
 
 pub fn agents <W: Write>(w: &mut EventWriter<W>) {
     start_element(w, "agents", None);
+    let agents = agent::all().unwrap();
+
+    for a in agents {
+        agent(w, a);
+    }
+
     end_element(w);
 }
+
+pub fn agent<W: Write>(w: &mut EventWriter<W>, agent: agent::Agent) {
+    let params = agent::params(agent.id).unwrap();
+    let user = user::get_user(agent.user_id).unwrap();
+    let contact = format!("[leg_timeout={}]user/{}", agent.leg_timeout, user.user_id);
+
+    let mut vec_params: Vec<(&str, &str)> = Vec::new();
+    vec_params.push(("name", &agent.name));
+    vec_params.push(("contact", &contact));
+
+    for p in &params {
+        vec_params.push((&p.name, &p.value));
+    }
+
+    start_element(w, "agent", attrs(vec_params));
+    end_element(w);
+}
+
 pub fn tiers <W: Write>(w: &mut EventWriter<W>) {
     start_element(w, "tiers", None);
     end_element(w);

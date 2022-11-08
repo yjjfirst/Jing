@@ -31,7 +31,7 @@ export FS_ACTIVE_DOMAIN=1
 ./target/debug/fscmd conference add --name test --exten 4000 --conference-profile-id 1
 
 #add queue
-./target/debug/fscmd queue add --exten 5002 --name test
+./target/debug/fscmd queue add --exten 5002 --name test@internal
 ./target/debug/fscmd agent add  --name test --user-id 1
 
 export FS_ACTIVE_DOMAIN=2

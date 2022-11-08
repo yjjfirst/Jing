@@ -14,6 +14,7 @@ pub struct Agent {
     pub domain_id: i32,
     pub user_id: i32,
     pub name: String,
+    pub leg_timeout: i32,
 }
 
 #[derive(Insertable)]
@@ -22,18 +23,17 @@ pub struct NewAgent<'a> {
     pub domain_id: i32,
     pub user_id: i32,
     pub name: &'a str,
+    pub leg_timeout:i32,
 }
 
-pub fn add(domain_id: i32, name: String, user_id: i32) -> Result<()> {
-    let domain = domain::get_domain(domain_id)?;
-    let user = user::get_user(user_id)?;
-
+pub fn add(domain_id: i32, user_id: i32, name: String, leg_timeout: i32) -> Result<()> {
     let mut conn = db_connect();
 
     let agent = NewAgent {
         domain_id: domain_id,
         user_id: user_id,
         name: &name,
+        leg_timeout: leg_timeout,
     };
 
     let inserted = diesel::insert_into(agents::table)
@@ -64,4 +64,18 @@ pub fn all() -> Result<Vec<Agent>>{
         .load::<Agent>(&mut conn)?;
 
     Ok(result)
+}
+
+pub fn params(a_id: i32) -> Result<Vec<agent_param::AgentParam>> {
+    use crate::schema::agents::dsl::*;
+    let mut conn = db_connect();
+
+    let agent = agents
+        .find(a_id)
+        .first::<Agent>(&mut conn)?;
+
+    let params = agent_param::AgentParam::belonging_to(&agent)
+        .load::<agent_param::AgentParam>(&mut conn)?;
+
+    Ok(params)
 }

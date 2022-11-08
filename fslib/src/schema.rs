@@ -15,6 +15,7 @@ diesel::table! {
         domain_id -> Int4,
         user_id -> Int4,
         name -> Varchar,
+        leg_timeout -> Int4,
     }
 }
 
@@ -232,6 +233,16 @@ diesel::table! {
 }
 
 diesel::table! {
+    tiers (id) {
+        id -> Int4,
+        agent_id -> Int4,
+        queue_id -> Int4,
+        level -> Int4,
+        position -> Int4,
+    }
+}
+
+diesel::table! {
     users (id) {
         id -> Int4,
         domain_id -> Int4,
@@ -283,6 +294,8 @@ diesel::joinable!(ringing_groups -> domains (domain_id));
 diesel::joinable!(sound_files -> domains (domain_id));
 diesel::joinable!(sounds -> domains (domain_id));
 diesel::joinable!(sounds -> sound_files (sound_file_id));
+diesel::joinable!(tiers -> agents (agent_id));
+diesel::joinable!(tiers -> queues (queue_id));
 diesel::joinable!(users -> domains (domain_id));
 diesel::joinable!(voicemails -> users (user_id));
 
@@ -311,6 +324,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     ringing_groups,
     sound_files,
     sounds,
+    tiers,
     users,
     voicemails,
 );

@@ -25,7 +25,7 @@ pub fn exec_agent_cmd(agent: AgentCli) {
 
     match agent {
         AgentCli::Add {name, user_id} => {
-            agent::add(domain_id, name, user_id).unwrap();
+            agent::add(domain_id, user_id, name, 15).unwrap();
         },
         AgentCli::Del {id} => {
             agent::del(id).unwrap();
