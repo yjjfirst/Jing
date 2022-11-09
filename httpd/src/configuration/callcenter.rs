@@ -4,6 +4,7 @@ use crate::xml_utils::{start_element, end_element, attrs, param};
 
 use fslib::queue;
 use fslib::queue::agent;
+use fslib::queue::tier;
 use fslib::user;
 
 pub fn serve<W: Write>(w: &mut EventWriter<W>) {
@@ -61,6 +62,22 @@ pub fn agent<W: Write>(w: &mut EventWriter<W>, agent: agent::Agent) {
 
 pub fn tiers <W: Write>(w: &mut EventWriter<W>) {
     start_element(w, "tiers", None);
+    let tiers = tier::all().unwrap();
+    for t in tiers {
+        tier(w, t);
+    }
+    end_element(w);
+}
+
+pub fn tier<W: Write>(w: &mut EventWriter<W>, tier: tier::Tier) {
+    let agent = agent::get(tier.agent_id).unwrap();
+    let queue = queue::get(tier.queue_id).unwrap();
+    start_element(w, "tier", attrs(vec![
+        ("agent", &agent.name),
+        ("queue", &queue.name),
+        ("level", &tier.level.to_string()),
+        ("position", &tier.position.to_string())
+    ]));
     end_element(w);
 }
 

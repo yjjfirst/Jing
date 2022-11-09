@@ -66,6 +66,18 @@ pub fn all() -> Result<Vec<Agent>>{
     Ok(result)
 }
 
+pub fn get(agent_id: i32) -> Result<Agent> {
+    use crate::schema::agents::dsl::*;
+    let mut conn = db_connect();
+
+    let result = agents
+        .find(agent_id)
+        .first(&mut conn)?;
+
+    Ok(result)
+
+}
+
 pub fn params(a_id: i32) -> Result<Vec<agent_param::AgentParam>> {
     use crate::schema::agents::dsl::*;
     let mut conn = db_connect();
