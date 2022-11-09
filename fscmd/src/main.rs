@@ -7,6 +7,7 @@ mod sound;
 mod conference;
 mod queue;
 mod agent;
+mod tier;
 
 #[macro_use]
 extern crate prettytable;
@@ -79,6 +80,10 @@ enum Cli {
     Agent {
         #[structopt(subcommand)]
         agent: agent::AgentCli
+    },
+    Tier {
+        #[structopt(subcommand)]
+        tier: tier::TierCli
     }
 }
 
@@ -258,6 +263,9 @@ fn main() {
         },
         Cli::Agent {agent} => {
             agent::exec_agent_cmd(agent);
+        },
+        Cli::Tier { tier } => {
+            tier::exec_tier_cmd(tier);
         }
     }
 }
