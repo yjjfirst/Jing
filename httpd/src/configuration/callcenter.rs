@@ -6,6 +6,7 @@ use fslib::queue;
 use fslib::queue::agent;
 use fslib::queue::tier;
 use fslib::user;
+use fslib::domain;
 
 pub fn serve<W: Write>(w: &mut EventWriter<W>) {
     start_element(w, "document", attrs(vec![("type", "freeswitch/xml")]));
@@ -43,13 +44,20 @@ pub fn agents <W: Write>(w: &mut EventWriter<W>) {
     end_element(w);
 }
 
+fn agent_name(agent: &agent::Agent) -> String {
+    let user = user::get_user(agent.user_id).unwrap();
+    let domain = domain::get_domain(user.domain_id).unwrap();
+
+    format!("{}@{}", user.user_id, domain.domain_name)
+}
+
 pub fn agent<W: Write>(w: &mut EventWriter<W>, agent: agent::Agent) {
     let params = agent::params(agent.id).unwrap();
-    let user = user::get_user(agent.user_id).unwrap();
-    let contact = format!("[leg_timeout={}]user/{}", agent.leg_timeout, user.user_id);
+    let name = agent_name(&agent);
+    let contact = format!("[leg_timeout={}]user/{}", agent.leg_timeout, &name);
 
     let mut vec_params: Vec<(&str, &str)> = Vec::new();
-    vec_params.push(("name", &agent.name));
+    vec_params.push(("name", &name));
     vec_params.push(("contact", &contact));
 
     for p in &params {
@@ -72,9 +80,12 @@ pub fn tiers <W: Write>(w: &mut EventWriter<W>) {
 pub fn tier<W: Write>(w: &mut EventWriter<W>, tier: tier::Tier) {
     let agent = agent::get(tier.agent_id).unwrap();
     let queue = queue::get(tier.queue_id).unwrap();
+
+    let q_name = queue_name(&queue);
+    let a_name = agent_name(&agent);
     start_element(w, "tier", attrs(vec![
-        ("agent", &agent.name),
-        ("queue", &queue.name),
+        ("agent", &a_name),
+        ("queue", &q_name),
         ("level", &tier.level.to_string()),
         ("position", &tier.position.to_string())
     ]));
@@ -90,8 +101,15 @@ pub fn queues<W: Write>(w: &mut EventWriter<W>) {
     end_element(w);
 }
 
+fn queue_name(queue: &queue::Queue) -> String {
+    let domain = domain::get_domain(queue.domain_id).unwrap();
+    format!("{}@{}", queue.exten, domain.domain_name)
+}
+
 pub fn queue<W: Write>(w: &mut EventWriter<W>, queue: queue::Queue) {
-    start_element(w, "queue", attrs(vec![("name", &queue.name)]));
+    let name = queue_name(&queue);
+
+    start_element(w, "queue", attrs(vec![("name", &name)]));
     let params = queue::params(queue.id).unwrap();
     for p in params {
         param(w, &p.name, &p.value);

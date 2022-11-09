@@ -84,6 +84,18 @@ pub fn get(a_id: i32) -> Result<Queue> {
     Ok(result)
 }
 
+pub fn get_by(domain: i32, ext: &str) -> Result<Queue> {
+    use crate::schema::queues::dsl::*;
+    let mut conn = db_connect();
+
+    let result = queues
+        .filter(domain_id.eq(domain))
+        .filter(exten.eq(ext))
+        .first(&mut conn)?;
+
+    Ok(result)
+}
+
 pub fn params(d_id: i32) -> Result<Vec<QueueParam>> {
     use crate::schema::queues::dsl::*;
     let mut conn = db_connect();

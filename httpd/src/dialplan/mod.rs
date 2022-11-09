@@ -16,6 +16,7 @@ use fslib::sound;
 use fslib::sound_file;
 use fslib::conference;
 use fslib::conference::conference_profile;
+use fslib::queue;
 
 use super::FsRequest;
 
@@ -54,6 +55,8 @@ fn dialplan<W: Write>(w: &mut EventWriter<W>, fs_req: FsRequest) {
                 sound(w, domain.id, dest_exten);
             } else if e.exten_type == "conference" {
                 conference(w, domain.id, dest_exten);
+            } else if e.exten_type == "queue" {
+                queue(w, domain.id, dest_exten);
             }
         } else {
             outbounds(w);
@@ -195,8 +198,29 @@ fn conference<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
 
         action(w, "Answer", "");
 
-        let data = format!("{}-${{domain_name}}@{}",&c.exten, &profile.name);
+        let data = format!("{}-$${{domain_name}}@{}",&c.exten, &profile.name);
         action(w, "conference",  &data);
+
+        end_element(w);
+        end_element(w);
+        end_element(w);
+    }
+
+}
+
+fn queue<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
+    let queue = queue::get_by(domain_id, &exten);
+
+    if let Ok(q) = queue {
+        let name = format!("queue_{}", q.id);
+        start_element(w, "context", attrs(vec![("name", "internal")]));
+        start_element(w, "extension", attrs(vec![("name", &name)]));
+        start_element(w, "condition", attrs(vec![("field", "destination_number"),
+                                                 ("expression", &q.exten)
+        ]));
+
+        let data = format!("{}@{}", exten, "$${domain}");
+        action(w, "callcenter",  &data);
 
         end_element(w);
         end_element(w);
