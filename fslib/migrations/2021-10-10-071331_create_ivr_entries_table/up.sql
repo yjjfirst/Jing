@@ -1,5 +1,5 @@
 -- Your SQL goes here
-CREATE TABLE ivr_options (
+CREATE TABLE ivr_entries (
   id SERIAL,
   ivr_id INT,
   digits VARCHAR(8) NOT NULL,

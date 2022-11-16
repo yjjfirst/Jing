@@ -98,8 +98,8 @@ pub fn get(i: i32) -> Result<Ivr> {
 }
 
 pub fn add_ivr_option(domain: i32, a_ivr_id: i32, ds: String, exten: String) -> Result<()> {
-    use crate::schema::ivr_options::dsl::*;
-    use crate::schema::ivr_options;
+    use crate::schema::ivr_entries::dsl::*;
+    use crate::schema::ivr_entries;
     let mut conn = db_connect();
 
     if !ivr_exists(a_ivr_id)? {
@@ -108,7 +108,7 @@ pub fn add_ivr_option(domain: i32, a_ivr_id: i32, ds: String, exten: String) -> 
 
     let exten = extension::get_extension(&exten, domain)?;
 
-    diesel::insert_into(ivr_options::table)
+    diesel::insert_into(ivr_entries::table)
         .values((&ivr_id.eq(a_ivr_id),
                  &digits.eq(ds),
                  &dest_type.eq(exten.exten_type),

@@ -6,8 +6,8 @@ use super::domain;
 #[derive(StructOpt)]
 #[structopt(about="Manage IVR")]
 #[derive(Debug)]
-pub enum IvrOptionCli {
-    #[structopt(about="Add IVR option")]
+pub enum IvrEntryCli {
+    #[structopt(about="Add IVR entry")]
     Add {
         #[structopt(short, long, help="IVR id")]
         ivr_id: i32,
@@ -16,10 +16,10 @@ pub enum IvrOptionCli {
         #[structopt(long, help="Dest extension")]
         dest_exten: String,
     },
-    #[structopt(about="Delete IVR option")]
+    #[structopt(about="Delete IVR entry")]
     Del {
     },
-    #[structopt(about="List IVR options")]
+    #[structopt(about="List IVR entries")]
     Ls {
     }
 }
@@ -44,9 +44,9 @@ pub enum IvrCli {
     Ls {
     },
 
-    Option {
+    Entry {
         #[structopt(subcommand, help="manager IVR options")]
-        option: IvrOptionCli,
+        entry: IvrEntryCli,
     }
 }
 
@@ -67,14 +67,14 @@ pub fn print_ivrs(ivrs: Vec<ivr::Ivr>) {
     table.print();
 }
 
-pub fn exec_ivr_option_cmd(option: IvrOptionCli) {
+pub fn exec_ivr_option_cmd(entry: IvrEntryCli) {
     let domain_id = domain::get_active().unwrap();
-    match option {
-        IvrOptionCli::Add {ivr_id, digits, dest_exten} =>  {
+    match entry {
+        IvrEntryCli::Add {ivr_id, digits, dest_exten} =>  {
             ivr::add_ivr_option(domain_id, ivr_id, digits, dest_exten).unwrap();
         },
-        IvrOptionCli::Del {} => {},
-        IvrOptionCli::Ls {} => {
+        IvrEntryCli::Del {} => {},
+        IvrEntryCli::Ls {} => {
         }
     }
 
@@ -93,8 +93,8 @@ pub fn exec_ivr_cmd(ivr: IvrCli) {
             let ivrs = ivr::all().unwrap();
             print_ivrs(ivrs);
         },
-        IvrCli::Option { option } => {
-            exec_ivr_option_cmd(option);
+        IvrCli::Entry { entry } => {
+            exec_ivr_option_cmd(entry);
         }
     }
 }

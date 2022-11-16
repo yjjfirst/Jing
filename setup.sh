@@ -22,7 +22,7 @@ export FS_ACTIVE_DOMAIN=1
 ./target/debug/fscmd rg member add --group 1 --user 2
 
 ./target/debug/fscmd ivr add  --exten 8000 --name martin_test
-./target/debug/fscmd ivr option add --digits 1 --ivr-id 1 --dest-exten 1000
+./target/debug/fscmd ivr entry add --digits 1 --ivr-id 1 --dest-exten 1000
 
 ./target/debug/fscmd sound-file add --name ttt.wav --path /root/play-profiles.mp3 --desc "test"
 ./target/debug/fscmd sound add --exten 3000 --name test --sound-file-id 1

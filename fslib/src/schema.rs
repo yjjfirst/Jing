@@ -131,7 +131,7 @@ diesel::table! {
 }
 
 diesel::table! {
-    ivr_options (id) {
+    ivr_entries (id) {
         id -> Int4,
         ivr_id -> Nullable<Int4>,
         digits -> Varchar,
@@ -282,7 +282,7 @@ diesel::joinable!(conferences -> conference_profiles (conference_profile_id));
 diesel::joinable!(conferences -> domains (domain_id));
 diesel::joinable!(gateways -> profiles (profile_id));
 diesel::joinable!(ivr_attrs -> ivrs (ivr_id));
-diesel::joinable!(ivr_options -> ivrs (ivr_id));
+diesel::joinable!(ivr_entries -> ivrs (ivr_id));
 diesel::joinable!(ivrs -> domains (domain_id));
 diesel::joinable!(outbound_routes -> gateways (gateway_id));
 diesel::joinable!(profile_params -> profiles (profile_id));
@@ -314,7 +314,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     gateways,
     inbound_routes,
     ivr_attrs,
-    ivr_options,
+    ivr_entries,
     ivrs,
     outbound_routes,
     profile_params,
