@@ -34,15 +34,6 @@ pub enum IvrCli {
         name: String,
         #[structopt(short, long, help="Extension of the IVR")]
         exten: String,
-        #[structopt(short, long, help="Domain of the IVR")]
-        greet_long: Option<String>,
-        #[structopt(short="s", long, help="Short greet")]
-        greet_short: Option<String>,
-        #[structopt(short, long, help="Invalid sound")]
-        invalid_sound: Option<String>,
-        #[structopt(short="x", long, help="Exit sound")]
-        exit_sound: Option<String>
-
     },
     #[structopt(about="Delete IVR.")]
     Del {
@@ -59,10 +50,10 @@ pub enum IvrCli {
     }
 }
 
-pub fn print_ivrs(ivrs: Vec<ivr::models::Ivr>) {
+pub fn print_ivrs(ivrs: Vec<ivr::Ivr>) {
     let mut table = Ctable::new();
 
-    table.set_titles(row!["id", "name", "exten", "domain_id", "greet_long", "greet_short", "invalid_sound", "exit_sound"]);
+    table.set_titles(row!["id", "name", "exten", "domain_id"]);
     for i in ivrs {
         table.add_row(
             row![
@@ -70,10 +61,6 @@ pub fn print_ivrs(ivrs: Vec<ivr::models::Ivr>) {
                 i.name,
                 i.exten,
                 i.domain_id,
-                i.greet_long.unwrap_or("".to_string()),
-                i.greet_short.unwrap_or("".to_string()),
-                i.invalid_sound.unwrap_or("".to_string()),
-                i.exit_sound.unwrap_or("".to_string())
             ])
     }
 
@@ -96,16 +83,8 @@ pub fn exec_ivr_option_cmd(option: IvrOptionCli) {
 pub fn exec_ivr_cmd(ivr: IvrCli) {
     let domain_id = domain::get_active().unwrap();
     match ivr {
-        IvrCli::Add {name, exten, greet_long, greet_short, invalid_sound, exit_sound} => {
-            use ivr::models::NewIvr;
-            ivr::add(NewIvr {
-                name: &name,
-                exten: &exten,
-                domain_id,
-                greet_long: greet_long.as_deref(),
-                greet_short: greet_short.as_deref(),
-                invalid_sound: invalid_sound.as_deref(),
-                exit_sound: exit_sound.as_deref()}).unwrap();
+        IvrCli::Add {name, exten} => {
+            ivr::add(&name, &exten, domain_id).unwrap();
         },
         IvrCli::Del {id} => {
             ivr::del(id).unwrap();

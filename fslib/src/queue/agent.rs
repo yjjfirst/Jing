@@ -1,11 +1,9 @@
 use super::agent_param;
 
 use diesel::prelude::*;
-use crate::error::{Result,Error};
+use crate::error::{Result};
 use crate::db_connect;
 use crate::schema::{agents};
-use crate::domain;
-use crate::user;
 
 #[derive(Identifiable,Queryable,Debug,PartialEq)]
 #[derive(Clone)]

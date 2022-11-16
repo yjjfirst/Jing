@@ -57,6 +57,8 @@ fn dialplan<W: Write>(w: &mut EventWriter<W>, fs_req: FsRequest) {
                 conference(w, domain.id, dest_exten);
             } else if e.exten_type == "queue" {
                 queue(w, domain.id, dest_exten);
+            } else if e.exten_type == "ivr" {
+                ivr(w, domain.id, dest_exten);
             }
         } else {
             outbounds(w);
@@ -226,5 +228,22 @@ fn queue<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
         end_element(w);
         end_element(w);
     }
+
+}
+
+fn ivr<W: Write>(w: &mut EventWriter<W>, _domain_id: i32, exten: String) {
+
+    let name = format!("ivr_{}", 1);
+    start_element(w, "context", attrs(vec![("name", "internal")]));
+    start_element(w, "extension", attrs(vec![("name", &name)]));
+    start_element(w, "condition", attrs(vec![("field", "destination_number"),
+                                             ("expression", &exten)
+    ]));
+
+    action(w, "ivr",  "demo_ivr");
+
+    end_element(w);
+    end_element(w);
+    end_element(w);
 
 }

@@ -122,6 +122,15 @@ diesel::table! {
 }
 
 diesel::table! {
+    ivr_attrs (id) {
+        id -> Int4,
+        ivr_id -> Int4,
+        name -> Varchar,
+        value -> Varchar,
+    }
+}
+
+diesel::table! {
     ivr_options (id) {
         id -> Int4,
         ivr_id -> Nullable<Int4>,
@@ -137,16 +146,6 @@ diesel::table! {
         exten -> Varchar,
         name -> Varchar,
         domain_id -> Int4,
-        greet_long -> Nullable<Varchar>,
-        greet_short -> Nullable<Varchar>,
-        invalid_sound -> Nullable<Varchar>,
-        exit_sound -> Nullable<Varchar>,
-        confirm_attempts -> Nullable<Int4>,
-        timeout -> Nullable<Int4>,
-        inter_digit_timeout -> Nullable<Int4>,
-        max_failures -> Nullable<Int4>,
-        max_timeouts -> Nullable<Int4>,
-        digit_len -> Nullable<Int4>,
     }
 }
 
@@ -282,6 +281,7 @@ diesel::joinable!(conference_profile_params -> conference_profiles (conference_p
 diesel::joinable!(conferences -> conference_profiles (conference_profile_id));
 diesel::joinable!(conferences -> domains (domain_id));
 diesel::joinable!(gateways -> profiles (profile_id));
+diesel::joinable!(ivr_attrs -> ivrs (ivr_id));
 diesel::joinable!(ivr_options -> ivrs (ivr_id));
 diesel::joinable!(ivrs -> domains (domain_id));
 diesel::joinable!(outbound_routes -> gateways (gateway_id));
@@ -313,6 +313,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     extensions,
     gateways,
     inbound_routes,
+    ivr_attrs,
     ivr_options,
     ivrs,
     outbound_routes,

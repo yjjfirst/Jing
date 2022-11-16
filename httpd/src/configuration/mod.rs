@@ -1,6 +1,7 @@
 mod sofia;
 mod conference;
 mod callcenter;
+mod ivr;
 
 extern crate fslib;
 
@@ -20,6 +21,8 @@ pub fn serve (fs_req: FsRequest) -> tide::Result {
         conference::serve(&mut w);
     } else if fs_req.key_value == "callcenter.conf" {
         callcenter::serve(&mut w);
+    } else if fs_req.key_value == "ivr.conf" {
+        ivr::serve(&mut w);
     }
 
     let response = buf.into_inner().unwrap();

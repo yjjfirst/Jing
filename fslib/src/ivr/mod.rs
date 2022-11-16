@@ -1,24 +1,53 @@
-pub mod models;
+pub mod ivr_attrs;
 
-use models::*;
 use diesel::prelude::*;
 use diesel::dsl::*;
 use crate::db_connect;
 use crate::extension;
 use crate::error::{Result, Error};
+use super::extension::{add_extension, del_extension};
+use crate::schema::ivrs;
+
+use ivr_attrs::{IvrAttr};
 
 pub enum DestType {
     User(i32),
     Ringgroup(i32)
 }
 
-pub fn add(new_ivr: NewIvr) -> Result<()> {
-    use crate::schema::ivrs;
-    let mut conn = db_connect();
+#[derive(Identifiable,Queryable,Debug,PartialEq)]
+#[derive(Clone)]
+pub struct Ivr {
+    pub id: i32,
+    pub exten: String,
+    pub name: String,
+    pub domain_id: i32,
+}
 
-    diesel::insert_into(ivrs::table)
+#[derive(Insertable)]
+#[diesel(table_name=ivrs)]
+pub struct NewIvr<'a> {
+    pub exten: &'a str,
+    pub name: &'a str,
+    pub domain_id: i32,
+}
+
+pub struct IvrEntry {
+}
+
+pub fn add(name: &str, exten: &str, domain_id: i32) -> Result<()> {
+    let mut conn = db_connect();
+    let new_ivr = NewIvr {
+        name, exten, domain_id
+    };
+
+    add_extension(new_ivr.exten, "ivr", new_ivr.domain_id)?;
+
+    let inserted: Ivr = diesel::insert_into(ivrs::table)
         .values(&new_ivr)
-        .execute(&mut conn)?;
+        .get_result(&mut conn)?;
+
+    ivr_attrs::add_defaults(inserted.id)?;
 
     Ok(())
 }
@@ -33,15 +62,16 @@ pub fn ivr_exists(i: i32) -> Result<bool> {
 }
 
 pub fn del(i: i32) -> Result<()> {
-    use crate::schema::ivrs;
     use crate::schema::ivrs::columns::id;
 
     let mut conn = db_connect();
+    let Ivr {exten, ..} = get(i)?;
 
     diesel::delete(ivrs::table)
         .filter(id.eq(i))
         .execute(&mut conn)?;
 
+    del_extension(&exten)?;
     Ok(())
 }
 
@@ -54,6 +84,17 @@ pub fn all() -> Result<Vec<Ivr>> {
         .load::<Ivr>(&mut conn)?;
 
     Ok(results)
+}
+
+pub fn get(i: i32) -> Result<Ivr> {
+    use crate::schema::ivrs::dsl::*;
+    let mut conn = db_connect();
+
+    let result = ivrs
+        .find(i)
+        .first(&mut conn)?;
+
+    Ok(result)
 }
 
 pub fn add_ivr_option(domain: i32, a_ivr_id: i32, ds: String, exten: String) -> Result<()> {
@@ -75,4 +116,22 @@ pub fn add_ivr_option(domain: i32, a_ivr_id: i32, ds: String, exten: String) -> 
         .execute(&mut conn)?;
 
     Ok(())
+}
+
+pub fn attrs(ivr_id: i32) -> Result<Vec<ivr_attrs::IvrAttr>> {
+    use crate::schema::ivrs::dsl::*;
+    let mut conn = db_connect();
+
+    let ivr = ivrs
+        .find(ivr_id)
+        .first::<Ivr>(&mut conn)?;
+
+    let attrs = IvrAttr::belonging_to(&ivr)
+        .load::<IvrAttr>(&mut conn)?;
+
+    Ok(attrs)
+}
+
+pub fn entries(_ivr_id: i32) -> Result<Vec<IvrEntry>> {
+    return Ok(vec![]);
 }
