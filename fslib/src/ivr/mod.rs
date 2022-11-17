@@ -109,7 +109,6 @@ pub fn add_ivr_option(domain: i32, a_ivr_id: i32, ds: String, exten: String) -> 
     diesel::insert_into(ivr_entries::table)
         .values((&ivr_id.eq(a_ivr_id),
                  &digits.eq(ds),
-                 &dest_type.eq(exten.exten_type),
                  &dest_exten.eq(exten.exten)))
         .execute(&mut conn)?;
 

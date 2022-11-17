@@ -10,6 +10,5 @@ pub struct IvrEntry {
     pub id: i32,
     pub ivr_id: i32,
     pub digits: String,
-    pub dest_type: String,
     pub dest_exten: String
 }

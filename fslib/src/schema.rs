@@ -135,7 +135,6 @@ diesel::table! {
         id -> Int4,
         ivr_id -> Int4,
         digits -> Varchar,
-        dest_type -> Varchar,
         dest_exten -> Varchar,
     }
 }
