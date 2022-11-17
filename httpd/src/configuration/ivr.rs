@@ -3,9 +3,11 @@ extern crate fslib;
 use xml::writer::{EventWriter};
 use std::io::Write;
 use fslib::ivr;
-use crate::xml_utils::{start_element, end_element, attrs};
+use crate::xml_utils::{start_element, end_element, attrs, entry};
 
 pub fn serve<W: Write>(w: &mut EventWriter<W>) {
+    start_element(w, "document", attrs(vec![("type", "freeswitch/xml")]));
+    start_element(w, "section", attrs(vec![("name", "configuration")]));
     start_element(w,
                   "configuration",
                   attrs(vec![
@@ -20,12 +22,15 @@ pub fn serve<W: Write>(w: &mut EventWriter<W>) {
 
     end_element(w);
     end_element(w);
+    end_element(w);
+    end_element(w);
 }
 
 pub fn ivr<W: Write>(w: &mut EventWriter<W>, ivr: ivr::Ivr) {
     let ivr_attrs = ivr::attrs(ivr.id).unwrap();
     let mut vec_attrs: Vec<(&str, &str)> = Vec::new();
 
+    vec_attrs.push(("name", &ivr.name));
     for a in &ivr_attrs {
         vec_attrs.push((&a.name, &a.value));
     }
@@ -36,6 +41,9 @@ pub fn ivr<W: Write>(w: &mut EventWriter<W>, ivr: ivr::Ivr) {
     end_element(w);
 }
 
-fn entries<W: Write>(_w: &mut EventWriter<W>, ivr: ivr::Ivr) {
-    let _ivr_entries = ivr::entries(ivr.id);
+fn entries<W: Write>(w: &mut EventWriter<W>, ivr: ivr::Ivr) {
+    let ivr_entries = ivr::entries(ivr.id).unwrap();
+    for i in ivr_entries {
+        entry(w, &i.digits, &i.dest_exten);
+    }
 }

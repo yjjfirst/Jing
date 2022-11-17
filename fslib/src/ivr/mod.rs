@@ -1,4 +1,5 @@
 pub mod ivr_attrs;
+pub mod ivr_entry;
 
 use diesel::prelude::*;
 use diesel::dsl::*;
@@ -9,7 +10,7 @@ use super::extension::{add_extension, del_extension};
 use crate::schema::ivrs;
 
 use ivr_attrs::{IvrAttr};
-
+use ivr_entry::{IvrEntry};
 pub enum DestType {
     User(i32),
     Ringgroup(i32)
@@ -30,9 +31,6 @@ pub struct NewIvr<'a> {
     pub exten: &'a str,
     pub name: &'a str,
     pub domain_id: i32,
-}
-
-pub struct IvrEntry {
 }
 
 pub fn add(name: &str, exten: &str, domain_id: i32) -> Result<()> {
@@ -132,6 +130,16 @@ pub fn attrs(ivr_id: i32) -> Result<Vec<ivr_attrs::IvrAttr>> {
     Ok(attrs)
 }
 
-pub fn entries(_ivr_id: i32) -> Result<Vec<IvrEntry>> {
-    return Ok(vec![]);
+pub fn entries(ivr_id: i32) -> Result<Vec<IvrEntry>> {
+    use crate::schema::ivrs::dsl::*;
+    let mut conn =db_connect();
+
+    let ivr = ivrs
+        .find(ivr_id)
+        .first::<Ivr>(&mut conn)?;
+
+    let  entries = IvrEntry::belonging_to(&ivr)
+        .load::<IvrEntry>(&mut conn)?;
+
+    return Ok(entries);
 }

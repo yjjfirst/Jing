@@ -240,7 +240,7 @@ fn ivr<W: Write>(w: &mut EventWriter<W>, _domain_id: i32, exten: String) {
                                              ("expression", &exten)
     ]));
 
-    action(w, "ivr",  "demo_ivr");
+    action(w, "ivr",  "martin_test");
 
     end_element(w);
     end_element(w);

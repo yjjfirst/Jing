@@ -1,7 +1,7 @@
 -- Your SQL goes here
 CREATE TABLE ivr_entries (
   id SERIAL,
-  ivr_id INT,
+  ivr_id INT NOT NULL,
   digits VARCHAR(8) NOT NULL,
   dest_type VARCHAR(64) NOT NULL,
   dest_exten VARCHAR(64) NOT NULL,

@@ -64,3 +64,14 @@ pub fn control<W: Write>(w: &mut EventWriter<W>, action: &str, digits: &str) {
     start_element(w, "control", attrs(vec![("action", action), ("digits", digits)]));
     end_element(w);
 }
+
+pub fn entry<W: Write>(w: &mut EventWriter<W>, digits: &str, exten: &str) {
+    let param = format!("transfer {} XML internal", exten);
+    start_element(w, "entry", attrs(vec![
+        ("action", "menu-exec-app"),
+        ("digits", digits),
+        ("param", &param)
+    ]));
+    end_element(w);
+
+}
