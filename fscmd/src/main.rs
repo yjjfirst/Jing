@@ -316,7 +316,7 @@ fn exec_user_cmd(user: UserCli) {
         }
 
         UserCli::Ls => {
-            match user::all_users_with_domain() {
+            match user::users_within_domain(domain_id) {
                 Ok(users) => exec_user_ls_cmd(users),
                 Err(err) => println!("{}", err),
             }
