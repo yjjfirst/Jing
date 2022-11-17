@@ -8,6 +8,7 @@ mod conference;
 mod queue;
 mod agent;
 mod tier;
+mod extension;
 
 #[macro_use]
 extern crate prettytable;
@@ -84,6 +85,10 @@ enum Cli {
     Tier {
         #[structopt(subcommand)]
         tier: tier::TierCli
+    },
+    Extension {
+        #[structopt(subcommand)]
+        exten: extension::ExtensionCli
     }
 }
 
@@ -266,6 +271,9 @@ fn main() {
         },
         Cli::Tier { tier } => {
             tier::exec_tier_cmd(tier);
+        },
+        Cli::Extension {exten} => {
+            extension::exec_extension_cmd(exten);
         }
     }
 }
