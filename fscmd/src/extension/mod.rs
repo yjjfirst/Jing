@@ -1,6 +1,7 @@
 use super::customtable::{Ctable};
 use structopt::StructOpt;
 use fslib::*;
+use super::domain;
 
 #[derive(StructOpt)]
 #[derive(Debug)]
@@ -9,9 +10,10 @@ pub enum ExtensionCli {
 }
 
 pub fn exec_extension_cmd(exten: ExtensionCli) {
+    let domain_id = domain::get_active().unwrap();
     match exten {
         ExtensionCli::Ls => {
-            let extensions = extension::ls_extension().unwrap();
+            let extensions = extension::ls_extension(domain_id).unwrap();
             let mut table = Ctable::new();
 
             table.set_titles(row!["id", "exten", "type", "domain_id"]);

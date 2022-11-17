@@ -50,10 +50,11 @@ pub fn del_extension(ext: &str) -> Result<()>{
     Ok(())
 }
 
-pub fn ls_extension() -> Result<Vec<Extension>> {
+pub fn ls_extension(d_id: i32) -> Result<Vec<Extension>> {
     use crate::schema::extensions::dsl::*;
     let mut conn = db_connect();
     let result = extensions
+        .filter(domain_id.eq(d_id))
         .load::<Extension>(&mut conn)?;
 
     Ok(result)

@@ -47,7 +47,7 @@ pub fn exec_queue_cmd(queue: QueueCli) {
             queue::del(id).unwrap();
         },
         QueueCli::Ls => {
-            let queues = queue::all().unwrap();
+            let queues = queue::queues_in(domain_id).unwrap();
             print_queues(queues);
         }
     }

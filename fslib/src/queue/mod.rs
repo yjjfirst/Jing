@@ -73,6 +73,18 @@ pub fn all() -> Result<Vec<Queue>> {
     Ok(result)
 }
 
+pub fn queues_in(domain: i32) -> Result<Vec<Queue>> {
+    use crate::schema::queues::dsl::*;
+    let mut conn = db_connect();
+
+    let result = queues
+        .filter(domain_id.eq(domain))
+        .load::<Queue>(&mut conn)?;
+
+    Ok(result)
+
+}
+
 pub fn get(a_id: i32) -> Result<Queue> {
     use crate::schema::queues::dsl::*;
     let mut conn = db_connect();
