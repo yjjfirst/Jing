@@ -9,9 +9,6 @@ use fslib::user;
 use fslib::domain;
 
 pub fn serve<W: Write>(w: &mut EventWriter<W>) {
-    start_element(w, "document", attrs(vec![("type", "freeswitch/xml")]));
-    start_element(w, "section", attrs(vec![("name", "configuration")]));
-
     start_element(w,
                   "configuration",
                   attrs(vec![
@@ -23,8 +20,6 @@ pub fn serve<W: Write>(w: &mut EventWriter<W>) {
     agents(w);
     tiers(w);
 
-    end_element(w);
-    end_element(w);
     end_element(w);
 }
 

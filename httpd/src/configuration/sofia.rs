@@ -7,16 +7,12 @@ use fslib::profile;
 use crate::xml_utils::{start_element, end_element, param, Attr};
 
 pub fn serve<W: Write>(w: &mut EventWriter<W>) {
-    start_element(w, "document", Some(vec![Attr {name: "type", value: "freeswitch/xml"}]));
-    start_element(w, "section", Some(vec![Attr{name: "name", value: "configuration"}]));
     start_element(w, "configuration", Some(
         vec![Attr {name: "name", value: "sofia.conf"},
              Attr {name: "description",value: "sofia Endpoint"}]));
 
     profiles(w);
 
-    end_element(w);
-    end_element(w);
     end_element(w);
 
 }

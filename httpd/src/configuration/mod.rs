@@ -7,7 +7,7 @@ extern crate fslib;
 
 use std::io::BufWriter;
 use xml::writer::{EmitterConfig};
-
+use super::xml_utils::*;
 use super::FsRequest;
 
 pub fn serve (fs_req: FsRequest) -> tide::Result {
@@ -15,6 +15,9 @@ pub fn serve (fs_req: FsRequest) -> tide::Result {
     let mut w = EmitterConfig::new()
         .perform_indent(true)
         .create_writer(&mut buf);
+    start_element(&mut w, "document", Some(vec![Attr {name: "type", value: "freeswitch/xml"}]));
+    start_element(&mut w, "section", Some(vec![Attr{name: "name", value: "configuration"}]));
+
     if fs_req.key_value == "sofia.conf" {
         sofia::serve(&mut w);
     } else if fs_req.key_value == "conference.conf" {
@@ -24,6 +27,9 @@ pub fn serve (fs_req: FsRequest) -> tide::Result {
     } else if fs_req.key_value == "ivr.conf" {
         ivr::serve(&mut w);
     }
+
+    end_element(&mut w);
+    end_element(&mut w);
 
     let response = buf.into_inner().unwrap();
     let response: String = String::from_utf8(response).unwrap();

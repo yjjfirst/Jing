@@ -6,8 +6,6 @@ use fslib::ivr;
 use crate::xml_utils::{start_element, end_element, attrs, entry};
 
 pub fn serve<W: Write>(w: &mut EventWriter<W>) {
-    start_element(w, "document", attrs(vec![("type", "freeswitch/xml")]));
-    start_element(w, "section", attrs(vec![("name", "configuration")]));
     start_element(w,
                   "configuration",
                   attrs(vec![
@@ -20,8 +18,6 @@ pub fn serve<W: Write>(w: &mut EventWriter<W>) {
         ivr(w, i);
     }
 
-    end_element(w);
-    end_element(w);
     end_element(w);
     end_element(w);
 }
