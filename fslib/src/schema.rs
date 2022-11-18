@@ -244,22 +244,8 @@ diesel::table! {
     users (id) {
         id -> Int4,
         domain_id -> Int4,
-        number_alias -> Nullable<Varchar>,
-        mailbox -> Nullable<Varchar>,
-        cidr -> Nullable<Varchar>,
         user_id -> Varchar,
         password -> Varchar,
-        toll_allow -> Nullable<Varchar>,
-        user_context -> Nullable<Varchar>,
-        default_gateway -> Nullable<Varchar>,
-        effective_caller_id_name -> Nullable<Varchar>,
-        effective_caller_id_number -> Nullable<Varchar>,
-        outbound_caller_id_name -> Nullable<Varchar>,
-        outbound_caller_id_number -> Nullable<Varchar>,
-        callgroup -> Nullable<Varchar>,
-        uservar1 -> Nullable<Varchar>,
-        uservar2 -> Nullable<Varchar>,
-        uservar3 -> Nullable<Varchar>,
     }
 }
 

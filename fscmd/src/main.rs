@@ -296,23 +296,7 @@ fn exec_user_cmd(user: UserCli) {
             user::add_user(
                 domain_id,
                 &user_id,
-                &password,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None).unwrap_or_else(|err| println!("{}",err));
-
-
+                &password).unwrap_or_else(|err| println!("{}",err));
         }
 
         UserCli::Ls => {

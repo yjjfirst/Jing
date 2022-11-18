@@ -9,44 +9,15 @@ use crate::extension::{add_extension, del_extension};
 pub fn add_user<'a> (
     domain: i32,
     user_id: &'a str,
-    password: &'a str,
-    number_alias: Option<&'a str> ,
-    mailbox: Option<&'a str>,
-    cidr: Option<&'a str>,
-    toll_allow: Option<&'a str>,
-    user_context: Option<&'a str>,
-    default_gateway: Option<&'a str>,
-    effective_caller_id_name: Option<&'a str>,
-    effective_caller_id_number: Option<&'a str>,
-    outbound_caller_id_name : Option<&'a str>,
-    outbound_caller_id_number: Option<&'a str>,
-    callgroup: Option<&'a str>,
-    uservar1: Option<&'a str>,
-    uservar2: Option<&'a str>,
-    uservar3: Option<&'a str>) -> Result<()> {
+    password: &'a str) -> Result<()> {
 
     use crate::schema::users;
     let mut conn = db_connect();
 
     let new_user = NewUser {
         domain_id: domain,
-        number_alias,
-        mailbox,
-        cidr,
         user_id,
         password,
-        toll_allow,
-        user_context,
-        default_gateway,
-        effective_caller_id_name,
-        effective_caller_id_number,
-        outbound_caller_id_name,
-        outbound_caller_id_number,
-        callgroup,
-        uservar1,
-        uservar2,
-        uservar3,
-
     };
 
     add_extension(user_id, "user", domain)?;

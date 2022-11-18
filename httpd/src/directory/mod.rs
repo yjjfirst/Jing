@@ -76,13 +76,8 @@ fn user_params<W: Write>(w: &mut EventWriter<W>, u: &User) {
     end_element(w);
 }
 
-fn user_variables<W: Write>(w: &mut EventWriter<W>, u: &User) {
+fn user_variables<W: Write>(w: &mut EventWriter<W>, _u: &User) {
     start_element(w, "variables", None);
     variable(w, "user_context", "internal");
-    variable(w, "effective_caller_id_name", &u.effective_caller_id_name.as_ref().unwrap_or(&u.user_id));
-    variable(w, "effective_caller_id_number", &u.effective_caller_id_number.as_ref().unwrap_or(&u.user_id));
-    variable(w, "outbound_caller_id_name", &u.outbound_caller_id_name.as_ref().unwrap_or(&u.user_id));
-    variable(w, "outbound_caller_id_number", &u.outbound_caller_id_number.as_ref().unwrap_or(&u.user_id));
-
     end_element(w);
 }
