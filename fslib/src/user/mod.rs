@@ -1,4 +1,6 @@
 pub mod models;
+pub mod user_variable;
+pub mod user_param;
 
 use models::*;
 use diesel::prelude::*;

@@ -5,4 +5,5 @@ members = [
     "esl",
     "httpd",
     "fscmd",
+    "params",
 ]

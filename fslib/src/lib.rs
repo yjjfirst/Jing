@@ -19,6 +19,7 @@ pub mod queue;
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;
+extern crate params;
 
 use diesel::prelude::*;
 use diesel::pg::PgConnection;
