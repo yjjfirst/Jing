@@ -9,6 +9,7 @@ mod queue;
 mod agent;
 mod tier;
 mod extension;
+mod user;
 
 #[macro_use]
 extern crate prettytable;
@@ -23,7 +24,7 @@ use self::fslib::*;
 enum Cli {
     User {
         #[structopt(subcommand, help="manager user.")]
-        user: UserCli,
+        user: user::UserCli,
     },
     Profile {
         #[structopt(subcommand)]
@@ -90,24 +91,6 @@ enum Cli {
         #[structopt(subcommand)]
         exten: extension::ExtensionCli
     }
-}
-
-#[derive(StructOpt)]
-#[derive(Debug)]
-enum UserCli {
-    Add {
-        #[structopt(short, long)]
-        user_id: String,
-        #[structopt(short, long)]
-        password: String
-    },
-
-    Del {
-        #[structopt(short, long)]
-        user_id: String,
-    },
-
-    Ls,
 }
 
 #[derive(StructOpt)]
@@ -228,7 +211,7 @@ fn main() {
 
     match args {
         Cli::User { user } => {
-            exec_user_cmd(user);
+            user::exec_user_cmd(user);
         },
         Cli::Profile { profile } => {
             exec_profile_cmd(profile);
@@ -278,40 +261,6 @@ fn main() {
     }
 }
 
-fn exec_user_ls_cmd(users: Vec<(i32, String, String, String)>) {
-    let mut table = Ctable::new();
-
-    table.set_titles(row!["Id", "User_id", "Password", "Domain"]);
-    for u in users {
-        table.add_row(row![u.0, u.1, u.2, u.3]);
-    }
-
-    table.print();
-}
-
-fn exec_user_cmd(user: UserCli) {
-    let domain_id = domain::get_active().unwrap();
-    match user {
-        UserCli::Add {user_id, password} => {
-            user::add_user(
-                domain_id,
-                &user_id,
-                &password).unwrap_or_else(|err| println!("{}",err));
-        }
-
-        UserCli::Ls => {
-            match user::users_within_domain(domain_id) {
-                Ok(users) => exec_user_ls_cmd(users),
-                Err(err) => println!("{}", err),
-            }
-        }
-
-        UserCli::Del { user_id }=> {
-            user::del_user(&user_id)
-                .unwrap_or_else(|err| println!("{}",err));
-        }
-    }
-}
 
 fn print_profiles(profiles:  Vec<profile::models::Profile>) {
     let mut table = Ctable::new();
