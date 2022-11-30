@@ -31,6 +31,23 @@ pub fn param_derive(input: TokenStream) -> TokenStream {
 
                 Ok(())
             }
+            pub fn del(the_id: i32) -> Result<()> {
+                let mut conn = db_connect();
+                diesel::delete(table)
+                    .filter(id.eq(the_id))
+                    .execute(&mut conn)?;
+                Ok(())
+            }
+
+            pub fn update(the_id: i32, n: &str, v: &str) -> Result<()> {
+                let mut conn = db_connect();
+                diesel::update(table)
+                    .filter(id.eq(the_id))
+                    .set((#name.eq(n), #value.eq(v)))
+                    .execute(&mut conn)?;
+
+                Ok(())
+            }
         }
     };
 

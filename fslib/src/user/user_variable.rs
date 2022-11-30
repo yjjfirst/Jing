@@ -10,7 +10,6 @@ use crate::db_connect;
 #[derive(Identifiable,Queryable,Associations,Debug)]
 #[derive(Clone,PartialEq)]
 #[derive(Param)]
-#[diesel(table_name=user_variables)]
 #[diesel(belongs_to(User))]
 pub struct UserVariable {
     #[id]
@@ -26,4 +25,14 @@ pub struct UserVariable {
 #[test]
 fn user_variable_add_test() {
     UserVariable::add("name", "value", 1).unwrap();
+}
+
+#[test]
+fn user_variable_del_test() {
+    UserVariable::del(1).unwrap();
+}
+
+#[test]
+fn user_variable_update_test() {
+    UserVariable::update(7, "new_name", "new_value").unwrap();
 }
