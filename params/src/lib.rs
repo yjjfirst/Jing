@@ -23,7 +23,7 @@ pub fn param_derive(input: TokenStream) -> TokenStream {
 
     let output = quote!{
         impl #ident {
-            pub fn add(n: &str, v: &str, p_id: i32) -> Result<()>{
+            pub fn add(p_id: i32, n: &str, v: &str ) -> Result<()>{
                 let mut conn = db_connect();
                 diesel::insert_into(table)
                     .values((#name.eq(n), #value.eq(v), #parent_id.eq(p_id)))

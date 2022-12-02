@@ -24,7 +24,7 @@ pub struct UserVariable {
 
 #[test]
 fn user_variable_add_test() {
-    UserVariable::add("name", "value", 1).unwrap();
+    UserVariable::add(1, "name", "value").unwrap();
 }
 
 #[test]

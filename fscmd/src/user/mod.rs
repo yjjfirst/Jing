@@ -1,3 +1,6 @@
+pub mod user_param;
+pub mod user_variable;
+
 use super::customtable::{Ctable};
 use structopt::StructOpt;
 use super::domain;
@@ -19,6 +22,14 @@ pub enum UserCli {
     },
 
     Ls,
+    Param {
+        #[structopt(subcommand)]
+        param: user_param::UserParamCli,
+    },
+    Var {
+        #[structopt(subcommand)]
+        var: user_variable::UserVariableCli,
+    }
 }
 
 pub fn exec_user_cmd(user: UserCli) {
@@ -41,6 +52,14 @@ pub fn exec_user_cmd(user: UserCli) {
         UserCli::Del { user_id }=> {
             user::del_user(&user_id)
                 .unwrap_or_else(|err| println!("{}",err));
+        }
+
+        UserCli::Param {param} =>{
+            user_param::exec_userparam_cmd(param);
+        }
+
+        UserCli::Var {var} =>{
+            user_variable::exec_user_var_cmd(var);
         }
     }
 }
