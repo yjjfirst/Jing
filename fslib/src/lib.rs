@@ -15,7 +15,6 @@ pub mod sound_file;
 pub mod sound;
 pub mod conference;
 pub mod queue;
-pub mod fieldable;
 
 #[macro_use]
 extern crate diesel;

@@ -6,7 +6,6 @@ use crate::schema::user_params;
 use crate::schema::user_params::table;
 use crate::params::{Param, Fields};
 use crate::db_connect;
-use crate::fieldable::{Fieldable};
 
 #[derive(Identifiable,Queryable,Associations,Debug)]
 #[derive(Clone,PartialEq)]

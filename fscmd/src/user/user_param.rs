@@ -1,7 +1,6 @@
 use structopt::StructOpt;
 use fslib::user::*;
 use crate::customtable::{Ctable};
-use crate::fslib::fieldable::{Fieldable};
 
 #[derive(StructOpt)]
 #[derive(Debug)]
