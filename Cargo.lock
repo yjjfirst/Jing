@@ -779,6 +779,7 @@ dependencies = [
  "diesel 1.4.8",
  "dotenv",
  "fslib",
+ "params",
  "prettytable-rs",
  "structopt",
  "thiserror",

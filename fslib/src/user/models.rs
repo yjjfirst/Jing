@@ -1,6 +1,6 @@
 use crate::schema::users;
 
-#[derive(Queryable)]
+#[derive(Identifiable, Queryable, Debug, PartialEq)]
 pub struct User {
     pub id: i32,
     pub domain_id: i32,

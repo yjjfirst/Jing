@@ -65,6 +65,7 @@ pub fn exec_user_cmd(user: UserCli) {
 }
 
 
+
 fn exec_user_ls_cmd(users: Vec<(i32, String, String, String)>) {
     let mut table = Ctable::new();
 

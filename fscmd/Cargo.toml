@@ -12,4 +12,5 @@ structopt = "0.3.21"
 prettytable-rs = "^0.8"
 thiserror = "1.0.26"
 chrono = "0.4.19"
+params = {version = "0.1.0", path = "../params"}
 fslib = {version="0.1.0", path="../fslib"}

@@ -5,6 +5,42 @@ use quote::{quote};
 use syn::{parse_macro_input, DataStruct, Data, Fields, Field, DeriveInput};
 use syn::token::Comma;
 
+#[proc_macro_derive(Fields)]
+pub fn fields_derive(input: TokenStream) -> TokenStream {
+    let DeriveInput {ident, data, ..} = parse_macro_input!(input);
+    let fields_punct = match data {
+        Data::Struct(DataStruct {
+            fields: Fields::Named(fields),
+            ..
+        }) => fields.named,
+        _ => panic!("Only struct with name fields"),
+    };
+    let mut field_names: Vec<String> = Vec::new();
+
+    for f in &fields_punct {
+        field_names.push(f.ident.as_ref().unwrap().to_string());
+    };
+
+    let mut field_idents: Vec<&syn::Ident> = Vec::new();
+    for f in &fields_punct {
+        field_idents.push(f.ident.as_ref().unwrap());
+    }
+
+    let output = quote!{
+        impl Fieldable for #ident {
+            fn fields(&self) -> Vec<&str> {
+                return vec![#(#field_names),*];
+            }
+
+            fn field_values(&self) -> Vec<String> {
+                return vec![#(self.#field_idents.to_string()),*];
+            }
+        }
+    };
+
+    output.into()
+}
+
 #[proc_macro_derive(Param, attributes(id, parent_id, name, value))]
 pub fn param_derive(input: TokenStream) -> TokenStream {
     let DeriveInput {ident, data, ..} = parse_macro_input!(input);
@@ -19,7 +55,6 @@ pub fn param_derive(input: TokenStream) -> TokenStream {
     let name = get_field(&fields_punct, "name".to_string());
     let value = get_field(&fields_punct, "value".to_string());
     let parent_id  = get_field(&fields_punct, "parent_id".to_string());
-    let _id = get_field(&fields_punct, "id".to_string());
 
     let output = quote!{
         impl #ident {

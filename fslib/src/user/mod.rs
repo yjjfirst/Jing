@@ -7,6 +7,8 @@ use diesel::prelude::*;
 use crate::db_connect;
 use crate::error::{Error, Result};
 use crate::extension::{add_extension, del_extension};
+use user_param::{UserParam};
+use user_variable::{UserVariable};
 
 pub fn add_user<'a> (
     domain: i32,
@@ -97,4 +99,26 @@ pub fn get_user(db_id: i32) -> Result<User>{
         .first::<User>(&mut conn)?;
 
     Ok(user)
+}
+
+pub fn get_user_params(user_id: i32) -> Result<Vec<UserParam>>{
+    let mut conn = db_connect();
+
+    let user = get_user(user_id)?;
+    let params =  UserParam::belonging_to(&user)
+        .load::<UserParam>(&mut conn)?;
+
+    Ok(params)
+
+}
+
+pub fn get_user_vars(user_id: i32) -> Result<Vec<UserVariable>> {
+    let mut conn = db_connect();
+
+    let user = get_user(user_id)?;
+    let vars = UserVariable::belonging_to(&user)
+        .load::<UserVariable>(&mut conn)?;
+
+    Ok(vars)
+
 }
