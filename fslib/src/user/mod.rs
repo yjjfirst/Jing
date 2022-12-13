@@ -5,7 +5,7 @@ pub mod user_param;
 use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
-use crate::error::{Error, Result};
+use crate::error::{Result};
 use crate::extension::{add_extension, del_extension};
 use user_param::{UserParam};
 use user_variable::{UserVariable};
@@ -72,22 +72,6 @@ pub fn all_users() -> Result<Vec<User>> {
 
 
     Ok(results)
-}
-
-pub fn get_user_domain(a_user_id: i32) -> Result<i32>{
-    use crate::schema::users::dsl::*;
-
-    let mut conn = db_connect();
-    let mut domains = users
-        .select(domain_id)
-        .filter(id.eq(a_user_id))
-        .load::<i32>(&mut conn)?;
-
-    if let Some(d) = domains.pop() {
-        Ok(d)
-    } else {
-        Err(Error::Fslib("User doesn't exist".to_string()))
-    }
 }
 
 pub fn get_user(db_id: i32) -> Result<User>{

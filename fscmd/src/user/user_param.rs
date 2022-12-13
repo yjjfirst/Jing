@@ -44,13 +44,14 @@ pub fn exec_userparam_cmd(param: UserParamCli) {
         },
         UserParamCli::Ls {user_id} =>{
             let params = &get_user_params(user_id).unwrap();
-            Ctable::print_table(&params.first().unwrap().fields(),
-                                &params.into_iter().map(|p| {
-                                    p.field_values()
-                                        .into_iter()
-                                        .map(|f| f)
-                                        .collect()
-                                }).collect()
+            Ctable::print_table(
+                &params.first().unwrap().fields(),
+                &params.into_iter().map(|p| {
+                    p.field_values()
+                        .into_iter()
+                        .map(|f| f)
+                        .collect()
+                }).collect()
             );
         },
 

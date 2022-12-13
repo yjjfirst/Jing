@@ -1,7 +1,7 @@
 pub mod models;
 
 use models::*;
-use super::user::{get_user_domain, get_user};
+use super::user::{get_user};
 use super::domain::{get_domain};
 use super::extension::{add_extension, del_extension};
 use diesel::prelude::*;
@@ -62,21 +62,21 @@ pub fn all_ringgroup() -> Result<Vec<Ringgroup>>{
     Ok(results)
 }
 
-pub fn add_ringgroup_member(group: i32, user: i32) -> Result<()> {
+pub fn add_ringgroup_member(group: i32, uid: i32) -> Result<()> {
     use crate::schema::ringing_group_members::dsl::*;
 
     let mut conn = db_connect();
-    let user_domain = get_user_domain(user)?;
+    let user  = get_user(uid)?;
     let ringgroup = get_ringgroup(group)?;
     let ringgroup_domain = ringgroup.domain_id;
 
-    if let Ok(1) = member_exists(group, user) {
+    if let Ok(1) = member_exists(group, uid) {
         return Err(Error::Fslib("User exist in ringing group".to_string()));
     }
 
-    if user_domain == ringgroup_domain {
+    if user.domain_id == ringgroup_domain {
         diesel::insert_into(ringing_group_members)
-            .values((ringing_group_id.eq(group), user_id.eq(user)))
+            .values((ringing_group_id.eq(group), user_id.eq(uid)))
             .execute(&mut conn)?;
     } else {
         return Err(Error::Fslib("User doamin and ringing group domain don't match.".to_string()));
