@@ -263,7 +263,6 @@ diesel::table! {
         id -> Int4,
         domain_id -> Int4,
         user_id -> Varchar,
-        password -> Varchar,
     }
 }
 

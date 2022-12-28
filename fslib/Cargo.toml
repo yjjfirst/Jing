@@ -16,3 +16,4 @@ chrono = "0.4.19"
 regex = "1"
 uuid = { version = "1.1.2", features =["serde", "v4"]}
 params = {version = "0.1.0", path = "../params"}
+rand = "0.8.5"

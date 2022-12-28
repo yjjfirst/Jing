@@ -7,9 +7,8 @@ use super::xml_utils::{start_element, end_element, param, variable, Attr};
 
 use fslib::domain;
 use fslib::domain::models::Domain;
-use fslib::user::{all_users};
+use fslib::user::{all_users, get_user_params, get_user_vars};
 use fslib::user::models::{User};
-use fslib::voicemail::{get_voicemail};
 
 pub fn serve () -> tide::Result {
     let mut buf = BufWriter::new(Vec::new());
@@ -67,17 +66,19 @@ fn user<W: Write>(w: &mut EventWriter<W>, u: User) {
 fn user_params<W: Write>(w: &mut EventWriter<W>, u: &User) {
     start_element(w, "params", None);
 
-    param(w, "password", u.password.as_str());
-    let vm = get_voicemail(u.id);
-    if let Ok(v) = vm {
-        param(w, "vm-password", &v.password);
+    let params = get_user_params(u.id).unwrap();
+    for p in params  {
+        param(w, &p.name, &p.value);
     }
 
     end_element(w);
 }
 
-fn user_variables<W: Write>(w: &mut EventWriter<W>, _u: &User) {
+fn user_variables<W: Write>(w: &mut EventWriter<W>, u: &User) {
     start_element(w, "variables", None);
-    variable(w, "user_context", "internal");
+    let vars = get_user_vars(u.id).unwrap();
+    for v in vars {
+        variable(w, &v.name,&v.value);
+    }
     end_element(w);
 }

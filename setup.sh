@@ -3,8 +3,8 @@
 export FS_ACTIVE_DOMAIN=1
 #add domain and users
 ./target/debug/fscmd domain add --name teleman.me
-./target/debug/fscmd user add  -u 1000 -p gxGB418oc2TVU9rt
-./target/debug/fscmd user add  -u 1001 -p gxGB418oc2TVU9rt
+./target/debug/fscmd user add  -u 1000
+./target/debug/fscmd user add  -u 1001
 
 #add gateways
 ./target/debug/fscmd gateway add --name kamailio_1001 --profile 2 --password 0z1*7CSUOj96nV5 --proxy 45.76.77.24 --register 45.76.77.24 --username 1001
@@ -36,5 +36,5 @@ export FS_ACTIVE_DOMAIN=1
 ./target/debug/fscmd tier add --agent-id 1 --queue-id 1 --level 1 --position 1
 
 export FS_ACTIVE_DOMAIN=2
-./target/debug/fscmd user add -u 2000 -p gxGB418oc2TVU9rt
-./target/debug/fscmd user add -u 2001 -p gxGB418oc2TVU9rt
+./target/debug/fscmd user add -u 2000
+./target/debug/fscmd user add -u 2001

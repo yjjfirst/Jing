@@ -12,8 +12,7 @@ use user_variable::{UserVariable};
 
 pub fn add_user<'a> (
     domain: i32,
-    user_id: &'a str,
-    password: &'a str) -> Result<()> {
+    user_id: &'a str) -> Result<()> {
 
     use crate::schema::users;
     let mut conn = db_connect();
@@ -21,13 +20,16 @@ pub fn add_user<'a> (
     let new_user = NewUser {
         domain_id: domain,
         user_id,
-        password,
     };
 
     add_extension(user_id, "user", domain)?;
-    diesel::insert_into(users::table)
+
+    let inserted: Vec<User> = diesel::insert_into(users::table)
         .values(&new_user)
-        .execute(&mut conn)?;
+        .load(&mut conn)?;
+
+    UserParam::add_defaults(inserted[0].id)?;
+    UserVariable::add_defaults(inserted[0].id)?;
 
     Ok(())
 }
@@ -47,15 +49,15 @@ pub fn del_user(user: &str) -> Result<()> {
     Ok(())
 }
 
-pub fn users_within_domain(domain: i32) -> Result<Vec<(i32, String, String, String)>>{
+pub fn users_within_domain(domain: i32) -> Result<Vec<(i32, String, String)>>{
     use crate::schema::users;
     use crate::schema::domains;
     use crate::schema::users::dsl::*;
 
     let mut conn = db_connect();
 
-    let results: Vec<(i32, String, String, String)> = users::table.inner_join(domains::table)
-        .select((users::id, users::user_id, users::password, domains::domain_name))
+    let results: Vec<(i32, String, String)> = users::table.inner_join(domains::table)
+        .select((users::id, users::user_id, domains::domain_name))
         .filter(domain_id.eq(domain))
         .load(&mut conn)?;
 

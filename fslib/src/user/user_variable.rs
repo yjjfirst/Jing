@@ -23,6 +23,13 @@ pub struct UserVariable {
     pub value: String
 }
 
+impl UserVariable {
+    pub fn add_defaults(uid: i32) -> Result<()> {
+        UserVariable::add(uid, "user_context", "internal")?;
+        Ok(())
+    }
+}
+
 #[test]
 fn user_variable_add_test() {
     UserVariable::add(1, "name", "value").unwrap();

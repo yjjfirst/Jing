@@ -12,8 +12,6 @@ pub enum UserCli {
     Add {
         #[structopt(short, long)]
         user_id: String,
-        #[structopt(short, long)]
-        password: String
     },
 
     Del {
@@ -35,11 +33,10 @@ pub enum UserCli {
 pub fn exec_user_cmd(user: UserCli) {
     let domain_id = domain::get_active().unwrap();
     match user {
-        UserCli::Add {user_id, password} => {
+        UserCli::Add {user_id} => {
             user::add_user(
                 domain_id,
-                &user_id,
-                &password).unwrap_or_else(|err| println!("{}",err));
+                &user_id).unwrap_or_else(|err| println!("{}",err));
         }
 
         UserCli::Ls => {
@@ -66,12 +63,12 @@ pub fn exec_user_cmd(user: UserCli) {
 
 
 
-fn exec_user_ls_cmd(users: Vec<(i32, String, String, String)>) {
+fn exec_user_ls_cmd(users: Vec<(i32, String, String)>) {
     let mut table = Ctable::new();
 
-    table.set_titles(row!["Id", "User_id", "Password", "Domain"]);
+    table.set_titles(row!["Id", "User_id", "Domain"]);
     for u in users {
-        table.add_row(row![u.0, u.1, u.2, u.3]);
+        table.add_row(row![u.0, u.1, u.2]);
     }
 
     table.print();
