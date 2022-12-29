@@ -1,6 +1,7 @@
 use structopt::StructOpt;
 use fslib::user::*;
 use crate::customtable::{Ctable};
+use fslib::printable::{Printable};
 
 #[derive(StructOpt)]
 #[derive(Debug)]
@@ -42,18 +43,13 @@ pub fn exec_userparam_cmd(param: UserParamCli) {
         UserParamCli::Update {id, name, value} =>{
             user_param::UserParam::update(id, &name, &value).unwrap();
         },
-        UserParamCli::Ls {user_id} =>{
-            let params = &get_user_params(user_id).unwrap();
-            Ctable::print_table(
-                &params.first().unwrap().fields(),
-                &params.into_iter().map(|p| {
-                    p.field_values()
-                        .into_iter()
-                        .map(|f| f)
-                        .collect()
-                }).collect()
-            );
+        UserParamCli::Ls {user_id} => {
+            let params = get_user_params(user_id).unwrap();
+            let mut boxed: Vec<Box<dyn Printable>> = Vec::new();
+            for p in params {
+                boxed.push(Box::new(p));
+            }
+            Ctable::print_table(boxed);
         },
-
     }
 }

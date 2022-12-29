@@ -27,12 +27,12 @@ pub fn fields_derive(input: TokenStream) -> TokenStream {
     }
 
     let output = quote!{
-        impl #ident {
-            pub fn fields(&self) -> Vec<&str> {
+        impl Printable for #ident {
+            fn titles(&self) -> Vec<&str> {
                 return vec![#(#field_names),*];
             }
 
-            pub fn field_values(&self) -> Vec<String> {
+            fn row(&self) -> Vec<String> {
                 return vec![#(self.#field_idents.to_string()),*];
             }
         }

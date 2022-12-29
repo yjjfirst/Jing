@@ -1,4 +1,5 @@
 use prettytable::{Table, format, Row, Cell};
+use fslib::printable::{Printable};
 
 pub struct Ctable {
     table: Table,
@@ -26,7 +27,20 @@ impl Ctable {
         self.table.add_row(row);
     }
 
-    pub fn print_table(titles: &Vec<&str>, values: &Vec<Vec<String>>) {
+    pub fn print_table(t: Vec<Box<dyn Printable>>) {
+        let vars = &t;
+        Ctable::print_table_impl(
+            &vars.first().unwrap().titles(),
+            &vars.into_iter().map(|p| {
+                p.row()
+                    .into_iter()
+                    .map(|f| f)
+                    .collect()
+            }).collect()
+        );
+    }
+
+    fn print_table_impl(titles: &Vec<&str>, values: &Vec<Vec<String>>) {
 
         let mut table = Ctable::new();
         let title_cells: Vec<Cell> = titles.into_iter().map(|f| Cell::new(f)).collect();

@@ -4,14 +4,16 @@ use crate::error::{Result};
 use crate::schema::user_params::*;
 use crate::schema::user_params;
 use crate::schema::user_params::table;
-use crate::params::{Param, Fields};
+use crate::util_macro::{Param, Fields};
 use crate::db_connect;
 use rand::{thread_rng, Rng};
 use rand::distributions::Alphanumeric;
+use crate::printable::{Printable};
 
 #[derive(Identifiable,Queryable,Associations,Debug)]
 #[derive(Clone,PartialEq)]
-#[derive(Param, Fields)]
+#[derive(Param)]
+#[derive(Fields)]
 #[diesel(belongs_to(User))]
 pub struct UserParam {
     #[id]
@@ -32,7 +34,7 @@ impl UserParam {
         Ok(())
     }
 
-    pub fn rand_passwd() -> String {
+    fn rand_passwd() -> String {
         let password: String = thread_rng()
             .sample_iter(&Alphanumeric)
             .take(12)

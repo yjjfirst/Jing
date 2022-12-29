@@ -15,11 +15,12 @@ pub mod sound_file;
 pub mod sound;
 pub mod conference;
 pub mod queue;
+pub mod printable;
 
 #[macro_use]
 extern crate diesel;
 extern crate dotenv;
-extern crate params;
+extern crate util_macro;
 
 use diesel::prelude::*;
 use diesel::pg::PgConnection;

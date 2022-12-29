@@ -1,5 +1,7 @@
 use structopt::StructOpt;
 use fslib::user::*;
+use crate::customtable::{Ctable};
+use fslib::printable::{Printable};
 
 #[derive(StructOpt)]
 #[derive(Debug)]
@@ -23,7 +25,12 @@ pub enum UserVariableCli {
         name: String,
         #[structopt(short, long)]
         value: String
+    },
+    Ls {
+        #[structopt(short, long)]
+        user_id: i32,
     }
+
 }
 
 pub fn exec_user_var_cmd(var: UserVariableCli) {
@@ -36,6 +43,14 @@ pub fn exec_user_var_cmd(var: UserVariableCli) {
         },
         UserVariableCli::Update {id, name, value} => {
             user_variable::UserVariable::update(id, &name, &value).unwrap();
+        },
+        UserVariableCli::Ls {user_id} => {
+            let vars = get_user_vars(user_id).unwrap();
+            let mut boxed: Vec<Box<dyn Printable>> = Vec::new();
+            for v in vars {
+                boxed.push(Box::new(v));
+            }
+            Ctable::print_table(boxed);
         }
     }
 }

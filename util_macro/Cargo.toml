@@ -1,5 +1,5 @@
 [package]
-name = "params"
+name = "util_macro"
 version = "0.1.0"
 edition = "2021"
 

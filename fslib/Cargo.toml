@@ -15,5 +15,5 @@ thiserror = "1.0.26"
 chrono = "0.4.19"
 regex = "1"
 uuid = { version = "1.1.2", features =["serde", "v4"]}
-params = {version = "0.1.0", path = "../params"}
+util_macro = {version = "0.1.0", path = "../util_macro"}
 rand = "0.8.5"

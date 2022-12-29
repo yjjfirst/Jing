@@ -779,10 +779,10 @@ dependencies = [
  "diesel 1.4.8",
  "dotenv",
  "fslib",
- "params",
  "prettytable-rs",
  "structopt",
  "thiserror",
+ "util_macro",
 ]
 
 [[package]]
@@ -792,12 +792,12 @@ dependencies = [
  "chrono",
  "diesel 2.0.0",
  "dotenv",
- "params",
  "prettytable-rs",
  "rand 0.8.5",
  "regex",
  "structopt",
  "thiserror",
+ "util_macro",
  "uuid",
 ]
 
@@ -1175,15 +1175,6 @@ name = "opaque-debug"
 version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
-
-[[package]]
-name = "params"
-version = "0.1.0"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn",
-]
 
 [[package]]
 name = "parking"
@@ -1964,6 +1955,15 @@ name = "urlencoding"
 version = "2.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e8db7427f936968176eaa7cdf81b7f98b980b18495ec28f1b5791ac3bfe3eea9"
+
+[[package]]
+name = "util_macro"
+version = "0.1.0"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "uuid"

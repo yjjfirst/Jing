@@ -4,8 +4,9 @@ use crate::error::{Result};
 use crate::schema::user_variables::*;
 use crate::schema::user_variables;
 use crate::schema::user_variables::table;
-use crate::params::{Param, Fields};
+use crate::util_macro::{Param, Fields};
 use crate::db_connect;
+use crate::printable::{Printable};
 
 #[derive(Identifiable,Queryable,Associations,Debug)]
 #[derive(Clone,PartialEq)]
@@ -54,6 +55,6 @@ fn user_variable_fields_test() {
         value: "v".to_string()
     };
 
-    println!("{:?}", p.fields());
-    println!("{:?}", p.field_values());
+    println!("{:?}", p.titles());
+    println!("{:?}", p.row());
 }
