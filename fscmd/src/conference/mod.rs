@@ -1,7 +1,32 @@
 use super::customtable::{Ctable};
 use structopt::StructOpt;
 use super::fslib::*;
+use super::fslib::conference::conference_profile;
 use super::domain;
+
+#[derive(StructOpt)]
+#[derive(Debug)]
+pub enum ProfileCli {
+    Add {
+        #[structopt(short, long)]
+        name: String,
+        #[structopt(short, long)]
+        desc: String,
+    },
+    Del {
+        #[structopt(short, long)]
+        id: i32,
+    },
+    Update {
+        #[structopt(short, long)]
+        id: i32,
+        #[structopt(short, long)]
+        name: String,
+        #[structopt(short, long)]
+        desc: String,
+    },
+    Ls
+}
 
 #[derive(StructOpt)]
 #[derive(Debug)]
@@ -20,6 +45,10 @@ pub enum ConferenceCli {
     Del {
         #[structopt(short, long)]
         id: i32
+    },
+    Profile {
+        #[structopt(subcommand)]
+        profile: ProfileCli,
     }
 }
 
@@ -39,6 +68,25 @@ pub fn exec_conference_cmd(conference: ConferenceCli) {
         ConferenceCli::Ls => {
             let conferences = conference::all().unwrap();
             print_conferences(conferences);
+        },
+        ConferenceCli::Profile { profile } => {
+            exec_conference_profile_cmd(profile);
+        }
+    }
+}
+
+fn exec_conference_profile_cmd(profile: ProfileCli) {
+    match profile {
+        ProfileCli::Add {name, desc} => {
+            conference_profile::add(&name, &desc).unwrap();
+        },
+        ProfileCli::Del {id} => {
+            conference_profile::del(id).unwrap();
+        },
+        ProfileCli::Update {id, name, desc} => {
+        },
+        ProfileCli::Ls => {
+            println!("List all conference profiles");
         }
     }
 }

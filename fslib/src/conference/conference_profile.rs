@@ -1,7 +1,9 @@
 use diesel::prelude::*;
 use crate::error::{Result};
 use crate::db_connect;
-use crate::schema::{conference_profiles, conference_profile_params};
+use crate::schema::{conference_profiles};
+use super::conference_profile_param::ConferenceProfileParam;
+use super::conference_profile_param;
 
 #[derive(Identifiable,Queryable,Debug,PartialEq)]
 #[derive(Clone)]
@@ -11,15 +13,6 @@ pub struct ConferenceProfile {
     pub description: Option<String>
 }
 
-#[derive(Identifiable,Queryable,Associations,Debug)]
-#[derive(Clone,PartialEq)]
-#[diesel(belongs_to(ConferenceProfile))]
-pub struct ConferenceProfileParam {
-    pub id: i32,
-    pub conference_profile_id: i32,
-    pub name: String,
-    pub value: String
-}
 
 pub fn profiles() -> Result<Vec<ConferenceProfile>> {
     use crate::schema::conference_profiles::dsl::*;
@@ -28,6 +21,29 @@ pub fn profiles() -> Result<Vec<ConferenceProfile>> {
         .load::<ConferenceProfile>(&mut conn)?;
 
     Ok(result)
+}
+
+pub fn add(a_name: &str, a_desc: &str) -> Result<()> {
+    use crate::schema::conference_profiles::dsl::*;
+    let mut conn = db_connect();
+    let inserted: Vec<ConferenceProfile> = diesel::insert_into(conference_profiles)
+        .values((name.eq(a_name), description.eq(a_desc)))
+        .load(&mut conn)?;
+
+    conference_profile_param::add_defaults(inserted.first().unwrap().id)?;
+
+    Ok(())
+}
+
+pub fn del(a_id: i32) -> Result<()> {
+    use crate::schema::conference_profiles::columns::id;
+    let mut conn = db_connect();
+
+    diesel::delete(conference_profiles::table)
+        .filter(id.eq(a_id))
+        .execute(&mut conn)?;
+
+    Ok(())
 }
 
 pub fn params(profile_id: i32) -> Result<Vec<ConferenceProfileParam>>{

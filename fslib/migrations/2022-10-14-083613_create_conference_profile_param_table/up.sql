@@ -4,7 +4,7 @@ CREATE TABLE conference_profile_params (
        name VARCHAR(128) NOT NULL,
        value VARCHAR(128) NOT NULL,
        PRIMARY KEY(id),
-       FOREIGN KEY(conference_profile_id) REFERENCES conference_profiles(id)
+       FOREIGN KEY(conference_profile_id) REFERENCES conference_profiles(id) ON DELETE CASCADE
 );
 
 INSERT INTO conference_profile_params (conference_profile_id, name, value)

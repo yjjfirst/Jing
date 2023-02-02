@@ -26,8 +26,9 @@ pub fn add(domain: i32,name: String, path: String, desc: String) -> Result<()>{
                 .values(&new_soundfile)
                 .execute(&mut conn)?;
         },
-        Err(_) => {
-            return Err(Error::Fslib("Add sound failed".to_string()));
+        Err(e) => {
+            println!("{:?}", e);
+            return Err(Error::Fslib("Install sound file failed".to_string()));
         }
     }
 
