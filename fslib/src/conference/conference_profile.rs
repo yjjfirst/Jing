@@ -46,6 +46,18 @@ pub fn del(a_id: i32) -> Result<()> {
     Ok(())
 }
 
+pub fn update(a_id: i32, a_name: String, a_desc: String) -> Result<()> {
+    use crate::schema::conference_profiles::dsl::*;
+    let mut conn = db_connect();
+
+    diesel::update(conference_profiles)
+        .filter(id.eq(a_id))
+        .set((name.eq(a_name), description.eq(a_desc)))
+        .execute(&mut conn)?;
+
+    Ok(())
+}
+
 pub fn params(profile_id: i32) -> Result<Vec<ConferenceProfileParam>>{
     use crate::schema::conference_profiles::dsl::*;
     let mut conn = db_connect();

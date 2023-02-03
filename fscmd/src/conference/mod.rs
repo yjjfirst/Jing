@@ -1,7 +1,8 @@
 use super::customtable::{Ctable};
 use structopt::StructOpt;
 use super::fslib::*;
-use super::fslib::conference::conference_profile;
+use super::fslib::conference::conference_profile as profile;
+use super::fslib::conference::conference_profile_param as param;
 use super::domain;
 
 #[derive(StructOpt)]
@@ -24,6 +25,35 @@ pub enum ProfileCli {
         name: String,
         #[structopt(short, long)]
         desc: String,
+    },
+    Ls,
+    Param  {
+        #[structopt(subcommand)]
+        param: ParamCli,
+    }
+}
+#[derive(StructOpt)]
+#[derive(Debug)]
+pub enum ParamCli {
+    Add {
+        #[structopt(short, long)]
+        profile_id: i32,
+        #[structopt(short, long)]
+        name: String,
+        #[structopt(short, long)]
+        value: String,
+    },
+    Del {
+        #[structopt(short, long)]
+        id: i32,
+    },
+    Update {
+        #[structopt(short, long)]
+        id: i32,
+        #[structopt(short, long)]
+        name: String,
+        #[structopt(short, long)]
+        value: String,
     },
     Ls
 }
@@ -78,15 +108,36 @@ pub fn exec_conference_cmd(conference: ConferenceCli) {
 fn exec_conference_profile_cmd(profile: ProfileCli) {
     match profile {
         ProfileCli::Add {name, desc} => {
-            conference_profile::add(&name, &desc).unwrap();
+            profile::add(&name, &desc).unwrap();
         },
         ProfileCli::Del {id} => {
-            conference_profile::del(id).unwrap();
+            profile::del(id).unwrap();
         },
         ProfileCli::Update {id, name, desc} => {
+            profile::update(id, name, desc).unwrap();
         },
         ProfileCli::Ls => {
-            println!("List all conference profiles");
+            let profiles = profile::profiles().unwrap();
+            print_conference_profiles(profiles);
+        },
+        ProfileCli::Param {param} => {
+            exec_conference_profile_param_cmd(param);
+        }
+    }
+}
+
+fn exec_conference_profile_param_cmd(param: ParamCli) {
+    match param {
+        ParamCli::Add {profile_id, name, value} => {
+            param::ConferenceProfileParam::add(profile_id, &name, &value).unwrap();
+        },
+        ParamCli::Del {id} => {
+            param::ConferenceProfileParam::del(id).unwrap();
+        },
+        ParamCli::Update {id, name, value} => {
+            param::ConferenceProfileParam::update(id, &name, &value).unwrap();
+        },
+        ParamCli::Ls {..} => {
         }
     }
 }
@@ -101,6 +152,21 @@ fn print_conferences(conferences: Vec<conference::Conference>) {
             c.exten,
             c.domain_id,
             c.conference_profile_id
+        ]);
+    }
+
+    table.print();
+}
+
+fn print_conference_profiles(profiles: Vec<profile::ConferenceProfile>) {
+    let mut table = Ctable::new();
+    table.set_titles(row!["id", "name","description"]);
+    for c in profiles {
+        let desc = c.description.unwrap_or("".to_string());
+        table.add_row(row![
+            c.id,
+            c.name,
+            desc
         ]);
     }
 
