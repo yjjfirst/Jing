@@ -10,7 +10,7 @@ edition = "2018"
 diesel = { version = "2.0.0", features = ["postgres", "chrono"] }
 dotenv = "0.15.0"
 structopt = "0.3.21"
-prettytable-rs = "^0.8"
+prettytable-rs = "0.10.0"
 thiserror = "1.0.26"
 chrono = "0.4.19"
 regex = "1"
