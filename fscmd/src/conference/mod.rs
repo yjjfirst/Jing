@@ -1,9 +1,11 @@
 use super::customtable::{Ctable};
+use fslib::printable::{Printable};
 use structopt::StructOpt;
 use super::fslib::*;
 use super::fslib::conference::conference_profile as profile;
 use super::fslib::conference::conference_profile_param as param;
 use super::domain;
+use crate::print_params;
 
 #[derive(StructOpt)]
 #[derive(Debug)]
@@ -55,7 +57,10 @@ pub enum ParamCli {
         #[structopt(short, long)]
         value: String,
     },
-    Ls
+    Ls {
+        #[structopt(short, long)]
+        parent_id: i32,
+    }
 }
 
 #[derive(StructOpt)]
@@ -137,7 +142,9 @@ fn exec_conference_profile_param_cmd(param: ParamCli) {
         ParamCli::Update {id, name, value} => {
             param::ConferenceProfileParam::update(id, &name, &value).unwrap();
         },
-        ParamCli::Ls {..} => {
+        ParamCli::Ls {parent_id} => {
+            let params = param::ConferenceProfileParam::belong_to(parent_id).unwrap();
+            print_params!(params);
         }
     }
 }

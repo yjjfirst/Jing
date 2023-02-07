@@ -56,3 +56,14 @@ impl Ctable {
         table.print();
     }
 }
+
+#[macro_export]
+macro_rules! print_params {
+    ($params: ident) => {
+        let mut boxed: Vec<Box<dyn Printable>> = Vec::new();
+        for p in $params {
+            boxed.push(Box::new(p));
+        }
+        Ctable::print_table(boxed);
+    }
+}

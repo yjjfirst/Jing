@@ -83,6 +83,16 @@ pub fn param_derive(input: TokenStream) -> TokenStream {
 
                 Ok(())
             }
+
+            pub fn belong_to(parent_id: i32) -> Result<Vec<#ident>> {
+                let mut conn = db_connect();
+
+                let results: Vec<#ident> = table
+                    .filter(#parent_id.eq(parent_id))
+                    .load(&mut conn)?;
+
+                return Ok(results);
+            }
         }
     };
 
