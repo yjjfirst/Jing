@@ -5,6 +5,9 @@ use super::customtable::{Ctable};
 use structopt::StructOpt;
 use super::domain;
 use fslib::user;
+use fslib::user::models::{User};
+use fslib::printable::Printable;
+use crate::print_table;
 
 #[derive(StructOpt)]
 #[derive(Debug)]
@@ -40,7 +43,7 @@ pub fn exec_user_cmd(user: UserCli) {
         }
 
         UserCli::Ls => {
-            match user::users_within_domain(domain_id) {
+            match user::users_within(domain_id) {
                 Ok(users) => exec_user_ls_cmd(users),
                 Err(err) => println!("{}", err),
             }
@@ -63,13 +66,6 @@ pub fn exec_user_cmd(user: UserCli) {
 
 
 
-fn exec_user_ls_cmd(users: Vec<(i32, String, String)>) {
-    let mut table = Ctable::new();
-
-    table.set_titles(row!["Id", "User_id", "Domain"]);
-    for u in users {
-        table.add_row(row![u.0, u.1, u.2]);
-    }
-
-    table.print();
+fn exec_user_ls_cmd(users: Vec<User>) {
+    print_table!(users);
 }

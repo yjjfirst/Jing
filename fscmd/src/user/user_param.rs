@@ -1,7 +1,7 @@
 use structopt::StructOpt;
 use fslib::user::*;
 use crate::customtable::{Ctable};
-use crate::print_params;
+use crate::print_table;
 use fslib::printable::{Printable};
 
 #[derive(StructOpt)]
@@ -46,7 +46,7 @@ pub fn exec_userparam_cmd(param: UserParamCli) {
         },
         UserParamCli::Ls {user_id} => {
             let params = get_user_params(user_id).unwrap();
-            print_params!(params);
+            print_table!(params);
         },
     }
 }

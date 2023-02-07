@@ -1,6 +1,9 @@
 use crate::schema::users;
+use crate::util_macro::{Fields};
+use crate::printable::{Printable};
 
 #[derive(Identifiable, Queryable, Debug, PartialEq)]
+#[derive(Fields)]
 pub struct User {
     pub id: i32,
     pub domain_id: i32,

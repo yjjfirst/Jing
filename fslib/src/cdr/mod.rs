@@ -29,7 +29,7 @@ pub fn add_cdr<'a>(
     let new_cdr = NewCdr {
         a_caller_id,
         a_dest,
-        start_time: &NaiveDateTime::from_timestamp(start_time.parse::<i64>().unwrap(), 0),
+        start_time: &NaiveDateTime::from_timestamp_opt(start_time.parse::<i64>().unwrap(), 0).unwrap(),
         duration,
         uuid,
     };

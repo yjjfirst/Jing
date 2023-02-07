@@ -5,7 +5,7 @@ use super::fslib::*;
 use super::fslib::conference::conference_profile as profile;
 use super::fslib::conference::conference_profile_param as param;
 use super::domain;
-use crate::print_params;
+use crate::print_table;
 
 #[derive(StructOpt)]
 #[derive(Debug)]
@@ -144,7 +144,7 @@ fn exec_conference_profile_param_cmd(param: ParamCli) {
         },
         ParamCli::Ls {parent_id} => {
             let params = param::ConferenceProfileParam::belong_to(parent_id).unwrap();
-            print_params!(params);
+            print_table!(params);
         }
     }
 }

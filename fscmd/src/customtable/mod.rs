@@ -58,7 +58,7 @@ impl Ctable {
 }
 
 #[macro_export]
-macro_rules! print_params {
+macro_rules! print_table {
     ($params: ident) => {
         let mut boxed: Vec<Box<dyn Printable>> = Vec::new();
         for p in $params {

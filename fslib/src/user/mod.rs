@@ -49,15 +49,12 @@ pub fn del_user(user: &str) -> Result<()> {
     Ok(())
 }
 
-pub fn users_within_domain(domain: i32) -> Result<Vec<(i32, String, String)>>{
-    use crate::schema::users;
-    use crate::schema::domains;
+pub fn users_within(domain: i32) -> Result<Vec<User>>{
     use crate::schema::users::dsl::*;
 
     let mut conn = db_connect();
 
-    let results: Vec<(i32, String, String)> = users::table.inner_join(domains::table)
-        .select((users::id, users::user_id, domains::domain_name))
+    let results: Vec<User> = users
         .filter(domain_id.eq(domain))
         .load(&mut conn)?;
 
