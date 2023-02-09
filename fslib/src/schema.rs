@@ -101,6 +101,14 @@ diesel::table! {
 }
 
 diesel::table! {
+    feature_codes (id) {
+        id -> Int4,
+        digits -> Varchar,
+        action -> Varchar,
+    }
+}
+
+diesel::table! {
     gateways (id) {
         id -> Int4,
         profile_id -> Int4,
@@ -315,6 +323,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     domains,
     extension_types,
     extensions,
+    feature_codes,
     gateways,
     inbound_routes,
     ivr_attrs,

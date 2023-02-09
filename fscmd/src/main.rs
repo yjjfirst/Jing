@@ -10,6 +10,7 @@ mod agent;
 mod tier;
 mod extension;
 mod user;
+mod feature_code;
 
 #[macro_use]
 extern crate prettytable;
@@ -90,6 +91,10 @@ enum Cli {
     Extension {
         #[structopt(subcommand)]
         exten: extension::ExtensionCli
+    },
+    Feature {
+        #[structopt(subcommand)]
+        feature: feature_code::FeatureCodeCli
     }
 }
 
@@ -257,6 +262,9 @@ fn main() {
         },
         Cli::Extension {exten} => {
             extension::exec_extension_cmd(exten);
+        },
+        Cli::Feature {feature} => {
+            feature_code::exec_feature_cmd(feature);
         }
     }
 }

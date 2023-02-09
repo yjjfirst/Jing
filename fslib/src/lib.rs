@@ -15,6 +15,7 @@ pub mod sound_file;
 pub mod sound;
 pub mod conference;
 pub mod queue;
+pub mod feature_code;
 pub mod printable;
 
 #[macro_use]
