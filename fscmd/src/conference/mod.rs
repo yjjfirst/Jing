@@ -4,8 +4,67 @@ use structopt::StructOpt;
 use super::fslib::*;
 use super::fslib::conference::conference_profile as profile;
 use super::fslib::conference::conference_profile_param as param;
+use super::fslib::conference::conference_control as control;
+use super::fslib::conference::conference_control_detail as detail;
 use super::domain;
 use crate::print_table;
+
+#[derive(StructOpt)]
+#[derive(Debug)]
+pub enum ControlCli {
+    Add {
+        #[structopt(short, long)]
+        name: String,
+        #[structopt(short, long)]
+        desc: String,
+    },
+    Del {
+        #[structopt(short, long)]
+        id: i32,
+    },
+    Update {
+        #[structopt(short, long)]
+        id: i32,
+        #[structopt(short, long)]
+        name: String,
+        #[structopt(short, long)]
+        desc: String,
+    },
+    Ls,
+    Detail  {
+        #[structopt(subcommand)]
+        detail: DetailCli,
+    }
+}
+
+#[derive(StructOpt)]
+#[derive(Debug)]
+pub enum DetailCli {
+    Add {
+        #[structopt(short, long)]
+        control_id: i32,
+        #[structopt(short, long)]
+        action: String,
+        #[structopt(short, long)]
+        digits: String,
+    },
+    Del {
+        #[structopt(short, long)]
+        id: i32,
+    },
+    Update {
+        #[structopt(short, long)]
+        id: i32,
+        #[structopt(short, long)]
+        action: String,
+        #[structopt(short, long)]
+        digits: String,
+    },
+    Ls {
+        #[structopt(short, long)]
+        control_id: i32,
+    }
+}
 
 #[derive(StructOpt)]
 #[derive(Debug)]
@@ -13,6 +72,7 @@ pub enum ProfileCli {
     Add {
         #[structopt(short, long)]
         name: String,
+
         #[structopt(short, long)]
         desc: String,
     },
@@ -59,7 +119,7 @@ pub enum ParamCli {
     },
     Ls {
         #[structopt(short, long)]
-        parent_id: i32,
+        profile_id: i32,
     }
 }
 
@@ -84,6 +144,10 @@ pub enum ConferenceCli {
     Profile {
         #[structopt(subcommand)]
         profile: ProfileCli,
+    },
+    Control {
+        #[structopt(subcommand)]
+        control: ControlCli,
     }
 }
 
@@ -106,6 +170,48 @@ pub fn exec_conference_cmd(conference: ConferenceCli) {
         },
         ConferenceCli::Profile { profile } => {
             exec_conference_profile_cmd(profile);
+        },
+        ConferenceCli::Control { control } => {
+            exec_conference_control_cmd(control);
+        }
+    }
+}
+
+fn exec_conference_control_cmd(control: ControlCli) {
+    match control {
+        ControlCli::Add {name, desc} => {
+            control::add(&name, &desc).unwrap();
+        },
+        ControlCli::Del {id } => {
+            control::del(id).unwrap();
+        },
+        ControlCli::Update {id, name, desc} => {
+            control::update(id, &name, &desc).unwrap();
+        },
+        ControlCli::Ls => {
+            let groups = control::groups().unwrap();
+            print_conference_controls(groups);
+        },
+        ControlCli::Detail {detail} => {
+            exec_conference_control_detail_cmd(detail);
+        }
+    }
+}
+
+fn exec_conference_control_detail_cmd(detail: DetailCli) {
+    match detail {
+        DetailCli::Add {control_id, action, digits} => {
+            detail::ConferenceControlDetail::add(control_id, &action, &digits).unwrap();
+        },
+        DetailCli::Del {id} => {
+            detail::ConferenceControlDetail::del(id).unwrap();
+        },
+        DetailCli::Update {id, action, digits} => {
+            detail::ConferenceControlDetail::update(id, &action, &digits).unwrap();
+        },
+        DetailCli::Ls {control_id} => {
+            let details = detail::ConferenceControlDetail::belong_to(control_id).unwrap();
+            print_table!(details);
         }
     }
 }
@@ -142,8 +248,8 @@ fn exec_conference_profile_param_cmd(param: ParamCli) {
         ParamCli::Update {id, name, value} => {
             param::ConferenceProfileParam::update(id, &name, &value).unwrap();
         },
-        ParamCli::Ls {parent_id} => {
-            let params = param::ConferenceProfileParam::belong_to(parent_id).unwrap();
+        ParamCli::Ls {profile_id} => {
+            let params = param::ConferenceProfileParam::belong_to(profile_id).unwrap();
             print_table!(params);
         }
     }
@@ -178,4 +284,8 @@ fn print_conference_profiles(profiles: Vec<profile::ConferenceProfile>) {
     }
 
     table.print();
+}
+
+fn print_conference_controls(controls: Vec<control::ConferenceControl>) {
+    print_table!(controls);
 }

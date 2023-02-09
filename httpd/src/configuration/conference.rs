@@ -50,7 +50,7 @@ pub fn control_groups<W: Write>(w: &mut EventWriter<W>) {
 
     let groups = groups.unwrap();
     for g in groups {
-        let details = conference_control::group_details(g.id).unwrap();
+        let details = conference_control::details(g.id).unwrap();
         start_element(w, "group", attrs(vec![("name", &g.name)]));
         for d in details {
             control(w, &d.action, &d.digits);

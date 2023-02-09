@@ -1,6 +1,7 @@
 pub mod conference_control;
 pub mod conference_profile;
 pub mod conference_profile_param;
+pub mod conference_control_detail;
 
 use diesel::prelude::*;
 use crate::error::{Result};

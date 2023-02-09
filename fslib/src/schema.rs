@@ -45,7 +45,7 @@ diesel::table! {
     conference_controls (id) {
         id -> Int4,
         name -> Varchar,
-        description -> Nullable<Varchar>,
+        description -> Varchar,
     }
 }
 

@@ -17,5 +17,5 @@ INSERT INTO conference_control_details (conference_control_id, action, digits) V
 INSERT INTO conference_control_details (conference_control_id, action, digits) VALUES (1, 'vol talk dn', '1');
 INSERT INTO conference_control_details (conference_control_id, action, digits) VALUES (1, 'vol listen up', '6');
 INSERT INTO conference_control_details (conference_control_id, action, digits) VALUES (1, 'vol listen zero', '5');
-INSERT INTO conference_control_details (conference_control_id, action, digits) VALUES (1, 'vol listen dn', '5');
+INSERT INTO conference_control_details (conference_control_id, action, digits) VALUES (1, 'vol listen dn', '4');
 INSERT INTO conference_control_details (conference_control_id, action, digits) VALUES (1, 'hangup', '#');
