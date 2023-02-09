@@ -135,7 +135,7 @@ pub enum ConferenceCli {
         #[structopt(short, long)]
         conference_profile_id: i32,
         #[structopt(short, long)]
-        description: Option<String>
+        description: String
     },
     Del {
         #[structopt(short, long)]
@@ -256,34 +256,11 @@ fn exec_conference_profile_param_cmd(param: ParamCli) {
 }
 
 fn print_conferences(conferences: Vec<conference::Conference>) {
-    let mut table = Ctable::new();
-    table.set_titles(row!["id", "name","exten", "domain_id", "conference_profile_id"]);
-    for c in conferences {
-        table.add_row(row![
-            c.id,
-            c.name,
-            c.exten,
-            c.domain_id,
-            c.conference_profile_id
-        ]);
-    }
-
-    table.print();
+    print_table!(conferences);
 }
 
 fn print_conference_profiles(profiles: Vec<profile::ConferenceProfile>) {
-    let mut table = Ctable::new();
-    table.set_titles(row!["id", "name","description"]);
-    for c in profiles {
-        let desc = c.description.unwrap_or("".to_string());
-        table.add_row(row![
-            c.id,
-            c.name,
-            desc
-        ]);
-    }
-
-    table.print();
+    print_table!(profiles);
 }
 
 fn print_conference_controls(controls: Vec<control::ConferenceControl>) {

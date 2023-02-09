@@ -7,17 +7,20 @@ use diesel::prelude::*;
 use crate::error::{Result};
 use crate::db_connect;
 use crate::schema::{conferences};
+use crate::util_macro::{Fields};
+use crate::printable::{Printable};
 use super::extension::{add_extension, del_extension};
 
 #[derive(Identifiable,Queryable,Debug,PartialEq)]
 #[derive(Clone)]
+#[derive(Fields)]
 pub struct Conference {
     pub id: i32,
     pub exten: String,
     pub name: String,
     pub domain_id: i32,
     pub conference_profile_id: i32,
-    pub description: Option<String>
+    pub description: String
 }
 
 #[derive(Insertable)]
@@ -27,14 +30,14 @@ pub struct NewConference {
     pub name: String,
     pub domain_id: i32,
     pub conference_profile_id :i32,
-    pub description: Option<String>
+    pub description: String
 }
 
 pub fn add(domain_id: i32,
            conference_profile_id: i32,
            exten: String,
            name: String,
-           description: Option<String>) -> Result<()>{
+           description: String) -> Result<()>{
     let mut conn = db_connect();
 
     add_extension(exten.as_str(), "conference", domain_id)?;

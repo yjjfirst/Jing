@@ -62,7 +62,7 @@ diesel::table! {
     conference_profiles (id) {
         id -> Int4,
         name -> Varchar,
-        description -> Nullable<Varchar>,
+        description -> Varchar,
     }
 }
 
@@ -73,7 +73,7 @@ diesel::table! {
         name -> Varchar,
         domain_id -> Int4,
         conference_profile_id -> Int4,
-        description -> Nullable<Varchar>,
+        description -> Varchar,
     }
 }
 

@@ -28,7 +28,7 @@ export FS_ACTIVE_DOMAIN=1
 ./target/debug/fscmd sound add --exten 3000 --name test --sound-file-id 1
 
 #add conference
-./target/debug/fscmd conference add --name test --exten 4000 --conference-profile-id 1
+./target/debug/fscmd conference add --name test --exten 4000 --conference-profile-id 1 --description "test"
 
 #add queue
 ./target/debug/fscmd queue add --exten 5002 --name test@internal

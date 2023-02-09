@@ -1,16 +1,19 @@
 use diesel::prelude::*;
 use crate::error::{Result};
 use crate::db_connect;
+use crate::util_macro::{Fields};
+use crate::printable::{Printable};
 use crate::schema::{conference_profiles};
 use super::conference_profile_param::ConferenceProfileParam;
 use super::conference_profile_param;
 
 #[derive(Identifiable,Queryable,Debug,PartialEq)]
 #[derive(Clone)]
+#[derive(Fields)]
 pub struct ConferenceProfile {
     pub id: i32,
     pub name: String,
-    pub description: Option<String>
+    pub description: String
 }
 
 
