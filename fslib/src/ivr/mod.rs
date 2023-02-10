@@ -95,6 +95,18 @@ pub fn get(i: i32) -> Result<Ivr> {
     Ok(result)
 }
 
+pub fn get_by(domain: i32, ext: &str) -> Result<Ivr> {
+    use crate::schema::ivrs::dsl::*;
+    let mut conn = db_connect();
+
+    let result = ivrs
+        .filter(domain_id.eq(domain))
+        .filter(exten.eq(ext))
+        .first(&mut conn)?;
+
+    Ok(result)
+}
+
 pub fn add_ivr_option(domain: i32, a_ivr_id: i32, ds: String, exten: String) -> Result<()> {
     use crate::schema::ivr_entries::dsl::*;
     use crate::schema::ivr_entries;

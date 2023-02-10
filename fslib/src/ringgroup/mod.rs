@@ -121,6 +121,18 @@ pub fn all_ringgroup_member(group: i32) -> Result<Vec<(i32,String,String)>> {
     Ok(results)
 }
 
+pub fn get_by(domain: i32, exten: &str) -> Result<Ringgroup> {
+    use crate::schema::ringing_groups::dsl::*;
+    let mut conn = db_connect();
+
+    let result = ringing_groups
+        .filter(domain_id.eq(domain))
+        .filter(group_id.eq(exten))
+        .first(&mut conn)?;
+
+    Ok(result)
+}
+
 fn get_ringgroup(target_ringgroup_id: i32) -> Result<Ringgroup> {
     use crate::schema::ringing_groups::dsl::*;
 

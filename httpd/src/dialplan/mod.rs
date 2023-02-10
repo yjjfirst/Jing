@@ -3,20 +3,19 @@ extern crate fslib;
 use std::io::Write;
 use std::io::BufWriter;
 use xml::writer::{EmitterConfig, EventWriter};
-use super::xml_utils::{start_element, end_element, action, Attr, attrs};
-use fslib::extension::{get_extension};
+use super::xml_utils::{start_element, end_element, action, Attr};
+use fslib::extension::{get_extension, Extension};
 use fslib::route::{all_outbounds, all_inbound};
 use fslib::route::outbound_models::{OutboundRoute};
 use fslib::route::inbound_models::{InboundRoute};
-use fslib::gateway::{get_gateway};
-use fslib::ringgroup::{all_ringgroup, all_ringgroup_member};
-use fslib::ringgroup::models::{Ringgroup};
-use fslib::domain::{get_domain_by_name};
+use fslib::gateway;
+use fslib::ringgroup;
+use fslib::domain;
 use fslib::sound;
 use fslib::sound_file;
 use fslib::conference;
-use fslib::conference::conference_profile;
 use fslib::queue;
+use fslib::ivr;
 
 use super::FsRequest;
 
@@ -24,9 +23,11 @@ pub fn serve (fs_req: FsRequest) -> tide::Result {
     let mut buf = BufWriter::new(Vec::new());
     let mut w = EmitterConfig::new().perform_indent(true).create_writer(&mut buf);
 
-    start_element(&mut w, "document", Some(vec![Attr {name: "type", value: "freeswitch/xml"}]));
-    start_element(&mut w, "section", Some(vec![Attr::new("name", "dialplan"),
-                                               Attr::new("description", "Dialplan for Freeswitch")]));
+    start_element(&mut w, "document",
+                  Some(vec![Attr {name: "type", value: "freeswitch/xml"}]));
+    start_element(&mut w, "section",
+                  Some(vec![Attr::new("name", "dialplan"),
+                            Attr::new("description", "Dialplan for Freeswitch")]));
     dialplan(&mut w, fs_req);
 
     end_element(&mut w);
@@ -44,13 +45,15 @@ fn dialplan<W: Write>(w: &mut EventWriter<W>, fs_req: FsRequest) {
     if context == "internal" {
         let dest_exten = fs_req.dest_number.unwrap();
         let domain_name = fs_req.dest_domain.unwrap();
-        let domain = get_domain_by_name(domain_name).unwrap();
+        let domain = domain::get_domain_by_name(domain_name).unwrap();
 
         if let Ok(e) = get_extension(dest_exten.as_str(), domain.id) {
+            start_internal_xml(w, &e);
+
             if e.exten_type == "user" {
                 user(w);
             } else if e.exten_type == "ringgroup" {
-                ringgroups(w);
+                ringgroup(w, domain.id, dest_exten);
             } else if e.exten_type == "sound" {
                 sound(w, domain.id, dest_exten);
             } else if e.exten_type == "conference" {
@@ -60,6 +63,8 @@ fn dialplan<W: Write>(w: &mut EventWriter<W>, fs_req: FsRequest) {
             } else if e.exten_type == "ivr" {
                 ivr(w, domain.id, dest_exten);
             }
+
+            end_internal_xml(w);
         } else {
             outbounds(w);
         }
@@ -68,22 +73,27 @@ fn dialplan<W: Write>(w: &mut EventWriter<W>, fs_req: FsRequest) {
     }
 }
 
-fn user<W: Write>(w: &mut EventWriter<W>)  {
+fn start_internal_xml<W: Write>(w: &mut EventWriter<W>, exten: &Extension) {
+    let name = format!("{}_{}",exten.exten_type,exten.exten);
     start_element(w, "context", Some(vec![Attr::new("name", "internal")]));
-    start_element(w, "extension", Some(vec![Attr::new("name", "local_user")]));
+    start_element(w, "extension", Some(vec![Attr::new("name", &name)]));
     start_element(w, "condition", Some(vec![Attr::new("field", "destination_number"),
                                             Attr::new("expression", "^(.*)$"),
     ]));
+}
 
+fn end_internal_xml<W: Write>(w: &mut EventWriter<W>) {
+    end_element(w);
+    end_element(w);
+    end_element(w);
+}
+
+fn user<W: Write>(w: &mut EventWriter<W>)  {
     action(w, "export","dialed_extension=$1");
     action(w, "set","call_timeout=30");
     action(w, "set","hangup_after_bridge=true");
     action(w, "set","continue_on_fail=true");
     action(w, "bridge", "user/${dialed_extension}@${domain_name}");
-
-    end_element(w);
-    end_element(w);
-    end_element(w);
 }
 
 fn outbounds<W: Write>(w: &mut EventWriter<W>) {
@@ -100,7 +110,7 @@ fn outbound<W: Write>(w: &mut EventWriter<W>, route: OutboundRoute) {
                                             Attr::new("expression", route.condition.as_str())
     ]));
 
-    if let Ok(g) = get_gateway(route.gateway_id) {
+    if let Ok(g) = gateway::get_gateway(route.gateway_id) {
         action(w,"bridge", format!("sofia/gateway/{}/$1",g.gateway_name).as_str());
     }
     end_element(w);
@@ -128,58 +138,25 @@ fn inbound<W: Write>(w: &mut EventWriter<W>, route: InboundRoute) {
 
 }
 
-fn ringgroups<W: Write>(w: &mut EventWriter<W>) {
-    start_element(w, "context", Some(vec![Attr::new("name", "internal")]));
-    for rg in all_ringgroup().unwrap() {
-        ringgroup(w, rg);
-    }
-    end_element(w);
-}
-
-fn ringgroup<W: Write>(w: &mut EventWriter<W>, rg: Ringgroup) {
-    start_element(w, "extension", Some(vec![Attr::new("name", format!("ringgroup_{}", rg.id).as_str())]));
-    start_element(w, "condition", Some(vec![Attr::new("field", "destination_number"),
-                                            Attr::new("expression", rg.group_id.as_str())
-    ]));
-
-    let members = all_ringgroup_member(rg.id).unwrap();
+fn ringgroup<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
+    let rg = ringgroup::get_by(domain_id, &exten).unwrap();
+    let members = ringgroup::all_ringgroup_member(rg.id).unwrap();
     let members: Vec<String> = members.iter().map(|m| format!("user/{}@${{domain_name}}",m.1)).collect();
     let members = members.join(",");
 
     action(w, "set", "call_timeout=30");
     action(w, "bridge", format!("{{ignore_early_media=true}}{}", members).as_str());
-
-    end_element(w);
-    end_element(w);
 }
 
-fn sound_file<W: Write>(w: &mut EventWriter<W>,
-                        sound_file: sound_file::models::SoundFile,
-                        sound: sound::models::Sound)
-{
-    let name = format!("sound_{}", sound.id);
-    start_element(w, "context", Some(vec![Attr::new("name", "internal")]));
-    start_element(w, "extension", Some(vec![Attr::new("name", &name)]));
-    start_element(w, "condition", Some(vec![Attr::new("field","destination_number"),
-                                            Attr::new("expression", &sound.exten)
-    ]));
-
-    action(w, "answer","");
-    action(w, "sleep", "1000");
-    action(w, "playback", &sound_file.name);
-
-    end_element(w);
-    end_element(w);
-    end_element(w);
-
-}
 
 fn sound<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
     let sound = sound::get_by(domain_id, &exten);
     if let Ok(s) = sound {
         let file = sound_file::get(s.sound_file_id);
         if let Ok(f) = file {
-            sound_file(w, f, s);
+            action(w, "answer","");
+            action(w, "sleep", "1000");
+            action(w, "playback", &f.name);
         }
     };
 }
@@ -189,23 +166,10 @@ fn conference<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
     let conference = conference::get_by(domain_id, &exten);
 
     if let Ok(c) = conference {
-        let name = format!("conference_{}", c.id);
-        let profile = conference_profile::get(c.conference_profile_id).unwrap();
-
-        start_element(w, "context", attrs(vec![("name", "internal")]));
-        start_element(w, "extension", attrs(vec![("name", &name)]));
-        start_element(w, "condition", attrs(vec![("field", "destination_number"),
-                                                 ("expression", &c.exten)
-        ]));
-
+        let profile = conference::conference_profile::get(c.conference_profile_id).unwrap();
         action(w, "Answer", "");
-
         let data = format!("{}-$${{domain_name}}@{}",&c.exten, &profile.name);
         action(w, "conference",  &data);
-
-        end_element(w);
-        end_element(w);
-        end_element(w);
     }
 
 }
@@ -213,37 +177,14 @@ fn conference<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
 fn queue<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
     let queue = queue::get_by(domain_id, &exten);
 
-    if let Ok(q) = queue {
-        let name = format!("queue_{}", q.id);
-        start_element(w, "context", attrs(vec![("name", "internal")]));
-        start_element(w, "extension", attrs(vec![("name", &name)]));
-        start_element(w, "condition", attrs(vec![("field", "destination_number"),
-                                                 ("expression", &q.exten)
-        ]));
-
+    if let Ok(_q) = queue {
         let data = format!("{}@{}", exten, "$${domain}");
         action(w, "callcenter",  &data);
-
-        end_element(w);
-        end_element(w);
-        end_element(w);
     }
 
 }
 
-fn ivr<W: Write>(w: &mut EventWriter<W>, _domain_id: i32, exten: String) {
-
-    let name = format!("ivr_{}", 1);
-    start_element(w, "context", attrs(vec![("name", "internal")]));
-    start_element(w, "extension", attrs(vec![("name", &name)]));
-    start_element(w, "condition", attrs(vec![("field", "destination_number"),
-                                             ("expression", &exten)
-    ]));
-
-    action(w, "ivr",  "martin_test");
-
-    end_element(w);
-    end_element(w);
-    end_element(w);
-
+fn ivr<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
+    let ivr = ivr::get_by(domain_id, &exten).unwrap();
+    action(w, "ivr",  &ivr.name);
 }
