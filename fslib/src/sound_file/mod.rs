@@ -81,7 +81,7 @@ fn install_file(path: &str, name: &str) -> std::io::Result<()> {
 
     let tmp_file = make_tmp_name();
     let sound_dir = rt::eval("$${sounds_dir}");
-    let target_path = format!("{}/{}", sound_dir, name);
+    let target_path = format!("{}/en/us/callie/{}", sound_dir, name);
 
     Command::new("mpg123")
         .arg("-w")
