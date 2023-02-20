@@ -1,6 +1,7 @@
 use super::customtable::{Ctable};
 use structopt::StructOpt;
 use super::fslib::feature_code::{FeatureCode};
+use super::domain;
 use fslib::printable::Printable;
 use crate::print_table;
 
@@ -29,9 +30,10 @@ pub enum FeatureCodeCli {
 }
 
 pub fn exec_feature_cmd(feature: FeatureCodeCli) {
+    let domain_id = domain::get_active().unwrap();
     match feature {
         FeatureCodeCli::Add {digits, action } => {
-            FeatureCode::add(&digits, &action).unwrap();
+            FeatureCode::add(domain_id, &digits, &action).unwrap();
         },
         FeatureCodeCli::Del { id } => {
             FeatureCode::del(id).unwrap();

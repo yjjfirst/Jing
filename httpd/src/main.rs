@@ -18,7 +18,9 @@ pub struct FsRequest {
     #[serde(rename = "Caller-Context")]
     context: Option<String>,
     #[serde(rename = "variable_sip_to_host")]
-    dest_domain: Option<String>
+    dest_domain: Option<String>,
+    #[serde(rename = "Caller-Caller-ID-Number")]
+    caller_id: Option<String>
 }
 
 #[async_std::main]

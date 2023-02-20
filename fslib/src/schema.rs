@@ -103,6 +103,7 @@ diesel::table! {
 diesel::table! {
     feature_codes (id) {
         id -> Int4,
+        domain_id -> Int4,
         digits -> Varchar,
         action -> Varchar,
     }
@@ -290,6 +291,7 @@ diesel::joinable!(conference_control_details -> conference_controls (conference_
 diesel::joinable!(conference_profile_params -> conference_profiles (conference_profile_id));
 diesel::joinable!(conferences -> conference_profiles (conference_profile_id));
 diesel::joinable!(conferences -> domains (domain_id));
+diesel::joinable!(feature_codes -> domains (domain_id));
 diesel::joinable!(gateways -> profiles (profile_id));
 diesel::joinable!(ivr_attrs -> ivrs (ivr_id));
 diesel::joinable!(ivr_entries -> ivrs (ivr_id));

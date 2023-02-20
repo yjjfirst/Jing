@@ -1,3 +1,4 @@
+mod feature_code;
 extern crate fslib;
 
 use std::io::Write;
@@ -62,6 +63,8 @@ fn dialplan<W: Write>(w: &mut EventWriter<W>, fs_req: FsRequest) {
                 queue(w, domain.id, dest_exten);
             } else if e.exten_type == "ivr" {
                 ivr(w, domain.id, dest_exten);
+            } else if e.exten_type == "feature_code" {
+                feature_code::serve(w, dest_exten, fs_req.caller_id);
             }
 
             end_internal_xml(w);
