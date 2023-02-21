@@ -2,8 +2,8 @@
 
 members = [
     "fslib",
-    "esl",
-    "httpd",
-    "fscmd",
+    "fs_esl",
+    "fs_httpd",
+    "fs_cmd",
     "util_macro",
 ]

@@ -1,5 +1,5 @@
 [package]
-name = "esl"
+name = "fs_esl"
 version = "0.1.0"
 edition = "2018"
 
