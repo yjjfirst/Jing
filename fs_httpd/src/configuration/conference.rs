@@ -1,10 +1,10 @@
-extern crate fslib;
+extern crate fs_lib;
 
 use xml::writer::{EventWriter};
 use std::io::Write;
 use crate::xml_utils::{start_element, end_element, attrs, control, param};
 
-use fslib::conference::{conference_control, conference_profile};
+use fs_lib::conference::{conference_control, conference_profile};
 
 pub fn serve<W: Write>(w: &mut EventWriter<W>) {
     start_element(w,

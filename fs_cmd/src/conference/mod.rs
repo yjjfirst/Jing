@@ -1,11 +1,11 @@
 use super::customtable::{Ctable};
-use fslib::printable::{Printable};
+use fs_lib::printable::{Printable};
 use structopt::StructOpt;
-use super::fslib::*;
-use super::fslib::conference::conference_profile as profile;
-use super::fslib::conference::conference_profile_param as param;
-use super::fslib::conference::conference_control as control;
-use super::fslib::conference::conference_control_detail as detail;
+use super::fs_lib::*;
+use super::fs_lib::conference::conference_profile as profile;
+use super::fs_lib::conference::conference_profile_param as param;
+use super::fs_lib::conference::conference_control as control;
+use super::fs_lib::conference::conference_control_detail as detail;
 use super::domain;
 use crate::print_table;
 

@@ -3,7 +3,7 @@ mod conference;
 mod callcenter;
 mod ivr;
 
-extern crate fslib;
+extern crate fs_lib;
 
 use std::io::BufWriter;
 use xml::writer::{EmitterConfig};

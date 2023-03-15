@@ -14,11 +14,11 @@ mod feature_code;
 
 #[macro_use]
 extern crate prettytable;
-extern crate fslib;
+extern crate fs_lib;
 
 use self::customtable::{Ctable};
 use structopt::StructOpt;
-use self::fslib::*;
+use self::fs_lib::*;
 
 #[derive(StructOpt)]
 #[derive(Debug)]

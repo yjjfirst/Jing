@@ -1,8 +1,8 @@
 use super::customtable::{Ctable};
 use structopt::StructOpt;
-use super::fslib::*;
+use super::fs_lib::*;
 use super::domain;
-use super::fslib::queue::{Queue};
+use super::fs_lib::queue::{Queue};
 
 #[derive(StructOpt)]
 #[derive(Debug)]

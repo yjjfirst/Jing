@@ -1,14 +1,14 @@
-extern crate fslib;
+extern crate fs_lib;
 
 use std::io::Write;
 use std::io::BufWriter;
 use xml::writer::{EmitterConfig, EventWriter};
 use super::xml_utils::{start_element, end_element, param, variable, Attr};
 
-use fslib::domain;
-use fslib::domain::models::Domain;
-use fslib::user::{all_users, get_user_params, get_user_vars};
-use fslib::user::models::{User};
+use fs_lib::domain;
+use fs_lib::domain::models::Domain;
+use fs_lib::user::{all_users, get_user_params, get_user_vars};
+use fs_lib::user::models::{User};
 
 pub fn serve () -> tide::Result {
     let mut buf = BufWriter::new(Vec::new());

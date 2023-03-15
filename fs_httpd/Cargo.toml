@@ -10,4 +10,4 @@ tide = "0.16.0"
 async-std = { version = "1.8.0", features = ["attributes"] }
 serde = { version = "1.0", features = ["derive"] }
 xml-rs = "0.8.4"
-fslib = {version="0.1.0", path="../fslib"}
+fs_lib = {version="0.1.0", path="../fs_lib"}

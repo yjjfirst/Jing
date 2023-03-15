@@ -2,11 +2,11 @@ use xml::writer::{EventWriter};
 use std::io::Write;
 use crate::xml_utils::{start_element, end_element, attrs, param};
 
-use fslib::queue;
-use fslib::queue::agent;
-use fslib::queue::tier;
-use fslib::user;
-use fslib::domain;
+use fs_lib::queue;
+use fs_lib::queue::agent;
+use fs_lib::queue::tier;
+use fs_lib::user;
+use fs_lib::domain;
 
 pub fn serve<W: Write>(w: &mut EventWriter<W>) {
     start_element(w,

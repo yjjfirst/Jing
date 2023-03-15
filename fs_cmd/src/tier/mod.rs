@@ -1,6 +1,6 @@
 use super::customtable::{Ctable};
 use structopt::StructOpt;
-use fslib::queue::tier;
+use fs_lib::queue::tier;
 
 #[derive(StructOpt)]
 #[derive(Debug)]

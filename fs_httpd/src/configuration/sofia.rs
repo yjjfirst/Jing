@@ -1,8 +1,8 @@
 use xml::writer::{EventWriter};
 use std::io::Write;
-use fslib::gateway::models::{Gateway};
-use fslib::profile::models::{Profile};
-use fslib::profile;
+use fs_lib::gateway::models::{Gateway};
+use fs_lib::profile::models::{Profile};
+use fs_lib::profile;
 
 use crate::xml_utils::{start_element, end_element, param, Attr};
 

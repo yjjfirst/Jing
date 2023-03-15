@@ -4,9 +4,9 @@ pub mod user_variable;
 use super::customtable::{Ctable};
 use structopt::StructOpt;
 use super::domain;
-use fslib::user;
-use fslib::user::models::{User};
-use fslib::printable::Printable;
+use fs_lib::user;
+use fs_lib::user::models::{User};
+use fs_lib::printable::Printable;
 use crate::print_table;
 
 #[derive(StructOpt)]

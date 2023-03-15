@@ -6,7 +6,7 @@ use std::collections::HashMap;
 
 use super::event::*;
 use super::cmd::*;
-use fslib::cdr;
+use fs_lib::cdr;
 
 #[derive(Debug)]
 pub struct Bleg {

@@ -2,8 +2,8 @@ use std::env;
 
 use super::customtable::{Ctable};
 use structopt::StructOpt;
-use super::fslib::*;
-use super::fslib::rt::{eval, is_var};
+use super::fs_lib::*;
+use super::fs_lib::rt::{eval, is_var};
 
 #[derive(StructOpt)]
 #[derive(Debug)]

@@ -1,5 +1,5 @@
 use prettytable::{Table, format, Row, Cell};
-use fslib::printable::{Printable};
+use fs_lib::printable::{Printable};
 
 pub struct Ctable {
     table: Table,

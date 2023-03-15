@@ -1,22 +1,22 @@
 mod feature_code;
-extern crate fslib;
+extern crate fs_lib;
 
 use std::io::Write;
 use std::io::BufWriter;
 use xml::writer::{EmitterConfig, EventWriter};
 use super::xml_utils::{start_element, end_element, action, Attr};
-use fslib::extension::{get_extension, Extension};
-use fslib::route::{all_outbounds, all_inbound};
-use fslib::route::outbound_models::{OutboundRoute};
-use fslib::route::inbound_models::{InboundRoute};
-use fslib::gateway;
-use fslib::ringgroup;
-use fslib::domain;
-use fslib::sound;
-use fslib::sound_file;
-use fslib::conference;
-use fslib::queue;
-use fslib::ivr;
+use fs_lib::extension::{get_extension, Extension};
+use fs_lib::route::{all_outbounds, all_inbound};
+use fs_lib::route::outbound_models::{OutboundRoute};
+use fs_lib::route::inbound_models::{InboundRoute};
+use fs_lib::gateway;
+use fs_lib::ringgroup;
+use fs_lib::domain;
+use fs_lib::sound;
+use fs_lib::sound_file;
+use fs_lib::conference;
+use fs_lib::queue;
+use fs_lib::ivr;
 
 use super::FsRequest;
 
