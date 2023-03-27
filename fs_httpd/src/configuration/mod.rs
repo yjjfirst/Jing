@@ -9,8 +9,9 @@ use std::io::BufWriter;
 use xml::writer::{EmitterConfig};
 use super::xml_utils::*;
 use super::FsRequest;
+use actix_web::Result;
 
-pub fn serve (fs_req: FsRequest) -> tide::Result {
+pub fn serve (fs_req: FsRequest) -> Result<String> {
     let mut buf = BufWriter::new(Vec::new());
     let mut w = EmitterConfig::new()
         .perform_indent(true)

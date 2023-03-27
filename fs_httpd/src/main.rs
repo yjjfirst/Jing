@@ -3,10 +3,10 @@ mod configuration;
 mod directory;
 mod dialplan;
 
-use tide::{Request, StatusCode};
-use tide::prelude::*;
+use actix_web::{get, post, web, App, HttpServer, Responder, HttpResponse};
+use serde::{Deserialize};
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Debug, Deserialize)]
 pub struct FsRequest {
     hostname: String,
     section: String,
@@ -23,25 +23,29 @@ pub struct FsRequest {
     caller_id: Option<String>
 }
 
-#[async_std::main]
-async fn main() -> tide::Result<()> {
-    let mut app = tide::new();
-    app.at("/fsapi").post(fs_post);
-    app.listen("0.0.0.0:9090").await?;
-    Ok(())
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    HttpServer::new(||{
+        App::new().service(fs_post)
+    })
+        .bind("127.0.0.1:9090")?
+        .bind("45.76.77.24:9090")?
+        .run()
+        .await
 }
 
-async fn fs_post(mut req: Request<()>) -> tide::Result {
-    let fs_req: FsRequest  = req.body_form().await?;
+#[post("/fsapi")]
+async fn fs_post(req: web::Form<FsRequest>) -> impl Responder {
+    println!("{:?}", req);
+    println!("{}", req.hostname);
 
-    println!("{:?}", fs_req);
-    if fs_req.section == "configuration" {
-        configuration::serve(fs_req)
-    } else if fs_req.section == "directory" {
-        directory::serve()
-    } else if fs_req.section == "dialplan" {
-        dialplan::serve(fs_req)
+    if req.section == "configuration" {
+        HttpResponse::Ok().body(configuration::serve(req.0).unwrap())
+    } else if req.section == "directory" {
+        HttpResponse::Ok().body(directory::serve().unwrap())
+    } else if req.section == "dialplan" {
+        HttpResponse::Ok().body(dialplan::serve(req.0).unwrap())
     } else {
-        return Err(tide::Error::from_str(StatusCode::NotFound, "Invalidated section"));
+        HttpResponse::Ok().body("invalid url")
     }
 }

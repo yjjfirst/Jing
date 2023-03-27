@@ -9,8 +9,9 @@ use fs_lib::domain;
 use fs_lib::domain::models::Domain;
 use fs_lib::user::{all_users, get_user_params, get_user_vars};
 use fs_lib::user::models::{User};
+use actix_web::Result;
 
-pub fn serve () -> tide::Result {
+pub fn serve () -> Result<String> {
     let mut buf = BufWriter::new(Vec::new());
     let mut w = EmitterConfig::new().perform_indent(true).create_writer(&mut buf);
 
