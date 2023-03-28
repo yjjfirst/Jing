@@ -20,6 +20,30 @@ diesel::table! {
 }
 
 diesel::table! {
+    cdr (id) {
+        id -> Int4,
+        local_ip_v4 -> Inet,
+        caller_id_name -> Nullable<Varchar>,
+        caller_id_number -> Nullable<Varchar>,
+        destination_number -> Varchar,
+        context -> Varchar,
+        start_stamp -> Timestamptz,
+        answer_stamp -> Nullable<Timestamptz>,
+        end_stamp -> Timestamptz,
+        duration -> Int4,
+        billsec -> Int4,
+        hangup_cause -> Varchar,
+        uuid -> Uuid,
+        bleg_uuid -> Nullable<Uuid>,
+        accountcode -> Nullable<Varchar>,
+        read_codec -> Nullable<Varchar>,
+        write_codec -> Nullable<Varchar>,
+        sip_hangup_disposition -> Nullable<Varchar>,
+        ani -> Nullable<Varchar>,
+    }
+}
+
+diesel::table! {
     cdrs (id) {
         id -> Int4,
         a_caller_id -> Varchar,
@@ -316,6 +340,7 @@ diesel::joinable!(voicemails -> users (user_id));
 diesel::allow_tables_to_appear_in_same_query!(
     agent_params,
     agents,
+    cdr,
     cdrs,
     conference_control_details,
     conference_controls,
