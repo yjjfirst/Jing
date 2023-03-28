@@ -1,0 +1,7 @@
+<configuration name="lua.conf" description="LUA Configuration">
+  <settings>
+    <param name="script-directory" value="/usr/share/freeswitch/scripts/?.lua"/>
+    <!-- <param name="xml-handler-script" value="freeswitch_xml.lua"/>
+    <param name="xml-handler-bindings" value="directory,dialplan,configuration"/> -->
+  </settings>
+</configuration>
