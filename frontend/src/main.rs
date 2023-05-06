@@ -1,4 +1,8 @@
 mod app;
+mod sidebar;
+mod main_panel;
+mod ringing_group;
+mod cards;
 
 use app::App;
 
