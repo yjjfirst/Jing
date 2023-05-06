@@ -1,6 +1,7 @@
 use crate::schema::ringing_groups;
+use serde::{Serialize};
 
-#[derive(Queryable)]
+#[derive(Queryable, Serialize)]
 pub struct Ringgroup {
     pub id: i32,
     pub name: String,
