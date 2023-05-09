@@ -6,6 +6,8 @@ use gloo_dialogs::{alert};
 use crate::ringing_group::{RingingGroups};
 use crate::cards::{Cards};
 
+use std::sync::{Arc, Mutex};
+
 #[derive(Clone, Routable, PartialEq)]
 pub enum Route {
     #[at("/")]
@@ -29,7 +31,6 @@ pub fn MainPanel() -> Html {
 
     html! {
         <div class="grow ml-4 mr-1">
-            <h1 class="p-4 border-b-zinc-400 border-b mb-4">{"Title"}</h1>
             <BrowserRouter>
                 <Switch<Route> render={switch} />
             </BrowserRouter>

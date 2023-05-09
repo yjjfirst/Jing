@@ -15,6 +15,7 @@ gloo-dialogs = "0.1.1"
 gloo-net = "0.2.6"
 serde = {version = "1.0", features = ["derive"]}
 wasm-bindgen-futures  = "0.4"
+yew_icons = {version = "0.7", features = ["LucideEdit", "LucideDelete", "LucideUser"]}
 
 [dependencies.web-sys]
 version = "0.3"

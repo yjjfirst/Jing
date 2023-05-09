@@ -3,6 +3,8 @@ mod sidebar;
 mod main_panel;
 mod ringing_group;
 mod cards;
+mod header;
+mod button;
 
 use app::App;
 

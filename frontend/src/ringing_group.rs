@@ -1,6 +1,8 @@
 use yew::prelude::*;
 use gloo_net::http::Request;
 use serde::Deserialize;
+use crate::header::{Header};
+use crate::button::{Button, ButtonType};
 
 #[derive(Clone, PartialEq, Deserialize, Properties)]
 pub struct RingingGroup {
@@ -31,10 +33,17 @@ pub fn RingingGroups() -> Html {
         },());
     }
     
-    ringing_groups.iter().map(|g| html! {
+    let groups: Vec<Html> = ringing_groups.iter().map(|g| html! {
         <RingingGroupComponent ..g.clone()>
         </RingingGroupComponent>
-    }).collect()
+    }).collect();
+
+    html! {
+        <div class="grow">
+            <Header title="Application->Ringing Group"></Header>
+            {groups}
+        </div>
+    }
 
 }
 
@@ -42,9 +51,10 @@ pub fn RingingGroups() -> Html {
 pub fn RingingGroupComponent(props: &RingingGroup) -> Html {
     let props = props.clone();
     return html! {
-        <div class="flex w-full hover:bg-zinc-200 duration-200 transition-colors border-b p-2">
+        <div class="flex w-full hover:bg-zinc-200 duration-200 transition-colors border-b h-12 items-center">
             <div class="w-1/5">{props.group_id}</div>
             <div class="grow">{props.name}</div>
+            <Button b_type={ButtonType::Edit}></Button>
         </div>
     }
 }
