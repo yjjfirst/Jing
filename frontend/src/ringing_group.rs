@@ -51,7 +51,7 @@ pub fn RingingGroups() -> Html {
 pub fn RingingGroupComponent(props: &RingingGroup) -> Html {
     let props = props.clone();
     return html! {
-        <div class="flex w-full hover:bg-zinc-200 duration-200 transition-colors border-b h-12 items-center">
+        <div class="flex w-full hover:bg-skin-hover border-b h-12 items-center">
             <div class="w-1/5">{props.group_id}</div>
             <div class="grow">{props.name}</div>
             <Button b_type={ButtonType::Edit}></Button>

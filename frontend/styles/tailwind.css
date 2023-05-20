@@ -4,6 +4,21 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+    :root {
+        --color-text-base: rgb(24 24 27);
+        --color-text-inverted: rgb(244 244 245);
+        --color-background-fill: #f4f4f5;
+        --color-background-hover-fill: #e4e4e7;
+        --color-background-inverted-fill: #27272a;
+        --color-background-inverted-hover: #71717a;
+    }
+}
+
+body * {
+    @apply transition-colors duration-200;
+}
+
 html {
     font-family: 'Poppins', sans-serif;
 }

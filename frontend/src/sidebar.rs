@@ -37,7 +37,7 @@ pub struct MenuItemPros {
 #[function_component] 
 pub fn MenuItem(props: &MenuItemPros) -> Html {
     html! {
-        <div class="py-2 px-12 hover:bg-zinc-500 duration-200 transition-colors">
+        <div class="py-2 px-12 hover:bg-skin-inverted_hover text-skin-inverted">
             { for props.children.iter() }
         </div>
     }

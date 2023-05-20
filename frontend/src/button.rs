@@ -18,7 +18,7 @@ pub fn Button(props: &ButtonProps) -> Html {
     let b_type = props.b_type.clone();
 
     html! {
-        <div class="hover:bg-zinc-200 p-2 rounded inline-flex items-center">
+        <div class="hover:bg-skin-hover p-2 rounded inline-flex items-center">
             if b_type == ButtonType::Edit {
                 <Icon icon_id={IconId::LucideEdit}/>
             } else if b_type == ButtonType::User {

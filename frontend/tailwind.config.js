@@ -26,6 +26,21 @@ module.exports = {
                   '2xl': '1125px',
               },
           },
+          textColor: {
+            skin: {
+                base: "var(--color-text-base)",
+                inverted: "var(--color-text-inverted)",
+            }
+          },
+          backgroundColor: {
+            skin: {
+                fill: "var(--color-background-fill)",
+                inverted: "var(--color-background-inverted-fill)",
+                hover: "var(--color-background-hover-fill)",
+                inverted_hover: "var(--color-background-inverted-hover)",
+            }
+          }
+
 
       },
   },
