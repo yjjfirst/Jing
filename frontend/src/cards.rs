@@ -16,7 +16,7 @@ pub fn Cards() -> Html {
 #[function_component]
 pub fn Card() -> Html {
     let navigator = use_navigator().unwrap();
-    let onclick = Callback::from(move |_: MouseEvent| navigator.push(&Route::RingingGroups));
+    let onclick = Callback::from(move |_: MouseEvent| navigator.push(&Route::RingingGroupsRoot));
     html! {
         <div class="grow">
             <Header title="Application"></Header>

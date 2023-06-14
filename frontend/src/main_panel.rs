@@ -3,7 +3,7 @@ use yew_router::prelude::*;
 use yew::{Properties};
 use web_sys::{MouseEvent};
 use gloo_dialogs::{alert};
-use crate::ringing_group::{RingingGroups};
+use crate::ringing_group::{RingingGroupsRoute, switch_ringinggroups};
 use crate::cards::{Cards};
 
 use std::sync::{Arc, Mutex};
@@ -13,14 +13,16 @@ pub enum Route {
     #[at("/")]
     Cards,
     #[at("/ringing-group")]
-    RingingGroups
+    RingingGroupsRoot,
+    #[at("/ringing-group/*")]
+    RingingGroups,
+
 }
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
     onclick: Callback<MouseEvent>,
 }
-
 
 #[function_component]
 pub fn MainPanel() -> Html {
@@ -44,8 +46,11 @@ fn switch(routes: Route) -> Html {
         Route::Cards => html! {
             <Cards />
         },
+        Route::RingingGroupsRoot => html! {
+            <Switch<RingingGroupsRoute> render={switch_ringinggroups}/>
+        },
         Route::RingingGroups => html! {
-            <RingingGroups />
+            <Switch<RingingGroupsRoute> render={switch_ringinggroups}/>
         }
     }
 }

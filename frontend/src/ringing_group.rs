@@ -1,8 +1,18 @@
 use yew::prelude::*;
+use yew_router::prelude::*;
 use gloo_net::http::Request;
 use serde::Deserialize;
 use crate::header::{Header};
 use crate::button::{Button, ButtonType};
+
+#[derive(Clone, Routable, PartialEq)]
+pub enum RingingGroupsRoute {
+    #[at("/ringing-group")]
+    Index,
+    #[at("/ringing-group/ttt")]
+    Get,
+}
+
 
 #[derive(Clone, PartialEq, Deserialize, Properties)]
 pub struct RingingGroup {
@@ -56,5 +66,19 @@ pub fn RingingGroupComponent(props: &RingingGroup) -> Html {
             <div class="grow">{props.name}</div>
             <Button b_type={ButtonType::Edit}></Button>
         </div>
+    }
+}
+
+#[function_component]
+pub fn RingingGroupDetail() -> Html {
+    html! {
+        <p class="flex">{"Ringing Group details"}</p>
+    }
+}
+
+pub fn switch_ringinggroups(route: RingingGroupsRoute) -> Html {
+    match route {
+        RingingGroupsRoute::Index => html!{ <RingingGroups />},
+        RingingGroupsRoute::Get  => html!{<RingingGroupDetail/>}
     }
 }
