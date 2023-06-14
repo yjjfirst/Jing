@@ -1,5 +1,4 @@
 use yew::prelude::*;
-use yew_router::prelude::*;
 use yew_icons::{Icon, IconId};
 
 #[derive(PartialEq, Clone)]

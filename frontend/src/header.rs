@@ -1,5 +1,4 @@
 use yew::prelude::*;
-use yew_router::prelude::*;
 use crate::button::{Button, ButtonType};
 
 #[derive(Properties, PartialEq)]

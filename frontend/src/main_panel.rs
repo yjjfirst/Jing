@@ -6,8 +6,6 @@ use gloo_dialogs::{alert};
 use crate::ringing_group::{RingingGroupsRoute, switch_ringinggroups};
 use crate::cards::{Cards};
 
-use std::sync::{Arc, Mutex};
-
 #[derive(Clone, Routable, PartialEq)]
 pub enum Route {
     #[at("/")]
@@ -26,7 +24,7 @@ pub struct Props {
 
 #[function_component]
 pub fn MainPanel() -> Html {
-    let onclick = Callback::from(|_e: MouseEvent| {
+    let _onclick = Callback::from(|_e: MouseEvent| {
         let greeting = String::from("Hi there");
         alert(&greeting);
     });
