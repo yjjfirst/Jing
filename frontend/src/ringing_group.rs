@@ -1,4 +1,5 @@
 use yew::prelude::*;
+use yew::Properties;
 use yew_router::prelude::*;
 use gloo_net::http::Request;
 use serde::Deserialize;
@@ -9,17 +10,22 @@ use crate::button::{Button, ButtonType};
 pub enum RingingGroupsRoute {
     #[at("/ringing-group")]
     Index,
-    #[at("/ringing-group/ttt")]
-    Get,
+    #[at("/ringing-group/:id")]
+    Get {id: String},
 }
 
 
 #[derive(Clone, PartialEq, Deserialize, Properties)]
 pub struct RingingGroup {
-    id: usize,
-    name: String,
-    group_id: String,
-    description: Option<String>
+    pub id: usize,
+    pub name: String,
+    pub group_id: String,
+    pub description: Option<String>
+}
+
+#[derive(Clone, PartialEq, Properties)] 
+pub struct RingingGroupDetailsProps {
+    pub id: String
 }
 
 #[function_component]
@@ -44,8 +50,8 @@ pub fn RingingGroups() -> Html {
     }
     
     let groups: Vec<Html> = ringing_groups.iter().map(|g| html! {
-        <RingingGroupComponent ..g.clone()>
-        </RingingGroupComponent>
+        <RingingGroupListItem ..g.clone()>
+        </RingingGroupListItem>
     }).collect();
 
     html! {
@@ -58,7 +64,7 @@ pub fn RingingGroups() -> Html {
 }
 
 #[function_component]
-pub fn RingingGroupComponent(props: &RingingGroup) -> Html {
+pub fn RingingGroupListItem(props: &RingingGroup) -> Html {
     let props = props.clone();
     return html! {
         <div class="flex w-full hover:bg-skin-hover border-b h-12 items-center">
@@ -70,15 +76,16 @@ pub fn RingingGroupComponent(props: &RingingGroup) -> Html {
 }
 
 #[function_component]
-pub fn RingingGroupDetail() -> Html {
+pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
+    let id = props.clone().id;
     html! {
-        <p class="flex">{"Ringing Group details"}</p>
+        <p class="flex">{ format!("Ringing Group details: {}", id) }</p>
     }
 }
 
-pub fn switch_ringinggroups(route: RingingGroupsRoute) -> Html {
+pub fn ringinggroups_switch(route: RingingGroupsRoute) -> Html {
     match route {
         RingingGroupsRoute::Index => html!{ <RingingGroups />},
-        RingingGroupsRoute::Get  => html!{<RingingGroupDetail/>}
+        RingingGroupsRoute::Get { id } => html!{<RingingGroupDetail id={id}/>}
     }
 }

@@ -3,7 +3,7 @@ use yew_router::prelude::*;
 use yew::{Properties};
 use web_sys::{MouseEvent};
 use gloo_dialogs::{alert};
-use crate::ringing_group::{RingingGroupsRoute, switch_ringinggroups};
+use crate::ringing_group::{RingingGroupsRoute, ringinggroups_switch};
 use crate::cards::{Cards};
 
 #[derive(Clone, Routable, PartialEq)]
@@ -45,10 +45,10 @@ fn switch(routes: Route) -> Html {
             <Cards />
         },
         Route::RingingGroupsRoot => html! {
-            <Switch<RingingGroupsRoute> render={switch_ringinggroups}/>
+            <Switch<RingingGroupsRoute> render={ringinggroups_switch}/>
         },
         Route::RingingGroups => html! {
-            <Switch<RingingGroupsRoute> render={switch_ringinggroups}/>
+            <Switch<RingingGroupsRoute> render={ringinggroups_switch}/>
         }
     }
 }
