@@ -2,7 +2,6 @@ use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
 use gloo_net::http::Request;
-use gloo_dialogs::{alert};
 use serde::Deserialize;
 use crate::header::{Header};
 use crate::button::{Button, ButtonType};

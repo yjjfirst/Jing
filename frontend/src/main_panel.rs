@@ -31,9 +31,7 @@ pub fn MainPanel() -> Html {
 
     html! {
         <div class="grow ml-4 mr-1">
-            <BrowserRouter>
-                <Switch<Route> render={switch} />
-            </BrowserRouter>
+            <Switch<Route> render={switch} />
         </div>
     }
 }

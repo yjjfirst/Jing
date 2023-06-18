@@ -1,4 +1,6 @@
 use yew::prelude::*;
+use yew_router::prelude::*;
+use super::main_panel::Route;
 
 #[function_component]
 pub fn SideBar() -> Html {
@@ -23,21 +25,32 @@ pub fn Logo() -> Html {
 pub fn Menu() -> Html {
     html! {
         <div>
-            <MenuItem>{"Application"}</MenuItem>
-            <MenuItem>{"System"}</MenuItem>
+            <MenuItem route={Route::Cards}>
+                {"Application" }
+            </MenuItem>
+            <MenuItem route={Route::Cards}>
+                {"System"}
+            </MenuItem>
         </div>
     }
 }
 
-#[derive(Properties, PartialEq)]
+#[derive(Clone, Properties, PartialEq)]
 pub struct MenuItemPros {
     pub children: Children,
+    pub route: Route,
 }
 
 #[function_component] 
 pub fn MenuItem(props: &MenuItemPros) -> Html {
+    let nav = use_navigator().unwrap();
+    let p = props.clone();
+    let onclick = Callback::from(move |_e: MouseEvent| {
+        nav.push(&p.route);
+    });    
+
     html! {
-        <div class="py-2 px-12 hover:bg-skin-inverted_hover text-skin-inverted">
+        <div {onclick} class="py-2 px-12 hover:bg-skin-inverted_hover text-skin-inverted">
             { for props.children.iter() }
         </div>
     }
