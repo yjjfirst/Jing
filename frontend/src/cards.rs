@@ -4,19 +4,25 @@ use web_sys::{MouseEvent};
 use crate::main_panel::{Route};
 use crate::header::{Header};
 
+#[derive(Clone, Properties, PartialEq)]
+pub struct CardProps {
+    pub route: Route,
+}
+
 #[function_component] 
 pub fn Cards() -> Html {
     html! {
         <div class="flex flex-wrap">
-            <Card></Card>
+            <Card route={Route::RingingGroupsRoot}></Card>
         </div>
     }
 }
 
 #[function_component]
-pub fn Card() -> Html {
+pub fn Card(props: &CardProps) -> Html {
     let navigator = use_navigator().unwrap();
-    let onclick = Callback::from(move |_: MouseEvent| navigator.push(&Route::RingingGroupsRoot));
+    let p = props.clone();
+    let onclick = Callback::from(move |_: MouseEvent| navigator.push(&p.route));
     html! {
         <div class="grow">
             <Header title="Application"></Header>
