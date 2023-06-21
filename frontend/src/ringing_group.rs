@@ -5,6 +5,7 @@ use gloo_net::http::Request;
 use serde::Deserialize;
 use crate::header::{Header};
 use crate::button::{Button, ButtonType};
+use crate::app::{Env};
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum RingingGroupsRoute {
@@ -30,24 +31,24 @@ pub struct RingingGroupDetailsProps {
 
 #[function_component]
 pub fn RingingGroups() -> Html {
+    let env = use_context::<Env>().expect("no context found");
+    let endpoint = format!("{}/ringing-groups", env.base_url);
     let ringing_groups: UseStateHandle<Vec<RingingGroup>> = use_state(||vec![]);
-    {
-        let ringing_groups = ringing_groups.clone();
-        use_effect_with_deps(move |_| {
-            let ringing_groups = ringing_groups.clone();
-            wasm_bindgen_futures::spawn_local(async move {
-                let fetched_ringing_groups: Vec<RingingGroup> 
-                    = Request::get("http://teleman.me:9090/api/ringing-groups")
-                        .send()
-                        .await
-                        .unwrap()
-                        .json()
-                        .await
-                        .unwrap();
-                ringing_groups.set(fetched_ringing_groups);        
-            });
-        },());
-    }
+    let groups = ringing_groups.clone();
+    use_effect_with_deps(move |_| {
+        let groups = groups.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            let fetched_groups: Vec<RingingGroup> 
+                = Request::get(&endpoint)
+                    .send()
+                    .await
+                    .unwrap()
+                    .json()
+                    .await
+                    .unwrap();
+            groups.set(fetched_groups);        
+        });
+    },());
     
     let groups: Vec<Html> = ringing_groups.iter().map(|g| html! {
         <RingingGroupListItem ..g.clone()>
@@ -86,7 +87,32 @@ pub fn RingingGroupListItem(props: &RingingGroup) -> Html {
 
 #[function_component]
 pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
+    let env = use_context::<Env>().expect("no context found");
     let id = props.clone().id;
+    let endpoint = format!("{}/ringing-groups/{}", env.base_url, id);
+
+    let group: UseStateHandle<RingingGroup> = use_state(||RingingGroup {
+        id: 0,
+        name: "".to_string(),
+        group_id: "".to_string(),
+        description: None
+    });
+    let g = group.clone();
+    use_effect_with_deps(move |_| {
+        let g = g.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            let fetched_group: RingingGroup
+                = Request::get(&endpoint)
+                    .send()
+                    .await
+                    .unwrap()
+                    .json()
+                    .await
+                    .unwrap();
+            g.set(fetched_group);
+        });
+    },());
+    
     html! {
         <div class="grow">
             <Header title= {format!("Ringing Group: {}", id)}></Header>
