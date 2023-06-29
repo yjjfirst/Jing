@@ -4,15 +4,13 @@ mod configuration;
 mod directory;
 mod dialplan;
 
-use actix_web::{get, post, web, App, HttpServer, Responder, HttpResponse};
+use actix_web::{post, web, Responder, HttpResponse};
 use serde::{Deserialize};
 
 #[derive(Debug, Deserialize)]
 pub struct FsRequest {
     hostname: String,
     section: String,
-    tag_name: String,
-    key_name: String,
     key_value: String,
     #[serde(rename = "Caller-Destination-Number")]
     dest_number: Option<String>,
