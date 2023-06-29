@@ -2,7 +2,7 @@ extern crate fs_lib;
 
 use xml::writer::{EventWriter};
 use std::io::Write;
-use crate::xml_utils::{start_element, end_element, attrs, control, param};
+use crate::fs::xml_utils::{start_element, end_element, attrs, control, param};
 
 use fs_lib::conference::{conference_control, conference_profile};
 

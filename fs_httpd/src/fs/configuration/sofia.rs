@@ -4,7 +4,7 @@ use fs_lib::gateway::models::{Gateway};
 use fs_lib::profile::models::{Profile};
 use fs_lib::profile;
 
-use crate::xml_utils::{start_element, end_element, param, Attr};
+use crate::fs::xml_utils::{start_element, end_element, param, Attr};
 
 pub fn serve<W: Write>(w: &mut EventWriter<W>) {
     start_element(w, "configuration", Some(

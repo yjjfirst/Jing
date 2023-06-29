@@ -1,6 +1,6 @@
 use xml::writer::{EventWriter};
 use std::io::Write;
-use crate::xml_utils::{start_element, end_element, attrs, param};
+use crate::fs::xml_utils::{start_element, end_element, attrs, param};
 
 use fs_lib::queue;
 use fs_lib::queue::agent;
