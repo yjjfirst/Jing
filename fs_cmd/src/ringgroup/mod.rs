@@ -82,7 +82,7 @@ pub fn exec_rg_member_cmd(member: RgMemberCli) {
                 .unwrap();
         },
         RgMemberCli::Ls {group}=> {
-            let members = ringgroup::all_ringgroup_member(group)
+            let members = ringgroup::members(group)
                 .unwrap();
             let mut table = Ctable::new();
 

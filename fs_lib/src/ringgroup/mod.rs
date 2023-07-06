@@ -99,7 +99,7 @@ pub fn del_ringgroup_member(group: i32, user: i32) -> Result<()> {
     Ok(())
 }
 
-pub fn all_ringgroup_member(group: i32) -> Result<Vec<(i32,String,String)>> {
+pub fn members(group: i32) -> Result<Vec<(i32,String,String)>> {
     use crate::schema::ringing_group_members::dsl::*;
 
     let mut conn = db_connect();
@@ -133,7 +133,7 @@ pub fn get_by(domain: i32, exten: &str) -> Result<Ringgroup> {
     Ok(result)
 }
 
-fn get_ringgroup(target_ringgroup_id: i32) -> Result<Ringgroup> {
+pub fn get_ringgroup(target_ringgroup_id: i32) -> Result<Ringgroup> {
     use crate::schema::ringing_groups::dsl::*;
 
     let mut conn = db_connect();
