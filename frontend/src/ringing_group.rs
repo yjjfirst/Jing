@@ -1,3 +1,4 @@
+use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
@@ -50,7 +51,7 @@ pub fn RingingGroupListItem(props: &RingingGroup) -> Html {
     let id = props.id;
     let nav = use_navigator().unwrap();
 
-    let onclick = Callback::from(move |_e: MouseEvent| {
+    let onclick: Callback<MouseEvent> = Callback::from(move |_e: MouseEvent| {
         nav.push(&RingingGroupsRoute::Get {id: id.to_string()});
     });
 
@@ -67,8 +68,8 @@ pub fn RingingGroupListItem(props: &RingingGroup) -> Html {
 
 #[function_component]
 pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
-    let id = props.id.parse::<i32>().unwrap();
-    let group: UseStateHandle<RingingGroup> = use_state(||RingingGroup::new());
+    let id = props.id.parse::<usize>().unwrap();
+    let group: UseStateHandle<RingingGroup> = use_state(||RingingGroup::new_empty());
     let g = group.clone();
     
     use_effect_with_deps(move |_| {
@@ -79,6 +80,38 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
         });
     },());
     
+    let name_input_ref = use_node_ref();
+    let name_input_ref_cloned = name_input_ref.clone();
+
+    let exten_input_ref = use_node_ref();
+    let exten_input_ref_cloned = exten_input_ref.clone();
+
+    let desc_input_ref = use_node_ref();
+    let desc_input_ref_cloned = desc_input_ref.clone();
+
+    let ringtime_input_ref = use_node_ref();
+    let ringtime_input_ref_cloned = ringtime_input_ref.clone();
+
+    let ringstrategy_input_ref = use_node_ref();
+    let ringstragegy_input_ref_cloned = ringstrategy_input_ref.clone();
+
+    let onclick: Callback<MouseEvent> = Callback::from(move|_:MouseEvent|{
+        let name_input: HtmlInputElement = name_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
+        let exten_input: HtmlInputElement = exten_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
+        let desc_input: HtmlInputElement = desc_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
+        let ringtime_input: HtmlInputElement = ringtime_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
+        let ringstrategy_input: HtmlInputElement = ringstragegy_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
+        let group = RingingGroup::new(
+            id,
+            name_input.value(),
+            exten_input.value(),
+            Some(desc_input.value()),
+            ringtime_input.value().parse::<i32>().unwrap(),
+            ringstrategy_input.value()
+        );
+        wasm_bindgen_futures::spawn_local(async move {RingingGroup::update(id, group).await;});
+    });
+
     html! { 
         <div class="grow">
             <Header title= {format!("Ringing Group: {}", group.group_id.clone())}></Header>
@@ -93,8 +126,9 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
                 <input 
                   class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" 
                   id="name" 
-                  type="text" 
-                  value={group.name.clone()}/>
+                  type="text"
+                  value={group.name.clone()}
+                  ref={name_input_ref}/>
               </div>
               <div class="w-full md:w-1/2 px-3">
                 <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" 
@@ -104,7 +138,8 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
                 <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" 
                   id="extension" 
                   type="text" 
-                  value={group.group_id.clone()}/>
+                  value={group.group_id.clone()}
+                  ref={exten_input_ref}/>
               </div>
             </div>
             <div class="flex flex-wrap -mx-3 mb-6">
@@ -116,7 +151,8 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
                 <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" 
                   id="description" 
                   type="text" 
-                  placeholder={group.description.clone()}/>
+                  placeholder={group.description.clone()}
+                  ref={desc_input_ref}/>
               </div>
             </div>
             <div class="flex flex-wrap -mx-3 mb-6">
@@ -130,7 +166,8 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
                   class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" 
                   id="ring-time" 
                   type="text" 
-                  value={group.ring_time.to_string()}/>
+                  value={group.ring_time.to_string()}
+                  ref={ringtime_input_ref}/>
               </div>
               <div class="w-full md:w-1/2 px-3">
                 <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" 
@@ -140,11 +177,13 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
                 <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" 
                   id="ring-strategy" 
                   type="text" 
-                  value={group.ring_strategy.clone()}/>
+                  value={group.ring_strategy.clone()}
+                  ref={ringstrategy_input_ref}/>
               </div>
             </div>
-
           </form>
+          <button {onclick}>{"Submit"}</button>
+
         </div>
     }
 }
