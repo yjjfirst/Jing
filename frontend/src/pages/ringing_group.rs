@@ -2,9 +2,12 @@ use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
+use yewdux::prelude::*;
+
 use crate::components::header::{Header};
 use crate::components::button::{Button, ButtonType};
 use crate::services::{RingingGroup};
+use crate::store::{show_alert, Store};
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum RingingGroupsRoute {
@@ -68,7 +71,8 @@ pub fn RingingGroupListItem(props: &RingingGroup) -> Html {
 
 #[function_component]
 pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
-    let id = props.id.parse::<usize>().unwrap();
+  let(_, dispatch) = use_store::<Store>();
+  let id = props.id.parse::<usize>().unwrap();
     let group: UseStateHandle<RingingGroup> = use_state(||RingingGroup::new_empty());
     let g = group.clone();
     
@@ -96,6 +100,7 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
     let ringstragegy_input_ref_cloned = ringstrategy_input_ref.clone();
 
     let onclick: Callback<MouseEvent> = Callback::from(move|_:MouseEvent|{
+        let dispatch = dispatch.clone();
         let name_input: HtmlInputElement = name_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
         let exten_input: HtmlInputElement = exten_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
         let desc_input: HtmlInputElement = desc_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
@@ -109,7 +114,12 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
             ringtime_input.value().parse::<i32>().unwrap(),
             ringstrategy_input.value()
         );
-        wasm_bindgen_futures::spawn_local(async move {RingingGroup::update(id, group).await;});
+        wasm_bindgen_futures::spawn_local(async move {
+          let dispatch = dispatch.clone();
+          show_alert("Updating ringing group.".to_string(), dispatch);
+          RingingGroup::update(id, group).await;
+        });
+        
     });
 
     html! { 
