@@ -2,7 +2,7 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 use web_sys::{MouseEvent};
 use crate::main_panel::{Route};
-use crate::header::{Header};
+use crate::components::header::{Header};
 
 #[derive(Clone, Properties, PartialEq)]
 pub struct CardProps {

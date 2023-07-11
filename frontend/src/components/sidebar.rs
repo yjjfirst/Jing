@@ -1,6 +1,6 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
-use super::main_panel::Route;
+use crate::main_panel::Route;
 
 #[function_component]
 pub fn SideBar() -> Html {

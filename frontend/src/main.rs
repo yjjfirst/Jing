@@ -1,11 +1,9 @@
 mod app;
-mod sidebar;
 mod main_panel;
-mod ringing_group;
 mod cards;
-mod header;
-mod button;
 mod services;
+mod components;
+mod pages;
 
 use app::App;
 

@@ -2,8 +2,8 @@ use web_sys::HtmlInputElement;
 use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
-use crate::header::{Header};
-use crate::button::{Button, ButtonType};
+use crate::components::header::{Header};
+use crate::components::button::{Button, ButtonType};
 use crate::services::{RingingGroup};
 
 #[derive(Clone, Routable, PartialEq)]
@@ -182,8 +182,14 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
               </div>
             </div>
           </form>
-          <button {onclick}>{"Submit"}</button>
-
+          <div class="flex">
+          <div {onclick}>
+            <Button b_type={ButtonType::Check}>{"Submit"}</Button>
+          </div>
+          <div>
+            <Button b_type={ButtonType::X}>{"Cancel"}</Button>
+          </div>
+          </div>
         </div>
     }
 }

@@ -1,5 +1,5 @@
 use yew::prelude::*;
-use crate::button::{Button, ButtonType};
+use crate::components::button::{Button, ButtonType};
 
 #[derive(Properties, PartialEq)]
 pub struct HeaderProps {

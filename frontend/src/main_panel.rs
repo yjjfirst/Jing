@@ -3,7 +3,7 @@ use yew_router::prelude::*;
 use yew::{Properties};
 use web_sys::{MouseEvent};
 use gloo_dialogs::{alert};
-use crate::ringing_group::{RingingGroupsRoute, ringinggroups_switch};
+use crate::pages::ringing_group::{RingingGroupsRoute, ringinggroups_switch};
 use crate::cards::{Cards};
 
 #[derive(Clone, Routable, PartialEq)]

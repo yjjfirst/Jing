@@ -1,5 +1,5 @@
 use yew::Properties;
-use gloo_net::http::Request;
+use gloo_net::http::{Request, Response};
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, PartialEq, Deserialize, Properties, Serialize)]
@@ -34,36 +34,20 @@ impl RingingGroup {
 
     pub async fn fetch_all() -> Vec<RingingGroup> {
         let endpoint = format!("http://teleman.me:9090/api/ringing-groups");
-        Request::get(&endpoint)
-            .send()
-            .await
-            .unwrap()
-            .json()
-            .await
-            .unwrap()
+        let response = Request::get(&endpoint).send().await.unwrap();
+        response.json().await.unwrap()
     }
     pub async fn fetch(id: usize) -> RingingGroup {
         let endpoint = format!("http://teleman.me:9090/api/ringing-groups/{}", id);
-        Request::get(&endpoint)
-            .send()
-            .await
-            .unwrap()
-            .json()
-            .await
-            .unwrap()
+        let response = Request::get(&endpoint).send().await.unwrap();
+        response.json().await.unwrap()
     }
 
-    pub async fn update(id: usize, group: RingingGroup)  {
+    pub async fn update(id: usize, group: RingingGroup) {
         let endpoint = format!("http://teleman.me:9090/api/ringing-groups/{}", id);
         let data = serde_json::to_string(&group).unwrap();
-        Request::post(&endpoint)
-            .body(data)
-            .send()
-            .await
-            .unwrap()
-            .json()
-            .await
-            .unwrap()
+        let response: Response = Request::post(&endpoint).body(data).send().await.unwrap();
+        response.json().await.unwrap()
     }
     
 }

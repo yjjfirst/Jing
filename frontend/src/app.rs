@@ -1,6 +1,6 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
-use super::sidebar::{SideBar};
+use super::components::sidebar::{SideBar};
 use super::main_panel::{MainPanel};
 
 #[derive(Clone, Debug, PartialEq)]
