@@ -1,11 +1,23 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 use super::components::sidebar::{SideBar};
-use super::main_panel::{MainPanel};
+use crate::pages::ringing_group::{RingingGroupsRoute, ringinggroups_switch};
+use crate::components::cards::{Cards};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Env {
     pub base_url: String,
+}
+
+#[derive(Clone, Routable, PartialEq)]
+pub enum Route {
+    #[at("/")]
+    Cards,
+    #[at("/ringing-group")]
+    RingingGroupsRoot,
+    #[at("/ringing-group/*")]
+    RingingGroups,
+
 }
 
 #[function_component(App)]
@@ -19,9 +31,25 @@ pub fn app() -> Html {
             <BrowserRouter>
                 <div class="flex">
                     <SideBar></SideBar>
-                    <MainPanel></MainPanel>
+                    <div class="grow ml-4 mr-1">
+                        <Switch<Route> render={switch} />
+                    </div>                    
                 </div>
             </BrowserRouter>
         </ContextProvider<Env>>
+    }
+}
+
+fn switch(routes: Route) -> Html {
+    match routes {
+        Route::Cards => html! {
+            <Cards />
+        },
+        Route::RingingGroupsRoot => html! {
+            <Switch<RingingGroupsRoute> render={ringinggroups_switch}/>
+        },
+        Route::RingingGroups => html! {
+            <Switch<RingingGroupsRoute> render={ringinggroups_switch}/>
+        }
     }
 }

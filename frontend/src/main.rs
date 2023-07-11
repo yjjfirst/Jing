@@ -1,6 +1,4 @@
 mod app;
-mod main_panel;
-mod cards;
 mod services;
 mod components;
 mod pages;
