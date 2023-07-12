@@ -111,6 +111,7 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
             name_input.value(),
             exten_input.value(),
             Some(desc_input.value()),
+            1,           
             ringtime_input.value().parse::<i32>().unwrap(),
             ringstrategy_input.value()
         );

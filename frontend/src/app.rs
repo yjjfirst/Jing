@@ -48,8 +48,7 @@ pub fn app() -> Html {
                 <div class="flex">
                     <SideBar></SideBar>
                     <div class="grow ml-4 mr-1">
-                        <Switch<Route> render={switch} />
-                        
+                        <Switch<Route> render={switch} />    
                     </div>                    
                 </div>
             </BrowserRouter>

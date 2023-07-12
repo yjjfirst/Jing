@@ -8,6 +8,7 @@ pub struct RingingGroup {
     pub name: String,
     pub group_id: String,
     pub description: Option<String>,
+    pub domain_id: i32,
     pub ring_time: i32,
     pub ring_strategy: String
 }
@@ -20,6 +21,7 @@ impl RingingGroup {
             group_id: "".to_string(),
             description: None,
             ring_time: 0,
+            domain_id: 1,
             ring_strategy: "all".to_string()       
         }
     }
@@ -27,9 +29,10 @@ impl RingingGroup {
         name: String, 
         group_id: String, 
         description: Option<String>, 
+        domain_id: i32,
         ring_time: i32, 
         ring_strategy: String) -> RingingGroup {
-            RingingGroup {id, name, group_id, description, ring_time, ring_strategy}
+            RingingGroup {id, name, group_id, description, domain_id, ring_time, ring_strategy}
     }
 
     pub async fn fetch_all() -> Vec<RingingGroup> {
@@ -45,8 +48,8 @@ impl RingingGroup {
 
     pub async fn update(id: usize, group: RingingGroup) {
         let endpoint = format!("http://teleman.me:9090/api/ringing-groups/{}", id);
-        let data = serde_json::to_string(&group).unwrap();
-        let response: Response = Request::post(&endpoint).body(data).send().await.unwrap();
+        let request = Request::post(&endpoint).json(&group).unwrap();
+        let response: Response = request.send().await.unwrap();
         response.json().await.unwrap()
     }
     

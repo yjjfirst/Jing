@@ -5,7 +5,7 @@ use crate::app::Route;
 #[function_component]
 pub fn SideBar() -> Html {
     html! {
-        <div class="flex-row bg-zinc-700 text-white ml-1">
+        <div class="flex-row bg-skin-inverted text-skin-inverted ml-1">
             <Logo></Logo>
             <Menu></Menu>
         </div>
