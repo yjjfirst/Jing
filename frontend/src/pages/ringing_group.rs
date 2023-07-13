@@ -8,6 +8,7 @@ use crate::components::header::{Header};
 use crate::components::button::{Button, ButtonType};
 use crate::services::{RingingGroup};
 use crate::store::{show_alert, Store};
+use crate::components::input::Input;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum RingingGroupsRoute {
@@ -129,67 +130,53 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
             <form class="w-full max-w-screen-lg">
             <div class="flex flex-wrap -mx-3 mb-6">
               <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                <label 
-                  class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" 
-                  for="name">
-                  {"Ringing Group Name"}
-                </label>
-                <input 
-                  class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" 
-                  id="name" 
-                  type="text"
+                <Input 
+                  label="Ringing Group Name" 
+                  name="name" 
                   value={group.name.clone()}
-                  ref={name_input_ref}/>
+                  input_type="text"
+                  id="name"
+                  input_ref={name_input_ref}/>
               </div>
               <div class="w-full md:w-1/2 px-3">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" 
-                  for="extension">
-                  {"Ringing Groue Extension"}
-                </label>
-                <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" 
-                  id="extension" 
-                  type="text" 
+                <Input 
+                  label="Ringing Group Extension" 
+                  name="extension" 
                   value={group.group_id.clone()}
-                  ref={exten_input_ref}/>
+                  input_type="text"
+                  id="extension"
+                  input_ref={exten_input_ref}/>
               </div>
             </div>
             <div class="flex flex-wrap -mx-3 mb-6">
               <div class="w-full px-3">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" 
-                  for="description">
-                  {"Description"}
-                </label>
-                <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" 
-                  id="description" 
-                  type="text" 
-                  placeholder={group.description.clone()}
-                  ref={desc_input_ref}/>
+                <Input 
+                  label="Description" 
+                  name="description" 
+                  value={group.description.clone()}
+                  input_type="text"
+                  id="description"
+                  input_ref={desc_input_ref}/>
               </div>
             </div>
             <div class="flex flex-wrap -mx-3 mb-6">
               <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                <label 
-                  class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" 
-                  for="ring-time">
-                  {"Ring Time"}
-                </label>
-                <input 
-                  class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-white" 
-                  id="ring-time" 
-                  type="text" 
+                <Input 
+                  label="Ring Time" 
+                  name="ring-time" 
                   value={group.ring_time.to_string()}
-                  ref={ringtime_input_ref}/>
+                  input_type="number"
+                  id="ring-time"
+                  input_ref={ringtime_input_ref}/>
               </div>
               <div class="w-full md:w-1/2 px-3">
-                <label class="block uppercase tracking-wide text-gray-700 text-xs font-bold mb-2" 
-                  for="ring-strategy">
-                  {"Ringing Strategy"}
-                </label>
-                <input class="appearance-none block w-full bg-gray-200 text-gray-700 border border-gray-200 rounded py-3 px-4 leading-tight focus:outline-none focus:bg-white focus:border-gray-500" 
-                  id="ring-strategy" 
-                  type="text" 
+              <Input 
+                  label="Ringing Strategy" 
+                  name="ring-strategy" 
                   value={group.ring_strategy.clone()}
-                  ref={ringstrategy_input_ref}/>
+                  input_type="text"
+                  id="ring-strategy"
+                  input_ref={ringstrategy_input_ref}/>
               </div>
             </div>
           </form>

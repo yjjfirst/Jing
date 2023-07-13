@@ -38,6 +38,7 @@ module.exports = {
                 inverted: "var(--color-background-inverted-fill)",
                 hover: "var(--color-background-hover-fill)",
                 inverted_hover: "var(--color-background-inverted-hover)",
+                focus: "var(--color-background-focus)",                
             }
           }
 

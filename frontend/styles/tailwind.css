@@ -12,6 +12,7 @@
         --color-background-hover-fill: #e4e4e7;
         --color-background-inverted-fill: #27272a;
         --color-background-inverted-hover: #71717a;
+        --color-background-focus: rgb(255 255 255);
     }
 }
 
