@@ -34,11 +34,11 @@ module.exports = {
           },
           backgroundColor: {
             skin: {
-                fill: "var(--color-background-fill)",
-                inverted: "var(--color-background-inverted-fill)",
-                hover: "var(--color-background-hover-fill)",
+                fill: "var(--color-background)",
+                inverted: "var(--color-background-inverted)",
+                hover: "var(--color-background-hover)",
                 inverted_hover: "var(--color-background-inverted-hover)",
-                focus: "var(--color-background-focus)",                
+                focus: "var(--color-background-focus)",
             }
           }
 
