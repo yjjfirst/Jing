@@ -10,7 +10,7 @@ pub struct AlertInput {
 #[derive(Debug, Serialize, Deserialize, Default, Clone, PartialEq, Store)]
 pub struct Store {
     pub alert_input: AlertInput,
-    pub selected_domain: i32,
+    pub selected_domain_id: usize,
 }
 
 pub fn show_alert(message: String, dispatch: Dispatch<Store>) {
@@ -28,9 +28,9 @@ pub fn hide_alert(dispatch: Dispatch<Store>) {
     })
 }
 
-pub fn select_domain(domain_id: i32, dispatch: Dispatch<Store>) {
+pub fn select_domain(id: usize, dispatch: Dispatch<Store>) {
     dispatch.reduce_mut(move|store| {
-        store.selected_domain = domain_id;
+        store.selected_domain_id = id;
     })
 }
 

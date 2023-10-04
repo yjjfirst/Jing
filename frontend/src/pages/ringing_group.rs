@@ -6,7 +6,7 @@ use yewdux::prelude::*;
 
 use crate::components::header::{Header};
 use crate::components::button::{Button, ButtonType};
-use crate::services::{RingingGroup};
+use crate::services::ringing_group::{RingingGroup};
 use crate::store::{show_alert, Store};
 use crate::components::input::Input;
 

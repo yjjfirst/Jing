@@ -17,17 +17,7 @@ pub struct SidebarMenuItemPros {
 pub fn SideBar() -> Html {
     html! {
         <div class="w-48 flex-row bg-skin-inverted text-skin-inverted ml-1">
-            <Logo></Logo>
             <SidebarMenu/>
-        </div>
-    }
-}
-
-#[function_component]
-pub fn Logo() -> Html {
-    html! {
-        <div class="flex my-4 justify-center">
-            <span>{"PBX"}</span>
         </div>
     }
 }

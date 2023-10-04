@@ -6,9 +6,10 @@ use super::components::sidebar::{SideBar};
 use crate::pages::ringing_group::{RingingGroupsRoute, ringinggroups_switch};
 use crate::components::cards::{Cards};
 use crate::components::alert::{AlertComponent, Props as AlertProps};
+use crate::components::banner::Banner;
+
 #[derive(Clone, Debug, PartialEq)]
 pub struct Env {
-    pub base_url: String,
 }
 
 #[derive(Clone, Routable, PartialEq)]
@@ -33,7 +34,6 @@ pub fn app() -> Html {
         delay_ms: 5000,
     };    
     let ctx = use_state (|| Env {
-        base_url: "http://teleman.me:9090/api".to_owned(),
     });
 
     html! {
@@ -45,10 +45,13 @@ pub fn app() -> Html {
                         delay_ms={alert_props.delay_ms}
                     />
                 }
-                <div class="flex">
-                    <SideBar></SideBar>
-                    <div class="grow ml-4 mr-1">
-                        <Switch<Route> render={switch} />    
+                <div class="flex flex-col">
+                    <Banner></Banner>
+                    <div class="flex grow ml-4 mr-1">
+                        <SideBar></SideBar>
+                        <div class="grow ml-4 mr-1">
+                            <Switch<Route> render={switch} />    
+                        </div>
                     </div>                    
                 </div>
             </BrowserRouter>
