@@ -1,6 +1,7 @@
+use serde::Serialize;
 use crate::schema::domains;
 
-#[derive(Queryable, Debug)]
+#[derive(Queryable, Debug, Serialize)]
 #[derive(Clone)]
 pub struct Domain {
     pub id: i32,
