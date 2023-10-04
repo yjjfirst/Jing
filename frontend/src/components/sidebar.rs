@@ -1,13 +1,13 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
-use super::main_panel::Route;
+use crate::app::Route;
 
 #[function_component]
 pub fn SideBar() -> Html {
     html! {
-        <div class="flex-row bg-zinc-700 text-white ml-1">
+        <div class="flex-row bg-skin-inverted text-skin-inverted ml-1">
             <Logo></Logo>
-            <Menu></Menu>
+            <SidebarMenu/>
         </div>
     }
 }
@@ -22,27 +22,27 @@ pub fn Logo() -> Html {
 }
 
 #[function_component]
-pub fn Menu() -> Html {
+pub fn SidebarMenu() -> Html {
     html! {
         <div>
-            <MenuItem route={Route::Cards}>
+            <SidebarMenuItem route={Route::Cards}>
                 {"Application" }
-            </MenuItem>
-            <MenuItem route={Route::Cards}>
+            </SidebarMenuItem>
+            <SidebarMenuItem route={Route::Cards}>
                 {"System"}
-            </MenuItem>
+            </SidebarMenuItem>
         </div>
     }
 }
 
 #[derive(Clone, Properties, PartialEq)]
-pub struct MenuItemPros {
+pub struct SidebarMenuItemPros {
     pub children: Children,
     pub route: Route,
 }
 
 #[function_component] 
-pub fn MenuItem(props: &MenuItemPros) -> Html {
+pub fn SidebarMenuItem(props: &SidebarMenuItemPros) -> Html {
     let nav = use_navigator().unwrap();
     let p = props.clone();
     let onclick = Callback::from(move |_e: MouseEvent| {
