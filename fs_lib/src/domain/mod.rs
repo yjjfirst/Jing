@@ -34,10 +34,22 @@ pub fn list_domains() -> Result<Vec<Domain>> {
     use crate::schema::domains::dsl::*;
 
     let mut conn = db_connect();
-    let result = domains
+    let dms = domains
         .load::<Domain>(&mut conn)?;
 
-    Ok(result)
+
+    let dms = dms.into_iter().map(|d| {
+        Domain {
+            domain_name: if is_var(&d.domain_name) {
+                eval(&d.domain_name)
+            } else {
+                d.domain_name
+            },
+            ..d
+        }
+    }).collect();
+
+    Ok(dms)
 }
 
 
