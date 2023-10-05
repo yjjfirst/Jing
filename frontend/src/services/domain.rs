@@ -1,5 +1,5 @@
 use yew::Properties;
-use gloo_net::http::{Request, Response};
+use gloo_net::http::Request;
 use serde::{Deserialize, Serialize};
 
 use super::BASE_URL;

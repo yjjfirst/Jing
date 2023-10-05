@@ -14,7 +14,8 @@ pub struct DropdownMenuProps {
 #[function_component]
 pub fn DropdownMenu(props: &DropdownMenuProps) -> Html {
     let items = props.items.clone();
-    let selected = use_state(||props.selected.clone());
+    let init_selected = props.selected.clone();
+    let selected = use_state(||"".to_string());
     let dropped = use_state(||false);
     let onclick = {
         let dropped = dropped.clone();
@@ -52,7 +53,13 @@ pub fn DropdownMenu(props: &DropdownMenuProps) -> Html {
     html! {
         <div class="flex items-center">
             <div class="py-2 group relative">
-                <button {onclick} {onfocusout} class="rounded inline-flex py-2">{selected.deref()}
+                <button {onclick} {onfocusout} class="rounded inline-flex py-2">{
+                        if selected.deref().to_string() == "" {
+                            init_selected
+                        } else {
+                            selected.deref().to_string()
+                        }
+                    }
                     <Icon icon_id={IconId::LucideChevronDown} class={classes!(icon_class)}/>
                 </button>
                 <nav class={classes!(menu_class)}>

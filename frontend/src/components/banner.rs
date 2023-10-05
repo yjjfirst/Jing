@@ -1,9 +1,11 @@
+use std::ops::Deref;
 use yew::prelude::*;
-use gloo_console::log;
-
 use crate::services::domain::Domain;
 use crate::components::dropdown_menu::DropdownMenu;
 use crate::components::button::{Button, ButtonType};
+use yewdux::prelude::use_store;
+use crate::store::{Store, select_domain};
+
 
 #[function_component]
 pub fn Banner() -> Html {
@@ -17,20 +19,28 @@ pub fn Banner() -> Html {
 
 #[function_component]
 pub fn DomainComponent() -> Html {
+    let (store, dispatch) = use_store::<Store>();
     let on_changed = {
+        let dispatch = dispatch.clone();
         Callback::from(move|selected: String|{
-            log!(selected);
+            let dispatch = dispatch.clone();
+            select_domain(&selected, dispatch);
         }
     )};
 
     let domains: UseStateHandle<Vec<Domain>> = use_state(||vec![]);
     let dms = domains.clone();
+    let selected_domain : UseStateHandle<String> = use_state(||"".to_string());
+    let sel_dm = selected_domain.clone();
 
     use_effect_with_deps(move |_| {
         let dms = dms.clone();
+        let sel_dm = sel_dm.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_domains = Domain::index().await;
-            dms.set(fetched_domains);
+            dms.set(fetched_domains.clone());
+            sel_dm.set(fetched_domains.first().unwrap().domain_name.clone());
+            select_domain(&fetched_domains.first().unwrap().domain_name.clone(), dispatch);
         })
     }, ());
 
@@ -38,13 +48,10 @@ pub fn DomainComponent() -> Html {
         d.domain_name.clone()
     }).collect();
 
-    let selected = domains.first();
-    let selected = match selected {
-        Some(s) => s.domain_name.clone(),
-        None => "Please select domain".to_string()
-    };
-
+    let selected = selected_domain.deref().clone();
     html! {
-        <DropdownMenu selected={selected} items={items} {on_changed}/>
+        <div>
+            <DropdownMenu {selected} {items} {on_changed}/>
+        </div>
     }
 }
