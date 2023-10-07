@@ -62,6 +62,15 @@ pub fn all_ringgroup() -> Result<Vec<Ringgroup>>{
     Ok(results)
 }
 
+pub fn groups_in_domain(domain: i32) -> Vec<Ringgroup> {
+    use crate::schema::ringing_groups::dsl::*;
+    let mut conn = db_connect();
+
+    ringing_groups
+        .filter(domain_id.eq(domain))
+        .load::<Ringgroup>(&mut conn).unwrap()
+}
+
 pub fn add_ringgroup_member(group: i32, uid: i32) -> Result<()> {
     use crate::schema::ringing_group_members::dsl::*;
 

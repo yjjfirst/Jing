@@ -8,6 +8,6 @@ use domain::domain_config;
 pub fn api_config(cfg: &mut web::ServiceConfig) {
 
     cfg
-        .service(web::scope("/ringing-groups").configure(ringing_group_config))
+        .service(web::scope("/{domain}/ringing-group").configure(ringing_group_config))
         .service(web::scope("/domain").configure(domain_config));
 }
