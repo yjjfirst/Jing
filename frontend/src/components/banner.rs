@@ -1,6 +1,4 @@
-use std::ops::Deref;
 use yew::prelude::*;
-use crate::services::domain::Domain;
 use crate::components::dropdown_menu::DropdownMenu;
 use crate::components::button::{Button, ButtonType};
 use yewdux::prelude::use_store;
@@ -28,27 +26,14 @@ pub fn DomainComponent() -> Html {
         }
     )};
 
-    let domains: UseStateHandle<Vec<Domain>> = use_state(||vec![]);
-    let dms = domains.clone();
-    let selected_domain : UseStateHandle<String> = use_state(||"".to_string());
-    let sel_dm = selected_domain.clone();
-
-    use_effect_with_deps(move |_| {
-        let dms = dms.clone();
-        let sel_dm = sel_dm.clone();
-        wasm_bindgen_futures::spawn_local(async move {
-            let fetched_domains = Domain::index().await;
-            dms.set(fetched_domains.clone());
-            sel_dm.set(fetched_domains.first().unwrap().domain_name.clone());
-            select_domain(&fetched_domains.first().unwrap().domain_name.clone(), dispatch);
-        })
-    }, ());
+    let domains = store.domains.clone();
+    let selected_domain  = store.selected_domain.clone();
 
     let items: Vec<String> = domains.iter().map(|d| {
-        d.domain_name.clone()
+        d.clone()
     }).collect();
 
-    let selected = selected_domain.deref().clone();
+    let selected = selected_domain.clone();
     html! {
         <div>
             <DropdownMenu {selected} {items} {on_changed}/>

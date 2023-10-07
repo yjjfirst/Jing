@@ -1,12 +1,13 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 use yewdux::prelude::use_store;
-use crate::store::Store;
+use crate::store::{Store, select_domain, set_domains};
 use super::components::sidebar::{SideBar};
 use crate::pages::ringing_group::{RingingGroupsRoute, ringinggroups_switch};
 use crate::components::cards::{Cards};
 use crate::components::alert::{AlertComponent, Props as AlertProps};
 use crate::components::banner::Banner;
+use crate::services::domain::Domain;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Env {
@@ -25,7 +26,7 @@ pub enum Route {
 
 #[function_component(App)]
 pub fn app() -> Html {
-    let (store, _) = use_store::<Store>();
+    let (store, dispatch) = use_store::<Store>();
     let message = store.alert_input.alert_message.clone();
     let show_alert: bool = store.alert_input.show_alert;
     
@@ -36,6 +37,19 @@ pub fn app() -> Html {
     let ctx = use_state (|| Env {
     });
 
+    use_effect_with_deps(move |_| {
+        let disp = dispatch.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            let fetched_domains = Domain::index().await;
+            select_domain(&fetched_domains.first().unwrap().domain_name.clone(), dispatch);
+
+            let domains: Vec<String> = fetched_domains.iter().map(|d| {
+                    d.domain_name.clone()
+                }).collect();
+            set_domains(domains, disp);                
+        })
+    }, ());
+
     html! {
         <ContextProvider<Env> context={(*ctx).clone()}>
             <BrowserRouter>
@@ -45,15 +59,17 @@ pub fn app() -> Html {
                         delay_ms={alert_props.delay_ms}
                     />
                 }
-                <div class="flex flex-col">
-                    <Banner></Banner>
-                    <div class="flex grow ml-4 mr-1">
-                        <SideBar></SideBar>
-                        <div class="grow ml-4 mr-1">
-                            <Switch<Route> render={switch} />    
-                        </div>
-                    </div>                    
-                </div>
+                if store.selected_domain.clone() != "" {
+                    <div class="flex flex-col">
+                        <Banner></Banner>
+                        <div class="flex grow ml-4 mr-1">
+                            <SideBar></SideBar>
+                            <div class="grow ml-4 mr-1">
+                                <Switch<Route> render={switch} />    
+                            </div>
+                        </div>                    
+                    </div>
+                }
             </BrowserRouter>
         </ContextProvider<Env>>
     }

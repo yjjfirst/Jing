@@ -25,15 +25,18 @@ pub struct RingingGroupDetailsProps {
 
 #[function_component]
 pub fn RingingGroups() -> Html {
+    let (store,_) = use_store::<Store>();
+    let s = store.clone();
     let ringing_groups: UseStateHandle<Vec<RingingGroup>> = use_state(||vec![]);
     let groups = ringing_groups.clone();
     use_effect_with_deps(move |_| {
         let groups = groups.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_groups: Vec<RingingGroup> = RingingGroup::fetch_all().await;
+            let fetched_groups: Vec<RingingGroup> = 
+                RingingGroup::fetch_all(store.selected_domain.clone()).await;
             groups.set(fetched_groups);
         });
-    },());
+    },s.selected_domain.clone());
     
     let groups: Vec<Html> = ringing_groups.iter().map(|g| html! {
         <RingingGroupListItem ..g.clone()>

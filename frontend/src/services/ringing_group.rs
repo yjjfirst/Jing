@@ -1,6 +1,7 @@
 use yew::Properties;
 use gloo_net::http::{Request, Response};
 use serde::{Deserialize, Serialize};
+
 use super::BASE_URL;
 
 #[derive(Clone, PartialEq, Deserialize, Properties, Serialize)]
@@ -36,19 +37,19 @@ impl RingingGroup {
             RingingGroup {id, name, group_id, description, domain_id, ring_time, ring_strategy}
     }
 
-    pub async fn fetch_all() -> Vec<RingingGroup> {
-        let endpoint = format!("{}/ringing-groups", BASE_URL);
+    pub async fn fetch_all(domain: String) -> Vec<RingingGroup> {
+        let endpoint = format!("{}/{}/ringing-group", BASE_URL, domain);
         let response = Request::get(&endpoint).send().await.unwrap();
         response.json().await.unwrap()
     }
     pub async fn fetch(id: usize) -> RingingGroup {
-        let endpoint = format!("{}/ringing-groups/{}", BASE_URL, id);
+        let endpoint = format!("{}/ringing-group/{}", BASE_URL, id);
         let response = Request::get(&endpoint).send().await.unwrap();
         response.json().await.unwrap()
     }
 
     pub async fn update(id: usize, group: RingingGroup) {
-        let endpoint = format!("{}/ringing-groups/{}", BASE_URL, id);
+        let endpoint = format!("{}/ringing-group/{}", BASE_URL, id);
         let request = Request::post(&endpoint).json(&group).unwrap();
         let response: Response = request.send().await.unwrap();
         response.json().await.unwrap()

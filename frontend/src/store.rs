@@ -11,6 +11,7 @@ pub struct AlertInput {
 pub struct Store {
     pub alert_input: AlertInput,
     pub selected_domain: String,
+    pub domains: Vec<String>,
 }
 
 pub fn show_alert(message: String, dispatch: Dispatch<Store>) {
@@ -34,3 +35,8 @@ pub fn select_domain(domain: &str, dispatch: Dispatch<Store>) {
     })
 }
 
+pub fn set_domains(domains: Vec<String>, dispatch: Dispatch<Store>) {
+    dispatch.reduce_mut(move|store: &mut Store| {
+        store.domains = domains;
+    })
+}
