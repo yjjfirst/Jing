@@ -2,9 +2,9 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 use yewdux::prelude::use_store;
 use crate::store::{Store, select_domain, set_domains};
-use super::components::sidebar::{SideBar};
+use super::components::sidebar::SideBar;
 use crate::pages::ringing_group::{RingingGroupsRoute, ringinggroups_switch};
-use crate::components::cards::{Cards};
+use crate::components::cards::Cards;
 use crate::components::alert::{AlertComponent, Props as AlertProps};
 use crate::components::banner::Banner;
 use crate::services::domain::Domain;
@@ -40,12 +40,8 @@ pub fn app() -> Html {
     use_effect_with_deps(move |_| {
         let disp = dispatch.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_domains = Domain::index().await;
-            select_domain(&fetched_domains.first().unwrap().domain_name.clone(), dispatch);
-
-            let domains: Vec<String> = fetched_domains.iter().map(|d| {
-                    d.domain_name.clone()
-                }).collect();
+            let domains = Domain::index().await;
+            select_domain(domains.first().unwrap().id, dispatch);
             set_domains(domains, disp);                
         })
     }, ());
@@ -59,7 +55,7 @@ pub fn app() -> Html {
                         delay_ms={alert_props.delay_ms}
                     />
                 }
-                if store.selected_domain.clone() != "" {
+                if store.selected_domain != 0 {
                     <div class="flex flex-col">
                         <Banner></Banner>
                         <div class="flex grow ml-4 mr-1">

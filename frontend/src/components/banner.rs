@@ -19,21 +19,35 @@ pub fn Banner() -> Html {
 pub fn DomainComponent() -> Html {
     let (store, dispatch) = use_store::<Store>();
     let on_changed = {
+        let store = store.clone();
         let dispatch = dispatch.clone();
         Callback::from(move|selected: String|{
             let dispatch = dispatch.clone();
-            select_domain(&selected, dispatch);
+            let mut selected_id = 0;
+            for d in store.domains.clone() {
+                if selected == d.domain_name {
+                    selected_id = d.id
+                } 
+            };
+
+            select_domain(selected_id, dispatch);
         }
     )};
 
     let domains = store.domains.clone();
-    let selected_domain  = store.selected_domain.clone();
+    let selected_id  = store.selected_domain;
 
     let items: Vec<String> = domains.iter().map(|d| {
-        d.clone()
+        d.domain_name.clone()
     }).collect();
 
-    let selected = selected_domain.clone();
+    let mut selected = "".to_string();
+    for d in domains {
+        if d.id == selected_id {
+            selected = d.domain_name.clone();
+        }
+    }
+
     html! {
         <div>
             <DropdownMenu {selected} {items} {on_changed}/>

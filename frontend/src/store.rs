@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use yewdux::prelude::*;
+use crate::services::domain::Domain;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Default, Clone)]
 pub struct AlertInput {
@@ -10,8 +11,8 @@ pub struct AlertInput {
 #[derive(Debug, Serialize, Deserialize, Default, Clone, PartialEq, Store)]
 pub struct Store {
     pub alert_input: AlertInput,
-    pub selected_domain: String,
-    pub domains: Vec<String>,
+    pub selected_domain: usize,
+    pub domains: Vec<Domain>,
 }
 
 pub fn show_alert(message: String, dispatch: Dispatch<Store>) {
@@ -29,13 +30,13 @@ pub fn hide_alert(dispatch: Dispatch<Store>) {
     })
 }
 
-pub fn select_domain(domain: &str, dispatch: Dispatch<Store>) {
+pub fn select_domain(domain: usize, dispatch: Dispatch<Store>) {
     dispatch.reduce_mut(move|store| {
-        store.selected_domain = domain.to_string();
+        store.selected_domain = domain;
     })
 }
 
-pub fn set_domains(domains: Vec<String>, dispatch: Dispatch<Store>) {
+pub fn set_domains(domains: Vec<Domain>, dispatch: Dispatch<Store>) {
     dispatch.reduce_mut(move|store: &mut Store| {
         store.domains = domains;
     })

@@ -4,9 +4,9 @@ use yew::Properties;
 use yew_router::prelude::*;
 use yewdux::prelude::*;
 
-use crate::components::header::{Header};
+use crate::components::header::Header;
 use crate::components::button::{Button, ButtonType};
-use crate::services::ringing_group::{RingingGroup};
+use crate::services::ringing_group::RingingGroup;
 use crate::store::{show_alert, Store};
 use crate::components::input::Input;
 
@@ -75,7 +75,8 @@ pub fn RingingGroupListItem(props: &RingingGroup) -> Html {
 
 #[function_component]
 pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
-  let(_, dispatch) = use_store::<Store>();
+  let(store, dispatch) = use_store::<Store>();
+  let store_cloned = store.clone();
   let id = props.id.parse::<usize>().unwrap();
     let group: UseStateHandle<RingingGroup> = use_state(||RingingGroup::new_empty());
     let g = group.clone();
@@ -83,7 +84,7 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
     use_effect_with_deps(move |_| {
         let g = g.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_group: RingingGroup = RingingGroup::fetch(id).await;
+            let fetched_group: RingingGroup = RingingGroup::fetch(store.selected_domain, id).await;
             g.set(fetched_group);
         });
     },());
@@ -105,6 +106,7 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
 
     let onclick: Callback<MouseEvent> = Callback::from(move|_:MouseEvent|{
         let dispatch = dispatch.clone();
+        let store_cloned = store_cloned.clone();
         let name_input: HtmlInputElement = name_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
         let exten_input: HtmlInputElement = exten_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
         let desc_input: HtmlInputElement = desc_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
@@ -122,7 +124,7 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
         wasm_bindgen_futures::spawn_local(async move {
           let dispatch = dispatch.clone();
           show_alert("Updating ringing group.".to_string(), dispatch);
-          RingingGroup::update(id, group).await;
+          RingingGroup::update(store_cloned.selected_domain, id, group).await;
         });
         
     });

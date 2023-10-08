@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use super::BASE_URL;
 
-#[derive(Clone, PartialEq, Deserialize, Properties, Serialize)]
+#[derive(Clone, Debug, PartialEq, Deserialize, Properties, Serialize)]
 pub struct Domain {
     pub id: usize,
     pub domain_name: String
