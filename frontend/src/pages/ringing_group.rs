@@ -5,7 +5,7 @@ use yew_router::prelude::*;
 use yewdux::prelude::*;
 
 use crate::components::header::Header;
-use crate::components::button::{Button, ButtonType};
+use crate::components::button::{Button, ButtonIcon, ButtonTheme};
 use crate::services::ringing_group::RingingGroup;
 use crate::store::{show_alert, Store};
 use crate::components::input::Input;
@@ -67,7 +67,7 @@ pub fn RingingGroupListItem(props: &RingingGroup) -> Html {
             <div class="w-1/5">{props.group_id}</div>
             <div class="grow">{props.name}</div>
             <div {onclick}>
-                <Button b_type={ButtonType::Edit}></Button>
+                <Button icon={ButtonIcon::Edit} theme={ButtonTheme::Light}></Button>
             </div>
         </div>
     }
@@ -187,10 +187,10 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
           </form>
           <div class="flex">
           <div {onclick}>
-            <Button b_type={ButtonType::Check}>{"Submit"}</Button>
+            <Button icon={ButtonIcon::Check} theme={ButtonTheme::Light}>{"Submit"}</Button>
           </div>
           <div>
-            <Button b_type={ButtonType::X}>{"Cancel"}</Button>
+            <Button icon={ButtonIcon::X} theme={ButtonTheme::Light}>{"Cancel"}</Button>
           </div>
           </div>
         </div>

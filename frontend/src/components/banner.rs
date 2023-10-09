@@ -1,6 +1,6 @@
 use yew::prelude::*;
 use crate::components::dropdown_menu::DropdownMenu;
-use crate::components::button::{Button, ButtonType};
+use crate::components::button::{Button, ButtonIcon, ButtonTheme};
 use yewdux::prelude::use_store;
 use crate::store::{Store, select_domain};
 
@@ -8,9 +8,9 @@ use crate::store::{Store, select_domain};
 #[function_component]
 pub fn Banner() -> Html {
     html! {
-        <div class="flex justify-end grow items-center bg-skin-fill border-b ml-4">
+        <div class="flex justify-end grow items-center bg-skin-inverted text-skin-inverted border-b ml-4">
             <DomainComponent/>
-            <Button b_type={ButtonType::User}></Button>
+            <Button icon={ButtonIcon::User} theme={ButtonTheme::Dark}></Button>
             </div>
     }
 }
