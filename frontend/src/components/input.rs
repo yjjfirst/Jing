@@ -60,7 +60,7 @@ pub fn Input(props: &Props) -> Html {
         <div>
             <label 
                 for={id.clone()} 
-                class="block uppercase tracking-wide text-xs font-bold mb-2">
+                class="block uppercase tracking-wide text-xs mb-2">
                 {props.label.clone()}
             </label>
             <input
@@ -69,7 +69,7 @@ pub fn Input(props: &Props) -> Html {
                 value={input_value}
                 id={id.clone()}
                 name={props.name.clone()}
-                class="appearance-none block w-full bg-skin-hover rounded py-3 px-4 mb-3 leading-tight focus:outline-none focus:bg-skin-focus"
+                class="appearance-none block w-full rounded-md py-2 px-4 mb-3 leading-tight focus:outline outline-1"
                 ref={props.input_ref.clone()}
                 onchange={on_changed}
                 onblur={on_blur}
