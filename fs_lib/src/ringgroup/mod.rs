@@ -38,7 +38,7 @@ pub fn del_ringgroup(i: i32) -> Result<()>{
     use crate::schema::ringing_groups;
     use crate::schema::ringing_groups::columns::id;
 
-    let group = get_ringgroup(i).unwrap();
+    let group = get(i).unwrap();
     let extension = group.group_id.clone();
     let mut conn = db_connect();
 
@@ -71,12 +71,51 @@ pub fn groups_in_domain(domain: i32) -> Vec<Ringgroup> {
         .load::<Ringgroup>(&mut conn).unwrap()
 }
 
+pub fn get_by(domain: i32, exten: &str) -> Result<Ringgroup> {
+    use crate::schema::ringing_groups::dsl::*;
+    let mut conn = db_connect();
+
+    let result = ringing_groups
+        .filter(domain_id.eq(domain))
+        .filter(group_id.eq(exten))
+        .first(&mut conn)?;
+
+    Ok(result)
+}
+
+pub fn get(target_ringgroup_id: i32) -> Result<Ringgroup> {
+    use crate::schema::ringing_groups::dsl::*;
+
+    let mut conn = db_connect();
+
+    let mut groups = ringing_groups
+        .filter(id.eq(target_ringgroup_id))
+        .load::<Ringgroup>(&mut conn)?;
+
+    if let Some(g) = groups.pop() {
+        Ok(g)
+    } else {
+        Err(Error::Fslib("Ringgroup doesn't exist".to_string()))
+    }
+}
+
+pub fn update(group: &Ringgroup) -> Result<()> {
+    use crate::schema::ringing_groups;
+    let mut conn = db_connect();
+    println!("{:?}", group);
+    diesel::update(ringing_groups::table)
+        .set(group)
+        .execute(&mut conn)?;
+
+    Ok(())
+}
+
 pub fn add_ringgroup_member(group: i32, uid: i32) -> Result<()> {
     use crate::schema::ringing_group_members::dsl::*;
 
     let mut conn = db_connect();
     let user  = get_user(uid)?;
-    let ringgroup = get_ringgroup(group)?;
+    let ringgroup = get(group)?;
     let ringgroup_domain = ringgroup.domain_id;
 
     if let Ok(1) = member_exists(group, uid) {
@@ -121,41 +160,13 @@ pub fn members(group: i32) -> Result<Vec<(i32,String,String)>> {
         .into_iter()
         .map(|x| {
             let u = get_user(x.2).unwrap();
-            let dn = get_domain(get_ringgroup(x.1).unwrap().domain_id).unwrap();
+            let dn = get_domain(get(x.1).unwrap().domain_id).unwrap();
 
             (x.0, u.user_id, dn.domain_name)
         })
         .collect();
 
     Ok(results)
-}
-
-pub fn get_by(domain: i32, exten: &str) -> Result<Ringgroup> {
-    use crate::schema::ringing_groups::dsl::*;
-    let mut conn = db_connect();
-
-    let result = ringing_groups
-        .filter(domain_id.eq(domain))
-        .filter(group_id.eq(exten))
-        .first(&mut conn)?;
-
-    Ok(result)
-}
-
-pub fn get_ringgroup(target_ringgroup_id: i32) -> Result<Ringgroup> {
-    use crate::schema::ringing_groups::dsl::*;
-
-    let mut conn = db_connect();
-
-    let mut groups = ringing_groups
-        .filter(id.eq(target_ringgroup_id))
-        .load::<Ringgroup>(&mut conn)?;
-
-    if let Some(g) = groups.pop() {
-        Ok(g)
-    } else {
-        Err(Error::Fslib("Ringgroup doesn't exist".to_string()))
-    }
 }
 
 fn member_exists(group: i32, user: i32) -> Result<usize> {

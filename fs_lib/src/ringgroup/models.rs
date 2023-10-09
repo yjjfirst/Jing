@@ -1,7 +1,9 @@
 use crate::schema::ringing_groups;
 use serde::{Serialize, Deserialize};
 
-#[derive(Queryable, Serialize,Deserialize, Debug)]
+#[derive(Queryable, Serialize, Deserialize, Debug, AsChangeset)]
+#[diesel(table_name=ringing_groups)]
+#[diesel(primary_key(id, group_id))]
 pub struct Ringgroup {
     pub id: i32,
     pub name: String,

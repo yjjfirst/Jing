@@ -1,7 +1,7 @@
 pub mod ringing_group;
 pub mod domain;
 
-use actix_web::{web, Responder};
+use actix_web::{web};
 use ringing_group::ringing_group_config;
 use domain::domain_config;
 
