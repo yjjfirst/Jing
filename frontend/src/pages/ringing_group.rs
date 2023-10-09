@@ -133,7 +133,7 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
         <div class="grow">
             <Header title= {format!("Ringing Group: {}", group.group_id.clone())}></Header>
             <form class="w-full max-w-screen-lg">
-            <div class="flex flex-wrap -mx-3 mb-6">
+            <div class="flex flex-wrap -mx-3 mb-1">
               <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                 <Input 
                   label="Ringing Group Name" 
@@ -143,7 +143,7 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
                   id="name"
                   input_ref={name_input_ref}/>
               </div>
-              <div class="w-full md:w-1/2 px-3">
+              <div class="w-full md:w-1/2 px-2">
                 <Input 
                   label="Ringing Group Extension" 
                   name="extension" 
@@ -153,7 +153,7 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
                   input_ref={exten_input_ref}/>
               </div>
             </div>
-            <div class="flex flex-wrap -mx-3 mb-6">
+            <div class="flex flex-wrap -mx-3 mb-1">
               <div class="w-full px-3">
                 <Input 
                   label="Description" 
@@ -164,7 +164,7 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
                   input_ref={desc_input_ref}/>
               </div>
             </div>
-            <div class="flex flex-wrap -mx-3 mb-6">
+            <div class="flex flex-wrap -mx-3 mb-1">
               <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
                 <Input 
                   label="Ring Time" 
@@ -185,13 +185,13 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
               </div>
             </div>
           </form>
-          <div class="flex">
-          <div {onclick}>
-            <Button icon={ButtonIcon::Check} theme={ButtonTheme::Light}>{"Submit"}</Button>
-          </div>
-          <div>
-            <Button icon={ButtonIcon::X} theme={ButtonTheme::Light}>{"Cancel"}</Button>
-          </div>
+          <div class="flex justify-end">
+            <div {onclick}>
+                <Button icon={ButtonIcon::Check} theme={ButtonTheme::Light}>{"Submit"}</Button>
+            </div>
+            <div>
+                <Button icon={ButtonIcon::X} theme={ButtonTheme::Light}>{"Cancel"}</Button>
+            </div>
           </div>
         </div>
     }
