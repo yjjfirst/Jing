@@ -101,9 +101,12 @@ pub fn get(target_ringgroup_id: i32) -> Result<Ringgroup> {
 
 pub fn update(group: &Ringgroup) -> Result<()> {
     use crate::schema::ringing_groups;
+    use crate::schema::ringing_groups::dsl::*;
+
     let mut conn = db_connect();
     println!("{:?}", group);
     diesel::update(ringing_groups::table)
+        .filter(id.eq(group.id))
         .set(group)
         .execute(&mut conn)?;
 
