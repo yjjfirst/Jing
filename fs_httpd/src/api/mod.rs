@@ -4,7 +4,12 @@ pub mod domain;
 use actix_web::{web};
 use ringing_group::ringing_group_config;
 use domain::domain_config;
+use serde::Serialize;
 
+#[derive(Serialize)]
+struct Status {
+    status: String,
+}
 pub fn api_config(cfg: &mut web::ServiceConfig) {
 
     cfg

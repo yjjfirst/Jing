@@ -1,6 +1,8 @@
 use std::ops::Deref;
 use actix_web::{web, Responder};
+
 use fs_lib::ringgroup;
+use super::Status;
 
 pub fn ringing_group_config(cfg: &mut web::ServiceConfig) {
     cfg
@@ -36,5 +38,5 @@ async fn members(path: web::Path<(i32, i32)>) -> impl Responder {
 
 async fn update(group: web::Json<ringgroup::models::Ringgroup>) -> impl Responder {
     ringgroup::update(group.deref()).unwrap();
-    web::Json("ok")
+    web::Json(Status {status: "Ok".to_string()})
 }
