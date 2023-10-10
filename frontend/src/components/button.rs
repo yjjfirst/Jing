@@ -1,4 +1,4 @@
-use yew::prelude::*;
+use yew::{function_component, html, Html, Properties, classes, Children};
 use yew_icons::{Icon, IconId};
 
 #[derive(PartialEq, Clone)]
@@ -19,7 +19,7 @@ pub enum ButtonTheme {
 pub struct ButtonProps {
     pub icon: ButtonIcon,
     pub theme: ButtonTheme,
-    pub children: Option<Children>
+    pub children: Children
 }
 
 #[function_component]
@@ -45,9 +45,7 @@ pub fn Button(props: &ButtonProps) -> Html {
             } else if icon == ButtonIcon::X {
                 <Icon icon_id={IconId::LucideX}/>
             }
-            if let Some(children) = props.children {
-                { for children.iter() }
-            }         
+            { for props.children.iter() }
         </div>
     }
 }

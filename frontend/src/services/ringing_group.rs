@@ -6,7 +6,7 @@ pub struct RingingGroup {
     pub id: usize,
     pub name: String,
     pub group_id: String,
-    pub description: Option<String>,
+    pub description: String,
     pub domain_id: i32,
     pub ring_time: i32,
     pub ring_strategy: String
@@ -18,7 +18,7 @@ impl RingingGroup {
             id: 0,
             name: "".to_string(),
             group_id: "".to_string(),
-            description: None,
+            description: "".to_string(),
             ring_time: 0,
             domain_id: 1,
             ring_strategy: "all".to_string()       
@@ -27,7 +27,7 @@ impl RingingGroup {
     pub fn new(id: usize, 
         name: String, 
         group_id: String, 
-        description: Option<String>, 
+        description: String, 
         domain_id: i32,
         ring_time: i32, 
         ring_strategy: String) -> RingingGroup {

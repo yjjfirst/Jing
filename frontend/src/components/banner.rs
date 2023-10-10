@@ -10,7 +10,7 @@ pub fn Banner() -> Html {
     html! {
         <div class="flex justify-end grow items-center bg-skin-inverted text-skin-inverted border-b ml-4">
             <DomainComponent/>
-            <Button icon={ButtonIcon::User} theme={ButtonTheme::Dark}></Button>
+            <Button icon={ButtonIcon::User} theme={ButtonTheme::Dark}>{""}</Button>
             </div>
     }
 }

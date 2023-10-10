@@ -3,7 +3,6 @@ use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
 use yewdux::prelude::*;
-use gloo_console::log;
 
 use crate::components::header::Header;
 use crate::components::button::{Button, ButtonIcon, ButtonTheme};
@@ -33,14 +32,14 @@ pub fn RingingGroups() -> Html {
     let s = store.clone();
     let ringing_groups: UseStateHandle<Vec<RingingGroup>> = use_state(||vec![]);
     let groups = ringing_groups.clone();
-    use_effect_with_deps(move |_| {
+    use_effect_with(s.selected_domain.clone(), move |_| {
         let groups = groups.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_groups: Vec<RingingGroup> = 
                 Service::index(loc.path(), store.selected_domain.clone()).await;
             groups.set(fetched_groups);
         });
-    },s.selected_domain.clone());
+    });
     
     let groups: Vec<Html> = ringing_groups.iter().map(|g| html! {
         <RingingGroupListItem ..g.clone()>
@@ -71,7 +70,7 @@ pub fn RingingGroupListItem(props: &RingingGroup) -> Html {
             <div class="w-1/5">{props.group_id}</div>
             <div class="grow">{props.name}</div>
             <div {onclick}>
-                <Button icon={ButtonIcon::Edit} theme={ButtonTheme::Light}></Button>
+                <Button icon={ButtonIcon::Edit} theme={ButtonTheme::Light}>{""}</Button>
             </div>
         </div>
     }
@@ -87,14 +86,14 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
     let loc = use_location().unwrap();
     let location = loc.clone();    
     
-    use_effect_with_deps(move |_| {
+    use_effect_with((), move |_| {
         let g = g.clone();
         let loc = location.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_group: RingingGroup = Service::get(loc.path(), store.selected_domain).await;
             g.set(fetched_group);
         });
-    },());
+    });
     
     let name_input_ref = use_node_ref();
     let name_input_ref_cloned = name_input_ref.clone();
@@ -124,7 +123,7 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
             id,
             name_input.value(),
             exten_input.value(),
-            Some(desc_input.value()),
+            desc_input.value(),
             1,           
             ringtime_input.value().parse::<i32>().unwrap(),
             ringstrategy_input.value()
@@ -148,7 +147,7 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
             <form class="w-full max-w-screen-lg">
             <div class="flex flex-wrap -mx-3 mb-1">
               <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
-                <Input 
+                <Input
                   label="Ringing Group Name" 
                   name="name" 
                   value={group.name.clone()}
@@ -201,7 +200,7 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
             </div>
             <div class="flex justify-end">
             <div {onclick}>
-                <Button icon={ButtonIcon::Check} theme={ButtonTheme::Light}>{"Submit"}</Button>
+                <Button icon={ButtonIcon::Check} theme={ButtonTheme::Light}>{"Apply"}</Button>
             </div>
             <div>
                 <Button icon={ButtonIcon::X} theme={ButtonTheme::Light}>{"Cancel"}</Button>

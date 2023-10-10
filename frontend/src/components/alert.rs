@@ -15,8 +15,7 @@ pub fn alert_component(props: &Props) -> Html {
     let (store, dispatch) = use_store::<Store>();
     let show_alert = store.alert_input.show_alert;
 
-    use_effect_with_deps(
-        move |(show_alert, dispatch, delay_ms)| {
+    use_effect_with((show_alert, dispatch.clone(), props.delay_ms), move |(show_alert, dispatch, delay_ms)| {
             let cloned_dispatch = dispatch.clone();
             if *show_alert {
                 let handle =
@@ -32,8 +31,7 @@ pub fn alert_component(props: &Props) -> Html {
             } else {
                 Box::new(|| {}) as Box<dyn FnOnce()>
             }
-        },
-        (show_alert, dispatch.clone(), props.delay_ms),
+        }
     );
 
     html! {

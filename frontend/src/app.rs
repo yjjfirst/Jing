@@ -37,14 +37,14 @@ pub fn app() -> Html {
     let ctx = use_state (|| Env {
     });
 
-    use_effect_with_deps(move |_| {
+    use_effect_with((), move |_| {
         let disp = dispatch.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let domains = Domain::index().await;
             select_domain(domains.first().unwrap().id, dispatch);
             set_domains(domains, disp);                
         })
-    }, ());
+    });
 
     html! {
         <ContextProvider<Env> context={(*ctx).clone()}>
