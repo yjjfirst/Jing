@@ -3,12 +3,15 @@ use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
 use yewdux::prelude::*;
+use gloo_console::log;
 
 use crate::components::header::Header;
 use crate::components::button::{Button, ButtonIcon, ButtonTheme};
 use crate::services::ringing_group::RingingGroup;
+use crate::services::Service;
 use crate::store::{show_alert, Store};
 use crate::components::input::Input;
+use crate::components::select::Select;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum RingingGroupsRoute {
@@ -25,6 +28,7 @@ pub struct RingingGroupDetailsProps {
 
 #[function_component]
 pub fn RingingGroups() -> Html {
+    let loc = use_location().unwrap().clone();    
     let (store,_) = use_store::<Store>();
     let s = store.clone();
     let ringing_groups: UseStateHandle<Vec<RingingGroup>> = use_state(||vec![]);
@@ -33,7 +37,7 @@ pub fn RingingGroups() -> Html {
         let groups = groups.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_groups: Vec<RingingGroup> = 
-                RingingGroup::fetch_all(store.selected_domain.clone()).await;
+                Service::index(loc.path(), store.selected_domain.clone()).await;
             groups.set(fetched_groups);
         });
     },s.selected_domain.clone());
@@ -75,16 +79,19 @@ pub fn RingingGroupListItem(props: &RingingGroup) -> Html {
 
 #[function_component]
 pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
-  let(store, dispatch) = use_store::<Store>();
-  let store_cloned = store.clone();
-  let id = props.id.parse::<usize>().unwrap();
+    let(store, dispatch) = use_store::<Store>();
+    let store_cloned = store.clone();
+    let id = props.id.parse::<usize>().unwrap();
     let group: UseStateHandle<RingingGroup> = use_state(||RingingGroup::new_empty());
     let g = group.clone();
+    let loc = use_location().unwrap();
+    let location = loc.clone();    
     
     use_effect_with_deps(move |_| {
         let g = g.clone();
+        let loc = location.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_group: RingingGroup = RingingGroup::fetch(store.selected_domain, id).await;
+            let fetched_group: RingingGroup = Service::get(loc.path(), store.selected_domain).await;
             g.set(fetched_group);
         });
     },());
@@ -107,6 +114,7 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
     let onclick: Callback<MouseEvent> = Callback::from(move|_:MouseEvent|{
         let dispatch = dispatch.clone();
         let store_cloned = store_cloned.clone();
+        let loc = loc.clone();
         let name_input: HtmlInputElement = name_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
         let exten_input: HtmlInputElement = exten_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
         let desc_input: HtmlInputElement = desc_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
@@ -122,12 +130,17 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
             ringstrategy_input.value()
         );
         wasm_bindgen_futures::spawn_local(async move {
-          let dispatch = dispatch.clone();
-          show_alert("Updating ringing group.".to_string(), dispatch);
-          RingingGroup::update(store_cloned.selected_domain, id, group).await;
+            let dispatch = dispatch.clone();
+            show_alert("Updating ringing group.".to_string(), dispatch);
+            Service::update(loc.path(), store_cloned.selected_domain, group).await;
         });
         
     });
+
+    let options: Vec<String> = vec![
+        String::from("simultaneous"), 
+        String::from("sequential")
+    ];
 
     html! { 
         <div class="grow">
@@ -175,24 +188,27 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
                   input_ref={ringtime_input_ref}/>
               </div>
               <div class="w-full md:w-1/2 px-3">
-              <Input 
-                  label="Ringing Strategy" 
-                  name="ring-strategy" 
-                  value={group.ring_strategy.clone()}
-                  input_type="text"
-                  id="ring-strategy"
-                  input_ref={ringstrategy_input_ref}/>
+                <Select
+                    {options}
+                    select = {group.ring_strategy.to_string()}
+                    name="Ring Strategy"
+                    id="ring-strategy"
+                    label="Ring Strategy"
+                    input_ref={ringstrategy_input_ref}
+                    >
+                </Select>
               </div>
             </div>
-          </form>
-          <div class="flex justify-end">
+            <div class="flex justify-end">
             <div {onclick}>
                 <Button icon={ButtonIcon::Check} theme={ButtonTheme::Light}>{"Submit"}</Button>
             </div>
             <div>
                 <Button icon={ButtonIcon::X} theme={ButtonTheme::Light}>{"Cancel"}</Button>
             </div>
-          </div>
+          </div>            
+          </form>
+
         </div>
     }
 }

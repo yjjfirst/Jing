@@ -74,6 +74,6 @@ pub fn Input(props: &Props) -> Html {
                 onchange={on_changed}
                 onblur={on_blur}
             />
-      </div>        
+        </div>        
     }
 }
