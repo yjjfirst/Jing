@@ -9,7 +9,7 @@ pub struct HeaderProps {
 pub fn Header(props: &HeaderProps) -> Html {
     let title = props.title.clone();
     html! {
-        <div class="flex justify-between grow items-center border-b h-16 mb-4 mr-2">
+        <div class="flex justify-between grow items-center my-4 mr-2">
             <div>
                 <h1>
                     {title}

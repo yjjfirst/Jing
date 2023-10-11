@@ -7,7 +7,7 @@ use yew_icons::{Icon, IconId};
 #[function_component]
 pub fn Banner() -> Html {
     html! {
-        <div class="flex justify-end grow items-center border-b ml-4 mr-4">
+        <div class="flex justify-end grow items-center ml-4 mr-4">
             <DomainComponent/>
             <div class="btn btn-circle btn-outline btn-sm">
                 <Icon icon_id={IconId::LucideUser}/>

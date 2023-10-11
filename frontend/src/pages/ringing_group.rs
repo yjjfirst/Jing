@@ -42,13 +42,17 @@ pub fn RingingGroups() -> Html {
     });
     
     let groups: Vec<Html> = ringing_groups.iter().map(|g| html! {
-        <RingingGroupListItem ..g.clone()>
-        </RingingGroupListItem>
+        <div>
+            <RingingGroupListItem ..g.clone()>
+            </RingingGroupListItem>
+            <div class="divider my-1"></div>
+        </div>
     }).collect();
 
     html! {
-        <div class="grow">
+        <div class="grow mr-2">
             <Header title="Application -> Ringing Group"></Header>
+            <div class="divider my-1"></div>
             {groups}
         </div>
     }
@@ -66,7 +70,7 @@ pub fn RingingGroupListItem(props: &RingingGroup) -> Html {
     });
 
     return html! {
-        <div class="flex w-full hover:bg-skin-hover border-b h-12 items-center">
+        <div class="flex w-full items-center">
             <div class="w-1/5">{props.group_id}</div>
             <div class="grow">{props.name}</div>
             <div {onclick}>
@@ -144,8 +148,9 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
     ];
 
     html! { 
-        <div class="grow">
+        <div class="grow mr-2">
             <Header title= {format!("Ringing Group: {}", group.group_id.clone())}></Header>
+            <div class="divider my-1"></div> 
             <form class="w-full max-w-screen-lg">
             <div class="flex flex-wrap -mx-3 mb-1">
               <div class="w-full md:w-1/2 px-3 mb-6 md:mb-0">
