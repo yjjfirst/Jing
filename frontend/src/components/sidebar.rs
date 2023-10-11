@@ -16,7 +16,7 @@ pub struct SidebarMenuItemPros {
 #[function_component]
 pub fn SideBar() -> Html {
     html! {
-        <div class="w-48 flex-row bg-skin-inverted text-skin-inverted">
+        <div class="w-48 flex-row">
             <SidebarMenu/>
         </div>
     }
@@ -75,7 +75,7 @@ pub fn SidebarMenuItem(props: &SidebarMenuItemPros) -> Html {
         nav.push(&p.route);
     }); 
 
-    let mut classes = vec!["block py-2 px-12 hover:bg-skin-inverted_hover text-skin-inverted"];
+    let mut classes = vec!["block py-2 px-12 hover:bg-skin-inverted_hover"];
     if  props.selected {
         classes.push("border-l-4 border-orange-500");
     }

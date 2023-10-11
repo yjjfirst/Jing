@@ -27,7 +27,7 @@ pub fn DropdownMenu(props: &DropdownMenuProps) -> Html {
         icon_class.push("transfrom rotate-180");
     }
 
-    let mut menu_class = vec!["text-skin-inverted bg-skin-inverted rounded absolute left-0 top-full transition-all"];
+    let mut menu_class = vec!["rounded absolute left-0 top-full transition-all"];
     if !*dropped {
         menu_class.push("invisible");
     }

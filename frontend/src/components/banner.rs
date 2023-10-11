@@ -1,17 +1,18 @@
 use yew::prelude::*;
 use crate::components::dropdown_menu::DropdownMenu;
-use crate::components::button::{Button, ButtonIcon, ButtonTheme};
 use yewdux::prelude::use_store;
 use crate::store::{Store, select_domain};
-
+use yew_icons::{Icon, IconId};
 
 #[function_component]
 pub fn Banner() -> Html {
     html! {
-        <div class="flex justify-end grow items-center bg-skin-inverted text-skin-inverted border-b ml-4">
+        <div class="flex justify-end grow items-center border-b ml-4 mr-4">
             <DomainComponent/>
-            <Button icon={ButtonIcon::User} theme={ButtonTheme::Dark}>{""}</Button>
+            <div class="btn btn-circle btn-outline btn-sm">
+                <Icon icon_id={IconId::LucideUser}/>
             </div>
+        </div>
     }
 }
 

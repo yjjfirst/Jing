@@ -19,16 +19,17 @@ pub fn Select(props: &Props) -> Html {
     let options = props.options.clone();
     html!{
         <div>
-            <span 
-                for={id.clone()} 
-                class="block uppercase tracking-wide text-xs mb-2">
+        <label class="label">
+            <span for={id.clone()} 
+                class="label-text">
                 {props.label.clone()}
             </span>
+        </label>        
             <select
                 id={id.clone()}
                 name={props.name.clone()}
                 ref={props.input_ref.clone()}
-                class="appearance-none block w-full text-sm rounded-md py-2 px-4 mb-3 mt-2   leading-tight focus:outline outline-1 bg-skin-focus"
+                class="select select-bordered block w-full"
             >
             {
                 options.into_iter().map(|o| {
@@ -42,6 +43,7 @@ pub fn Select(props: &Props) -> Html {
                 }).collect::<Html>()
             }
             </select>
-        </div>          
+
+        </div>       
     }
 }

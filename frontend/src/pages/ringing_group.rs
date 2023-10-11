@@ -3,9 +3,9 @@ use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
 use yewdux::prelude::*;
+use yew_icons::{Icon, IconId};
 
 use crate::components::header::Header;
-use crate::components::button::{Button, ButtonIcon, ButtonTheme};
 use crate::services::ringing_group::RingingGroup;
 use crate::services::Service;
 use crate::store::{show_alert, Store};
@@ -70,7 +70,9 @@ pub fn RingingGroupListItem(props: &RingingGroup) -> Html {
             <div class="w-1/5">{props.group_id}</div>
             <div class="grow">{props.name}</div>
             <div {onclick}>
-                <Button icon={ButtonIcon::Edit} theme={ButtonTheme::Light}>{""}</Button>
+                <div class="btn btn-square btn-outline btn-sm">
+                    <Icon icon_id={IconId::LucideEdit}/>   
+                </div>
             </div>
         </div>
     }
@@ -198,12 +200,18 @@ pub fn RingingGroupDetail(props: &RingingGroupDetailsProps) -> Html {
                 </Select>
               </div>
             </div>
-            <div class="flex justify-end">
+            <div class="flex justify-end mt-4">
             <div {onclick}>
-                <Button icon={ButtonIcon::Check} theme={ButtonTheme::Light}>{"Apply"}</Button>
+                <div class="btn btn-success btn-sm mr-4">
+                    <Icon icon_id={IconId::LucideCheck}/>
+                    {"Apply"}
+                </div>
             </div>
             <div>
-                <Button icon={ButtonIcon::X} theme={ButtonTheme::Light}>{"Cancel"}</Button>
+                <div class="btn btn-warning btn-sm">
+                    <Icon icon_id={IconId::LucideX}/>
+                    {"Cancel"}
+                </div>
             </div>
           </div>            
           </form>

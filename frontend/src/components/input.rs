@@ -26,18 +26,20 @@ pub fn Input(props: &Props) -> Html {
 
     html! {
         <div>
+            <label class="label">
             <span 
                 for={id.clone()} 
-                class="block uppercase tracking-wide text-xs mb-2">
+                class="label-text">
                 {props.label.clone()}
             </span>
+            </label>
             <input
                 type={input_type}
                 placeholder=""
                 value={input_value}
                 id={id.clone()}
                 name={props.name.clone()}
-                class="appearance-none block w-full text-sm rounded-md py-2 px-4 mb-3 leading-tight focus:outline outline-1"
+                class="input input-bordered block w-full"
                 ref={props.input_ref.clone()}
             />
         </div>        
