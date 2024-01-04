@@ -33,13 +33,13 @@ pub fn SidebarMenu() -> Html {
 
     let app_items = vec![
         SidebarMenuItemPros {
-            caption: "Application".to_string(),
+            caption: "Extension".to_string(),
             route: Route::RingingGroupsRoot,
             onclick: onclick.clone(),
             selected: false,
         },
         SidebarMenuItemPros {
-            caption: "System".to_string(),
+            caption: "Ringing Group".to_string(),
             route: Route::RingingGroupsRoot,
             onclick: onclick.clone(),
             selected: false,

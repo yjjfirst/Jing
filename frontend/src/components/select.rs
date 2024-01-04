@@ -1,9 +1,11 @@
 use yew::prelude::*;
+use super::label::Label;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
     pub id: Option<String>,
     pub label: String,
+    pub label_class: Classes,
     pub name: String,
     pub options: Vec<String>,
     pub select: String,
@@ -17,14 +19,16 @@ pub fn Select(props: &Props) -> Html {
         .clone()
         .unwrap_or_else(|| "".to_string());
     let options = props.options.clone();
+    let class = props.label_class.clone();
+    
     html!{
-        <div>
-        <label class="label">
+        <div class="flex mb-1">
+        <Label class={class}>
             <span for={id.clone()} 
                 class="label-text">
                 {props.label.clone()}
             </span>
-        </label>        
+        </Label>        
             <select
                 id={id.clone()}
                 name={props.name.clone()}

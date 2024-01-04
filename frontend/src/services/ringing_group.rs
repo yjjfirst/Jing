@@ -1,8 +1,8 @@
 use yew::Properties;
 use serde::{Serialize, Deserialize};
 
-#[derive(Clone, PartialEq, Deserialize, Properties, Serialize)]
-pub struct RingingGroup {
+#[derive(Clone, PartialEq, Deserialize, Properties, Serialize, Debug)]
+pub struct RingingGroupDetail {
     pub id: usize,
     pub name: String,
     pub group_id: String,
@@ -12,17 +12,22 @@ pub struct RingingGroup {
     pub ring_strategy: String
 }
 
+#[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
+pub struct RingingGroup (pub RingingGroupDetail, pub Vec<(i32, String, String)>);
+
+
 impl RingingGroup {
     pub fn new_empty() -> RingingGroup {
-        RingingGroup {
-            id: 0,
-            name: "".to_string(),
-            group_id: "".to_string(),
-            description: "".to_string(),
-            ring_time: 0,
-            domain_id: 1,
-            ring_strategy: "all".to_string()       
-        }
+        RingingGroup (
+            RingingGroupDetail {
+                id: 0,
+                name: "".to_string(),
+                group_id: "".to_string(),
+                description: "".to_string(),
+                ring_time: 0,
+                domain_id: 1,
+                ring_strategy: "all".to_string()
+            }, vec![])
     }
     pub fn new(id: usize, 
         name: String, 
@@ -31,7 +36,16 @@ impl RingingGroup {
         domain_id: i32,
         ring_time: i32, 
         ring_strategy: String) -> RingingGroup {
-            RingingGroup {id, name, group_id, description, domain_id, ring_time, ring_strategy}
+        RingingGroup(
+            RingingGroupDetail {
+                id, 
+                name, 
+                group_id, 
+                description, 
+                domain_id, 
+                ring_time, 
+                ring_strategy
+            }, vec![])
     }
     
 }

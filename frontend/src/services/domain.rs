@@ -1,6 +1,7 @@
 use yew::Properties;
 use gloo_net::http::Request;
 use serde::{Deserialize, Serialize};
+use gloo_console::log;
 
 use super::BASE_URL;
 
@@ -13,6 +14,8 @@ pub struct Domain {
 impl Domain {
     pub async fn index() ->Vec<Domain> {
         let endpoint = format!("{}/domain", BASE_URL);
+
+        log!(&endpoint);
         let response = Request::get(&endpoint).send().await.unwrap();
         
         response.json().await.unwrap()

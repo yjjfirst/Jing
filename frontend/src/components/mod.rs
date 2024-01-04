@@ -6,3 +6,5 @@ pub mod input;
 pub mod banner;
 pub mod dropdown_menu;
 pub mod select;
+pub mod mselect;
+pub mod label;

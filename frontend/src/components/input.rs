@@ -1,4 +1,5 @@
 use yew::prelude::*;
+use super::label::Label;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
@@ -7,6 +8,7 @@ pub struct Props {
     pub label: String,
     pub name: String,
     pub value: String,
+    pub label_class: Classes,
     pub input_ref: NodeRef,
 }
 
@@ -23,16 +25,17 @@ pub fn Input(props: &Props) -> Html {
     let id = props
         .id
         .clone();
+    let label_class: Classes = props.label_class.clone();
 
     html! {
-        <div>
-            <label class="label">
+        <div class="flex mb-1">
+            <Label class={label_class}>
             <span 
                 for={id.clone()} 
                 class="label-text">
                 {props.label.clone()}
             </span>
-            </label>
+            </Label>
             <input
                 type={input_type}
                 placeholder=""

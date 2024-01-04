@@ -58,7 +58,6 @@ pub fn app() -> Html {
                 if store.selected_domain != 0 {
                     <div class="flex flex-col">
                         <Banner></Banner>
-                        <div class="divider my-1 mx-4"></div> 
                         <div class="flex grow ml-4 mr-1">
                             <SideBar></SideBar>
                             <div class="grow ml-4 mr-1">
