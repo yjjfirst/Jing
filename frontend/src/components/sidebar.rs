@@ -81,7 +81,7 @@ pub fn SidebarMenu() -> Html {
     }];
     html! {
           <div class="flex flex-col">
-          <ul class="menu bg-base-200 w-60 rounded-box">
+          <ul class="menu bg-base-200 w-60">
             <li><a>
               {"Dashboard"}</a>
             </li>

@@ -1,9 +1,11 @@
-use web_sys::HtmlInputElement;
+use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement};
 use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
 use yewdux::prelude::*;
 use yew_icons::{Icon, IconId};
+use wasm_bindgen::JsCast;
+use gloo_console::debug;
 
 use crate::components::header::Header;
 use crate::services::ringing_group::{RingingGroup, RingingGroupDetail};
@@ -12,6 +14,7 @@ use crate::store::{show_alert, Store};
 use crate::components::input::Input;
 use crate::components::select::Select;
 use crate::components::mselect::Mselect;
+
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum RingingGroupsRoute {
@@ -91,7 +94,8 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
     let group: UseStateHandle<RingingGroup> = use_state(||RingingGroup::new_empty());
     let g = group.clone();
     let loc = use_location().unwrap();
-    let location = loc.clone();    
+    let location = loc.clone(); 
+    let nav = use_navigator().unwrap();
     
     use_effect_with((), move |_| {
         let g = g.clone();
@@ -102,57 +106,56 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
         });
     });
     
-    let name_input_ref = use_node_ref();
-    let name_input_ref_cloned = name_input_ref.clone();
-
-    let exten_input_ref = use_node_ref();
-    let exten_input_ref_cloned = exten_input_ref.clone();
-
-    let desc_input_ref = use_node_ref();
-    let desc_input_ref_cloned = desc_input_ref.clone();
-
-    let ringtime_input_ref = use_node_ref();
-    let ringtime_input_ref_cloned = ringtime_input_ref.clone();
-
-    let ringstrategy_input_ref = use_node_ref();
-    let ringstragegy_input_ref_cloned = ringstrategy_input_ref.clone();
-
-    let onclick: Callback<MouseEvent> = Callback::from(move|_:MouseEvent|{
-        let dispatch = dispatch.clone();
-        let store_cloned = store_cloned.clone();
-        let loc = loc.clone();
-        let name_input: HtmlInputElement = name_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
-        let exten_input: HtmlInputElement = exten_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
-        let desc_input: HtmlInputElement = desc_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
-        let ringtime_input: HtmlInputElement = ringtime_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
-        let ringstrategy_input: HtmlInputElement = ringstragegy_input_ref_cloned.cast::<HtmlInputElement>().unwrap();
-        let group = RingingGroup::new(
-            id,
-            name_input.value(),
-            exten_input.value(),
-            desc_input.value(),
-            1,           
-            ringtime_input.value().parse::<i32>().unwrap(),
-            ringstrategy_input.value()
-        );
-        wasm_bindgen_futures::spawn_local(async move {
-            let dispatch = dispatch.clone();
-            show_alert("Updating ringing group.".to_string(), dispatch);
-            Service::update(loc.path(), store_cloned.selected_domain, group).await;
-        });
-        
-    });
-
     let options: Vec<String> = vec![
         String::from("simultaneous"), 
         String::from("sequential")
     ];
 
+    let form_oncancel = {
+        Callback::from(move|event:MouseEvent| {
+            nav.push(&RingingGroupsRoute::Index);
+        })
+    };
+
+    let form_onsubmit = {
+        let dispatch: Dispatch<Store> = dispatch.clone();
+        let store_cloned = store_cloned.clone();
+        let loc = loc.clone();
+                
+        Callback::from( move| event: SubmitEvent|{
+            let dispatch: Dispatch<Store> = dispatch.clone();
+            let store_cloned = store_cloned.clone();
+            let loc = loc.clone();
+                                
+            let target: Option<EventTarget> = event.target();
+            let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();            
+            let form_data = FormData::new_with_form(&form).unwrap();
+
+            let group = RingingGroup::new(
+                id,
+                form_data.get("name").as_string().unwrap(),
+                form_data.get("extension").as_string().unwrap(),
+                form_data.get("description").as_string().unwrap(),
+                1,           
+                form_data.get("ring-time").as_string().unwrap().parse::<i32>().unwrap(),
+                form_data.get("ring-strategy").as_string().unwrap()
+            );
+
+            wasm_bindgen_futures::spawn_local(async move {
+                let dispatch = dispatch.clone();
+                show_alert("Updating ringing group.".to_string(), dispatch);
+                Service::update(loc.path(), store_cloned.selected_domain, group).await;
+            });
+                        
+            event.prevent_default();
+        })
+    };
+
     html! { 
         <div class="grow mr-2">
             <Header title= {format!("Ringing Group: {}", group.0.group_id.clone())}></Header>
             <div class="divider my-1"></div> 
-            <form class="w-full max-w-screen-lg">
+            <form class="w-full max-w-screen-lg" onsubmit={form_onsubmit}>
               <div class="w-full md:w-2/3 px-3 mb-6 md:mb-0">
                 <Input
                   label="Ringing Group Name" 
@@ -160,8 +163,8 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
                   value={group.0.name.clone()}
                   input_type="text"
                   id="name"
-                  label_class="w-80"
-                  input_ref={name_input_ref}/>
+                  label_width="w-80"
+                  />
               </div>
               <div class="w-full md:w-2/3 px-3">
                 <Input 
@@ -170,8 +173,8 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
                   value={group.0.group_id.clone()}
                   input_type="text"
                   id="extension"
-                  label_class="w-80"
-                  input_ref={exten_input_ref}/>
+                  label_width="w-80"
+                  />
               </div>
               <div class="w-full md:w-2/3 px-3">
                 <Input 
@@ -180,8 +183,8 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
                   value={group.0.description.clone()}
                   input_type="text"
                   id="description"
-                  label_class="w-80"
-                  input_ref={desc_input_ref}/>
+                  label_width="w-80"
+                  />
               </div>
               <div class="w-full md:w-2/3 px-3 mb-6 md:mb-0">
                 <Input 
@@ -190,18 +193,17 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
                   value={group.0.ring_time.to_string()}
                   input_type="number"
                   id="ring-time"
-                  label_class="w-80"
-                  input_ref={ringtime_input_ref}/>
+                  label_width="w-80"
+                  />
               </div>
               <div class="w-full md:w-2/3 px-3">
                 <Select
                     {options}
                     select = {group.0.ring_strategy.to_string()}
-                    name="Ring Strategy"
+                    name="ring-strategy"
                     id="ring-strategy"
                     label="Ring Strategy"
-                    label_class="w-80"
-                    input_ref={ringstrategy_input_ref}
+                    label_width="w-80"
                     >
                 </Select>
               </div>
@@ -212,17 +214,17 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
             </Mselect>
             </div>
             <div class="flex justify-end mt-4">
-            <div {onclick}>
-                <div class="btn btn-success btn-sm mr-4">
+            <div>
+                <button class="btn btn-success btn-sm mr-4">
                     <Icon icon_id={IconId::LucideCheck}/>
                     {"Apply"}
-                </div>
+                </button>
             </div>
             <div>
-                <div class="btn btn-warning btn-sm">
+                <button class="btn btn-warning btn-sm"  onclick={form_oncancel}>
                     <Icon icon_id={IconId::LucideX}/>
                     {"Cancel"}
-                </div>
+                </button>
             </div>
           </div>            
           </form>

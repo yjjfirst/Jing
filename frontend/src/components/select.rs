@@ -5,11 +5,10 @@ use super::label::Label;
 pub struct Props {
     pub id: Option<String>,
     pub label: String,
-    pub label_class: Classes,
+    pub label_width: Classes,
     pub name: String,
     pub options: Vec<String>,
     pub select: String,
-    pub input_ref: NodeRef
 }
 
 #[function_component]
@@ -19,7 +18,7 @@ pub fn Select(props: &Props) -> Html {
         .clone()
         .unwrap_or_else(|| "".to_string());
     let options = props.options.clone();
-    let class = props.label_class.clone();
+    let class = props.label_width.clone();
     
     html!{
         <div class="flex mb-1">
@@ -32,7 +31,6 @@ pub fn Select(props: &Props) -> Html {
             <select
                 id={id.clone()}
                 name={props.name.clone()}
-                ref={props.input_ref.clone()}
                 class="select select-bordered block w-full"
             >
             {

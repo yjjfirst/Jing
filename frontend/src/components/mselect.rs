@@ -1,6 +1,7 @@
 use yew::prelude::*;
 use yew_icons::{Icon, IconId};
 use super::label::Label;
+use super::input::Input;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
@@ -18,23 +19,24 @@ pub fn Mselect(props: &Props) -> Html {
                 {"Extensions"}
             </span>
             </Label>
-            <div class="w-full flex mr-1 py-4 border border-neutral rounded-lg">
-                <button class="btn btn-outline btn-sm mx-1">
-                    {"1001"}
-                    <Icon icon_id={IconId::LucideX}/>
-                </button>
-                <button class="btn btn-outline btn-sm mx-1">
-                    {"1001"}
-                    <Icon icon_id={IconId::LucideX}/>
-                </button>
-                <button class="btn btn-outline btn-sm mx-1">
-                    {"1001"}
-                    <Icon icon_id={IconId::LucideX}/>
-                </button>
-                <div>              
-                <button class="btn btn-square btn-outline btn-sm">
+            <div>
+                <Input
+                    id="ttt"
+                    name="ttt"
+                    value="ttt"
+                    input_type="text"
+                >
+                </Input>
+                <Input
+                    id="ttt"
+                    name="ttt"
+                    value="ttt"
+                    input_type="text"
+                >
+                </Input>
+                <div class="btn btn-link btn-sm mr-4">
                     <Icon icon_id={IconId::LucidePlus}/>
-                </button>
+                    {"Add"}
                 </div>
             </div>
         </div>

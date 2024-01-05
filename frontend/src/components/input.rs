@@ -5,11 +5,12 @@ use super::label::Label;
 pub struct Props {
     pub input_type: String,
     pub id: String,
+    #[prop_or_default]
     pub label: String,
     pub name: String,
     pub value: String,
-    pub label_class: Classes,
-    pub input_ref: NodeRef,
+    #[prop_or_default]
+    pub label_width: Classes,
 }
 
 #[function_component]
@@ -25,17 +26,20 @@ pub fn Input(props: &Props) -> Html {
     let id = props
         .id
         .clone();
-    let label_class: Classes = props.label_class.clone();
+    let label_class: Classes = props.label_width.clone();
 
+    let label = props.label.clone();
     html! {
         <div class="flex mb-1">
-            <Label class={label_class}>
-            <span 
-                for={id.clone()} 
-                class="label-text">
-                {props.label.clone()}
-            </span>
-            </Label>
+            if label != "" {
+                <Label class={label_class}>
+                    <span 
+                        for={id.clone()} 
+                        class="label-text">
+                        {props.label.clone()}
+                    </span>
+                </Label>
+            }
             <input
                 type={input_type}
                 placeholder=""
@@ -43,7 +47,6 @@ pub fn Input(props: &Props) -> Html {
                 id={id.clone()}
                 name={props.name.clone()}
                 class="input input-bordered block w-full"
-                ref={props.input_ref.clone()}
             />
         </div>        
     }
