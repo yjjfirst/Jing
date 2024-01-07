@@ -1,7 +1,7 @@
 pub mod models;
 
 use models::*;
-use super::user::{get_user};
+use super::user::{get_user, ByField};
 use super::domain::{get_domain};
 use super::extension::{add_extension, del_extension};
 use diesel::prelude::*;
@@ -117,7 +117,7 @@ pub fn add_ringgroup_member(group: i32, uid: i32) -> Result<()> {
     use crate::schema::ringing_group_members::dsl::*;
 
     let mut conn = db_connect();
-    let user  = get_user(uid)?;
+    let user  = get_user(ByField::Id(uid))?;
     let ringgroup = get(group)?;
     let ringgroup_domain = ringgroup.domain_id;
 
@@ -150,7 +150,7 @@ pub fn del_ringgroup_member(group: i32, user: i32) -> Result<()> {
     Ok(())
 }
 
-pub fn members(group: i32) -> Result<Vec<(i32,String,String)>> {
+pub fn members(group: i32) -> Result<Vec<String>> {
     use crate::schema::ringing_group_members::dsl::*;
 
     let mut conn = db_connect();
@@ -159,13 +159,11 @@ pub fn members(group: i32) -> Result<Vec<(i32,String,String)>> {
         .filter(ringing_group_id.eq(group))
         .load::<(i32, i32, i32)>(&mut conn)
         .unwrap();
-    let results: Vec<(i32,String,String)> = query_results
+    let results: Vec<String> = query_results
         .into_iter()
         .map(|x| {
-            let u = get_user(x.2).unwrap();
-            let dn = get_domain(get(x.1).unwrap().domain_id).unwrap();
-
-            (x.0, u.user_id, dn.domain_name)
+            let u = get_user(ByField::Id(x.2)).unwrap();
+            u.user_id
         })
         .collect();
 

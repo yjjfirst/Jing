@@ -86,13 +86,11 @@ pub fn exec_rg_member_cmd(member: RgMemberCli) {
                 .unwrap();
             let mut table = Ctable::new();
 
-            table.set_titles(row!["id", "User", "domain"]);
+            table.set_titles(row!["User"]);
             for m in members {
                 table.add_row(
                     row![
-                        m.0,
-                        m.1,
-                        m.2,
+                        m,
                     ])
             }
 

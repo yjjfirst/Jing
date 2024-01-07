@@ -10,6 +10,11 @@ use crate::extension::{add_extension, del_extension};
 use user_param::{UserParam};
 use user_variable::{UserVariable};
 
+pub enum ByField {
+    Id(i32),
+    UserId(String)
+}
+
 pub fn add_user<'a> (
     domain: i32,
     user_id: &'a str) -> Result<()> {
@@ -73,21 +78,29 @@ pub fn all_users() -> Result<Vec<User>> {
     Ok(results)
 }
 
-pub fn get_user(db_id: i32) -> Result<User>{
+pub fn get_user(field: ByField) -> Result<User> {
     use crate::schema::users::dsl::*;
 
     let mut conn = db_connect();
-    let user = users
-        .find(db_id)
-        .first::<User>(&mut conn)?;
+    match field {
+        ByField::Id(i) => {
+            Ok(users
+                .find(i)
+                .first::<User>(&mut conn)?)
+        },
+        ByField::UserId(u) => {
+            Ok(users
+                .filter(user_id.eq(u))
+                .first::<User>(&mut conn)?)
+        }
+    }
 
-    Ok(user)
 }
 
 pub fn get_user_params(user_id: i32) -> Result<Vec<UserParam>>{
     let mut conn = db_connect();
 
-    let user = get_user(user_id)?;
+    let user = get_user(ByField::Id(user_id))?;
     let params =  UserParam::belonging_to(&user)
         .load::<UserParam>(&mut conn)?;
 
@@ -98,7 +111,7 @@ pub fn get_user_params(user_id: i32) -> Result<Vec<UserParam>>{
 pub fn get_user_vars(user_id: i32) -> Result<Vec<UserVariable>> {
     let mut conn = db_connect();
 
-    let user = get_user(user_id)?;
+    let user = get_user(ByField::Id(user_id))?;
     let vars = UserVariable::belonging_to(&user)
         .load::<UserVariable>(&mut conn)?;
 

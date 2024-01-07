@@ -145,7 +145,7 @@ fn inbound<W: Write>(w: &mut EventWriter<W>, route: InboundRoute) {
 fn ringgroup<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
     let rg = ringgroup::get_by(domain_id, &exten).unwrap();
     let members = ringgroup::members(rg.id).unwrap();
-    let members: Vec<String> = members.iter().map(|m| format!("user/{}@${{domain_name}}",m.1)).collect();
+    let members: Vec<String> = members.iter().map(|m| format!("user/{}@${{domain_name}}",m)).collect();
     let members = members.join(",");
 
     action(w, "set", "call_timeout=30");

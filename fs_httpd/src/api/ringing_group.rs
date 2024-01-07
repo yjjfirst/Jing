@@ -2,6 +2,7 @@ use std::ops::Deref;
 use actix_web::{web, Responder};
 
 use fs_lib::ringgroup;
+use fs_lib::user;
 use super::Status;
 
 pub fn ringing_group_config(cfg: &mut web::ServiceConfig) {
@@ -25,9 +26,17 @@ async fn index(path: web::Path<i32>) -> impl Responder {
 }
 
 async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
-    let (_,id) = path.into_inner();
+    let (domain,id) = path.into_inner();
     let group = ringgroup::get(id).unwrap();
-    web::Json(group)
+    let members = ringgroup::members(id).unwrap();
+    let users = user::users_within(domain).unwrap();
+
+    web::Json((group,
+               members,
+               users.iter().map(|u|{
+                   u.user_id.clone()
+               }).collect::<Vec<String>>()
+    ))
 }
 
 async fn members(path: web::Path<(i32, i32)>) -> impl Responder {
@@ -36,7 +45,18 @@ async fn members(path: web::Path<(i32, i32)>) -> impl Responder {
     web::Json(members)
 }
 
-async fn update(group: web::Json<ringgroup::models::Ringgroup>) -> impl Responder {
-    ringgroup::update(group.deref()).unwrap();
+async fn update(group: web::Json<(ringgroup::models::Ringgroup, Vec<String>, Vec<String>)>) -> impl Responder {
+    let (group, members, _) =  group.deref();
+    let members_exist = ringgroup::members(group.id).unwrap();
+
+    for m in members {
+        if members_exist.contains(m) {
+            continue;
+        }
+    }
+
+    ringgroup::update(group).unwrap();
+
+
     web::Json(Status {status: "Ok".to_string()})
 }

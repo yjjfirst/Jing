@@ -6,6 +6,7 @@ use fs_lib::queue;
 use fs_lib::queue::agent;
 use fs_lib::queue::tier;
 use fs_lib::user;
+use fs_lib::user::ByField;
 use fs_lib::domain;
 
 pub fn serve<W: Write>(w: &mut EventWriter<W>) {
@@ -40,7 +41,7 @@ pub fn agents <W: Write>(w: &mut EventWriter<W>) {
 }
 
 fn agent_name(agent: &agent::Agent) -> String {
-    let user = user::get_user(agent.user_id).unwrap();
+    let user = user::get_user(ByField::Id(agent.user_id)).unwrap();
     let domain = domain::get_domain(user.domain_id).unwrap();
 
     format!("{}@{}", user.user_id, domain.domain_name)
