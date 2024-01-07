@@ -49,14 +49,16 @@ async fn update(group: web::Json<(ringgroup::models::Ringgroup, Vec<String>, Vec
     let (group, members, _) =  group.deref();
     let members_exist = ringgroup::members(group.id).unwrap();
 
+    for m in members_exist {
+        let user = user::get_user(user::ByField::UserId(m)).unwrap();
+        ringgroup::del_ringgroup_member(group.id, user.id).unwrap();
+    }
+
     for m in members {
-        if members_exist.contains(m) {
-            continue;
-        }
+        let user = user::get_user(user::ByField::UserId(m.to_string())).unwrap();
+        ringgroup::add_ringgroup_member(group.id, user.id).unwrap();
     }
 
     ringgroup::update(group).unwrap();
-
-
     web::Json(Status {status: "Ok".to_string()})
 }
