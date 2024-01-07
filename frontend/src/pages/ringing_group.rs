@@ -16,6 +16,7 @@ use crate::components::select::Select;
 use crate::components::mselect::Mselect;
 
 
+
 #[derive(Clone, Routable, PartialEq)]
 pub enum RingingGroupsRoute {
     #[at("/ringing-group")]
@@ -36,7 +37,7 @@ pub fn RingingGroups() -> Html {
     let s = store.clone();
     let ringing_groups: UseStateHandle<Vec<RingingGroupDetail>> = use_state(||vec![]);
     let groups = ringing_groups.clone();
-    use_effect_with(s.selected_domain.clone(), move |_| {
+    use_effect_with((), move |_| {
         let groups = groups.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_groups: Vec<RingingGroupDetail> = 
@@ -101,7 +102,8 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
         let g = g.clone();
         let loc = location.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_group: RingingGroup = Service::get(loc.path(), store.selected_domain).await;
+            let mut fetched_group: RingingGroup = Service::get(loc.path(), store.selected_domain).await;
+            fetched_group.2.insert(0,String::from(""));
             g.set(fetched_group);
         });
     });
@@ -112,7 +114,8 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
     ];
 
     let form_oncancel = {
-        Callback::from(move|event:MouseEvent| {
+        let nav = nav.clone();
+        Callback::from(move|_| {
             nav.push(&RingingGroupsRoute::Index);
         })
     };
@@ -121,8 +124,10 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
         let dispatch: Dispatch<Store> = dispatch.clone();
         let store_cloned = store_cloned.clone();
         let loc = loc.clone();
+        let nav = nav.clone();
                 
         Callback::from( move| event: SubmitEvent|{
+            let nav = nav.clone();
             let dispatch: Dispatch<Store> = dispatch.clone();
             let store_cloned = store_cloned.clone();
             let loc = loc.clone();
@@ -130,6 +135,7 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
             let target: Option<EventTarget> = event.target();
             let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();            
             let form_data = FormData::new_with_form(&form).unwrap();
+            let members = form_data.get_all("members");
 
             let group = RingingGroup::new(
                 id,
@@ -138,13 +144,19 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
                 form_data.get("description").as_string().unwrap(),
                 1,           
                 form_data.get("ring-time").as_string().unwrap().parse::<i32>().unwrap(),
-                form_data.get("ring-strategy").as_string().unwrap()
+                form_data.get("ring-strategy").as_string().unwrap(),
+                members.iter().map(|m|{
+                    m.as_string().unwrap()
+                }).filter(|m|{
+                    !m.eq("")
+                }).collect::<Vec<String>>()
             );
 
             wasm_bindgen_futures::spawn_local(async move {
                 let dispatch = dispatch.clone();
                 show_alert("Updating ringing group.".to_string(), dispatch);
                 Service::update(loc.path(), store_cloned.selected_domain, group).await;
+                nav.push(&RingingGroupsRoute::Index);            
             });
                         
             event.prevent_default();
@@ -209,7 +221,9 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
               </div>
               <div class="w-full md:w-2/3">
             <Mselect 
-                label_class="w-80"
+                label_width_class="w-80"
+                exists = {group.1.clone()}
+                all = {group.2.clone()}
                 >
             </Mselect>
             </div>

@@ -3,6 +3,8 @@ use crate::components::dropdown_menu::DropdownMenu;
 use yewdux::prelude::use_store;
 use crate::store::{Store, select_domain};
 use yew_icons::{Icon, IconId};
+use crate::app::Route;
+use yew_router::prelude::*;
 
 #[function_component]
 pub fn Banner() -> Html {
@@ -22,6 +24,7 @@ pub fn DomainComponent() -> Html {
     let on_changed = {
         let store = store.clone();
         let dispatch = dispatch.clone();
+        let nav = use_navigator().unwrap();
         Callback::from(move|selected: String|{
             let dispatch = dispatch.clone();
             let mut selected_id = 0;
@@ -32,6 +35,7 @@ pub fn DomainComponent() -> Html {
             };
 
             select_domain(selected_id, dispatch);
+            nav.push(&Route::Dashboard);
         }
     )};
 

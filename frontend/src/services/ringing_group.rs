@@ -13,7 +13,7 @@ pub struct RingingGroupDetail {
 }
 
 #[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
-pub struct RingingGroup (pub RingingGroupDetail, pub Vec<(i32, String, String)>);
+pub struct RingingGroup (pub RingingGroupDetail, pub Vec<String>, pub Vec<String>);
 
 
 impl RingingGroup {
@@ -27,7 +27,7 @@ impl RingingGroup {
                 ring_time: 0,
                 domain_id: 1,
                 ring_strategy: "all".to_string()
-            }, vec![])
+            }, vec![], vec![])
     }
     pub fn new(id: usize, 
         name: String, 
@@ -35,7 +35,8 @@ impl RingingGroup {
         description: String, 
         domain_id: i32,
         ring_time: i32, 
-        ring_strategy: String) -> RingingGroup {
+        ring_strategy: String,
+        members: Vec<String>) -> RingingGroup {
         RingingGroup(
             RingingGroupDetail {
                 id, 
@@ -45,7 +46,7 @@ impl RingingGroup {
                 domain_id, 
                 ring_time, 
                 ring_strategy
-            }, vec![])
+            }, members, vec![])
     }
     
 }
