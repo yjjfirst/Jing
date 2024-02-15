@@ -34,7 +34,6 @@ pub struct RingingGroupDetailsProps {
 pub fn RingingGroups() -> Html {
     let loc = use_location().unwrap().clone();    
     let (store,_) = use_store::<Store>();
-    let s = store.clone();
     let ringing_groups: UseStateHandle<Vec<RingingGroupDetail>> = use_state(||vec![]);
     let groups = ringing_groups.clone();
     use_effect_with((), move |_| {
@@ -59,6 +58,11 @@ pub fn RingingGroups() -> Html {
             <Header title="Application -> Ringing Group"></Header>
             <div class="divider my-1"></div>
             {groups}
+            <div class="flex flex-row-reverse">
+                <div class="btn btn-square btn-outline btn-sm">
+                    <Icon icon_id={IconId::LucidePlus}/>   
+                </div>
+            </div>            
         </div>
     }
 
@@ -78,11 +82,16 @@ pub fn RingingGroupListItem(props: &RingingGroupDetail) -> Html {
         <div class="flex w-full items-center">
             <div class="w-1/5">{props.group_id}</div>
             <div class="grow">{props.name}</div>
-            <div {onclick}>
+            <div {onclick} class="mr-1">
                 <div class="btn btn-square btn-outline btn-sm">
                     <Icon icon_id={IconId::LucideEdit}/>   
                 </div>
             </div>
+            <div>
+                <div class="btn btn-square btn-outline btn-sm">
+                    <Icon icon_id={IconId::LucideTrash}/>   
+                </div>
+            </div>            
         </div>
     }
 }
@@ -91,7 +100,7 @@ pub fn RingingGroupListItem(props: &RingingGroupDetail) -> Html {
 pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
     let(store, dispatch) = use_store::<Store>();
     let store_cloned = store.clone();
-    let id = props.id.parse::<usize>().unwrap();
+    let id: usize = props.id.parse::<usize>().unwrap();
     let group: UseStateHandle<RingingGroup> = use_state(||RingingGroup::new_empty());
     let g = group.clone();
     let loc = use_location().unwrap();
@@ -107,7 +116,7 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
             g.set(fetched_group);
         });
     });
-    
+
     let options: Vec<String> = vec![
         String::from("simultaneous"), 
         String::from("sequential")

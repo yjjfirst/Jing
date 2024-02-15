@@ -4,6 +4,7 @@ use yewdux::prelude::use_store;
 use crate::store::{Store, select_domain, set_domains};
 use super::components::sidebar::SideBar;
 use crate::pages::ringing_group::{RingingGroupsRoute, ringinggroups_switch};
+use crate::pages::extension::{ExtensionsRoute, extensions_switch};
 use crate::components::dashboard::Dashboard;
 use crate::components::alert::{AlertComponent, Props as AlertProps};
 use crate::components::banner::Banner;
@@ -21,7 +22,10 @@ pub enum Route {
     RingingGroupsRoot,
     #[at("/ringing-group/*")]
     RingingGroups,
-
+    #[at("/extension")]
+    ExtensionRoot,
+    #[at("/extension/*")]
+    Extensions,
 }
 
 #[function_component(App)]
@@ -81,6 +85,12 @@ fn switch(routes: Route) -> Html {
         },
         Route::RingingGroups => html! {
             <Switch<RingingGroupsRoute> render={ringinggroups_switch}/>
+        },
+        Route::ExtensionRoot => html! {
+            <Switch<ExtensionsRoute> render={extensions_switch}/>
+        },
+        Route::Extensions => html! {
+            <Switch<ExtensionsRoute> render={extensions_switch}/>
         }
     }
 }

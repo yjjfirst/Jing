@@ -1,3 +1,4 @@
+pub mod extension;
 pub mod ringing_group;
 pub mod domain;
 

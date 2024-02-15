@@ -26,7 +26,8 @@ yew_icons = {version = "0.8", features = ["LucideEdit",
     "LucideCheck", 
     "LucideChevronDown",
     "LucideChevronUp",
-    "LucidePlus"]}
+    "LucidePlus",
+    "LucideTrash"]}
 yewdux = "0.9.4"
 
 [dependencies.web-sys]
