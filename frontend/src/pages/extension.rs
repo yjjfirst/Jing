@@ -18,12 +18,53 @@ pub enum ExtensionsRoute {
     Get {id: String},
 }
 
+#[derive(Clone, PartialEq, Properties)] 
+pub struct ExtensionProps {
+    pub id: usize,
+    pub domain_id: i32,
+    pub user_id: String    
+}
+
+#[derive(Clone, PartialEq, Properties)] 
+pub struct ExtensionDetailProps {
+    pub id: String,
+}
+
+#[function_component]
+pub fn ExtensionsListItem(props: &Extension) -> Html {
+    let nav = use_navigator().unwrap();
+    let e = props.clone();
+    let onedit: Callback<MouseEvent> = Callback::from(move |_e|{
+        nav.push(&ExtensionsRoute::Get {id: e.id.clone().to_string()});
+    });
+
+    html!{    
+    <div>
+        <div class="flex w-full items-center">
+            <div class="grow">{e.user_id.clone()}</div>
+            <div onclick={onedit} class="mr-1">
+                <div class="btn btn-square btn-outline btn-sm">
+                    <Icon icon_id={IconId::LucideEdit}/>   
+                </div>
+            </div>
+            <div>
+                <div class="btn btn-square btn-outline btn-sm">
+                    <Icon icon_id={IconId::LucideTrash}/>   
+                </div>
+            </div>             
+        </div>
+        <div class="divider my-1"></div>
+    </div>
+    }
+}
+
 #[function_component]
 pub fn ExtensionsList() -> Html {
     let loc = use_location().unwrap().clone();    
     let (store,_) = use_store::<Store>();
     let extensions: UseStateHandle<Vec<Extension>> = use_state(||vec![]);
     let exts = extensions.clone();
+
     use_effect_with((), move |_| {
         let exts  = exts.clone();
         wasm_bindgen_futures::spawn_local(async move {
@@ -35,23 +76,7 @@ pub fn ExtensionsList() -> Html {
     
     let extensions_list: Vec<Html> = extensions.iter().map(|e|{
         html! {
-            <div>
-                <div class="flex w-full items-center">
-                    <div class="grow">{e.user_id.clone()}</div>
-                    <div class="mr-1">
-                        <div class="btn btn-square btn-outline btn-sm">
-                            <Icon icon_id={IconId::LucideEdit}/>   
-                        </div>
-                    </div>
-                    <div>
-                        <div class="btn btn-square btn-outline btn-sm">
-                            <Icon icon_id={IconId::LucideTrash}/>   
-                        </div>
-                    </div>             
-                </div>
-                <div class="divider my-1"></div>
-            </div>
-
+            <ExtensionsListItem ..e.clone()></ExtensionsListItem>
         }
     }).collect();
 
@@ -70,14 +95,15 @@ pub fn ExtensionsList() -> Html {
 }
 
 #[function_component]
-pub fn ExtensionDetail() -> Html {
+pub fn ExtensionDetail(props: &ExtensionDetailProps) -> Html {
+    let id = props.id.clone();
     html! {
-        <div>{"Extension detail"}</div>
+        <div>{id}</div>
     }
 }
 pub fn extensions_switch(route: ExtensionsRoute) -> Html{
     match route {
         ExtensionsRoute::Index => html!{<ExtensionsList />},
-        ExtensionsRoute::Get { id } => html !{<ExtensionDetail />}
+        ExtensionsRoute::Get { id } => html !{<ExtensionDetail id={id}/>}
     }
 }

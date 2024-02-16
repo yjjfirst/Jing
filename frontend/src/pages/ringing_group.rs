@@ -5,7 +5,6 @@ use yew_router::prelude::*;
 use yewdux::prelude::*;
 use yew_icons::{Icon, IconId};
 use wasm_bindgen::JsCast;
-use gloo_console::debug;
 
 use crate::components::header::Header;
 use crate::services::ringing_group::{RingingGroup, RingingGroupDetail};
@@ -14,20 +13,20 @@ use crate::store::{show_alert, Store};
 use crate::components::input::Input;
 use crate::components::select::Select;
 use crate::components::mselect::Mselect;
-
-
+use crate::services::extension::Extension;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum RingingGroupsRoute {
     #[at("/ringing-group")]
     Index,
     #[at("/ringing-group/:id")]
-    Get {id: String},
+    Get {id: usize},
 }
 
 #[derive(Clone, PartialEq, Properties)] 
 pub struct RingingGroupDetailsProps {
-    pub id: String
+    #[prop_or(0)]
+    pub id: usize
 }
 
 #[function_component]
@@ -36,6 +35,8 @@ pub fn RingingGroups() -> Html {
     let (store,_) = use_store::<Store>();
     let ringing_groups: UseStateHandle<Vec<RingingGroupDetail>> = use_state(||vec![]);
     let groups = ringing_groups.clone();
+    let nav = use_navigator().unwrap();
+
     use_effect_with((), move |_| {
         let groups = groups.clone();
         wasm_bindgen_futures::spawn_local(async move {
@@ -53,13 +54,17 @@ pub fn RingingGroups() -> Html {
         </div>
     }).collect();
 
+    let onadd: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent| {
+        nav.push(&RingingGroupsRoute::Get {id: 0});
+    });
+
     html! {
         <div class="grow mr-2">
             <Header title="Application -> Ringing Group"></Header>
             <div class="divider my-1"></div>
             {groups}
             <div class="flex flex-row-reverse">
-                <div class="btn btn-square btn-outline btn-sm">
+                <div onclick={onadd} class="btn btn-square btn-outline btn-sm">
                     <Icon icon_id={IconId::LucidePlus}/>   
                 </div>
             </div>            
@@ -73,21 +78,26 @@ pub fn RingingGroupListItem(props: &RingingGroupDetail) -> Html {
     let props = props.clone();
     let id = props.id;
     let nav = use_navigator().unwrap();
+    let nav1 = nav.clone();
 
-    let onclick: Callback<MouseEvent> = Callback::from(move |_e: MouseEvent| {
-        nav.push(&RingingGroupsRoute::Get {id: id.to_string()});
+    let onedit: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent| {
+        nav.push(&RingingGroupsRoute::Get {id});
     });
 
-    return html! {
+    let ondel: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent| {
+        nav1.push(&RingingGroupsRoute::Get {id});
+    });
+
+    html! {
         <div class="flex w-full items-center">
             <div class="w-1/5">{props.group_id}</div>
             <div class="grow">{props.name}</div>
-            <div {onclick} class="mr-1">
+            <div onclick={onedit} class="mr-1">
                 <div class="btn btn-square btn-outline btn-sm">
                     <Icon icon_id={IconId::LucideEdit}/>   
                 </div>
             </div>
-            <div>
+            <div onclick={ondel}>
                 <div class="btn btn-square btn-outline btn-sm">
                     <Icon icon_id={IconId::LucideTrash}/>   
                 </div>
@@ -100,20 +110,28 @@ pub fn RingingGroupListItem(props: &RingingGroupDetail) -> Html {
 pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
     let(store, dispatch) = use_store::<Store>();
     let store_cloned = store.clone();
-    let id: usize = props.id.parse::<usize>().unwrap();
+
+    let id = props.id;
     let group: UseStateHandle<RingingGroup> = use_state(||RingingGroup::new_empty());
     let g = group.clone();
+
     let loc = use_location().unwrap();
     let location = loc.clone(); 
     let nav = use_navigator().unwrap();
-    
+
+    let extensions: UseStateHandle<Vec<String>> = use_state(||vec![]);
+    let es = extensions.clone();
     use_effect_with((), move |_| {
         let g = g.clone();
+        let es = es.clone();
         let loc = location.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let mut fetched_group: RingingGroup = Service::get(loc.path(), store.selected_domain).await;
-            fetched_group.2.insert(0,String::from(""));
-            g.set(fetched_group);
+            if id != 0 {
+                let fetched_group: RingingGroup = Service::get(loc.path(), store.clone().selected_domain).await;
+                g.set(fetched_group);
+            }
+            let fetched_extensions = Extension::list(store.selected_domain).await;
+            es.set(fetched_extensions);
         });
     });
 
@@ -176,8 +194,8 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
         <div class="grow mr-2">
             <Header title= {format!("Ringing Group: {}", group.0.group_id.clone())}></Header>
             <div class="divider my-1"></div> 
-            <form class="w-full max-w-screen-lg" onsubmit={form_onsubmit}>
-              <div class="w-full md:w-2/3 px-3 mb-6 md:mb-0">
+            <form class="w-full" onsubmit={form_onsubmit}>
+              <div class="w-full px-3 mb-6 md:mb-0">
                 <Input
                   label="Ringing Group Name" 
                   name="name" 
@@ -187,7 +205,7 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
                   label_width="w-80"
                   />
               </div>
-              <div class="w-full md:w-2/3 px-3">
+              <div class="w-full px-3">
                 <Input 
                   label="Ringing Group Extension" 
                   name="extension" 
@@ -197,7 +215,7 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
                   label_width="w-80"
                   />
               </div>
-              <div class="w-full md:w-2/3 px-3">
+              <div class="w-full px-3">
                 <Input 
                   label="Description" 
                   name="description" 
@@ -207,7 +225,7 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
                   label_width="w-80"
                   />
               </div>
-              <div class="w-full md:w-2/3 px-3 mb-6 md:mb-0">
+              <div class="w-full px-3 mb-6 md:mb-0">
                 <Input 
                   label="Ring Time" 
                   name="ring-time" 
@@ -217,7 +235,7 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
                   label_width="w-80"
                   />
               </div>
-              <div class="w-full md:w-2/3 px-3">
+              <div class="w-full px-3">
                 <Select
                     {options}
                     select = {group.0.ring_strategy.to_string()}
@@ -228,11 +246,11 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
                     >
                 </Select>
               </div>
-              <div class="w-full md:w-2/3">
+              <div class="w-full ">
             <Mselect 
                 label_width_class="w-80"
                 exists = {group.1.clone()}
-                all = {group.2.clone()}
+                all = {extensions.iter().map(|e|e.to_string()).collect::<Vec<String>>()}
                 >
             </Mselect>
             </div>
