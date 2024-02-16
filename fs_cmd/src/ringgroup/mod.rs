@@ -103,7 +103,7 @@ pub fn exec_rg_cmd(rg: RgCli) {
     let domain_id = domain::get_active().unwrap();
     match rg {
         RgCli::Add {name, group_id, ring_time, strategy} => {
-            ringgroup::add_ringgroup(domain_id, name, group_id, ring_time, strategy)
+            ringgroup::add_ringgroup(domain_id, name, group_id, Some("".to_string()), ring_time, strategy)
                 .unwrap();
         },
         RgCli::Del { id } => {

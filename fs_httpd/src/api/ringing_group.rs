@@ -32,11 +32,7 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
     let users = user::users_within(domain).unwrap();
 
     web::Json((group,
-               members,
-               users.iter().map(|u|{
-                   u.user_id.clone()
-               }).collect::<Vec<String>>()
-    ))
+               members))
 }
 
 async fn members(path: web::Path<(i32, i32)>) -> impl Responder {
@@ -45,20 +41,33 @@ async fn members(path: web::Path<(i32, i32)>) -> impl Responder {
     web::Json(members)
 }
 
-async fn update(group: web::Json<(ringgroup::models::Ringgroup, Vec<String>, Vec<String>)>) -> impl Responder {
-    let (group, members, _) =  group.deref();
+async fn update(group: web::Json<(ringgroup::models::Ringgroup, Vec<String>)>) -> impl Responder {
+    let (group, members) =  group.deref();
     let members_exist = ringgroup::members(group.id).unwrap();
 
-    for m in members_exist {
-        let user = user::get_user(user::ByField::UserId(m)).unwrap();
-        ringgroup::del_ringgroup_member(group.id, user.id).unwrap();
-    }
 
-    for m in members {
-        let user = user::get_user(user::ByField::UserId(m.to_string())).unwrap();
-        ringgroup::add_ringgroup_member(group.id, user.id).unwrap();
-    }
+    if group.id != 0 {
+        for m in members_exist {
+            let user = user::get_user(user::ByField::UserId(m)).unwrap();
+            ringgroup::del_ringgroup_member(group.id, user.id).unwrap();
+        }
 
-    ringgroup::update(group).unwrap();
+        for m in members {
+            let user = user::get_user(user::ByField::UserId(m.to_string())).unwrap();
+            ringgroup::add_ringgroup_member(group.id, user.id).unwrap();
+        }
+        ringgroup::update(group).unwrap();
+    } else {
+        let inserted = ringgroup::add_ringgroup(group.domain_id,
+                                 group.name.clone(),
+                                 group.group_id.clone(),
+                                 group.description.clone(),
+                                 Some(group.ring_time),
+                                 Some(group.ring_strategy.clone())).unwrap();
+        for m in members {
+            let user = user::get_user(user::ByField::UserId(m.to_string())).unwrap();
+            ringgroup::add_ringgroup_member(inserted.id, user.id).unwrap();
+        }
+    }
     web::Json(Status {status: "Ok".to_string()})
 }

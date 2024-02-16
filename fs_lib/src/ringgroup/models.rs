@@ -19,6 +19,7 @@ pub struct Ringgroup {
 pub struct NewRinggroup<'a> {
     pub name: &'a str,
     pub group_id: &'a str,
+    pub description: Option<String>,
     pub domain_id: i32,
     pub ring_time: Option<i32>,
     pub ring_strategy: Option<&'a str>,

@@ -11,27 +11,29 @@ use crate::error::{Result, Error};
 pub fn add_ringgroup(domain: i32,
                      name: String,
                      group_id: String,
+                     desc: Option<String>,
                      ring_time: Option<i32>,
-                     strategy: Option<String>) -> Result<()>{
+                     strategy: Option<String>) -> Result<Ringgroup>{
     use crate::schema::ringing_groups;
 
     let mut conn = db_connect();
     let new_group = NewRinggroup {
         name: &name,
         group_id: &group_id,
+        description: desc,
         domain_id: domain,
         ring_time,
         ring_strategy: strategy.as_deref()
     };
 
 
-    diesel::insert_into(ringing_groups::table)
+    let inserted = diesel::insert_into(ringing_groups::table)
         .values(&new_group)
-        .execute(&mut conn)?;
+        .get_result::<Ringgroup>(&mut conn)?;
 
     add_extension(group_id.as_str(), "ringgroup", domain)?;
 
-    Ok(())
+    Ok(inserted)
 }
 
 pub fn del_ringgroup(i: i32) -> Result<()>{
