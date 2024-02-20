@@ -13,6 +13,7 @@ pub fn ringing_group_config(cfg: &mut web::ServiceConfig) {
         .service(
             web::resource("/{id}")
                 .route(web::get().to(get))
+                .route(web::delete().to(delete))
                 .route(web::post().to(update)))
         .service(
             web::resource("/{id}/members")
@@ -33,6 +34,13 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
 
     web::Json((group,
                members))
+}
+
+async fn delete(path: web::Path<(i32, i32)>) -> impl Responder {
+    let (_,id) = path.into_inner();
+
+    ringgroup::del_ringgroup(id).unwrap();
+    web::Json(Status {status: "Ok".to_string()})
 }
 
 async fn members(path: web::Path<(i32, i32)>) -> impl Responder {
