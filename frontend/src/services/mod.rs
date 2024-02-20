@@ -29,4 +29,9 @@ impl Service {
         let request = Request::post(&endpoint).json(&group).unwrap();
         request.send().await.unwrap();
     }
+
+    pub async fn delete(path: &str, domain: usize) {
+        let endpoint = Self::endpoint(path, domain);
+        Request::delete(&endpoint).send().await.unwrap();
+    }
 }

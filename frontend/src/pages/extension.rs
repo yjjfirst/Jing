@@ -1,4 +1,3 @@
-use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement};
 use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
@@ -7,7 +6,7 @@ use yew_icons::{Icon, IconId};
 
 use crate::components::header::Header;
 use crate::services::Service;
-use crate::store::{show_alert, Store};
+use crate::store::Store;
 use crate::services::extension::Extension;
 
 #[derive(Clone, Routable, PartialEq)]

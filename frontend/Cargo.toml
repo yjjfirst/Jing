@@ -39,5 +39,6 @@ features = [
     "MouseEvent",
     "DomRect",
     "Window",
-    "HtmlAnchorElement"
+    "HtmlAnchorElement",
+    "HtmlDialogElement"
 ]

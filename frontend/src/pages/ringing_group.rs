@@ -1,4 +1,4 @@
-use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement};
+use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
@@ -14,6 +14,7 @@ use crate::components::input::Input;
 use crate::components::select::Select;
 use crate::components::mselect::Mselect;
 use crate::services::extension::Extension;
+use crate::components::dialog::Dialog;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum RingingGroupsRoute {
@@ -26,7 +27,15 @@ pub enum RingingGroupsRoute {
 #[derive(Clone, PartialEq, Properties)] 
 pub struct RingingGroupDetailsProps {
     #[prop_or(0)]
-    pub id: usize
+    pub id: usize,
+}
+
+#[derive(Clone, PartialEq, Properties)]
+pub struct RingingGroupListItemProps {
+    pub id: usize,
+    pub group_id: String,
+    pub name: String,
+    pub ondel: Callback<usize>
 }
 
 #[function_component]
@@ -35,6 +44,8 @@ pub fn RingingGroups() -> Html {
     let (store,_) = use_store::<Store>();
     let ringing_groups: UseStateHandle<Vec<RingingGroupDetail>> = use_state(||vec![]);
     let groups = ringing_groups.clone();
+    let groups_1 = ringing_groups.clone();
+
     let nav = use_navigator().unwrap();
 
     use_effect_with((), move |_| {
@@ -46,9 +57,28 @@ pub fn RingingGroups() -> Html {
         });
     });
     
+    let ondel = Callback::from(move |id: usize|{
+        let groups = groups_1.clone();
+        let filtered: Vec<&RingingGroupDetail> = groups
+            .iter()
+            .filter(|g|id != g.id)
+            .collect();
+
+        let filtered: Vec<RingingGroupDetail> = filtered
+            .iter()
+            .map(|g|{(**g).clone()})
+            .collect();
+
+        groups.set(filtered);
+    });
+
     let groups: Vec<Html> = ringing_groups.iter().map(|g| html! {
         <div>
-            <RingingGroupListItem ..g.clone()>
+            <RingingGroupListItem 
+                ondel={ondel.clone()} 
+                id={g.id} 
+                group_id={g.group_id.clone()}
+                name={g.name.clone()}>
             </RingingGroupListItem>
             <div class="divider my-1"></div>
         </div>
@@ -74,18 +104,36 @@ pub fn RingingGroups() -> Html {
 }
 
 #[function_component]
-pub fn RingingGroupListItem(props: &RingingGroupDetail) -> Html {
+pub fn RingingGroupListItem(props: &RingingGroupListItemProps) -> Html {
     let props = props.clone();
     let id = props.id;
     let nav = use_navigator().unwrap();
-    let nav1 = nav.clone();
+    let loc: Location = use_location().unwrap().clone();
+    let (store,_) = use_store::<Store>();
+    let ondel = props.ondel.clone();
+
+    let dialog_ref: NodeRef = use_node_ref();
+    let dd_ref = dialog_ref.clone();
+    
+    let onconfirm: Callback<bool> = Callback::from(move |_e: bool|{
+        let loc = loc.clone();
+        let store = store.clone();
+        let ondel = ondel.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            let path = format!("{}/{}", loc.path(), id);
+            Service::delete(&path, store.clone().selected_domain).await;
+            ondel.emit(id);
+        })
+    });
 
     let onedit: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent| {
+        let nav = nav.clone();
         nav.push(&RingingGroupsRoute::Get {id});
     });
 
     let ondel: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent| {
-        nav1.push(&RingingGroupsRoute::Get {id});
+        let d = dd_ref.cast::<HtmlDialogElement>().unwrap();
+        d.show_modal().unwrap();        
     });
 
     html! {
@@ -101,7 +149,14 @@ pub fn RingingGroupListItem(props: &RingingGroupDetail) -> Html {
                 <div class="btn btn-square btn-outline btn-sm">
                     <Icon icon_id={IconId::LucideTrash}/>   
                 </div>
-            </div>            
+            </div>
+            <Dialog
+                d_ref = {dialog_ref}
+                title={"Warning!"} 
+                contents={"Are you sure to delete it"}
+                {onconfirm}            
+                >
+            </Dialog>         
         </div>
     }
 }
