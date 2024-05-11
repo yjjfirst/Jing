@@ -44,19 +44,6 @@ diesel::table! {
 }
 
 diesel::table! {
-    cdrs (id) {
-        id -> Int4,
-        a_caller_id -> Varchar,
-        a_dest -> Varchar,
-        start_time -> Timestamp,
-        duration -> Int4,
-        b_caller_id -> Nullable<Varchar>,
-        b_dest -> Nullable<Varchar>,
-        uuid -> Nullable<Varchar>,
-    }
-}
-
-diesel::table! {
     conference_control_details (id) {
         id -> Int4,
         conference_control_id -> Int4,
@@ -341,7 +328,6 @@ diesel::allow_tables_to_appear_in_same_query!(
     agent_params,
     agents,
     cdr,
-    cdrs,
     conference_control_details,
     conference_controls,
     conference_profile_params,
