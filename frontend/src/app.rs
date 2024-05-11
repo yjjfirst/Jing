@@ -6,7 +6,7 @@ use super::components::sidebar::SideBar;
 use crate::pages::ringing_group::{RingingGroupsRoute, ringinggroups_switch};
 use crate::pages::extension::{ExtensionsRoute, extensions_switch};
 use crate::components::dashboard::Dashboard;
-use crate::components::alert::{AlertComponent, Props as AlertProps};
+use crate::components::alert::{AlertType, AlertComponent, Props as AlertProps};
 use crate::components::banner::Banner;
 use crate::services::domain::Domain;
 
@@ -37,6 +37,7 @@ pub fn app() -> Html {
     let alert_props = AlertProps {
         message,
         delay_ms: 5000,
+        alert_type: AlertType::INFO
     };    
     let ctx = use_state (|| Env {
     });
@@ -57,6 +58,7 @@ pub fn app() -> Html {
                     <AlertComponent
                         message={alert_props.message}
                         delay_ms={alert_props.delay_ms}
+                        alert_type={alert_props.alert_type}
                     />
                 }
                 if store.selected_domain != 0 {

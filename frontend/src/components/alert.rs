@@ -4,10 +4,18 @@ use yewdux::prelude::use_store;
 
 use crate::store::{hide_alert, Store};
 
+#[derive(Debug, PartialEq)]
+pub enum AlertType {
+    INFO,
+    WARNING,
+    ERROR
+}
+
 #[derive(Debug, PartialEq, Properties)]
 pub struct Props {
     pub message: String,
     pub delay_ms: u32,
+    pub alert_type: AlertType
 }
 
 #[function_component(AlertComponent)]
@@ -35,11 +43,10 @@ pub fn alert_component(props: &Props) -> Html {
     );
 
     html! {
-    <div id="toast" class={format!("fixed top-14 right-10 px-5 py-4 border-r-8 border-orange-500 bg-white drop-shadow-lg {}", if show_alert { "" } else { "hidden" })}>
-        <p class="text-sm">
-            <span class="mr-2 inline-block px-3 py-1 rounded-full bg-blue-500 text-white font-extrabold">{"i"}</span>
-            {props.message.clone()}
-        </p>
+    <div class={format!("toast toast-top toast-center {}", if show_alert { "" } else { "hidden" })}>
+        <div class="alert alert-info">
+            <span>{props.message.clone()}</span>
+        </div>
     </div>
     }
 }
