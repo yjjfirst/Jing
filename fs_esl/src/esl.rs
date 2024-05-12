@@ -6,7 +6,6 @@ use std::collections::HashMap;
 
 use super::event::*;
 use super::cmd::*;
-use fs_lib::cdr;
 
 #[derive(Debug)]
 pub struct Bleg {
@@ -138,87 +137,7 @@ impl Esl {
         }
     }
 
-    pub fn add_leftover_bleg(&mut self, uuid: &str) {
-        let mut i = 0;
-
-        while i < self.cdr_blegs.len() {
-            if self.cdr_blegs[i].a_uuid == uuid.to_string() {
-                let b = self.cdr_blegs.remove(i);
-                cdr::add_bleg(&b.caller_id,
-                                  &b.dest,
-                                  &b.a_uuid).unwrap();
-            } else {
-                i = i + 1;
-            }
-        }
-    }
-
-    pub fn handle_cdr_aleg(&mut self, content: HashMap<String, String>) {
-        let caller_id =
-            match content.get("Caller-Caller-ID-Number") {
-                Some(cid) => cid,
-                None => return
-            };
-
-        let dest =
-            match content.get("Caller-Destination-Number") {
-                Some(d) => d,
-                None => return
-            };
-
-        let time = content
-            .get("Caller-Channel-Created-Time")
-            .unwrap();
-
-        let (start_time, _) = time.split_at(10);
-        let duration = content.get("variable_duration")
-            .unwrap()
-            .parse::<i32>()
-            .unwrap();
-        let uuid = content.get("Unique-ID").unwrap();
-        cdr::add_cdr(caller_id, dest, start_time, duration, uuid).unwrap();
-
-        self.add_leftover_bleg(&uuid);
-    }
-
-    pub fn handle_cdr_bleg(&mut self, content: HashMap<String, String>) {
-        let uuid =
-            match content.get("variable_originating_leg_uuid") {
-                Some(uuid) => uuid,
-                None => return
-            };
-
-        let caller_id =
-            match content.get("Caller-Caller-ID-Number") {
-                Some(cid) => cid,
-                None => return
-            };
-
-        let dest =
-            match content.get("Caller-Destination-Number") {
-                Some(d) => d,
-                None => return
-            };
-
-        match cdr::add_bleg(caller_id, dest, uuid) {
-            Ok(_) => return,
-            Err(_) => {
-                let bleg =  Bleg {
-                    caller_id: caller_id.to_string(),
-                    dest: dest.to_string(),
-                    a_uuid: uuid.to_string(),
-                };
-
-                self.cdr_blegs.push(bleg);
-            }
-        }
-    }
-
     pub fn handle_plain(&mut self, content: HashMap<String, String>) {
-        match content.get("variable_originating_leg_uuid") {
-            Some(_) => self.handle_cdr_bleg(content),
-            None =>  self.handle_cdr_aleg(content)
-        }
     }
 
     pub fn handle_event(&mut self, event: Event) {
