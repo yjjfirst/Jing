@@ -4,4 +4,3 @@ CREATE TABLE domains (
   PRIMARY KEY(id)
 );
 
-INSERT INTO domains (domain_name) VALUES ('$${domain}');

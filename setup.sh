@@ -2,6 +2,7 @@
 
 export FS_ACTIVE_DOMAIN=1
 #add domain and users
+./target/debug/fs_cmd domain add --name 45.76.77.24
 ./target/debug/fs_cmd domain add --name teleman.me
 ./target/debug/fs_cmd user add  -u 1000
 ./target/debug/fs_cmd user add  -u 1001
