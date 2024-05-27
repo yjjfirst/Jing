@@ -25,7 +25,6 @@ pub struct FsRequest {
 #[post("/fsapi")]
 pub async fn fs_post(req: web::Form<FsRequest>) -> impl Responder {
     println!("{:?}", req);
-    println!("{}", req.hostname);
 
     if req.section == "configuration" {
         HttpResponse::Ok().body(configuration::serve(req.0).unwrap())

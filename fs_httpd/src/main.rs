@@ -1,6 +1,7 @@
 mod fs;
 mod api;
-use actix_web::{web, App, HttpServer};
+mod cdr;
+use actix_web::{web, App, HttpServer,error,HttpResponse};
 use actix_cors::Cors;
 
 use api::{api_config};
@@ -9,8 +10,10 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(||{
         let cors = Cors::permissive();
         App::new()
+            .app_data(web::FormConfig::default().limit(327_680))
             .wrap(cors)
             .service(fs::fs_post)
+            .service(cdr::cdr_post)
             .service(web::scope("/api").configure(api_config))
     })
         .bind("127.0.0.1:9090")?
