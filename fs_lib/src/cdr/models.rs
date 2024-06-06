@@ -1,14 +1,16 @@
 use crate::schema::cdr;
 use chrono;
 
-#[derive(Queryable)]
+#[derive(Insertable)]
+#[diesel(table_name=cdr)]
 pub struct Cdr {
-    pub id: i32,
-    pub a_caller_id: String,
-    pub a_dest: String,
-    pub start_time: chrono::NaiveDateTime,
+    pub caller_id_number: String,
+    pub caller_id_name: String,
+    pub destination_number: String,
+    pub start_stamp: chrono::NaiveDateTime,
+    pub answer_stamp: chrono::NaiveDateTime,
+    pub end_stamp: chrono::NaiveDateTime,
     pub duration: i32,
-    pub b_caller_id: Option<String>,
-    pub b_dest: Option<String>,
-    pub uuid: Option<String>,
+    pub billsec: i32,
+    pub hangup_cause: String,
 }

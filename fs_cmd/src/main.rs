@@ -442,14 +442,19 @@ fn exec_cdr_cmd(cdr: CdrCli) {
                 .unwrap();
             let mut table = Ctable::new();
 
-            table.set_titles(row!["a_caller_id", "a_dest", "b_caller_id", "b_dest", "Duration"]);
+            table.set_titles(row!["caller_id_name",
+                                  "caller_id_number",
+                                  "destination_number",
+                                  "Duration",
+                                  "Billsec"
+            ]);
             for cdr in cdrs {
                 table.add_row(
-                    row![cdr.a_caller_id,
-                         cdr.a_dest,
-                         cdr.b_caller_id.unwrap_or("".to_string()),
-                         cdr.b_dest.unwrap_or("".to_string()),
-                         cdr.duration
+                    row![cdr.caller_id_number,
+                         cdr.caller_id_name,
+                         cdr.destination_number,
+                         cdr.duration,
+                         cdr.billsec
                     ])
             }
 

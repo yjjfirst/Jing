@@ -1,3 +1,4 @@
+use chrono::{NaiveDateTime};
 use actix_web::{post, web, Responder, HttpResponse};
 use serde::{Deserialize, Serialize};
 use serde_xml_rs::{from_str, to_string};
@@ -5,6 +6,8 @@ use serde_xml_rs::{from_str, to_string};
 use lettre::message::header::ContentType;
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
+
+use fs_lib::cdr;
 
 #[derive(Debug, Deserialize)]
 pub struct CdrXml {
@@ -18,27 +21,62 @@ pub struct Variables {
     sip_to_user: String,
     duration: i32,
     billsec: i32,
-    start_stamp: String
+    uuid: String,
+    start_epoch: String,
+    answer_epoch: String,
+    end_epoch: String,
+    hangup_cause: String,
 }
 
 #[derive(Debug, Deserialize, Serialize, PartialEq)]
+pub struct CallerProfile {
+    caller_id_name: String,
+    caller_id_number: String,
+    destination_number: String
+}
+
+#[derive(Debug, Deserialize, Serialize, PartialEq)]
+pub struct Callflow {
+    caller_profile: CallerProfile
+}
+#[derive(Debug, Deserialize, Serialize, PartialEq)]
 pub struct Cdr {
     variables: Variables,
+    callflow: Callflow,
 }
 
 #[post("/cdr")]
 pub async fn cdr_post(req: web::Form<CdrXml>) -> impl Responder {
-    println!("{}", req.cdr);
     let cdr: Cdr = from_str(&req.cdr).unwrap();
-    println!("{:?}", cdr);
 
+    send_email(
+        &cdr.callflow.caller_profile.caller_id_number,
+        &cdr.callflow.caller_profile.destination_number,
+    );
+
+    cdr::add_cdr (
+        cdr.callflow.caller_profile.caller_id_number,
+        cdr.callflow.caller_profile.caller_id_name,
+        cdr.callflow.caller_profile.destination_number,
+        NaiveDateTime::from_timestamp(cdr.variables.start_epoch.parse::<i64>().unwrap(), 0),
+        NaiveDateTime::from_timestamp(cdr.variables.answer_epoch.parse::<i64>().unwrap(), 0),
+        NaiveDateTime::from_timestamp(cdr.variables.end_epoch.parse::<i64>().unwrap(), 0),
+        cdr.variables.duration,
+        cdr.variables.billsec,
+        cdr.variables.hangup_cause
+    ).unwrap();
+
+    HttpResponse::Ok().body("ok")
+}
+
+pub fn send_email(from: &str, to: &str) {
     let subject = format!("Call from {} to {}.",
-                          cdr.variables.sip_from_user,
-                          cdr.variables.sip_to_user);
+                          from,
+                          to);
 
     let body = format!("Hi Martin, \n\nYou have call from {} to {}. \nPlease take action if you didn't make the calls.\n\nBR,\nFSRust",
-                       cdr.variables.sip_from_user,
-                       cdr.variables.sip_to_user);
+                       from,
+                       to);
 
     let email = Message::builder()
         .from("NoReply <yjjfirst@gmail.com>".parse().unwrap())
@@ -62,5 +100,4 @@ pub async fn cdr_post(req: web::Form<CdrXml>) -> impl Responder {
         Err(e) => println!("Could not send email: {e:?}"),
     }
 
-    HttpResponse::Ok().body("ok")
 }
