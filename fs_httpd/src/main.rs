@@ -1,7 +1,7 @@
 mod fs;
 mod api;
 mod cdr;
-use actix_web::{web, App, HttpServer,error,HttpResponse};
+use actix_web::{web, App, HttpServer};
 use actix_cors::Cors;
 
 use api::{api_config};

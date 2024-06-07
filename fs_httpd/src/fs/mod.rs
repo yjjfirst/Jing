@@ -9,7 +9,6 @@ use serde::{Deserialize};
 
 #[derive(Debug, Deserialize)]
 pub struct FsRequest {
-    hostname: String,
     section: String,
     key_value: String,
     #[serde(rename = "Caller-Destination-Number")]

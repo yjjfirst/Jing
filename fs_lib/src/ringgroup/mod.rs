@@ -2,7 +2,6 @@ pub mod models;
 
 use models::*;
 use super::user::{get_user, ByField};
-use super::domain::{get_domain};
 use super::extension::{add_extension, del_extension};
 use diesel::prelude::*;
 use crate::db_connect;

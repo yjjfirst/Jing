@@ -27,10 +27,9 @@ async fn index(path: web::Path<i32>) -> impl Responder {
 }
 
 async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
-    let (domain,id) = path.into_inner();
+    let (_domain,id) = path.into_inner();
     let group = ringgroup::get(id).unwrap();
     let members = ringgroup::members(id).unwrap();
-    let users = user::users_within(domain).unwrap();
 
     web::Json((group,
                members))

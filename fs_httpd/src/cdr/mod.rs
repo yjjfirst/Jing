@@ -1,7 +1,7 @@
-use chrono::{NaiveDateTime};
+use chrono::{DateTime};
 use actix_web::{post, web, Responder, HttpResponse};
 use serde::{Deserialize, Serialize};
-use serde_xml_rs::{from_str, to_string};
+use serde_xml_rs::{from_str};
 
 use lettre::message::header::ContentType;
 use lettre::transport::smtp::authentication::Credentials;
@@ -59,13 +59,13 @@ pub async fn cdr_post(req: web::Form<CdrXml>) -> impl Responder {
         cdr.callflow.caller_profile.caller_id_number,
         cdr.callflow.caller_profile.caller_id_name,
         cdr.callflow.caller_profile.destination_number,
-        NaiveDateTime::from_timestamp(cdr.variables.start_epoch.parse::<i64>().unwrap(), 0),
+        DateTime::from_timestamp(cdr.variables.start_epoch.parse::<i64>().unwrap(), 0).unwrap(),
         if cdr.variables.answer_epoch.parse::<i64>().unwrap() == 0 {
             None
         } else {
-            Some(NaiveDateTime::from_timestamp(cdr.variables.answer_epoch.parse::<i64>().unwrap(), 0))
+            Some(DateTime::from_timestamp(cdr.variables.answer_epoch.parse::<i64>().unwrap(), 0).unwrap())
         },
-        NaiveDateTime::from_timestamp(cdr.variables.end_epoch.parse::<i64>().unwrap(), 0),
+        DateTime::from_timestamp(cdr.variables.end_epoch.parse::<i64>().unwrap(), 0).unwrap(),
         cdr.variables.duration,
         cdr.variables.billsec,
         cdr.variables.hangup_cause

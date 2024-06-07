@@ -11,6 +11,7 @@ mod tier;
 mod extension;
 mod user;
 mod feature_code;
+mod cdr;
 
 #[macro_use]
 extern crate prettytable;
@@ -47,7 +48,7 @@ enum Cli {
 
     Cdr {
         #[structopt(subcommand)]
-        cdr: CdrCli,
+        cdr: cdr::CdrCli,
     },
 
     Voicemail {
@@ -184,12 +185,6 @@ enum OutRouteCli {
 
 #[derive(StructOpt)]
 #[derive(Debug)]
-enum CdrCli {
-    Ls
-}
-
-#[derive(StructOpt)]
-#[derive(Debug)]
 enum VoicemailCli {
     Add  {
         #[structopt(short, long)]
@@ -231,7 +226,7 @@ fn main() {
             exec_route_cmd(route)
         },
         Cli::Cdr { cdr } => {
-            exec_cdr_cmd(cdr)
+            cdr::exec_cdr_cmd(cdr)
         },
         Cli::Voicemail {voicemail} => {
             exec_voicemail_cmd(voicemail)
@@ -435,34 +430,6 @@ fn exec_route_cmd(route: RouteCli) {
     }
 }
 
-fn exec_cdr_cmd(cdr: CdrCli) {
-    match cdr {
-        CdrCli::Ls {} => {
-            let cdrs = cdr::all_cdrs()
-                .unwrap();
-            let mut table = Ctable::new();
-
-            table.set_titles(row!["caller_id_name",
-                                  "caller_id_number",
-                                  "destination_number",
-                                  "Duration",
-                                  "Billsec"
-            ]);
-            for cdr in cdrs {
-                table.add_row(
-                    row![cdr.caller_id_number,
-                         cdr.caller_id_name,
-                         cdr.destination_number,
-                         cdr.duration,
-                         cdr.billsec
-                    ])
-            }
-
-            table.print();
-
-        }
-    }
-}
 
 fn print_voicemails(voicemails: Vec<voicemail::models::Voicemail>) {
     let mut table = Ctable::new();

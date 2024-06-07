@@ -1,27 +1,29 @@
 pub mod models;
 
 use models::*;
-use chrono::NaiveDateTime;
+use chrono::{DateTime,Utc};
 use diesel::prelude::*;
 use crate::db_connect;
 use crate::schema::cdr;
 use crate::error::{Result};
 
-pub fn all_cdrs() -> Result<Vec<Cdr>> {
+pub fn all_cdrs() -> Result<Vec<QueryCdr>> {
     use crate::schema::cdr::dsl::*;
 
     let mut conn = db_connect();
+    let result = cdr
+        .load::<QueryCdr>(&mut conn)?;
 
-    Ok(vec![])
+    Ok(result)
 }
 
 pub fn add_cdr(
     caller_id_number: String,
     caller_id_name: String,
     destination_number: String,
-    start_stamp: NaiveDateTime,
-    answer_stamp: Option<NaiveDateTime>,
-    end_stamp: NaiveDateTime,
+    start_stamp: DateTime<Utc>,
+    answer_stamp: Option<DateTime<Utc>>,
+    end_stamp: DateTime<Utc>,
     duration: i32,
     billsec: i32,
     hangup_cause: String,

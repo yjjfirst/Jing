@@ -1,8 +1,5 @@
-use std::ops::Deref;
 use actix_web::{web, Responder};
-
 use fs_lib::user;
-use super::Status;
 
 pub fn extension_config(cfg: &mut web::ServiceConfig) {
     cfg

@@ -7,20 +7,12 @@ use std::collections::HashMap;
 use super::event::*;
 use super::cmd::*;
 
-#[derive(Debug)]
-pub struct Bleg {
-    caller_id: String,
-    dest: String,
-    a_uuid: String,
-}
-
 pub struct Esl {
     password: String,
     ipaddr: String,
     port: String,
     tcp_send_stream: Option<TcpStream>,
     last_cmd: Option<Cmd>,
-    cdr_blegs: Vec<Bleg>,
 }
 
 impl Esl {
@@ -31,7 +23,6 @@ impl Esl {
             port,
             tcp_send_stream: None,
             last_cmd: None,
-            cdr_blegs: Vec::new(),
         }
     }
 
@@ -137,7 +128,7 @@ impl Esl {
         }
     }
 
-    pub fn handle_plain(&mut self, content: HashMap<String, String>) {
+    pub fn handle_plain(&mut self, _content: HashMap<String, String>) {
     }
 
     pub fn handle_event(&mut self, event: Event) {
