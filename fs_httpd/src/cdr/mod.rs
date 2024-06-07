@@ -54,12 +54,17 @@ pub async fn cdr_post(req: web::Form<CdrXml>) -> impl Responder {
         &cdr.callflow.caller_profile.destination_number,
     );
 
+
     cdr::add_cdr (
         cdr.callflow.caller_profile.caller_id_number,
         cdr.callflow.caller_profile.caller_id_name,
         cdr.callflow.caller_profile.destination_number,
         NaiveDateTime::from_timestamp(cdr.variables.start_epoch.parse::<i64>().unwrap(), 0),
-        NaiveDateTime::from_timestamp(cdr.variables.answer_epoch.parse::<i64>().unwrap(), 0),
+        if cdr.variables.answer_epoch.parse::<i64>().unwrap() == 0 {
+            None
+        } else {
+            Some(NaiveDateTime::from_timestamp(cdr.variables.answer_epoch.parse::<i64>().unwrap(), 0))
+        },
         NaiveDateTime::from_timestamp(cdr.variables.end_epoch.parse::<i64>().unwrap(), 0),
         cdr.variables.duration,
         cdr.variables.billsec,

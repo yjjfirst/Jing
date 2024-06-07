@@ -20,7 +20,7 @@ pub fn add_cdr(
     caller_id_name: String,
     destination_number: String,
     start_stamp: NaiveDateTime,
-    answer_stamp: NaiveDateTime,
+    answer_stamp: Option<NaiveDateTime>,
     end_stamp: NaiveDateTime,
     duration: i32,
     billsec: i32,
