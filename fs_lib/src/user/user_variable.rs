@@ -7,8 +7,9 @@ use crate::schema::user_variables::table;
 use crate::util_macro::{Param, Fields};
 use crate::db_connect;
 use crate::printable::{Printable};
+use serde::Serialize;
 
-#[derive(Identifiable,Queryable,Associations,Debug)]
+#[derive(Identifiable,Queryable,Associations,Debug,Serialize)]
 #[derive(Clone,PartialEq)]
 #[derive(Param)]
 #[derive(Fields)]
