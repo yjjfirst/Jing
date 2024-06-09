@@ -1,4 +1,4 @@
-pub mod extension;
+pub mod user;
 pub mod ringing_group;
 pub mod domain;
 
