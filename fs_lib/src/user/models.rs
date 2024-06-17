@@ -3,7 +3,7 @@ use crate::util_macro::{Fields};
 use crate::printable::{Printable};
 use serde::{Serialize, Deserialize};
 
-#[derive(Identifiable, Queryable, Debug, PartialEq, Serialize, Deserialize)]
+#[derive(Identifiable, AsChangeset, Queryable, Debug, PartialEq, Serialize, Deserialize)]
 #[derive(Fields)]
 pub struct User {
     pub id: i32,

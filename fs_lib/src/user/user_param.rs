@@ -9,9 +9,9 @@ use crate::db_connect;
 use rand::{thread_rng, Rng};
 use rand::distributions::Alphanumeric;
 use crate::printable::{Printable};
-use serde::Serialize;
+use serde::{Serialize,Deserialize};
 
-#[derive(Identifiable,Queryable,Associations,Debug,Serialize)]
+#[derive(Identifiable,Queryable,Associations,Debug,Serialize,Deserialize)]
 #[derive(Clone,PartialEq)]
 #[derive(Param)]
 #[derive(Fields)]

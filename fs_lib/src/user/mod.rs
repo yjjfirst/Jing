@@ -97,6 +97,18 @@ pub fn get_user(field: ByField) -> Result<User> {
 
 }
 
+pub fn update_user(u: &User) -> Result<()>{
+    let mut conn = db_connect();
+    use crate::schema::users;
+    use crate::schema::users::dsl::*;
+    diesel::update(users::table)
+        .filter(id.eq(u.id))
+        .set(u)
+        .execute(&mut conn)?;
+
+    Ok(())
+}
+
 pub fn get_user_params(user_id: i32) -> Result<Vec<UserParam>>{
     let mut conn = db_connect();
 
