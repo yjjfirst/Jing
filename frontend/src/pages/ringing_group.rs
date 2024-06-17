@@ -13,7 +13,7 @@ use crate::store::{show_alert, Store};
 use crate::components::input::Input;
 use crate::components::select::Select;
 use crate::components::mselect::Mselect;
-use crate::services::extension::Extension;
+use crate::services::user::User;
 use crate::components::dialog::Dialog;
 
 #[derive(Clone, Routable, PartialEq)]
@@ -185,7 +185,7 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
                 let fetched_group: RingingGroup = Service::get(loc.path(), store.clone().selected_domain).await;
                 g.set(fetched_group);
             }
-            let fetched_extensions = Extension::list(store.selected_domain).await;
+            let fetched_extensions = User::list(store.selected_domain).await;
             es.set(fetched_extensions);
         });
     });
