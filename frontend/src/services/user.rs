@@ -1,14 +1,15 @@
 use gloo_net::http::Request;
+use std::collections::HashMap;
 use yew::Properties;
 use serde::{Serialize, Deserialize};
 
 use super::BASE_URL;
 
 #[derive(Clone, PartialEq, Deserialize, Properties, Serialize, Debug)]
-pub struct WebUser {
+pub struct UserContainer {
     pub user: User,
-    pub vars: Vec<Var>,
-    pub params: Vec<Param>
+    pub vars: HashMap<String, Var>,
+    pub params: HashMap<String, Param>
 }
 
 #[derive(Clone, PartialEq, Deserialize, Properties, Serialize, Debug)]
@@ -49,12 +50,13 @@ impl User {
         }).collect::<Vec<String>>()
     }
 
-    pub async fn get(domain: usize, id: i32) -> User {
+    pub async fn get(domain: usize, id: i32) -> UserContainer {
         let endpoint = format!("{}/{}/user/{}", BASE_URL, domain, id);
 
         let response = Request::get(&endpoint).send().await.unwrap();
-        let extension: User = response.json().await.unwrap();
+        let user: UserContainer = response.json().await.unwrap();
 
-        extension
+        user
     }
+
 }

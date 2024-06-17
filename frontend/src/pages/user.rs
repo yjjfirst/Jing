@@ -1,14 +1,18 @@
+use std::collections::HashMap;
+use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement};
+use wasm_bindgen::JsCast;
+
 use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
 use yewdux::prelude::*;
 use yew_icons::{Icon, IconId};
+use crate::store::{show_alert, Store};
 
 use crate::components::header::Header;
 use crate::components::input::Input;
-use crate::services::user::WebUser;
+use crate::services::user::UserContainer;
 use crate::services::Service;
-use crate::store::Store;
 use crate::services::user::*;
 
 #[derive(Clone, Routable, PartialEq)]
@@ -65,7 +69,7 @@ pub fn UserList() -> Html {
     let (store,_) = use_store::<Store>();
     let extensions: UseStateHandle<Vec<User>> = use_state(||vec![]);
     let exts = extensions.clone();
-
+    
     use_effect_with((), move |_| {
         let exts  = exts.clone();
         wasm_bindgen_futures::spawn_local(async move {
@@ -95,38 +99,216 @@ pub fn UserList() -> Html {
     }
 }
 
+pub fn update_var(name: &str, map: &mut HashMap<String, Var>, form_data: &FormData) 
+{
+    let value = &form_data.get(name).as_string().unwrap();
+    let old = map.get(name);
+    let mut user_id: usize = 0;
+    let mut id: usize = 0;
+    
+    match old {
+        Some(h) => {user_id = h.user_id; id = h.id;}
+        _ => {}
+    };
+
+    map.insert(name.to_string(), Var {
+        id, user_id,
+        name: name.to_string(),
+        value: value.to_string()
+
+    });
+}
+pub fn update_param(name: &str, map: &mut HashMap<String, Param>, form_data: &FormData) 
+{
+    let value = &form_data.get(name).as_string().unwrap();
+    let old = map.get(name);
+    let mut user_id: usize = 0;
+    let mut id: usize = 0;
+    
+    match old {
+        Some(h) => {user_id = h.user_id; id = h.id;}
+        _ => {}
+    };
+
+    map.insert(name.to_string(), Param {
+        id, user_id,
+        name: name.to_string(),
+        value: value.to_string()
+
+    });
+}
+
+pub fn get_var(name: &str, map: &HashMap<String, Var>) -> String
+{
+    match map.get(name) {
+        Some(v) => v.value.clone(),
+        None => "".to_string()
+    }
+}
+
+pub fn get_param(name: &str, map: &HashMap<String, Param>) -> String
+{
+    match map.get(name) {
+        Some(v) => v.value.clone(),
+        None => "".to_string()
+    }
+}
+
 #[function_component]
 pub fn UserDetail(props: &UserDetailProps) -> Html {
     let(store, dispatch) = use_store::<Store>();
-    let user: UseStateHandle<WebUser> = use_state(||WebUser {
+    let cloned_store = store.clone();
+    let user: UseStateHandle<UserContainer> = use_state(||UserContainer {
         user: User::new(),
-        params: vec![],
-        vars: vec![]
+        params: HashMap::new(),
+        vars: HashMap::new()
     });
 
+    let u = user.clone();
     let id: i32= props.id.clone().parse().unwrap();
 
+    let loc = use_location().unwrap();
+    let nav = use_navigator().unwrap();
+
     use_effect_with((), move |_| {
+        let user = u.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let exten = User::get(store.selected_domain, id).await;
+            let fetched_user = User::get(store.selected_domain, id).await;
+            user.set(fetched_user);
         });
     });
 
+    let form_oncancel = {
+        let nav = nav.clone();
+        Callback::from(move|_| {
+            nav.push(&UserRoute::Index);
+        })
+
+    };
+
+    let form_onsubmit = {
+        let user = user.clone();
+        let store = cloned_store.clone();
+        Callback::from (move|event: SubmitEvent| {
+            let dispatch = dispatch.clone();
+            let store = store.clone();
+            let loc = loc.clone();
+            let nav = nav.clone();
+            let user = user.clone();
+
+            let target: Option<EventTarget> = event.target();
+            let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();            
+            let form_data = FormData::new_with_form(&form).unwrap();
+
+            let new_user = User {
+                id: user.user.id,
+                domain_id: user.user.domain_id,
+                user_id: form_data.get("user_id").as_string().unwrap()
+            };
+
+            let mut new_vars = user.vars.clone();
+            let mut new_params = user.params.clone();
+
+            update_param("password", &mut new_params, &form_data);
+            update_param("vm-password", &mut new_params, &form_data);
+            update_var("effective_caller_id_name", &mut new_vars, &form_data);
+            update_var("effective_caller_id_number", &mut new_vars, &form_data);
+            update_var("outbound_caller_id_name", &mut new_vars, &form_data);
+            update_var("outbound_caller_id_number", &mut new_vars, &form_data);
+
+            let c = UserContainer {
+                user: new_user,
+                vars: new_vars,
+                params: new_params
+            };
+
+            wasm_bindgen_futures::spawn_local(async move {
+                let store = store.clone();
+                show_alert("Updating ringing user.".to_string(), dispatch);
+                Service::update(loc.path(), store.selected_domain, c).await;
+                nav.push(&UserRoute::Index);            
+            });
+
+            event.prevent_default();
+        })
+    };
+
     html! {
         <div class="grow mr-2">
-        <Header title= {format!("Extension: {}", id.clone())}></Header>
+        <Header title= {format!("User ID: {}", user.user.clone().user_id.clone())}></Header>
         <div class="divider my-1"></div> 
-            <form class="w-full">
+            <form class="w-full" onsubmit={form_onsubmit}>
                 <div class="w-full px-3 mb-6 md:mb-0">
                     <Input
-                        label="Ringing Group Name" 
-                        name="name" 
-                        value={"asdfsad"}
+                        label="User ID: " 
+                        name="user_id" 
+                        value={user.user.clone().user_id.clone()}
                         input_type="text"
-                        id="name"
+                        id="user_id"
                         label_width="w-80"
                     />
                 </div>
+                <div class="w-full px-3 mb-6 md:mb-0">
+                    <Input
+                        label="Password: " 
+                        name="password" 
+                        value={get_param("password", &user.params)}
+                        input_type="text"
+                        id="password"
+                        label_width="w-80"
+                    />
+                </div>
+                <div class="w-full px-3 mb-6 md:mb-0">
+                    <Input
+                        label="Effective caller id name: " 
+                        name="effective_caller_id_name" 
+                        value={get_var("effective_caller_id_name", &user.vars)}
+                        input_type="text"
+                        id="effective_caller_id_name"
+                        label_width="w-80"
+                    />
+                </div>
+                <div class="w-full px-3 mb-6 md:mb-0">
+                    <Input
+                        label="Effective caller id number: " 
+                        name="effective_caller_id_number" 
+                        value={get_var("effective_caller_id_number", &user.vars)}
+                        input_type="text"
+                        id="effective_caller_id_number"
+                        label_width="w-80"
+                    />
+                </div>
+                <div class="w-full px-3 mb-6 md:mb-0">
+                    <Input
+                        label="Outbound caller id name: " 
+                        name="outbound_caller_id_name" 
+                        value={get_var("outbound_caller_id_name", &user.vars)}
+                        input_type="text"
+                        id="outbound_caller_id_name"
+                        label_width="w-80"
+                    />
+                </div> 
+                <div class="w-full px-3 mb-6 md:mb-0">
+                    <Input
+                        label="Outbound caller id number: " 
+                        name="outbound_caller_id_number" 
+                        value={get_var("outbound_caller_id_number", &user.vars)}
+                        input_type="text"
+                        id="outbound_caller_id_number"
+                        label_width="w-80"
+                    />
+                </div>                 
+                <div class="w-full px-3 mb-6 md:mb-0">
+                    <Input
+                        label="Voice Mail Password: " 
+                        name="vm-password" 
+                        value={get_param("vm-password", &user.params)}
+                        input_type="text"
+                        id="vm-password"
+                        label_width="w-80"
+                    />
+                </div>
+                                           
                 <div class="flex justify-end mt-4">
                     <div>
                         <button class="btn btn-success btn-sm mr-4">
@@ -135,7 +317,7 @@ pub fn UserDetail(props: &UserDetailProps) -> Html {
                         </button>
                     </div>
                     <div>
-                        <button class="btn btn-warning btn-sm" >
+                        <button class="btn btn-warning btn-sm" onclick={form_oncancel}>
                             <Icon icon_id={IconId::LucideX}/>
                             {"Cancel"}
                         </button>
