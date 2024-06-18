@@ -26,8 +26,6 @@ pub fn user_config(cfg: &mut web::ServiceConfig) {
                 .route(web::post().to(post))
                 .route(web::delete().to(delete))
         );
-
-
 }
 
 async fn post(uc: web::Json<UserContainer>) -> impl Responder {
@@ -35,20 +33,24 @@ async fn post(uc: web::Json<UserContainer>) -> impl Responder {
     let vars = &uc.vars;
     let params = &uc.params;
 
-    for (name, var) in vars.into_iter() {
-        if var.id == 0 {
-            UserVariable::add(user.id, name, &var.value).unwrap();
-        } else {
-            UserVariable::update(var.id, name, &var.value).unwrap();
+    if user.id != 0 {
+        for (name, var) in vars.into_iter() {
+            if var.id == 0 {
+                UserVariable::add(user.id, name, &var.value).unwrap();
+            } else {
+                UserVariable::update(var.id, name, &var.value).unwrap();
+            }
         }
-    }
 
-    for (name, p) in params.into_iter() {
-        if p.id == 0 {
-            UserParam::add(user.id, name, &p.value).unwrap();
-        } else {
-            UserParam::update(p.id, name, &p.value).unwrap();
+        for (name, p) in params.into_iter() {
+            if p.id == 0 {
+                UserParam::add(user.id, name, &p.value).unwrap();
+            } else {
+                UserParam::update(p.id, name, &p.value).unwrap();
+            }
         }
+    } else {
+        user::add_user(user.domain_id, &user.user_id).unwrap();
     }
 
     web::Json(Status {status: "Ok".to_string()})
@@ -62,10 +64,13 @@ async fn delete(path: web::Path<(i32, i32)>) -> impl Responder {
     web::Json(Status {status: "Ok".to_string()})
 }
 async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
-    let (_,id) = path.into_inner();
-    let user = user::get_user(ByField::Id(id)).unwrap();
-    let params = user::get_user_params(id).unwrap();
-    let vars = user::get_user_vars(id).unwrap();
+    let (domain_id,id) = path.into_inner();
+    let user = user::get_user(ByField::Id(id)).unwrap_or(User {
+        id: 0, domain_id, user_id: "".to_string()
+    });
+
+    let params = user::get_user_params(id).unwrap_or(vec![]);
+    let vars = user::get_user_vars(id).unwrap_or(vec![]);
 
     let params = params.iter().map(|p| {
         (p.name.clone(), p.clone())
