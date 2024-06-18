@@ -1,25 +1,24 @@
 use gloo_net::http::Request;
 use std::collections::HashMap;
-use yew::Properties;
 use serde::{Serialize, Deserialize};
 
 use super::BASE_URL;
 
-#[derive(Clone, PartialEq, Deserialize, Properties, Serialize, Debug)]
+#[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
 pub struct UserContainer {
     pub user: User,
     pub vars: HashMap<String, Var>,
     pub params: HashMap<String, Param>
 }
 
-#[derive(Clone, PartialEq, Deserialize, Properties, Serialize, Debug)]
+#[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
 pub struct User {
     pub id: usize,
     pub domain_id: i32,
     pub user_id: String
 }
 
-#[derive(Clone, PartialEq, Deserialize, Properties, Serialize, Debug)]
+#[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
 pub struct Param {
     pub id: usize,
     pub user_id: usize,
@@ -27,7 +26,7 @@ pub struct Param {
     pub value: String
 }
 
-#[derive(Clone, PartialEq, Deserialize, Properties, Serialize, Debug)]
+#[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
 pub struct Var {
     pub id: usize,
     pub user_id: usize,

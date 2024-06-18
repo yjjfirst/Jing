@@ -1,5 +1,5 @@
 use std::collections::HashMap;
-use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement};
+use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use wasm_bindgen::JsCast;
 
 use yew::prelude::*;
@@ -14,6 +14,7 @@ use crate::components::input::Input;
 use crate::services::user::UserContainer;
 use crate::services::Service;
 use crate::services::user::*;
+use crate::components::dialog::Dialog;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum UserRoute {
@@ -25,9 +26,8 @@ pub enum UserRoute {
 
 #[derive(Clone, PartialEq, Properties)] 
 pub struct UserProps {
-    pub id: usize,
-    pub domain_id: i32,
-    pub user_id: String    
+    pub user: User,
+    pub ondel: Callback<usize>
 }
 
 #[derive(Clone, PartialEq, Properties)] 
@@ -36,29 +36,60 @@ pub struct UserDetailProps {
 }
 
 #[function_component]
-pub fn UserListItem(props: &User) -> Html {
+pub fn UserListItem(props: &UserProps) -> Html {
     let nav = use_navigator().unwrap();
-    let e = props.clone();
+    let user_props = props.clone();
+    let dialog_ref: NodeRef = use_node_ref();
+    let dd_ref = dialog_ref.clone();
+    let loc: Location = use_location().unwrap().clone();
+    let (store,_) = use_store::<Store>();    
+    let ondel = props.ondel.clone();
+    let id = props.user.id;
+
     let onedit: Callback<MouseEvent> = Callback::from(move |_e|{
-        nav.push(&UserRoute::Get {id: e.id.clone().to_string()});
+        nav.push(&UserRoute::Get {id: user_props.user.id.clone().to_string()});
+    });
+
+    let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
+        let loc = loc.clone();
+        let store = store.clone();
+        let ondel = ondel.clone();        
+        wasm_bindgen_futures::spawn_local(async move {
+            let path = format!("{}/{}", loc.path(), id);
+            Service::delete(&path, store.clone().selected_domain).await;
+            ondel.emit(id);
+        })
+    });
+
+    let ondel = Callback::from(move|_e|{
+        let d = dd_ref.cast::<HtmlDialogElement>().unwrap();
+        d.show_modal().unwrap();  
     });
 
     html!{    
     <div>
         <div class="flex w-full items-center">
-            <div class="grow">{e.user_id.clone()}</div>
+            <div class="grow">{user_props.user.user_id.clone()}</div>
             <div onclick={onedit} class="mr-1">
                 <div class="btn btn-square btn-outline btn-sm">
                     <Icon icon_id={IconId::LucideEdit}/>   
                 </div>
             </div>
-            <div>
+            <div onclick ={ondel}>
                 <div class="btn btn-square btn-outline btn-sm">
                     <Icon icon_id={IconId::LucideTrash}/>   
                 </div>
             </div>             
         </div>
         <div class="divider my-1"></div>
+        <Dialog
+            d_ref = {dialog_ref}
+            title={"Warning!"} 
+            contents={"Are you sure to delete the user"}
+            {onconfirm}
+            >
+        </Dialog>         
+
     </div>
     }
 }
@@ -69,6 +100,7 @@ pub fn UserList() -> Html {
     let (store,_) = use_store::<Store>();
     let extensions: UseStateHandle<Vec<User>> = use_state(||vec![]);
     let exts = extensions.clone();
+    let users = extensions.clone();
     
     use_effect_with((), move |_| {
         let exts  = exts.clone();
@@ -79,9 +111,26 @@ pub fn UserList() -> Html {
         });
     });
     
+    let ondel = Callback::from(move| id:usize|{
+        let users = users.clone();
+        let filtered: Vec<&User> = users
+            .iter()
+            .filter(|u|{id != u.id})
+            .collect();
+
+        let filtered: Vec<User> = filtered
+            .iter()
+            .map(|u|{(**u).clone()})
+            .collect();
+
+        users.set(filtered);
+    });
+
     let extensions_list: Vec<Html> = extensions.iter().map(|e|{
         html! {
-            <UserListItem ..e.clone()></UserListItem>
+            <UserListItem ondel={ondel.clone()} user={User {
+                id: e.id, domain_id: e.domain_id, user_id: e.user_id.clone()
+            }}></UserListItem>
         }
     }).collect();
 

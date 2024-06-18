@@ -153,7 +153,7 @@ pub fn RingingGroupListItem(props: &RingingGroupListItemProps) -> Html {
             <Dialog
                 d_ref = {dialog_ref}
                 title={"Warning!"} 
-                contents={"Are you sure to delete it"}
+                contents={"Are you sure to delete Ringing Group"}
                 {onconfirm}            
                 >
             </Dialog>         
