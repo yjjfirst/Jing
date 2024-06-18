@@ -19,7 +19,7 @@ pub enum UserCli {
 
     Del {
         #[structopt(short, long)]
-        user_id: String,
+        id: i32,
     },
 
     Ls,
@@ -49,8 +49,8 @@ pub fn exec_user_cmd(user: UserCli) {
             }
         }
 
-        UserCli::Del { user_id }=> {
-            user::del_user(&user_id)
+        UserCli::Del { id }=> {
+            user::del_user(id)
                 .unwrap_or_else(|err| println!("{}",err));
         }
 

@@ -39,18 +39,20 @@ pub fn add_user<'a> (
     Ok(())
 }
 
-
-pub fn del_user(user: &str) -> Result<()> {
+pub fn del_user(a_id: i32) -> Result<()> {
     use crate::schema::users;
-    use crate::schema::users::columns::user_id;
+    use crate::schema::users::columns::id;
 
     let mut conn = db_connect();
 
+    let user = get_user(ByField::Id(a_id))?;
+
     diesel::delete(users::table)
-        .filter(user_id.eq(user))
+        .filter(id.eq(a_id))
         .execute(&mut conn)?;
 
-    del_extension(user)?;
+    del_extension(&user.user_id)?;
+
     Ok(())
 }
 

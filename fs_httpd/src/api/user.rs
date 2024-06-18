@@ -24,6 +24,7 @@ pub fn user_config(cfg: &mut web::ServiceConfig) {
             web::resource("/{id}")
                 .route(web::get().to(get))
                 .route(web::post().to(post))
+                .route(web::delete().to(delete))
         );
 
 
@@ -53,6 +54,13 @@ async fn post(uc: web::Json<UserContainer>) -> impl Responder {
     web::Json(Status {status: "Ok".to_string()})
 }
 
+async fn delete(path: web::Path<(i32, i32)>) -> impl Responder {
+    let (_,id) = path.into_inner();
+
+    user::del_user(id).unwrap();
+
+    web::Json(Status {status: "Ok".to_string()})
+}
 async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
     let (_,id) = path.into_inner();
     let user = user::get_user(ByField::Id(id)).unwrap();
