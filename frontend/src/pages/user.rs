@@ -21,7 +21,7 @@ pub enum UserRoute {
     #[at("/user")]
     Index,
     #[at("/user/:id")]
-    Get {id: String},
+    Get {id: usize},
 }
 
 #[derive(Clone, PartialEq, Properties)] 
@@ -32,7 +32,7 @@ pub struct UserProps {
 
 #[derive(Clone, PartialEq, Properties)] 
 pub struct UserDetailProps {
-    pub id: String,
+    pub id: usize,
 }
 
 #[function_component]
@@ -47,7 +47,7 @@ pub fn UserListItem(props: &UserProps) -> Html {
     let id = props.user.id;
 
     let onedit: Callback<MouseEvent> = Callback::from(move |_e|{
-        nav.push(&UserRoute::Get {id: user_props.user.id.clone().to_string()});
+        nav.push(&UserRoute::Get {id: user_props.user.id});
     });
 
     let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
@@ -101,7 +101,8 @@ pub fn UserList() -> Html {
     let extensions: UseStateHandle<Vec<User>> = use_state(||vec![]);
     let exts = extensions.clone();
     let users = extensions.clone();
-    
+    let nav = use_navigator().unwrap();
+
     use_effect_with((), move |_| {
         let exts  = exts.clone();
         wasm_bindgen_futures::spawn_local(async move {
@@ -126,6 +127,10 @@ pub fn UserList() -> Html {
         users.set(filtered);
     });
 
+    let onadd: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent| {
+        nav.push(&UserRoute::Get {id: 0});
+    });
+
     let extensions_list: Vec<Html> = extensions.iter().map(|e|{
         html! {
             <UserListItem ondel={ondel.clone()} user={User {
@@ -134,13 +139,14 @@ pub fn UserList() -> Html {
         }
     }).collect();
 
+
     html! {
         <div class="grow mr-2">
             <Header title="Application -> Extension"></Header>
             <div class="divider my-1"></div>
             {extensions_list}
             <div class="flex flex-row-reverse">
-                <div class="btn btn-square btn-outline btn-sm">
+                <div onclick={onadd} class="btn btn-square btn-outline btn-sm" >
                     <Icon icon_id={IconId::LucidePlus}/>   
                 </div>
             </div>             
@@ -214,7 +220,7 @@ pub fn UserDetail(props: &UserDetailProps) -> Html {
     });
 
     let u = user.clone();
-    let id: i32= props.id.clone().parse().unwrap();
+    let id = props.id;
 
     let loc = use_location().unwrap();
     let nav = use_navigator().unwrap();
@@ -258,12 +264,14 @@ pub fn UserDetail(props: &UserDetailProps) -> Html {
             let mut new_vars = user.vars.clone();
             let mut new_params = user.params.clone();
 
-            update_param("password", &mut new_params, &form_data);
-            update_param("vm-password", &mut new_params, &form_data);
-            update_var("effective_caller_id_name", &mut new_vars, &form_data);
-            update_var("effective_caller_id_number", &mut new_vars, &form_data);
-            update_var("outbound_caller_id_name", &mut new_vars, &form_data);
-            update_var("outbound_caller_id_number", &mut new_vars, &form_data);
+            if new_user.id != 0 {
+                update_param("password", &mut new_params, &form_data);
+                update_param("vm-password", &mut new_params, &form_data);
+                update_var("effective_caller_id_name", &mut new_vars, &form_data);
+                update_var("effective_caller_id_number", &mut new_vars, &form_data);
+                update_var("outbound_caller_id_name", &mut new_vars, &form_data);
+                update_var("outbound_caller_id_number", &mut new_vars, &form_data);
+            }
 
             let c = UserContainer {
                 user: new_user,
@@ -297,67 +305,68 @@ pub fn UserDetail(props: &UserDetailProps) -> Html {
                         label_width="w-80"
                     />
                 </div>
-                <div class="w-full px-3 mb-6 md:mb-0">
-                    <Input
-                        label="Password: " 
-                        name="password" 
-                        value={get_param("password", &user.params)}
-                        input_type="text"
-                        id="password"
-                        label_width="w-80"
-                    />
-                </div>
-                <div class="w-full px-3 mb-6 md:mb-0">
-                    <Input
-                        label="Effective caller id name: " 
-                        name="effective_caller_id_name" 
-                        value={get_var("effective_caller_id_name", &user.vars)}
-                        input_type="text"
-                        id="effective_caller_id_name"
-                        label_width="w-80"
-                    />
-                </div>
-                <div class="w-full px-3 mb-6 md:mb-0">
-                    <Input
-                        label="Effective caller id number: " 
-                        name="effective_caller_id_number" 
-                        value={get_var("effective_caller_id_number", &user.vars)}
-                        input_type="text"
-                        id="effective_caller_id_number"
-                        label_width="w-80"
-                    />
-                </div>
-                <div class="w-full px-3 mb-6 md:mb-0">
-                    <Input
-                        label="Outbound caller id name: " 
-                        name="outbound_caller_id_name" 
-                        value={get_var("outbound_caller_id_name", &user.vars)}
-                        input_type="text"
-                        id="outbound_caller_id_name"
-                        label_width="w-80"
-                    />
-                </div> 
-                <div class="w-full px-3 mb-6 md:mb-0">
-                    <Input
-                        label="Outbound caller id number: " 
-                        name="outbound_caller_id_number" 
-                        value={get_var("outbound_caller_id_number", &user.vars)}
-                        input_type="text"
-                        id="outbound_caller_id_number"
-                        label_width="w-80"
-                    />
-                </div>                 
-                <div class="w-full px-3 mb-6 md:mb-0">
-                    <Input
-                        label="Voice Mail Password: " 
-                        name="vm-password" 
-                        value={get_param("vm-password", &user.params)}
-                        input_type="text"
-                        id="vm-password"
-                        label_width="w-80"
-                    />
-                </div>
-                                           
+                if user.user.id != 0 {
+                    <div class="w-full px-3 mb-6 md:mb-0">
+                        <Input
+                            label="Password: " 
+                            name="password" 
+                            value={get_param("password", &user.params)}
+                            input_type="text"
+                            id="password"
+                            label_width="w-80"
+                        />
+                    </div>
+                    <div class="w-full px-3 mb-6 md:mb-0">
+                        <Input
+                            label="Effective caller id name: " 
+                            name="effective_caller_id_name" 
+                            value={get_var("effective_caller_id_name", &user.vars)}
+                            input_type="text"
+                            id="effective_caller_id_name"
+                            label_width="w-80"
+                        />
+                    </div>
+                    <div class="w-full px-3 mb-6 md:mb-0">
+                        <Input
+                            label="Effective caller id number: " 
+                            name="effective_caller_id_number" 
+                            value={get_var("effective_caller_id_number", &user.vars)}
+                            input_type="text"
+                            id="effective_caller_id_number"
+                            label_width="w-80"
+                        />
+                    </div>
+                    <div class="w-full px-3 mb-6 md:mb-0">
+                        <Input
+                            label="Outbound caller id name: " 
+                            name="outbound_caller_id_name" 
+                            value={get_var("outbound_caller_id_name", &user.vars)}
+                            input_type="text"
+                            id="outbound_caller_id_name"
+                            label_width="w-80"
+                        />
+                    </div> 
+                    <div class="w-full px-3 mb-6 md:mb-0">
+                        <Input
+                            label="Outbound caller id number: " 
+                            name="outbound_caller_id_number" 
+                            value={get_var("outbound_caller_id_number", &user.vars)}
+                            input_type="text"
+                            id="outbound_caller_id_number"
+                            label_width="w-80"
+                        />
+                    </div>                 
+                    <div class="w-full px-3 mb-6 md:mb-0">
+                        <Input
+                            label="Voice Mail Password: " 
+                            name="vm-password" 
+                            value={get_param("vm-password", &user.params)}
+                            input_type="text"
+                            id="vm-password"
+                            label_width="w-80"
+                        />
+                    </div> 
+                }
                 <div class="flex justify-end mt-4">
                     <div>
                         <button class="btn btn-success btn-sm mr-4">

@@ -49,7 +49,7 @@ impl User {
         }).collect::<Vec<String>>()
     }
 
-    pub async fn get(domain: usize, id: i32) -> UserContainer {
+    pub async fn get(domain: usize, id: usize) -> UserContainer {
         let endpoint = format!("{}/{}/user/{}", BASE_URL, domain, id);
 
         let response = Request::get(&endpoint).send().await.unwrap();
