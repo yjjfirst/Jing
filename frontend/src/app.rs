@@ -5,7 +5,7 @@ use crate::store::{Store, select_domain, set_domains};
 use super::components::sidebar::SideBar;
 use crate::pages::ringing_group::{RingingGroupsRoute, ringinggroups_switch};
 use crate::pages::user::{UserRoute, user_switch};
-use crate::components::dashboard::Dashboard;
+use crate::pages::dashboard::Dashboard;
 use crate::components::alert::{AlertType, AlertComponent, Props as AlertProps};
 use crate::components::banner::Banner;
 use crate::services::domain::Domain;

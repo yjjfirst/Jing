@@ -68,7 +68,7 @@ pub fn SidebarMenu() -> Html {
     ];
 
     let report_items = vec![SidebarMenuItemPros {
-        caption: "Gateway".to_string(),
+        caption: "CDR".to_string(),
         route: Route::RingingGroupsRoot,
         onclick: onclick.clone(),
         selected: false,
@@ -82,9 +82,12 @@ pub fn SidebarMenu() -> Html {
     html! {
           <div class="flex flex-col">
           <ul class="menu bg-base-200 w-60">
-            <li><a>
-              {"Dashboard"}</a>
-            </li>
+            <SidebarMenuItem
+                route={Route::Dashboard}
+                caption={"Dashboard"}
+                onclick={onclick.clone()}
+                selected = {*selected == "Dashboard"}>
+            </SidebarMenuItem>
             <li>
             <details>
               <summary>{"Applications"}</summary>
