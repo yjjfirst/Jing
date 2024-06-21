@@ -67,10 +67,10 @@ pub fn UserListItem(props: &UserProps) -> Html {
     });
 
     html!{    
-    <div>
-        <div class="flex w-full items-center">
-            <div class="grow">{user_props.user.user_id.clone()}</div>
-            <div onclick={onedit} class="mr-1">
+    <tr>
+        <th>{user_props.user.user_id.clone()}</th>
+        <th class="flex justify-end">
+           <div onclick={onedit} class="mr-1">
                 <div class="btn btn-square btn-outline btn-sm">
                     <Icon icon_id={IconId::LucideEdit}/>   
                 </div>
@@ -79,9 +79,8 @@ pub fn UserListItem(props: &UserProps) -> Html {
                 <div class="btn btn-square btn-outline btn-sm">
                     <Icon icon_id={IconId::LucideTrash}/>   
                 </div>
-            </div>             
-        </div>
-        <div class="divider my-1"></div>
+            </div>
+        </th>
         <Dialog
             d_ref = {dialog_ref}
             title={"Warning!"} 
@@ -89,8 +88,7 @@ pub fn UserListItem(props: &UserProps) -> Html {
             {onconfirm}
             >
         </Dialog>         
-
-    </div>
+    </tr>
     }
 }
 
@@ -142,10 +140,17 @@ pub fn UserList() -> Html {
 
     html! {
         <div class="grow mr-2">
-            <Header title="Application -> Extension"></Header>
+            <Header title="Application -> User"></Header>
             <div class="divider my-1"></div>
-            {extensions_list}
-            <div class="flex flex-row-reverse">
+            <table class="table table-zebra">
+                <thead>
+                    <th>{"User ID"}</th>
+                </thead>
+                <tbody>
+                    {extensions_list}
+                </tbody>
+            </table>
+            <div class="flex flex-row-reverse pr-4">
                 <div onclick={onadd} class="btn btn-square btn-outline btn-sm" >
                     <Icon icon_id={IconId::LucidePlus}/>   
                 </div>

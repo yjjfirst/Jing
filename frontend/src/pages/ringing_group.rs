@@ -39,7 +39,7 @@ pub struct RingingGroupListItemProps {
 }
 
 #[function_component]
-pub fn RingingGroups() -> Html {
+pub fn RingingGroupList() -> Html {
     let loc = use_location().unwrap().clone();    
     let (store,_) = use_store::<Store>();
     let ringing_groups: UseStateHandle<Vec<RingingGroupDetail>> = use_state(||vec![]);
@@ -73,15 +73,12 @@ pub fn RingingGroups() -> Html {
     });
 
     let groups: Vec<Html> = ringing_groups.iter().map(|g| html! {
-        <div>
-            <RingingGroupListItem 
-                ondel={ondel.clone()} 
-                id={g.id} 
-                group_id={g.group_id.clone()}
-                name={g.name.clone()}>
-            </RingingGroupListItem>
-            <div class="divider my-1"></div>
-        </div>
+        <RingingGroupListItem 
+            ondel={ondel.clone()} 
+            id={g.id} 
+            group_id={g.group_id.clone()}
+            name={g.name.clone()}>
+        </RingingGroupListItem>
     }).collect();
 
     let onadd: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent| {
@@ -92,8 +89,16 @@ pub fn RingingGroups() -> Html {
         <div class="grow mr-2">
             <Header title="Application -> Ringing Group"></Header>
             <div class="divider my-1"></div>
-            {groups}
-            <div class="flex flex-row-reverse">
+            <table class="table table-zebra">
+                <thead>
+                    <th>{"Extension"}</th>
+                    <th>{"Name"}</th>
+                </thead>
+                <tbody>
+                    {groups}
+                </tbody>
+            </table>
+            <div class="flex flex-row-reverse pr-4">
                 <div onclick={onadd} class="btn btn-square btn-outline btn-sm">
                     <Icon icon_id={IconId::LucidePlus}/>   
                 </div>
@@ -137,19 +142,21 @@ pub fn RingingGroupListItem(props: &RingingGroupListItemProps) -> Html {
     });
 
     html! {
-        <div class="flex w-full items-center">
-            <div class="w-1/5">{props.group_id}</div>
-            <div class="grow">{props.name}</div>
-            <div onclick={onedit} class="mr-1">
-                <div class="btn btn-square btn-outline btn-sm">
-                    <Icon icon_id={IconId::LucideEdit}/>   
+        <tr>
+            <th>{props.group_id}</th>
+            <th>{props.name}</th>
+            <th class="flex justify-end">
+                <div onclick={onedit} class="mr-1">
+                    <div class="btn btn-square btn-outline btn-sm">
+                        <Icon icon_id={IconId::LucideEdit}/>   
+                    </div>
                 </div>
-            </div>
-            <div onclick={ondel}>
-                <div class="btn btn-square btn-outline btn-sm">
-                    <Icon icon_id={IconId::LucideTrash}/>   
+                <div onclick={ondel}>
+                    <div class="btn btn-square btn-outline btn-sm">
+                        <Icon icon_id={IconId::LucideTrash}/>   
+                    </div>
                 </div>
-            </div>
+            </th>
             <Dialog
                 d_ref = {dialog_ref}
                 title={"Warning!"} 
@@ -157,7 +164,7 @@ pub fn RingingGroupListItem(props: &RingingGroupListItemProps) -> Html {
                 {onconfirm}            
                 >
             </Dialog>         
-        </div>
+        </tr>
     }
 }
 
@@ -331,7 +338,7 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
 
 pub fn ringinggroups_switch(route: RingingGroupsRoute) -> Html {
     match route {
-        RingingGroupsRoute::Index => html!{ <RingingGroups />},
+        RingingGroupsRoute::Index => html!{ <RingingGroupList />},
         RingingGroupsRoute::Get { id } => html!{<RingingGroupDetailComponent id={id}/>}
     }
 }

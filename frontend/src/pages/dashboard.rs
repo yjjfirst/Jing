@@ -40,7 +40,7 @@ pub fn DashboardCard() -> Html {
 pub fn Dashboard() -> Html {
     html! {
             <div class="flex flex-wrap">
-                <div class="card w-1/2 bg-base-100 shadow-xl">
+                <div class="w-1/2 bg-base-100 shadow-xl">
                     <div class="card-body">
                     <h2 class="card-title">{"User"}</h2>
                         <DashboardCard />
@@ -50,7 +50,7 @@ pub fn Dashboard() -> Html {
                     </div>
                 </div>
 
-                <div class="card w-1/2 bg-base-100 shadow-xl">
+                <div class="w-1/2 bg-base-100 shadow-xl">
                     <div class="card-body">
                         <h2 class="card-title">
                             {"Active Calls"}
@@ -59,7 +59,7 @@ pub fn Dashboard() -> Html {
                     </div>
                 </div>
 
-                <div class="card w-1/2 bg-base-100 shadow-xl">
+                <div class="w-1/2 bg-base-100 shadow-xl">
                     <div class="card-body">
                         <h2 class="card-title">
                             {"Recent calls"}
@@ -71,7 +71,7 @@ pub fn Dashboard() -> Html {
                     </div>
                 </div>
 
-                <div class="card w-1/2 bg-base-100 shadow-xl">
+                <div class="w-1/2 bg-base-100 shadow-xl">
                     <div class="card-body">
                         <h2 class="card-title">
                             {"System"}

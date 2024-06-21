@@ -49,7 +49,7 @@ pub fn SidebarMenu() -> Html {
     let conn_items = vec![
         SidebarMenuItemPros {
             caption: "Gateway".to_string(),
-            route: Route::RingingGroupsRoot,
+            route: Route::GatewayRoot,
             onclick: onclick.clone(),
             selected: false,
         },

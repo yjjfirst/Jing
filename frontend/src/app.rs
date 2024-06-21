@@ -5,6 +5,7 @@ use crate::store::{Store, select_domain, set_domains};
 use super::components::sidebar::SideBar;
 use crate::pages::ringing_group::{RingingGroupsRoute, ringinggroups_switch};
 use crate::pages::user::{UserRoute, user_switch};
+use crate::pages::gateway::{GatewayRoute, gateway_switch};
 use crate::pages::dashboard::Dashboard;
 use crate::components::alert::{AlertType, AlertComponent, Props as AlertProps};
 use crate::components::banner::Banner;
@@ -26,6 +27,10 @@ pub enum Route {
     ExtensionRoot,
     #[at("/user/*")]
     Extensions,
+    #[at("/gateway")]
+    GatewayRoot,
+    #[at("/gateway/*")]
+    Gateways
 }
 
 #[function_component(App)]
@@ -93,6 +98,13 @@ fn switch(routes: Route) -> Html {
         },
         Route::Extensions => html! {
             <Switch<UserRoute> render={user_switch}/>
+        },
+        Route::GatewayRoot => html! {
+            <Switch<GatewayRoute> render={gateway_switch} />
+        },
+        Route::Gateways => html! {
+            <Switch<GatewayRoute> render={gateway_switch} />
         }
+
     }
 }
