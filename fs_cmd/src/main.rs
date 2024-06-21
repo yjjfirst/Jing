@@ -346,7 +346,7 @@ fn exec_gateway_cmd(gateway: GatewayCli) {
         },
 
         GatewayCli::Ls => {
-            match gateway::all_gateways() {
+            match gateway::list() {
                 Ok(gateways) => print_gateways(gateways),
                 Err(err) => println!("{}", err),
             }

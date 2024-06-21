@@ -1,7 +1,8 @@
 use crate::schema::{gateways};
 use crate::profile::models::Profile;
+use serde::{Serialize, Deserialize};
 
-#[derive(Queryable, Identifiable, Associations, PartialEq, Debug)]
+#[derive(Queryable, Identifiable, Associations, PartialEq, Debug, Serialize, Deserialize)]
 #[diesel(table_name = gateways)]
 #[diesel(belongs_to(Profile))]
 pub struct Gateway {

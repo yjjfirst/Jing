@@ -44,7 +44,7 @@ pub fn del_gateway(gateway_id: i32) -> Result<()>{
     Ok(())
 }
 
-pub fn all_gateways() -> Result<Vec<Gateway>> {
+pub fn list() -> Result<Vec<Gateway>> {
     use crate::schema::gateways::dsl::*;
     let mut conn = db_connect();
 
