@@ -1,15 +1,14 @@
 use yew::prelude::*;
 use super::label::Label;
+use crate::utils::string::capitalize;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
+    #[prop_or("text".to_string())]
     pub input_type: String,
     pub id: String,
-    #[prop_or_default]
-    pub label: String,
-    pub name: String,
     pub value: String,
-    #[prop_or_default]
+    #[prop_or(classes!("w-80"))]
     pub label_width: Classes,
 }
 
@@ -26,17 +25,22 @@ pub fn Input(props: &Props) -> Html {
     let id = props
         .id
         .clone();
+
+    let name = id.clone();
+    let label = name.replace("_", " ").replace("-", " ");
+    let label = capitalize(&label);
+
     let label_class: Classes = props.label_width.clone();
 
-    let label = props.label.clone();
     html! {
-        <div class="flex mb-1">
+        <div class="w-full px-3 mb-6 md:mb-0">
+        <div class="flex mb-1 ">
             if label != "" {
                 <Label class={label_class}>
                     <span 
                         for={id.clone()} 
                         class="label-text">
-                        {props.label.clone()}
+                        {label}
                     </span>
                 </Label>
             }
@@ -45,9 +49,11 @@ pub fn Input(props: &Props) -> Html {
                 placeholder=""
                 value={input_value}
                 id={id.clone()}
-                name={props.name.clone()}
+                name={name}
                 class="input input-bordered block w-full"
             />
-        </div>        
+        </div>
+        </div>       
     }
 }
+

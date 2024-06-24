@@ -1,4 +1,3 @@
-use std::collections::HashMap;
 use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use wasm_bindgen::JsCast;
 
@@ -12,6 +11,7 @@ use crate::store::{show_alert, Store};
 use crate::components::header::Header;
 use crate::services::Service;
 use crate::services::gateway::Gateway;
+use crate::components::input::Input;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum GatewayRoute {
@@ -26,16 +26,19 @@ pub struct GatewayProps {
     pub gateway: Gateway,
 }
 
-#[function_component]
-pub fn GatewayDetail() -> Html {
-    html! {
-        <p>{"Gateway detail"}</p>
-    }
+#[derive(Clone, PartialEq, Properties)] 
+pub struct GatewayDetailProps {
+    pub id: usize,
 }
-
 #[function_component]
 pub fn GatewayListItem(props: &GatewayProps) -> Html {
     let gateway = props.gateway.clone();
+    let nav = use_navigator().unwrap();
+
+    let onedit: Callback<MouseEvent> = Callback::from(move |_e|{
+        nav.push(&GatewayRoute::Get {id: gateway.id});
+    });
+
     html! {
         <tr>
             <th>{gateway.gateway_name.clone()}</th>
@@ -44,7 +47,7 @@ pub fn GatewayListItem(props: &GatewayProps) -> Html {
             <th>{gateway.username.clone()}</th>
             <th class="flex justify-end">
                 <div class="mr-1">
-                    <div class="btn btn-square btn-outline btn-sm">
+                    <div onclick={onedit} class="btn btn-square btn-outline btn-sm">
                         <Icon icon_id={IconId::LucideEdit}/>   
                     </div>
                 </div>
@@ -104,9 +107,53 @@ pub fn GatewayList() -> Html {
     }
 }
 
+#[function_component]
+pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
+    let id = props.id;
+    let gateway = use_state(||Gateway::new());
+    let g = gateway.clone();
+    let(store, _dispatch) = use_store::<Store>();
+
+
+    use_effect_with((), move |_|{
+        let gateway = g.clone();
+        wasm_bindgen_futures::spawn_local(async move {
+            let fetched_gateway = Gateway::get(store.selected_domain, id).await;
+            gateway.set(fetched_gateway);
+        });
+    });
+    html! {
+        <div class="grow mr-2">
+            <Header title= {format!("Gateway: {}", gateway.gateway_name.clone())}></Header>
+            <div class="divider my-1"></div> 
+            <form class="w-full">
+                <Input
+                    value={gateway.gateway_name.clone()}
+                    id="name"
+                />
+                <Input
+                    value={gateway.proxy.clone()}
+                    id="proxy"
+                />
+                <Input
+                    value={gateway.register.clone()}
+                    id="register"
+                />
+                <Input
+                    value={gateway.username.clone()}
+                    id="username"
+                />
+                <Input
+                    value={gateway.password.clone()}
+                    id="password"
+                />
+            </form>
+        </div>
+    }
+}
 pub fn gateway_switch(route: GatewayRoute) -> Html {
     match route {
         GatewayRoute::Index => html!{<GatewayList />},
-        GatewayRoute::Get { id } => html !{<GatewayDetail />}
+        GatewayRoute::Get { id } => html !{<GatewayDetails id={id}/>}
     }
 }

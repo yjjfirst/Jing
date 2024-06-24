@@ -6,6 +6,7 @@ use super::label::Label;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
+    #[prop_or(classes!("w-80"))]
     pub label_width_class: Classes,
     pub exists: Vec<String>,
     pub all: Vec<String>
@@ -45,7 +46,8 @@ pub fn Mselect(props: &Props) -> Html {
     };
 
     html! {
-        <div class="flex w-full px-3">
+        <div class="w-full px-3 mb-6 md:mb-0">
+        <div class="flex w-full">
             <Label class={class}>
             <span class="label-text">
                 {"Extensions"}
@@ -76,6 +78,7 @@ pub fn Mselect(props: &Props) -> Html {
                 </div>
             </div>
             </div>
+        </div>
         </div>
     }
 }

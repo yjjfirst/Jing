@@ -257,81 +257,48 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
             <Header title= {format!("Ringing Group: {}", group.0.group_id.clone())}></Header>
             <div class="divider my-1"></div> 
             <form class="w-full" onsubmit={form_onsubmit}>
-              <div class="w-full px-3 mb-6 md:mb-0">
                 <Input
-                  label="Ringing Group Name" 
-                  name="name" 
                   value={group.0.name.clone()}
-                  input_type="text"
                   id="name"
-                  label_width="w-80"
                   />
-              </div>
-              <div class="w-full px-3">
                 <Input 
-                  label="Ringing Group Extension" 
-                  name="extension" 
                   value={group.0.group_id.clone()}
-                  input_type="text"
                   id="extension"
-                  label_width="w-80"
                   />
-              </div>
-              <div class="w-full px-3">
                 <Input 
-                  label="Description" 
-                  name="description" 
                   value={group.0.description.clone()}
-                  input_type="text"
                   id="description"
-                  label_width="w-80"
                   />
-              </div>
-              <div class="w-full px-3 mb-6 md:mb-0">
                 <Input 
-                  label="Ring Time" 
-                  name="ring-time" 
                   value={group.0.ring_time.to_string()}
                   input_type="number"
                   id="ring-time"
-                  label_width="w-80"
                   />
-              </div>
-              <div class="w-full px-3">
                 <Select
                     {options}
                     select = {group.0.ring_strategy.to_string()}
-                    name="ring-strategy"
-                    id="ring-strategy"
-                    label="Ring Strategy"
-                    label_width="w-80"
-                    >
+                    id="ring-strategy">
                 </Select>
-              </div>
-              <div class="w-full ">
-            <Mselect 
-                label_width_class="w-80"
-                exists = {group.1.clone()}
-                all = {extensions.iter().map(|e|e.to_string()).collect::<Vec<String>>()}
-                >
-            </Mselect>
-            </div>
-            <div class="flex justify-end mt-4">
-            <div>
-                <button class="btn btn-success btn-sm mr-4">
-                    <Icon icon_id={IconId::LucideCheck}/>
-                    {"Apply"}
-                </button>
-            </div>
-            <div>
-                <button class="btn btn-warning btn-sm"  onclick={form_oncancel}>
-                    <Icon icon_id={IconId::LucideX}/>
-                    {"Cancel"}
-                </button>
-            </div>
-          </div>            
-          </form>
-
+                <Mselect 
+                    exists = {group.1.clone()}
+                    all = {extensions.iter().map(|e|e.to_string()).collect::<Vec<String>>()}
+                    >
+                </Mselect>
+                <div class="flex justify-end mt-4">
+                    <div>
+                        <button class="btn btn-success btn-sm mr-4">
+                            <Icon icon_id={IconId::LucideCheck}/>
+                            {"Apply"}
+                        </button>
+                    </div>
+                    <div>
+                        <button class="btn btn-warning btn-sm"  onclick={form_oncancel}>
+                            <Icon icon_id={IconId::LucideX}/>
+                            {"Cancel"}
+                        </button>
+                    </div>
+                </div>            
+            </form>
         </div>
     }
 }

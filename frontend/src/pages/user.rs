@@ -300,77 +300,35 @@ pub fn UserDetail(props: &UserDetailProps) -> Html {
         <Header title= {format!("User ID: {}", user.user.clone().user_id.clone())}></Header>
         <div class="divider my-1"></div> 
             <form class="w-full" onsubmit={form_onsubmit}>
-                <div class="w-full px-3 mb-6 md:mb-0">
-                    <Input
-                        label="User ID: " 
-                        name="user_id" 
-                        value={user.user.clone().user_id.clone()}
-                        input_type="text"
-                        id="user_id"
-                        label_width="w-80"
-                    />
-                </div>
+                <Input
+                    value={user.user.clone().user_id.clone()}
+                    id="user_id"
+                />
                 if user.user.id != 0 {
-                    <div class="w-full px-3 mb-6 md:mb-0">
-                        <Input
-                            label="Password: " 
-                            name="password" 
-                            value={get_param("password", &user.params)}
-                            input_type="text"
-                            id="password"
-                            label_width="w-80"
-                        />
-                    </div>
-                    <div class="w-full px-3 mb-6 md:mb-0">
-                        <Input
-                            label="Effective caller id name: " 
-                            name="effective_caller_id_name" 
-                            value={get_var("effective_caller_id_name", &user.vars)}
-                            input_type="text"
-                            id="effective_caller_id_name"
-                            label_width="w-80"
-                        />
-                    </div>
-                    <div class="w-full px-3 mb-6 md:mb-0">
-                        <Input
-                            label="Effective caller id number: " 
-                            name="effective_caller_id_number" 
+                    <Input
+                        value={get_param("password", &user.params)}
+                        id="password"
+                    />
+                    <Input
+                        value={get_var("effective_caller_id_name", &user.vars)}
+                        id="effective_caller_id_name"
+                    />
+                    <Input
                             value={get_var("effective_caller_id_number", &user.vars)}
-                            input_type="text"
                             id="effective_caller_id_number"
-                            label_width="w-80"
                         />
-                    </div>
-                    <div class="w-full px-3 mb-6 md:mb-0">
-                        <Input
-                            label="Outbound caller id name: " 
-                            name="outbound_caller_id_name" 
-                            value={get_var("outbound_caller_id_name", &user.vars)}
-                            input_type="text"
-                            id="outbound_caller_id_name"
-                            label_width="w-80"
-                        />
-                    </div> 
-                    <div class="w-full px-3 mb-6 md:mb-0">
-                        <Input
-                            label="Outbound caller id number: " 
-                            name="outbound_caller_id_number" 
-                            value={get_var("outbound_caller_id_number", &user.vars)}
-                            input_type="text"
-                            id="outbound_caller_id_number"
-                            label_width="w-80"
-                        />
-                    </div>                 
-                    <div class="w-full px-3 mb-6 md:mb-0">
-                        <Input
-                            label="Voice Mail Password: " 
-                            name="vm-password" 
-                            value={get_param("vm-password", &user.params)}
-                            input_type="text"
-                            id="vm-password"
-                            label_width="w-80"
-                        />
-                    </div> 
+                    <Input
+                        value={get_var("outbound_caller_id_name", &user.vars)}
+                        id="outbound_caller_id_name"
+                    />
+                    <Input
+                        value={get_var("outbound_caller_id_number", &user.vars)}
+                        id="outbound_caller_id_number"
+                    />
+                    <Input
+                        value={get_param("vm-password", &user.params)}
+                        id="vm-password"
+                    />
                 }
                 <div class="flex justify-end mt-4">
                     <div>

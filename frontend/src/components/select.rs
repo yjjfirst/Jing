@@ -1,36 +1,38 @@
 use yew::prelude::*;
+use crate::utils::string::capitalize;
 use super::label::Label;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
-    pub id: Option<String>,
-    pub label: String,
+    #[prop_or("".to_string())]
+    pub id: String,
+    #[prop_or(classes!("w-80"))]
     pub label_width: Classes,
-    pub name: String,
     pub options: Vec<String>,
     pub select: String,
 }
 
 #[function_component]
 pub fn Select(props: &Props) -> Html {
-    let id = props
-        .id
-        .clone()
-        .unwrap_or_else(|| "".to_string());
+    let id = props.id.clone();
     let options = props.options.clone();
     let class = props.label_width.clone();
     
+    let name = id.clone();
+    let label = id.replace("_", " ").replace("-", " ");
+    let label = capitalize(&label);
     html!{
+        <div class="w-full px-3 mb-6 md:mb-0">
         <div class="flex mb-1">
         <Label class={class}>
             <span for={id.clone()} 
                 class="label-text">
-                {props.label.clone()}
+                {label}
             </span>
         </Label>        
             <select
                 id={id.clone()}
-                name={props.name.clone()}
+                name={name}
                 class="select select-bordered block w-full"
             >
             {
@@ -47,5 +49,6 @@ pub fn Select(props: &Props) -> Html {
             </select>
 
         </div>       
+        </div>
     }
 }
