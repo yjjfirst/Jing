@@ -4,11 +4,13 @@ use wasm_bindgen::JsCast;
 use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
+use yewdux::dispatch;
 use yewdux::prelude::*;
 use yew_icons::{Icon, IconId};
 use crate::store::{show_alert, Store};
 
 use crate::components::header::Header;
+use crate::components::action_buttons::ActionButtons;
 use crate::services::Service;
 use crate::services::gateway::Gateway;
 use crate::components::input::Input;
@@ -109,12 +111,14 @@ pub fn GatewayList() -> Html {
 
 #[function_component]
 pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
+    let nav = use_navigator().unwrap();
+    let loc = use_location().unwrap();
+
     let id = props.id;
     let gateway = use_state(||Gateway::new());
     let g = gateway.clone();
-    let(store, _dispatch) = use_store::<Store>();
-
-
+    let(store, dispatch) = use_store::<Store>();
+    let store_cloned = store.clone();
     use_effect_with((), move |_|{
         let gateway = g.clone();
         wasm_bindgen_futures::spawn_local(async move {
@@ -122,11 +126,52 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
             gateway.set(fetched_gateway);
         });
     });
+
+    let form_oncancel = {
+        let nav = nav.clone();
+        Callback::from(move|_| {
+            nav.push(&GatewayRoute::Index);
+        })
+
+    };
+    let form_onsubmit = {
+        let dispatch = dispatch.clone();
+        Callback::from(move|e: SubmitEvent| {
+            let store = store_cloned.clone();
+            let target: Option<EventTarget> = e.target();
+            let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();            
+            let form_data = FormData::new_with_form(&form).unwrap();
+            let dispatch = dispatch.clone();
+            let loc = loc.clone();
+            let nav = nav.clone();
+
+            let gateway = Gateway {
+                id,
+                gateway_name: form_data.get("name").as_string().unwrap(),
+                proxy: form_data.get("proxy").as_string().unwrap(),
+                register: form_data.get("register").as_string().unwrap(),
+                username: form_data.get("username").as_string().unwrap(),
+                password: form_data.get("password").as_string().unwrap(),
+            };
+
+            wasm_bindgen_futures::spawn_local(async move {
+                let dispatch = dispatch.clone();
+                let loc = loc.clone();
+
+                show_alert("Updating gateway.".to_string(), dispatch);
+                Service::update(loc.path(), store.selected_domain, gateway).await;
+                nav.push(&GatewayRoute::Index);            
+            });
+                        
+            e.prevent_default();            
+        })
+    };
+
     html! {
         <div class="grow mr-2">
             <Header title= {format!("Gateway: {}", gateway.gateway_name.clone())}></Header>
             <div class="divider my-1"></div> 
-            <form class="w-full">
+            <form class="w-full" onsubmit={form_onsubmit}>
                 <Input
                     value={gateway.gateway_name.clone()}
                     id="name"
@@ -147,6 +192,7 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
                     value={gateway.password.clone()}
                     id="password"
                 />
+                <ActionButtons oncancel={form_oncancel}/>
             </form>
         </div>
     }

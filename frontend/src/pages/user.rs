@@ -11,6 +11,7 @@ use crate::store::{show_alert, Store};
 
 use crate::components::header::Header;
 use crate::components::input::Input;
+use crate::components::action_buttons::ActionButtons;
 use crate::services::user::UserContainer;
 use crate::services::Service;
 use crate::services::user::*;
@@ -330,20 +331,7 @@ pub fn UserDetail(props: &UserDetailProps) -> Html {
                         id="vm-password"
                     />
                 }
-                <div class="flex justify-end mt-4">
-                    <div>
-                        <button class="btn btn-success btn-sm mr-4">
-                            <Icon icon_id={IconId::LucideCheck}/>
-                            {"Apply"}
-                        </button>
-                    </div>
-                    <div>
-                        <button class="btn btn-warning btn-sm" onclick={form_oncancel}>
-                            <Icon icon_id={IconId::LucideX}/>
-                            {"Cancel"}
-                        </button>
-                    </div>
-                </div>
+                <ActionButtons oncancel={form_oncancel} />
             </form>
         </div>
     }
