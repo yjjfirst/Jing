@@ -14,7 +14,7 @@ pub fn ringing_group_config(cfg: &mut web::ServiceConfig) {
             web::resource("/{id}")
                 .route(web::get().to(get))
                 .route(web::delete().to(delete))
-                .route(web::post().to(update)))
+                .route(web::post().to(post)))
         .service(
             web::resource("/{id}/members")
                 .route(web::get().to(members)));
@@ -48,7 +48,7 @@ async fn members(path: web::Path<(i32, i32)>) -> impl Responder {
     web::Json(members)
 }
 
-async fn update(group: web::Json<(ringgroup::models::Ringgroup, Vec<String>)>) -> impl Responder {
+async fn post(group: web::Json<(ringgroup::models::Ringgroup, Vec<String>)>) -> impl Responder {
     let (group, members) =  group.deref();
     let members_exist = ringgroup::members(group.id).unwrap();
 

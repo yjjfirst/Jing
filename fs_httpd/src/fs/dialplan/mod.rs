@@ -114,7 +114,7 @@ fn outbound<W: Write>(w: &mut EventWriter<W>, route: OutboundRoute) {
                                             Attr::new("expression", route.condition.as_str())
     ]));
 
-    if let Ok(g) = gateway::get_gateway(route.gateway_id) {
+    if let Ok(g) = gateway::get(route.gateway_id) {
         action(w,"bridge", format!("sofia/gateway/{}/$1",g.gateway_name).as_str());
     }
     end_element(w);

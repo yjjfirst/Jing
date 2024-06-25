@@ -54,7 +54,7 @@ pub fn list() -> Result<Vec<Gateway>> {
     Ok(results)
 }
 
-pub fn get_gateway(gateway_id: i32) -> Result<Gateway> {
+pub fn get(gateway_id: i32) -> Result<Gateway> {
     use crate::schema::gateways::dsl::*;
     let mut conn = db_connect();
 
@@ -67,4 +67,17 @@ pub fn get_gateway(gateway_id: i32) -> Result<Gateway> {
     } else {
         Err(Error::Fslib("Gateway doesn't exist".to_string()))
     }
+}
+
+pub fn update(g: &Gateway) -> Result<()> {
+    let mut conn = db_connect();
+    use crate::schema::gateways;
+    use crate::schema::gateways::dsl::*;
+
+    diesel::update(gateways::table)
+        .filter(id.eq(g.id))
+        .set(g)
+        .execute(&mut conn)?;
+
+    Ok(())
 }
