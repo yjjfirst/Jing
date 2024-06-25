@@ -10,6 +10,10 @@ pub struct Props {
     pub value: String,
     #[prop_or(classes!("w-80"))]
     pub label_width: Classes,
+    #[prop_or(classes!("visible"))]
+    pub visibility: Classes,
+    #[prop_or(false)]
+    pub disabled: bool
 }
 
 #[function_component]
@@ -30,10 +34,11 @@ pub fn Input(props: &Props) -> Html {
     let label = name.replace("_", " ").replace("-", " ");
     let label = capitalize(&label);
 
+    
     let label_class: Classes = props.label_width.clone();
 
     html! {
-        <div class="w-full px-3 mb-6 md:mb-0">
+        <div class={classes!("w-full", "px-3", "mb-6", "md:mb-0", props.visibility.clone())}>
         <div class="flex mb-1 ">
             if label != "" {
                 <Label class={label_class}>
@@ -51,7 +56,7 @@ pub fn Input(props: &Props) -> Html {
                 id={id.clone()}
                 name={name}
                 class="input input-bordered block w-full"
-            />
+                disabled={props.disabled}/>
         </div>
         </div>       
     }

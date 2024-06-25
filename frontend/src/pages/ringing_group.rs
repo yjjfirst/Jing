@@ -258,23 +258,24 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
             <Header title= {format!("Ringing Group: {}", group.0.group_id.clone())}></Header>
             <div class="divider my-1"></div> 
             <form class="w-full" onsubmit={form_onsubmit}>
+                <Input 
+                    value={group.0.group_id.clone()}
+                    id="extension"
+                    disabled={group.0.group_id.clone() != ""}
+                />
                 <Input
-                  value={group.0.name.clone()}
-                  id="name"
-                  />
+                    value={group.0.name.clone()}
+                    id="name"
+                    />
                 <Input 
-                  value={group.0.group_id.clone()}
-                  id="extension"
-                  />
+                    value={group.0.description.clone()}
+                    id="description"
+                    />
                 <Input 
-                  value={group.0.description.clone()}
-                  id="description"
-                  />
-                <Input 
-                  value={group.0.ring_time.to_string()}
-                  input_type="number"
-                  id="ring-time"
-                  />
+                    value={group.0.ring_time.to_string()}
+                    input_type="number"
+                    id="ring-time"
+                    />
                 <Select
                     {options}
                     select = {group.0.ring_strategy.to_string()}

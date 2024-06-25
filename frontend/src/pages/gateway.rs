@@ -152,6 +152,11 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
                 register: form_data.get("register").as_string().unwrap(),
                 username: form_data.get("username").as_string().unwrap(),
                 password: form_data.get("password").as_string().unwrap(),
+                profile_id: form_data.get("profile_id")
+                    .as_string()
+                    .unwrap()
+                    .parse::<usize>()
+                    .unwrap(),
             };
 
             wasm_bindgen_futures::spawn_local(async move {
@@ -192,6 +197,10 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
                     value={gateway.password.clone()}
                     id="password"
                 />
+                <Input visibility="invisible"
+                    value={gateway.profile_id.to_string()}
+                    id="profile_id"
+                />                
                 <ActionButtons oncancel={form_oncancel}/>
             </form>
         </div>

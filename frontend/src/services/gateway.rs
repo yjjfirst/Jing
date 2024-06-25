@@ -10,12 +10,14 @@ pub struct Gateway {
     pub register: String,
     pub username: String,
     pub password: String,
+    pub profile_id: usize,
 }
 
 impl Gateway {
     pub fn new() -> Gateway {
         Gateway {
             id: 0, 
+            profile_id: 0,
             proxy: "".to_string(), 
             register: "".to_string(),
             gateway_name: "".to_string(),
