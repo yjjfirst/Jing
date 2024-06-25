@@ -11,9 +11,11 @@ use crate::store::{show_alert, Store};
 
 use crate::components::header::Header;
 use crate::components::action_buttons::ActionButtons;
+use crate::components::input::Input;
+use crate::components::dialog::Dialog;
+
 use crate::services::Service;
 use crate::services::gateway::Gateway;
-use crate::components::input::Input;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum GatewayRoute {
@@ -37,8 +39,19 @@ pub fn GatewayListItem(props: &GatewayProps) -> Html {
     let gateway = props.gateway.clone();
     let nav = use_navigator().unwrap();
 
+    let dialog_ref: NodeRef = use_node_ref();
+    let dd_ref = dialog_ref.clone(); 
+
     let onedit: Callback<MouseEvent> = Callback::from(move |_e|{
         nav.push(&GatewayRoute::Get {id: gateway.id});
+    });
+
+    let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
+    });
+    
+    let ondel: Callback<MouseEvent> = Callback::from(move |_e| {
+        let d = dd_ref.cast::<HtmlDialogElement>().unwrap();
+        d.show_modal().unwrap();
     });
 
     html! {
@@ -54,11 +67,18 @@ pub fn GatewayListItem(props: &GatewayProps) -> Html {
                     </div>
                 </div>
                 <div>
-                    <div class="btn btn-square btn-outline btn-sm">
+                    <div onclick={ondel} class="btn btn-square btn-outline btn-sm">
                         <Icon icon_id={IconId::LucideTrash}/>   
                     </div>
                 </div>
-            </th>             
+            </th>  
+            <Dialog
+                d_ref = {dialog_ref}
+                title={"Warning!"} 
+                contents={format!("Are you sure to delete gateway: {}?", gateway.gateway_name.clone())}
+                {onconfirm}
+                >
+            </Dialog>                     
         </tr>
     }
 }

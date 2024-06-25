@@ -144,7 +144,7 @@ pub fn RingingGroupListItem(props: &RingingGroupListItemProps) -> Html {
 
     html! {
         <tr>
-            <th>{props.group_id}</th>
+            <th>{props.group_id.clone()}</th>
             <th>{props.name}</th>
             <th class="flex justify-end">
                 <div onclick={onedit} class="mr-1">
@@ -161,7 +161,7 @@ pub fn RingingGroupListItem(props: &RingingGroupListItemProps) -> Html {
             <Dialog
                 d_ref = {dialog_ref}
                 title={"Warning!"} 
-                contents={"Are you sure to delete Ringing Group"}
+                contents={format!("Are you sure to delete Ringing Group: {}?", props.group_id.clone())}
                 {onconfirm}            
                 >
             </Dialog>         

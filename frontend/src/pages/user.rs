@@ -85,7 +85,7 @@ pub fn UserListItem(props: &UserProps) -> Html {
         <Dialog
             d_ref = {dialog_ref}
             title={"Warning!"} 
-            contents={"Are you sure to delete the user"}
+            contents={format!("Are you sure to delete the user: {}?", user_props.user.user_id.clone())}
             {onconfirm}
             >
         </Dialog>         
