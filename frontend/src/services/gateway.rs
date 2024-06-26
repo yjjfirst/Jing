@@ -1,6 +1,4 @@
-use gloo_net::http::Request;
 use serde::{Serialize, Deserialize};
-use super::BASE_URL;
 
 #[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
 pub struct Gateway {
@@ -24,14 +22,5 @@ impl Gateway {
             username: "".to_string(),
             password: "".to_string()        
        }
-    }
-
-    pub async fn get(domain: usize, id: usize) -> Gateway {
-        let endpoint = format!("{}/{}/gateway/{}", BASE_URL, domain, id);
-        let response = Request::get(&endpoint).send().await.unwrap();
-
-        let gateway: Gateway = response.json().await.unwrap();
-
-        gateway
     }
 }

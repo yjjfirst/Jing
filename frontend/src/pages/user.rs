@@ -212,7 +212,7 @@ pub fn get_param(name: &str, map: &HashMap<String, Param>) -> String
 }
 
 #[function_component]
-pub fn UserDetail(props: &UserDetailProps) -> Html {
+pub fn UserDetail(_props: &UserDetailProps) -> Html {
     let(store, dispatch) = use_store::<Store>();
     let cloned_store = store.clone();
     let user: UseStateHandle<UserContainer> = use_state(||UserContainer {
@@ -222,15 +222,16 @@ pub fn UserDetail(props: &UserDetailProps) -> Html {
     });
 
     let u = user.clone();
-    let id = props.id;
-
     let loc = use_location().unwrap();
+    let loc_1 = use_location().unwrap();
+
     let nav = use_navigator().unwrap();
 
     use_effect_with((), move |_| {
         let user = u.clone();
+        let loc = loc_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_user = User::get(store.selected_domain, id).await;
+            let fetched_user = Service::get(loc.path(), store.selected_domain).await;
             user.set(fetched_user);
         });
     });

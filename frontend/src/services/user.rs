@@ -48,14 +48,4 @@ impl User {
             e.user_id.to_string()
         }).collect::<Vec<String>>()
     }
-
-    pub async fn get(domain: usize, id: usize) -> UserContainer {
-        let endpoint = format!("{}/{}/user/{}", BASE_URL, domain, id);
-
-        let response = Request::get(&endpoint).send().await.unwrap();
-        let user: UserContainer = response.json().await.unwrap();
-
-        user
-    }
-
 }

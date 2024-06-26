@@ -96,7 +96,9 @@ pub fn GatewayListItem(props: &GatewayProps) -> Html {
 
 #[function_component]
 pub fn GatewayList() -> Html {
-    let loc = use_location().unwrap().clone();    
+    let loc = use_location().unwrap().clone();
+    let nav = use_navigator().unwrap();
+
     let (store,_) = use_store::<Store>();
     let gateways: UseStateHandle<Vec<Gateway>> = use_state(||vec![]);
     let gateways_1 = gateways.clone();
@@ -119,6 +121,10 @@ pub fn GatewayList() -> Html {
             .collect();
 
         gateways.set(filtered);
+    });
+
+    let onadd: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent|{
+        nav.push(&GatewayRoute::Get {id: 0});        
     });
 
     let gateways_list: Vec<Html> = gateways.iter().map(|g|{
@@ -145,7 +151,7 @@ pub fn GatewayList() -> Html {
                 </tbody>
             </table>
             <div class="flex flex-row-reverse pr-4">
-                <div class="btn btn-square btn-outline btn-sm" >
+                <div onclick={onadd} class="btn btn-square btn-outline btn-sm" >
                     <Icon icon_id={IconId::LucidePlus}/>   
                 </div>
             </div>             
@@ -157,6 +163,7 @@ pub fn GatewayList() -> Html {
 pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
     let nav = use_navigator().unwrap();
     let loc = use_location().unwrap();
+    let loc_1 = loc.clone();
 
     let id = props.id;
     let gateway = use_state(||Gateway::new());
@@ -165,8 +172,9 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
     let store_cloned = store.clone();
     use_effect_with((), move |_|{
         let gateway = g.clone();
+        let loc = loc_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_gateway = Gateway::get(store.selected_domain, id).await;
+            let fetched_gateway = Service::get(loc.path(), store.selected_domain).await;
             gateway.set(fetched_gateway);
         });
     });
