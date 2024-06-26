@@ -6,7 +6,7 @@ use std::io::BufWriter;
 use xml::writer::{EmitterConfig, EventWriter};
 use super::xml_utils::{start_element, end_element, action, Attr};
 use fs_lib::extension::{get_extension, Extension};
-use fs_lib::route::{all_outbounds, all_inbound};
+use fs_lib::route::{outbound, inbound};
 use fs_lib::route::outbound_models::{OutboundRoute};
 use fs_lib::route::inbound_models::{InboundRoute};
 use fs_lib::gateway;
@@ -102,7 +102,7 @@ fn user<W: Write>(w: &mut EventWriter<W>)  {
 
 fn outbounds<W: Write>(w: &mut EventWriter<W>) {
     start_element(w, "context", Some(vec![Attr::new("name", "internal")]));
-    for route in all_outbounds().unwrap() {
+    for route in outbound::list().unwrap() {
         outbound(w, route);
     }
     end_element(w);
@@ -123,7 +123,7 @@ fn outbound<W: Write>(w: &mut EventWriter<W>, route: OutboundRoute) {
 
 fn inbounds<W: Write>(w: &mut EventWriter<W>) {
     start_element(w, "context", Some(vec![Attr::new("name", "public")]));
-    for r in all_inbound().unwrap() {
+    for r in inbound::list().unwrap() {
         inbound(w, r);
     }
     end_element(w);

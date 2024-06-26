@@ -2,6 +2,7 @@ pub mod ringing_group;
 pub mod domain;
 pub mod user;
 pub mod gateway;
+pub mod outbound;
 
 use actix_web::{web};
 use ringing_group::ringing_group_config;

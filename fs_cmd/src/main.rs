@@ -370,15 +370,15 @@ fn print_inbounds(routes: Vec<route::inbound_models::InboundRoute>) {
 fn exec_inbound_cmd(inbound: InRouteCli) {
     match inbound {
         InRouteCli::Add {context, condition, dest_extension} => {
-            route::add_inboud(&context, &condition, &dest_extension)
+            route::inbound::add(&context, &condition, &dest_extension)
                 .unwrap_or_else(|err| println!("{}",err));
         },
         InRouteCli::Del {id} => {
-            route::del_inbound(id)
+            route::inbound::del(id)
                 .unwrap_or_else(|err| println!("{}",err));
         }
         InRouteCli::Ls {} => {
-            match route::all_inbound() {
+            match route::inbound::list() {
                 Ok(routes) => print_inbounds(routes),
                 Err(err) => println!("{}", err)
             }
@@ -401,17 +401,17 @@ fn print_outbounds(routes: Vec<route::outbound_models::OutboundRoute>) {
 fn exec_outbound_cmd(outbound: OutRouteCli) {
     match outbound {
         OutRouteCli::Add {gateway_id, priority, condition} => {
-            route::add_outbound(gateway_id, priority, &condition)
+            route::outbound::add(gateway_id, priority, &condition)
                 .unwrap_or_else(|err| println!("{}",err));
         },
 
         OutRouteCli::Del {id} => {
-            route::del_outbound(id)
+            route::outbound::del(id)
                 .unwrap_or_else(|err| println!("{}",err));
         },
 
         OutRouteCli::Ls {} => {
-            match route::all_outbounds() {
+            match route::outbound::list() {
                 Ok( routes) => print_outbounds(routes),
                 Err(err) => println!("{}", err),
             }
