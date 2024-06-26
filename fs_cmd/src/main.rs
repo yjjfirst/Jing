@@ -329,7 +329,7 @@ fn print_gateways(gateways: Vec<gateway::models::Gateway>)  {
 fn exec_gateway_cmd(gateway: GatewayCli) {
     match gateway {
         GatewayCli::Add {profile, name, proxy, register, username, password} => {
-            gateway::add_gateway(
+            gateway::add(
                 profile,
                 name,
                 proxy,
@@ -341,7 +341,7 @@ fn exec_gateway_cmd(gateway: GatewayCli) {
         },
 
         GatewayCli::Del {id} => {
-            gateway::del_gateway(id)
+            gateway::del(id)
                 .unwrap_or_else(|err| println!("{}",err));
         },
 

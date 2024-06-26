@@ -6,7 +6,7 @@ use crate::db_connect;
 use crate::schema::gateways;
 use crate::error::{Result, Error};
 
-pub fn add_gateway (
+pub fn add (
     profile_id: i32,
     gateway_name: String,
     proxy: String,
@@ -32,7 +32,7 @@ pub fn add_gateway (
     Ok(())
 }
 
-pub fn del_gateway(gateway_id: i32) -> Result<()>{
+pub fn del(gateway_id: i32) -> Result<()>{
     use crate::schema::gateways::columns::id;
 
     let mut conn = db_connect();
