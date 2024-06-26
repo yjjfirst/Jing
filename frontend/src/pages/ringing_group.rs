@@ -60,14 +60,10 @@ pub fn RingingGroupList() -> Html {
     
     let ondel = Callback::from(move |id: usize|{
         let groups = groups_1.clone();
-        let filtered: Vec<&RingingGroupDetail> = groups
+        let filtered: Vec<RingingGroupDetail> = groups
             .iter()
             .filter(|g|id != g.id)
-            .collect();
-
-        let filtered: Vec<RingingGroupDetail> = filtered
-            .iter()
-            .map(|g|{(**g).clone()})
+            .map(|g|{g.clone()})
             .collect();
 
         groups.set(filtered);

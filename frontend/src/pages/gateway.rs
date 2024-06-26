@@ -4,7 +4,6 @@ use wasm_bindgen::JsCast;
 use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
-use yewdux::dispatch;
 use yewdux::prelude::*;
 use yew_icons::{Icon, IconId};
 use crate::store::{show_alert, Store};
@@ -28,6 +27,7 @@ pub enum GatewayRoute {
 #[derive(Clone, PartialEq, Properties)] 
 pub struct GatewayProps {
     pub gateway: Gateway,
+    pub ondel: Callback<usize>
 }
 
 #[derive(Clone, PartialEq, Properties)] 
@@ -38,6 +38,9 @@ pub struct GatewayDetailProps {
 pub fn GatewayListItem(props: &GatewayProps) -> Html {
     let gateway = props.gateway.clone();
     let nav = use_navigator().unwrap();
+    let loc: Location = use_location().unwrap().clone();
+    let (store,_) = use_store::<Store>();    
+    let ondel = props.ondel.clone();
 
     let dialog_ref: NodeRef = use_node_ref();
     let dd_ref = dialog_ref.clone(); 
@@ -47,6 +50,14 @@ pub fn GatewayListItem(props: &GatewayProps) -> Html {
     });
 
     let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
+        let loc = loc.clone();
+        let store = store.clone();
+        let ondel = ondel.clone();        
+        wasm_bindgen_futures::spawn_local(async move {
+            let path = format!("{}/{}", loc.path(), gateway.id);
+            Service::delete(&path, store.clone().selected_domain).await;
+            ondel.emit(gateway.id);
+        })        
     });
     
     let ondel: Callback<MouseEvent> = Callback::from(move |_e| {
@@ -89,6 +100,8 @@ pub fn GatewayList() -> Html {
     let (store,_) = use_store::<Store>();
     let gateways: UseStateHandle<Vec<Gateway>> = use_state(||vec![]);
     let gateways_1 = gateways.clone();
+    let gateways_2 = gateways.clone();
+
     use_effect_with((), move|_|{
         let gateways = gateways_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
@@ -97,9 +110,20 @@ pub fn GatewayList() -> Html {
         });
     });
 
+    let ondel: Callback<usize> = Callback::from(move|id: usize|{
+        let gateways = gateways_2.clone();
+        let filtered: Vec<Gateway> = gateways
+            .iter()
+            .filter(|g| {g.id !=id})
+            .map(|g|{g.clone()})
+            .collect();
+
+        gateways.set(filtered);
+    });
+
     let gateways_list: Vec<Html> = gateways.iter().map(|g|{
         html! {
-            <GatewayListItem gateway={Gateway {..g.clone()}}></GatewayListItem>
+            <GatewayListItem gateway={Gateway {..g.clone()}} ondel={ondel.clone()}></GatewayListItem>
         }
     }).collect();
 

@@ -113,16 +113,12 @@ pub fn UserList() -> Html {
     
     let ondel = Callback::from(move| id:usize|{
         let users = users.clone();
-        let filtered: Vec<&User> = users
+        let filtered: Vec<User> = users
             .iter()
             .filter(|u|{id != u.id})
+            .map(|u|{u.clone()})
             .collect();
-
-        let filtered: Vec<User> = filtered
-            .iter()
-            .map(|u|{(**u).clone()})
-            .collect();
-
+        
         users.set(filtered);
     });
 
