@@ -55,7 +55,7 @@ pub fn SidebarMenu() -> Html {
         },
         SidebarMenuItemPros {
             caption: "Outbound Route".to_string(),
-            route: Route::RingingGroupsRoot,
+            route: Route::OutboundRoot,
             onclick: onclick.clone(),
             selected: false,
         },

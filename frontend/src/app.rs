@@ -6,6 +6,7 @@ use super::components::sidebar::SideBar;
 use crate::pages::ringing_group::{RingingGroupsRoute, ringinggroups_switch};
 use crate::pages::user::{UserRoute, user_switch};
 use crate::pages::gateway::{GatewayRoute, gateway_switch};
+use crate::pages::route_out::{OutboundRoute, outbound_switch};
 use crate::pages::dashboard::Dashboard;
 use crate::components::alert::{AlertType, AlertComponent, Props as AlertProps};
 use crate::components::banner::Banner;
@@ -30,7 +31,11 @@ pub enum Route {
     #[at("/gateway")]
     GatewayRoot,
     #[at("/gateway/*")]
-    Gateways
+    Gateways,
+    #[at("/outbound")]
+    OutboundRoot,
+    #[at("/outbound/*")]
+    Outbounds
 }
 
 #[function_component(App)]
@@ -104,7 +109,13 @@ fn switch(routes: Route) -> Html {
         },
         Route::Gateways => html! {
             <Switch<GatewayRoute> render={gateway_switch} />
-        }
+        },
+        Route::OutboundRoot => html! {
+            <Switch<OutboundRoute> render={outbound_switch} />
+        },
+        Route::Outbounds => html! {
+            <Switch<OutboundRoute> render={outbound_switch} />
+        },
 
     }
 }
