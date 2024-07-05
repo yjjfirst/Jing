@@ -27,7 +27,8 @@ pub enum OutboundRoute {
 }
 #[derive(Clone, PartialEq, Properties)] 
 pub struct OutboundProps {
-    pub out: Outbound
+    pub out: Outbound,
+    pub ondel: Callback<usize>    
 }
 #[derive(Clone, PartialEq, Properties)] 
 pub struct OutboundDetailsProps {
@@ -40,18 +41,32 @@ pub fn OutboundListItem(props: &OutboundProps) -> Html {
     let out = props.out.clone();
     let dialog_ref: NodeRef = use_node_ref();
     let dd_ref = dialog_ref.clone();    
+    let loc: Location = use_location().unwrap().clone();
+    let (store,_) = use_store::<Store>();
+    let id = props.out.id;
+    let ondel = props.ondel.clone();
 
     let onedit: Callback<MouseEvent> = Callback::from(move|_e|{
         nav.push(&OutboundRoute::Get {id: out.id});
     });
+    
+    let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
+        let loc = loc.clone();
+        let store = store.clone();
+        let ondel = ondel.clone();        
+
+        wasm_bindgen_futures::spawn_local(async move {
+            let path = format!("{}/{}", loc.path(), id);
+            Service::delete(&path, store.clone().selected_domain).await;
+            ondel.emit(id);
+        })
+
+    });    
 
     let ondel = Callback::from(move|_e: MouseEvent|{
         let d = dd_ref.cast::<HtmlDialogElement>().unwrap();
         d.show_modal().unwrap();  
     });
-    
-    let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
-    });    
 
     html! {
         <tr>
@@ -85,8 +100,10 @@ pub fn OutboundListItem(props: &OutboundProps) -> Html {
 pub fn OutboundList() -> Html {
     let loc = use_location().unwrap().clone();
     let (store,_) = use_store::<Store>();
+    let nav = use_navigator().unwrap();
 
     let out_routes: UseStateHandle<Vec<Outbound>> = use_state(||vec![]);
+    let out_routes_1 = out_routes.clone();
     let out = out_routes.clone();
     use_effect_with((), move|_|{
         let store = store.clone();
@@ -96,10 +113,25 @@ pub fn OutboundList() -> Html {
             out_routes.set(fetched_routes);
         });
     });
+
+    let onadd: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent| {
+        nav.push(&OutboundRoute::Get {id: 0});
+    });
+
+    let ondel = Callback::from(move| id:usize|{
+        let routes = out_routes_1.clone();
+        let filtered: Vec<Outbound> = routes
+                            .iter()
+                            .filter(|r|r.id != id)
+                            .map(|r|r.clone())
+                            .collect();
+
+        routes.set(filtered);
+    });
     
     let out_list: Vec<Html> = out.iter().map(|o|{
         html! {
-            <OutboundListItem out={Outbound {..o.clone()}} ></OutboundListItem>
+            <OutboundListItem out={Outbound {..o.clone()}} ondel={ondel.clone()} ></OutboundListItem>
         }
     }).collect();
 
@@ -121,7 +153,7 @@ pub fn OutboundList() -> Html {
                     </tbody>
                 </table>
                 <div class="flex flex-row-reverse pr-4">
-                    <div class="btn btn-square btn-outline btn-sm" >
+                    <div onclick={onadd} class="btn btn-square btn-outline btn-sm" >
                         <Icon icon_id={IconId::LucidePlus}/>   
                     </div>
                 </div>             
