@@ -23,4 +23,21 @@ impl Gateway {
             password: "".to_string()        
        }
     }
+    pub fn get_gateway_by_id(id: usize, gateways: &Vec<Gateway>) -> Option<&Gateway> {
+            let pos = gateways
+                                .iter()
+                                .position(|g|{g.id == id})
+                                .unwrap();
+            gateways.get(pos)
+
+    }
+
+    pub fn get_gateway_by_name(name: String, gateways: &Vec<Gateway>) -> Option<&Gateway> {
+            let pos = gateways
+                                .iter()
+                                .position(|g|{g.gateway_name == name})
+                                .unwrap();
+            gateways.get(pos)
+    }
+
 }

@@ -9,6 +9,7 @@ pub struct Props {
     #[prop_or(classes!("w-80"))]
     pub label_width: Classes,
     pub options: Vec<String>,
+    #[prop_or("".to_string())]
     pub select: String,
 }
 

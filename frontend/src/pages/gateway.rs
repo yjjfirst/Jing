@@ -249,7 +249,7 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
                     value={gateway.password.clone()}
                     id="password"
                 />
-                <Input visibility="invisible"
+                <Input hidden=true
                     value={gateway.profile_id.to_string()}
                     id="profile_id"
                 />                

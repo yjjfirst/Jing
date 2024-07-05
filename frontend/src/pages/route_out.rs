@@ -4,7 +4,6 @@ use yew_router::prelude::*;
 use yewdux::prelude::*;
 use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use wasm_bindgen::JsCast;
-use gloo_console::log;
 
 use crate::store::{show_alert, Store};
 use crate::components::header::Header;
@@ -135,8 +134,10 @@ pub fn OutboundList() -> Html {
 pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
     let nav = use_navigator().unwrap();
     let loc = use_location().unwrap();
-    let (store,_) = use_store::<Store>();
+    let loc_1 = loc.clone();
+    let (store,dispatch) = use_store::<Store>();
     let store_1 = store.clone();
+    let store_2 = store.clone();
 
     let out: UseStateHandle<Outbound> = use_state(||Outbound {
         id: 0, condition: "".to_string(), gateway_id:0, priority:100
@@ -146,6 +147,7 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
 
     let gateways: UseStateHandle<Vec<Gateway>> = use_state(||vec![]);
     let gateways_1 = gateways.clone();
+    let gateways_2 = gateways.clone();
 
     use_effect_with((), move |_| {
         let out = out_1.clone();
@@ -173,34 +175,64 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
 
     };
 
+    let form_onsubmit = {        
+        Callback::from(move|event: SubmitEvent| {
+            let dispatch = dispatch.clone();
+            let loc = loc_1.clone();
+            let store = store_2.clone();
+            let nav = nav.clone();
+            let target: Option<EventTarget> = event.target();
+            let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();            
+            let form_data = FormData::new_with_form(&form).unwrap();  
+
+            let gateway_name = form_data.get("gateway").as_string().unwrap();
+            let gateway = Gateway::get_gateway_by_name(gateway_name.clone(), &gateways_2).unwrap();
+            let out = Outbound {
+                id: form_data.get("id").as_string().unwrap().parse::<usize>().unwrap(),
+                condition: form_data.get("condition").as_string().unwrap(),
+                priority: form_data.get("priority").as_string().unwrap().parse::<usize>().unwrap(),
+                gateway_id: gateway.id
+            };
+
+            wasm_bindgen_futures::spawn_local(async move {
+                let dispatch = dispatch.clone();
+                let loc = loc.clone();
+
+                show_alert("Updating gateway.".to_string(), dispatch);
+                Service::update(loc.path(), store.selected_domain, out).await;
+                nav.push(&OutboundRoute::Index);            
+            });
+
+            event.prevent_default(); 
+        })
+    };
 
     html!{
         <div class="grow mr-2">
-            <Header title= {format!("Outbound Name: ")}></Header>
+            <Header title= {format!("Outbound: ")}></Header>
             <div class="divider my-1"></div> 
-            <form class="w-full">
+            <form class="w-full" onsubmit={form_onsubmit}>
+                <Input value={out.id.to_string()} id="id" hidden=true/>
                 <Input value={out.priority.to_string()} id="priority"/>
                 <Input value={out.condition.clone()} id="condition" />
 
-                if let Some(g) = gateways.get(out.gateway_id) {
+                if out.gateway_id != 0 && gateways.len() != 0 {
                     <Select 
-                        select={g.gateway_name.clone()} 
+                        select={Gateway::get_gateway_by_id(out.gateway_id, &gateways).unwrap().gateway_name.clone()}
                         options={gateways
-                                .iter()
-                                .map(|g|{g.gateway_name.clone()})
-                                .collect::<Vec<String>>()}
-
+                                    .iter()
+                                    .map(|g|{g.gateway_name.clone()})
+                                    .collect::<Vec<String>>()}
                         id="gateway"/>
                 } else {
                     <Select 
-                        select={"".to_string()} 
-                        options={gateways
-                                .iter()
-                                .map(|g|{g.gateway_name.clone()})
-                                .collect::<Vec<String>>()}
-
-                        id="gateway"/>
-                }
+                        select={""}
+                            options={gateways
+                                    .iter()
+                                    .map(|g|{g.gateway_name.clone()})
+                                    .collect::<Vec<String>>()}
+                        id="gateway"/>                    
+                } 
                 <ActionButtons oncancel={form_oncancel} />
             </form>
         </div>
