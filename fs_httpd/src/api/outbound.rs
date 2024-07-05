@@ -13,7 +13,14 @@ pub fn outbound_config(cfg: &mut web::ServiceConfig) {
             web::resource("/{id}")
                 .route(web::get().to(get))
                 .route(web::post().to(post))
+                .route(web::delete().to(delete))
         );
+}
+
+async fn delete(path: web::Path<(i32, i32)>) -> impl Responder {
+    let (_, id) = path.into_inner();
+    outbound::del(id).unwrap();
+    web::Json(Status {status: "Ok".to_string()})
 }
 
 async fn index(_path: web::Path<i32>) -> impl Responder {
@@ -32,6 +39,11 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
 
 async fn post(r: web::Json<OutboundRoute>) -> impl Responder {
     let route = r.deref();
-    outbound::update(route);
+    if route.id != 0 {
+        outbound::update(route);
+    } else {
+        outbound::add(r.gateway_id, r.priority, &r.condition).unwrap();
+    }
+
     web::Json(Status {status: "Ok".to_string()})
 }
