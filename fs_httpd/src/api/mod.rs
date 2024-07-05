@@ -9,6 +9,7 @@ use ringing_group::ringing_group_config;
 use domain::domain_config;
 use gateway::gateway_config;
 use user::user_config;
+use outbound::outbound_config;
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -21,6 +22,6 @@ pub fn api_config(cfg: &mut web::ServiceConfig) {
         .service(web::scope("/{domain}/gateway").configure(gateway_config))
         .service(web::scope("/{domain}/user").configure(user_config))
         .service(web::scope("/{domain}/ringing-group").configure(ringing_group_config))
+        .service(web::scope("/{domain}/outbound").configure(outbound_config))
         .service(web::scope("/domain").configure(domain_config));
-
 }

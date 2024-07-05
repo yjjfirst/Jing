@@ -43,3 +43,27 @@ pub fn del(outbound_id: i32) -> Result<()>{
 
     Ok(())
 }
+
+pub fn get(out_id: i32) -> Result<OutboundRoute> {
+    use crate::schema::outbound_routes::dsl::*;
+    let mut conn = db_connect();
+
+    let mut result = outbound_routes
+        .find(out_id)
+        .first::<OutboundRoute>(&mut conn)?;
+
+    Ok(result)
+}
+
+pub fn update(r: &OutboundRoute) -> Result<()> {
+    let mut conn = db_connect();
+    use crate::schema::outbound_routes;
+    use crate::schema::outbound_routes::dsl::*;
+
+    diesel::update(outbound_routes::table)
+        .filter(id.eq(r.id))
+        .set(r)
+        .execute(&mut conn)?;
+
+    Ok(())
+}
