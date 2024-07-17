@@ -69,7 +69,7 @@ pub fn SidebarMenu() -> Html {
 
     let report_items = vec![SidebarMenuItemPros {
         caption: "CDR".to_string(),
-        route: Route::RingingGroupsRoot,
+        route: Route::Cdr,
         onclick: onclick.clone(),
         selected: false,
     }];
@@ -140,26 +140,9 @@ pub fn SidebarMenu() -> Html {
           </ul>
         </details>
       </li>
-      <li>
-      <details>
-        <summary>{"System"}</summary>
-        <ul>
-        {sys_items.iter().map(|i|{
-          html! {
-              <SidebarMenuItem
-                  route={i.route.clone()}
-                  caption={i.caption.clone()}
-                  onclick={i.onclick.clone()}
-                  selected = {*selected == i.caption.clone()}>
-              </SidebarMenuItem>
-          }
-      }).collect::<Vec<Html>>()}
-        </ul>
-      </details>
-    </li>
 
-          </ul>
-          </div>
+    </ul>
+    </div>
       }
 }
 

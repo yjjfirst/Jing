@@ -1,7 +1,6 @@
 use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
-use yewdux::dispatch;
 use yewdux::prelude::*;
 use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use wasm_bindgen::JsCast;
@@ -11,9 +10,6 @@ use crate::components::header::Header;
 use crate::components::dialog::Dialog;
 use crate::components::action_buttons::ActionButtons;
 use crate::components::input::Input;
-use crate::components::select::Select;
-
-use crate::services::gateway::Gateway;
 use crate::services::route_in::Inbound;
 use crate::services::Service;
 
@@ -132,7 +128,7 @@ pub fn InboundList() -> Html {
         routes.set(filtered);
     });
 
-    let onadd = Callback::from(move|e: MouseEvent|{
+    let onadd = Callback::from(move|_e: MouseEvent|{
         nav.push(&InboundRoute::Get { id: 0 });
     });
 

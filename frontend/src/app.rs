@@ -8,6 +8,7 @@ use crate::pages::user::{UserRoute, user_switch};
 use crate::pages::gateway::{GatewayRoute, gateway_switch};
 use crate::pages::route_out::{OutboundRoute, outbound_switch};
 use crate::pages::route_in::{InboundRoute, inbound_switch};
+use crate::pages::cdr::{CdrRoute, cdr_switch};
 use crate::pages::dashboard::Dashboard;
 use crate::components::alert::{AlertType, AlertComponent, Props as AlertProps};
 use crate::components::banner::Banner;
@@ -40,7 +41,9 @@ pub enum Route {
     #[at("/inbound")]
     InboundRoot,
     #[at("/inbound/*")]
-    Inbounds    
+    Inbounds,
+    #[at("/cdr")]
+    Cdr,
 }
 
 #[function_component(App)]
@@ -127,5 +130,8 @@ fn switch(routes: Route) -> Html {
         Route::Inbounds => html! {
             <Switch<InboundRoute> render={inbound_switch} />
         },
+        Route::Cdr => html! {
+            <Switch<CdrRoute> render={cdr_switch} />
+        }
     }
 }

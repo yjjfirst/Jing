@@ -4,6 +4,7 @@ pub mod domain;
 pub mod gateway;
 pub mod route_out;
 pub mod route_in;
+pub mod cdr;
 
 use gloo_net::http::Request;
 use serde::{Serialize, de::DeserializeOwned};
