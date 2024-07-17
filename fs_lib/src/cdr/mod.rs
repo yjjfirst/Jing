@@ -7,7 +7,7 @@ use crate::db_connect;
 use crate::schema::cdr;
 use crate::error::{Result};
 
-pub fn all_cdrs() -> Result<Vec<QueryCdr>> {
+pub fn list() -> Result<Vec<QueryCdr>> {
     use crate::schema::cdr::dsl::*;
 
     let mut conn = db_connect();

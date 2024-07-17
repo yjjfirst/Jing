@@ -11,7 +11,7 @@ pub enum CdrCli {
 pub fn exec_cdr_cmd(cdr: CdrCli) {
     match cdr {
         CdrCli::Ls {} => {
-            let cdrs = cdr::all_cdrs()
+            let cdrs = cdr::list()
                 .unwrap();
             let mut table = Ctable::new();
 
