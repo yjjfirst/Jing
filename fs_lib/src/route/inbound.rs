@@ -47,3 +47,27 @@ pub fn del(inbound_id: i32) -> Result<()>{
 
     Ok(())
 }
+
+pub fn get(in_id: i32) -> Result<InboundRoute> {
+    use crate::schema::inbound_routes::dsl::*;
+    let mut conn = db_connect();
+
+    let result = inbound_routes
+        .find(in_id)
+        .first::<InboundRoute>(&mut conn)?;
+
+    Ok(result)
+}
+
+pub fn update(r: &InboundRoute) -> Result<()> {
+    let mut conn = db_connect();
+    use crate::schema::inbound_routes;
+    use crate::schema::inbound_routes::dsl::*;
+
+    diesel::update(inbound_routes::table)
+        .filter(id.eq(r.id))
+        .set(r)
+        .execute(&mut conn)?;
+
+    Ok(())
+}

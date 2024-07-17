@@ -48,7 +48,7 @@ pub fn get(out_id: i32) -> Result<OutboundRoute> {
     use crate::schema::outbound_routes::dsl::*;
     let mut conn = db_connect();
 
-    let mut result = outbound_routes
+    let result = outbound_routes
         .find(out_id)
         .first::<OutboundRoute>(&mut conn)?;
 

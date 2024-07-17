@@ -1,6 +1,7 @@
 use crate::schema::inbound_routes;
+use serde::{Serialize, Deserialize};
 
-#[derive(Queryable)]
+#[derive(Queryable, Serialize, Deserialize, AsChangeset)]
 #[derive(Debug)]
 pub struct InboundRoute {
     pub id: i32,

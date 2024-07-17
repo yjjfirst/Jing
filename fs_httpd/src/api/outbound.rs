@@ -40,7 +40,7 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
 async fn post(r: web::Json<OutboundRoute>) -> impl Responder {
     let route = r.deref();
     if route.id != 0 {
-        outbound::update(route);
+        outbound::update(route).unwrap();
     } else {
         outbound::add(r.gateway_id, r.priority, &r.condition).unwrap();
     }
