@@ -61,10 +61,10 @@ pub fn SidebarMenu() -> Html {
         },
         SidebarMenuItemPros {
             caption: "Inbound Route".to_string(),
-            route: Route::RingingGroupsRoot,
+            route: Route::InboundRoot,
             onclick: onclick.clone(),
             selected: false,
-        },
+        },     
     ];
 
     let report_items = vec![SidebarMenuItemPros {

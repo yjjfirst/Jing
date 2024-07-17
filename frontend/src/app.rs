@@ -7,6 +7,7 @@ use crate::pages::ringing_group::{RingingGroupsRoute, ringinggroups_switch};
 use crate::pages::user::{UserRoute, user_switch};
 use crate::pages::gateway::{GatewayRoute, gateway_switch};
 use crate::pages::route_out::{OutboundRoute, outbound_switch};
+use crate::pages::route_in::{InboundRoute, inbound_switch};
 use crate::pages::dashboard::Dashboard;
 use crate::components::alert::{AlertType, AlertComponent, Props as AlertProps};
 use crate::components::banner::Banner;
@@ -35,7 +36,11 @@ pub enum Route {
     #[at("/outbound")]
     OutboundRoot,
     #[at("/outbound/*")]
-    Outbounds
+    Outbounds,
+    #[at("/inbound")]
+    InboundRoot,
+    #[at("/inbound/*")]
+    Inbounds    
 }
 
 #[function_component(App)]
@@ -116,6 +121,11 @@ fn switch(routes: Route) -> Html {
         Route::Outbounds => html! {
             <Switch<OutboundRoute> render={outbound_switch} />
         },
-
+        Route::InboundRoot => html! {
+            <Switch<InboundRoute> render={inbound_switch} />
+        },        
+        Route::Inbounds => html! {
+            <Switch<InboundRoute> render={inbound_switch} />
+        },
     }
 }

@@ -136,30 +136,29 @@ pub fn OutboundList() -> Html {
     }).collect();
 
     html! {
-        html! {
-            <div class="grow mr-2">
-                <Header title="Connection -> Gateway"></Header>
-                <div class="divider my-1"></div>
-                <table class="table table-zebra">
-                    <thead>
-                        <tr>
-                            <th>{"ID"}</th>
-                            <th>{"Priority"}</th>
-                            <th>{"Condition"}</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {out_list}
-                    </tbody>
-                </table>
-                <div class="flex flex-row-reverse pr-4">
-                    <div onclick={onadd} class="btn btn-square btn-outline btn-sm" >
-                        <Icon icon_id={IconId::LucidePlus}/>   
-                    </div>
-                </div>             
-            </div>        
-        }    
-    }
+        <div class="grow mr-2">
+            <Header title="Connection -> Outbound Routes"></Header>
+            <div class="divider my-1"></div>
+            <table class="table table-zebra">
+                <thead>
+                    <tr>
+                        <th>{"ID"}</th>
+                        <th>{"Priority"}</th>
+                        <th>{"Condition"}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {out_list}
+                </tbody>
+            </table>
+            <div class="flex flex-row-reverse pr-4">
+                <div onclick={onadd} class="btn btn-square btn-outline btn-sm" >
+                    <Icon icon_id={IconId::LucidePlus}/>   
+                </div>
+            </div>             
+        </div>        
+    }    
+
 }
 
 #[function_component]
@@ -204,7 +203,6 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
         Callback::from(move|_| {
             nav.push(&OutboundRoute::Index);
         })
-
     };
 
     let form_onsubmit = {        
@@ -241,7 +239,7 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
 
     html!{
         <div class="grow mr-2">
-            <Header title= {format!("Outbound: ")}></Header>
+            <Header title= {format!("Outbound: {}", out.id)}></Header>
             <div class="divider my-1"></div> 
             <form class="w-full" onsubmit={form_onsubmit}>
                 <Input value={out.id.to_string()} id="id" hidden=true/>
