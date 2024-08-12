@@ -17,7 +17,7 @@ async fn main() -> std::io::Result<()> {
             .service(web::scope("/api").configure(api_config))
     })
         .bind("127.0.0.1:9090")?
-        .bind("45.76.77.24:9090")?
+        .bind("108.61.207.110:9090")?
         .run()
         .await
 }

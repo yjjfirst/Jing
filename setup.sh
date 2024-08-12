@@ -2,14 +2,14 @@
 
 export FS_ACTIVE_DOMAIN=1
 #add domain and users
-./target/debug/fs_cmd domain add --name 45.76.77.24
+./target/debug/fs_cmd domain add --name 108.61.207.110
 ./target/debug/fs_cmd domain add --name teleman.me
 ./target/debug/fs_cmd user add  -u 1000
 ./target/debug/fs_cmd user add  -u 1001
 
 #add gateways
-./target/debug/fs_cmd gateway add --name kamailio_1001 --profile 2 --password 0z1*7CSUOj96nV5 --proxy 45.76.77.24 --register 45.76.77.24 --username 1001
-./target/debug/fs_cmd gateway add --name kamailio_1002 --profile 2 --password j1U4NyRN6LtTGzp --proxy 45.76.77.24 --register 45.76.77.24 --username 1002
+./target/debug/fs_cmd gateway add --name kamailio_1001 --profile 2 --password 0z1*7CSUOj96nV5 --proxy 108.61.207.110 --register 108.61.207.110 --username 1001
+./target/debug/fs_cmd gateway add --name kamailio_1002 --profile 2 --password j1U4NyRN6LtTGzp --proxy 108.61.207.110 --register 108.61.207.110 --username 1002
 
 #add outbound route
 ./target/debug/fs_cmd route out add --condition "(1\d{10})" --gateway-id 1 --priority 100
