@@ -42,23 +42,24 @@ pub struct Callflow {
 #[derive(Debug, Deserialize, Serialize, PartialEq)]
 pub struct Cdr {
     variables: Variables,
-    callflow: Callflow,
+    callflow_first: Callflow,
 }
 
 #[post("/cdr")]
 pub async fn cdr_post(req: web::Form<CdrXml>) -> impl Responder {
-    let cdr: Cdr = from_str(&req.cdr).unwrap();
+    let cdr_string: String = req.cdr.replacen("callflow", "callflow_first", 2);
+    let cdr: Cdr = from_str(&cdr_string).unwrap();
 
     send_email(
-        &cdr.callflow.caller_profile.caller_id_number,
-        &cdr.callflow.caller_profile.destination_number,
+        &cdr.callflow_first.caller_profile.caller_id_number,
+        &cdr.callflow_first.caller_profile.destination_number,
     );
 
 
     cdr::add_cdr (
-        cdr.callflow.caller_profile.caller_id_number,
-        cdr.callflow.caller_profile.caller_id_name,
-        cdr.callflow.caller_profile.destination_number,
+        cdr.callflow_first.caller_profile.caller_id_number,
+        cdr.callflow_first.caller_profile.caller_id_name,
+        cdr.callflow_first.caller_profile.destination_number,
         DateTime::from_timestamp(cdr.variables.start_epoch.parse::<i64>().unwrap(), 0).unwrap(),
         if cdr.variables.answer_epoch.parse::<i64>().unwrap() == 0 {
             None
