@@ -1,6 +1,4 @@
-use std::ops::Deref;
 use actix_web::{web, Responder};
-use super::Status;
 
 use fs_lib::cdr;
 pub fn cdr_config(cfg: &mut web::ServiceConfig) {

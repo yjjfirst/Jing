@@ -16,8 +16,7 @@ async fn main() -> std::io::Result<()> {
             .service(cdr::cdr_post)
             .service(web::scope("/api").configure(api_config))
     })
-        .bind("127.0.0.1:9090")?
-        .bind("108.61.207.110:9090")?
+        .bind("0.0.0.0:9090")?
         .run()
         .await
 }

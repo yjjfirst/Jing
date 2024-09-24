@@ -1,15 +1,20 @@
 #!/bin/bash
 
 export FS_ACTIVE_DOMAIN=1
+
+IP_ADDR=45.76.243.82
+PROXY_IP_ADDR=${IP_ADDR}
+REGISTER_IP_ADDR=${IP_ADDR}
+
 #add domain and users
-./target/debug/fs_cmd domain add --name 108.61.207.110
+./target/debug/fs_cmd domain add --name $IP_ADDR
 ./target/debug/fs_cmd domain add --name teleman.me
 ./target/debug/fs_cmd user add  -u 1000
 ./target/debug/fs_cmd user add  -u 1001
 
 #add gateways
-./target/debug/fs_cmd gateway add --name kamailio_1001 --profile 2 --password 0z1*7CSUOj96nV5 --proxy 108.61.207.110 --register 108.61.207.110 --username 1001
-./target/debug/fs_cmd gateway add --name kamailio_1002 --profile 2 --password j1U4NyRN6LtTGzp --proxy 108.61.207.110 --register 108.61.207.110 --username 1002
+./target/debug/fs_cmd gateway add --name kamailio_1001 --profile 2 --password 0z1*7CSUOj96nV5 --proxy $PROXY_IP_ADDR --register $REGISTER_IP_ADDR --username 1001
+./target/debug/fs_cmd gateway add --name kamailio_1002 --profile 2 --password j1U4NyRN6LtTGzp --proxy $PROXY_IP_ADDR --register $REGISTER_IP_ADDR --username 1002
 
 #add outbound route
 ./target/debug/fs_cmd route out add --condition "(1\d{10})" --gateway-id 1 --priority 100
