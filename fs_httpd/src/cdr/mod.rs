@@ -1,4 +1,4 @@
-use chrono::{DateTime};
+use chrono::{TimeZone,Local};
 use actix_web::{post, web, Responder, HttpResponse};
 use serde::{Deserialize, Serialize};
 use serde_xml_rs::{from_str};
@@ -60,13 +60,13 @@ pub async fn cdr_post(req: web::Form<CdrXml>) -> impl Responder {
         cdr.callflow_first.caller_profile.caller_id_number,
         cdr.callflow_first.caller_profile.caller_id_name,
         cdr.callflow_first.caller_profile.destination_number,
-        DateTime::from_timestamp(cdr.variables.start_epoch.parse::<i64>().unwrap(), 0).unwrap(),
+        Local.timestamp_opt(cdr.variables.start_epoch.parse::<i64>().unwrap(), 0).unwrap(),
         if cdr.variables.answer_epoch.parse::<i64>().unwrap() == 0 {
             None
         } else {
-            Some(DateTime::from_timestamp(cdr.variables.answer_epoch.parse::<i64>().unwrap(), 0).unwrap())
+            Some(Local.timestamp_opt(cdr.variables.answer_epoch.parse::<i64>().unwrap(), 0).unwrap())
         },
-        DateTime::from_timestamp(cdr.variables.end_epoch.parse::<i64>().unwrap(), 0).unwrap(),
+        Local.timestamp_opt(cdr.variables.end_epoch.parse::<i64>().unwrap(), 0).unwrap(),
         cdr.variables.duration,
         cdr.variables.billsec,
         cdr.variables.hangup_cause

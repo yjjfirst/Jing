@@ -1,7 +1,7 @@
 pub mod models;
 
 use models::*;
-use chrono::{DateTime,Utc};
+use chrono::{DateTime,Local};
 use diesel::prelude::*;
 use crate::db_connect;
 use crate::schema::cdr;
@@ -21,9 +21,9 @@ pub fn add_cdr(
     caller_id_number: String,
     caller_id_name: String,
     destination_number: String,
-    start_stamp: DateTime<Utc>,
-    answer_stamp: Option<DateTime<Utc>>,
-    end_stamp: DateTime<Utc>,
+    start_stamp: DateTime<Local>,
+    answer_stamp: Option<DateTime<Local>>,
+    end_stamp: DateTime<Local>,
     duration: i32,
     billsec: i32,
     hangup_cause: String,
