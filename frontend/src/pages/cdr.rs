@@ -55,8 +55,8 @@ pub fn CdrList() -> Html {
                                <td>{c.caller_id_name.clone()}</td>
                                <td>{c.caller_id_number.clone()}</td>
                                <td>{c.destination_number.clone()}</td>
-                               <td>{c.start_stamp.clone().to_string()}</td>
-                               <td>{c.end_stamp.clone().to_string()}</td>
+                               <td>{c.start_stamp.clone().format("%Y-%m-%d %H:%M:%S").to_string()}</td>
+                               <td>{c.end_stamp.clone().format("%Y-%m-%d %H:%M:%S").to_string()}</td>
                                <td>{c.duration}</td>
                                <td>{c.billsec}</td>
                                <td>{c.hangup_cause.clone()}</td>                                
