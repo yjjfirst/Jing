@@ -5,8 +5,8 @@ use serde::{Serialize, Deserialize};
 #[derive(Queryable, Debug, PartialEq, Serialize, Deserialize)]
 pub struct QueryCdr {
     pub id: i32,
-    pub caller_id_number: Option<String>,
     pub caller_id_name: Option<String>,
+    pub caller_id_number: Option<String>,
     pub destination_number: String,
     pub start_stamp: DateTime<Local>,
     pub answer_stamp: Option<DateTime<Local>>,
