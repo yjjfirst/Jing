@@ -11,6 +11,7 @@ categories = ["gui", "wasm", "web-programming"]
 [dependencies]
 yew = { version="0.21.0", features=["csr"] }
 yew-router = "0.18.0"
+yew-hooks = "0.3.2"
 gloo-dialogs = "0.2.0"
 gloo-net = "0.4.0"
 gloo-timers = "0.3.0"
@@ -30,6 +31,7 @@ yew_icons = {version = "0.8", features = ["LucideEdit",
     "LucidePlus",
     "LucideTrash"]}
 yewdux = "0.9.4"
+charming = { features = ["wasm"] }
 
 [dependencies.web-sys]
 version = "0.3.66"
