@@ -12,6 +12,7 @@ pub fn list() -> Result<Vec<QueryCdr>> {
 
     let mut conn = db_connect();
     let result = cdr
+        .order_by(id.desc())
         .load::<QueryCdr>(&mut conn)?;
 
     Ok(result)
