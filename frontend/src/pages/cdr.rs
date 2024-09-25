@@ -35,7 +35,6 @@ pub fn CdrList() -> Html {
             <table class="table table-zebra">
                 <thead>
                     <tr>
-                        <th>{"No."}</th>
                         <th>{"Caller ID Name"}</th>
                         <th>{"Caller ID Number"}</th>
                         <th>{"Callee Number"}</th>
@@ -51,7 +50,6 @@ pub fn CdrList() -> Html {
                     cdrs.iter().map(|c|{
                        html! {
                            <tr>
-                               <td>{c.id}</td>
                                <td>{c.caller_id_name.clone()}</td>
                                <td>{c.caller_id_number.clone()}</td>
                                <td>{c.destination_number.clone()}</td>
