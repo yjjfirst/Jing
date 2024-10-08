@@ -74,8 +74,8 @@ pub fn SidebarMenu() -> Html {
         selected: false,
     }];
     let sys_items = vec![SidebarMenuItemPros {
-        caption: "Firewall".to_string(),
-        route: Route::RingingGroupsRoot,
+        caption: "Sound File".to_string(),
+        route: Route::SoundFileRoot,
         onclick: onclick.clone(),
         selected: false,
     }];
@@ -140,7 +140,23 @@ pub fn SidebarMenu() -> Html {
           </ul>
         </details>
       </li>
-
+      <li>
+      <details>
+        <summary>{"System"}</summary>
+        <ul>
+        {sys_items.iter().map(|i|{
+            html! {
+                <SidebarMenuItem
+                    route={i.route.clone()}
+                    caption={i.caption.clone()}
+                    onclick={i.onclick.clone()}
+                    selected = {*selected == i.caption.clone()}>
+                </SidebarMenuItem>
+            }
+        }).collect::<Vec<Html>>()}
+        </ul>
+      </details>
+    </li>
     </ul>
     </div>
       }

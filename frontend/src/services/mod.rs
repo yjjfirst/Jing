@@ -5,10 +5,15 @@ pub mod gateway;
 pub mod route_out;
 pub mod route_in;
 pub mod cdr;
+pub mod sound_file;
 
 use gloo_net::http::Request;
-use serde::{Serialize, de::DeserializeOwned};
+use gloo_net::Error;
+use serde::{Serialize, de::DeserializeOwned, Deserialize};
+#[derive(Serialize, Deserialize)]
+pub struct EmptyJson{
 
+}
 const BASE_URL: &str = "http://teleman.me:9090/api";
 
 pub struct Service {}
@@ -28,10 +33,12 @@ impl Service {
         response.json().await.unwrap()
     }
 
-    pub async fn update<T: Serialize + DeserializeOwned>(path: &str, domain: usize, group: T) {
+    pub async fn update<T: Serialize + DeserializeOwned>(path: &str, domain: usize, group: T) 
+    -> Result<EmptyJson, Error>{
         let endpoint = Self::endpoint(path, domain);
         let request = Request::post(&endpoint).json(&group).unwrap();
-        request.send().await.unwrap();
+        let response = request.send().await.unwrap();
+        return response.json().await
     }
 
     pub async fn delete(path: &str, domain: usize) {

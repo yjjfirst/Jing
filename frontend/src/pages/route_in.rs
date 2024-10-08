@@ -111,9 +111,6 @@ pub fn InboundList() -> Html {
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_routes: Vec<Inbound> = Service::index(loc.path(), store.selected_domain.clone()).await;
             in_routes.set(fetched_routes);
-            in_routes.iter().for_each(|i| {
-                gloo_console::log!(i.context.clone());
-            })
         });
     });
 

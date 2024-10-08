@@ -10,6 +10,7 @@ use crate::pages::route_out::{OutboundRoute, outbound_switch};
 use crate::pages::route_in::{InboundRoute, inbound_switch};
 use crate::pages::cdr::{CdrRoute, cdr_switch};
 use crate::pages::dashboard::Dashboard;
+use crate::pages::sound_file::{SoundFileRoute, sound_file_switch};
 use crate::components::alert::{AlertType, AlertComponent, Props as AlertProps};
 use crate::components::banner::Banner;
 use crate::services::domain::Domain;
@@ -44,6 +45,10 @@ pub enum Route {
     Inbounds,
     #[at("/cdr")]
     Cdr,
+    #[at("/sound-file")]
+    SoundFileRoot,
+    #[at("/sound-file/*")]
+    SoundFile,
 }
 
 #[function_component(App)]
@@ -132,6 +137,12 @@ fn switch(routes: Route) -> Html {
         },
         Route::Cdr => html! {
             <Switch<CdrRoute> render={cdr_switch} />
-        }
+        },
+        Route::SoundFileRoot => html! {
+            <Switch<SoundFileRoute> render={sound_file_switch} />
+        },
+        Route::SoundFile => html! {
+            <Switch<SoundFileRoute> render={sound_file_switch} />
+        },
     }
 }

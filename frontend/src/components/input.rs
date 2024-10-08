@@ -38,7 +38,12 @@ pub fn Input(props: &Props) -> Html {
     if props.hidden == true {
         hidden.push("hidden");
     }
-    
+    let mut input_class: Classes;
+    if input_type == "file" {
+        input_class = classes!("file-input", "file-input-bordered", "w-full");
+    } else {
+        input_class = classes!("input", "input-bordered", "block", "w-full");
+    }
     let label_class: Classes = props.label_width.clone();
 
     html! {
@@ -59,7 +64,7 @@ pub fn Input(props: &Props) -> Html {
                 value={input_value}
                 id={id.clone()}
                 name={name}
-                class="input input-bordered block w-full"
+                class={input_class}
                 disabled={props.disabled}/>
         </div>
         </div>       
