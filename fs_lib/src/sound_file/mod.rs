@@ -20,7 +20,7 @@ pub fn add(domain: i32,name: String, path: String, desc: String) -> Result<()>{
             let new_soundfile = NewSoundFile {
                 name: &name,
                 domain_id: domain,
-                desc: Some(&desc)
+                description: Some(&desc)
             };
             diesel::insert_into(sound_files::table)
                 .values(&new_soundfile)
@@ -35,7 +35,7 @@ pub fn add(domain: i32,name: String, path: String, desc: String) -> Result<()>{
     Ok(())
 }
 
-pub fn all() -> Result<Vec<SoundFile>>{
+pub fn list() -> Result<Vec<SoundFile>>{
     use crate::schema::sound_files::dsl::*;
 
     let mut conn = db_connect();
@@ -68,6 +68,21 @@ pub fn get(a_id: i32) -> Result<SoundFile> {
     Ok(result)
 }
 
+pub fn update(f: SoundFile) -> Result<()> {
+    use crate::schema::sound_files;
+    use crate::schema::sound_files::dsl::*;
+
+    let mut conn = db_connect();
+    let mut pre = get(f.id)?;
+
+    pre.description = f.description.clone();
+    diesel::update(sound_files::table)
+        .filter(id.eq(f.id))
+        .set(&pre)
+        .execute(&mut conn)?;
+
+    Ok(())
+}
 fn make_tmp_name() -> String {
     let tmp_dir = temp_dir();
     let file_name = format!("{}/{}.wav",

@@ -31,7 +31,7 @@ pub fn print_soundfiles(sounds: Vec<sound_file::models::SoundFile>)
         table.add_row(row![s.id,
                            s.name,
                            s.domain_id,
-                           s.desc.unwrap_or("".to_string())]);
+                           s.description.unwrap_or("".to_string())]);
     }
 
     table.print();
@@ -47,7 +47,7 @@ pub fn exec_soundfile_cmd(soundfile: SoundFileCli) {
             sound_file::del(id).unwrap();
         },
         SoundFileCli::Ls => {
-            let soundfiles = sound_file::all().unwrap();
+            let soundfiles = sound_file::list().unwrap();
             print_soundfiles(soundfiles);
         }
     }
