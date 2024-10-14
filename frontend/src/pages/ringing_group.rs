@@ -257,7 +257,7 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
                 <Input 
                     value={group.0.group_id.clone()}
                     id="extension"
-                    disabled={group.0.group_id.clone() != ""}
+                    hidden={group.0.group_id.clone() != ""}
                 />
                 <Input
                     value={group.0.name.clone()}

@@ -301,7 +301,7 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
                 <Input
                     value={user.user.clone().user_id.clone()}
                     id="user_id"
-                    disabled={user.user.clone().user_id.clone() != ""}
+                    hidden={user.user.clone().user_id.clone() != ""}
                 />
                 if user.user.id != 0 {
                     <Input
