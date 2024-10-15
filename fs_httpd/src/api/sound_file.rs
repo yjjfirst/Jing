@@ -1,8 +1,18 @@
 use std::ops::Deref;
 use actix_web::{web, Responder};
+use actix_multipart::form::{text::Text, tempfile::TempFile, MultipartForm};
+
 use fs_lib::sound_file;
 use fs_lib::sound_file::models::{SoundFile};
 use super::Status;
+
+#[derive(Debug, MultipartForm)]
+struct UploadForm {
+    #[multipart(limit = "20MB")]
+    file_name: TempFile,
+    description: Text<String>,
+    domain_id: Text<i32>
+}
 
 pub fn sound_file_config(cfg: &mut web::ServiceConfig) {
     cfg
@@ -13,6 +23,8 @@ pub fn sound_file_config(cfg: &mut web::ServiceConfig) {
             web::resource("/{id}")
                 .route(web::get().to(get))
                 .route(web::post().to(post))
+                .route(web::patch().to(patch))
+                .route(web::delete().to(delete))
         );
 }
 
@@ -33,12 +45,31 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
     web::Json(s)
 }
 
-async fn post(s: web::Json<SoundFile>) -> impl Responder {
+async fn delete(path: web::Path<(i32, i32)>) -> impl Responder {
+    let (_,id) =path.into_inner();
+    sound_file::del(id).unwrap();
+
+    web::Json(Status{status: "Ok".to_string()})
+}
+
+async fn post(MultipartForm(form): MultipartForm<UploadForm>) -> impl Responder {
+    let f = form.file_name;
+    let path = format!("/tmp/{}", f.file_name.clone().unwrap());
+
+    f.file.persist(path.clone()).unwrap();
+    sound_file::add(
+        form.domain_id.into_inner(),
+        f.file_name.unwrap(),
+        path,
+        form.description.into_inner()).unwrap();
+
+    web::Json(Status{status: "Ok".to_string()})
+}
+
+
+async fn patch(s: web::Json<SoundFile>) -> impl Responder {
     let f = s.deref();
-    if f.id != 0 {
-        sound_file::update(f.clone());
-    } else {
-    }
+    sound_file::update(f.clone()).unwrap();
 
     web::Json(Status {status: "Ok".to_string()})
 }

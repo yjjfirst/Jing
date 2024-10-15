@@ -92,31 +92,45 @@ fn make_tmp_name() -> String {
     file_name
 }
 
-fn install_file(path: &str, name: &str) -> std::io::Result<()> {
-
+fn install_file(path: &str, name: &str) -> Result<()> {
     let tmp_file = make_tmp_name();
     let sound_dir = rt::eval("$${sounds_dir}");
     let target_path = format!("{}/en/us/callie/{}", sound_dir, name);
 
-    Command::new("mpg123")
+    let mut status = Command::new("mpg123")
         .arg("-w")
         .arg(&tmp_file)
         .arg(path)
-        .status()?;
+        .status()
+        .unwrap();
 
-    Command::new("sox")
+    if !status.success() {
+        return Err(Error::Fslib("Add sound file failed".to_string()));
+    }
+
+    status = Command::new("sox")
         .arg(&tmp_file)
         .arg("-c")
         .arg("1")
         .arg("-r")
         .arg("8000")
         .arg(target_path)
-        .status()?;
+        .status()
+        .unwrap();
 
-    Command::new("rm")
+    if !status.success() {
+        return Err(Error::Fslib("Add sound file failed".to_string()));
+    }
+
+    status = Command::new("rm")
         .arg("-f")
         .arg(&tmp_file)
-        .status()?;
+        .status()
+        .unwrap();
+
+    if !status.success() {
+        return Err(Error::Fslib("Add sound file failed".to_string()));
+    }
 
     return Ok(())
 }
