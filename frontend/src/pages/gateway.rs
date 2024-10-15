@@ -216,7 +216,7 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
                 let loc = loc.clone();
 
                 show_alert("Updating gateway.".to_string(), dispatch);
-                Service::update(loc.path(), store.selected_domain, gateway).await;
+                Service::post(loc.path(), store.selected_domain, gateway).await;
                 nav.push(&GatewayRoute::Index);            
             });
                         

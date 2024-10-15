@@ -241,7 +241,7 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
             wasm_bindgen_futures::spawn_local(async move {
                 let dispatch = dispatch.clone();
                 show_alert("Updating ringing group.".to_string(), dispatch);
-                Service::update(loc.path(), store_cloned.selected_domain, group).await;
+                Service::post(loc.path(), store_cloned.selected_domain, group).await;
                 nav.push(&RingingGroupsRoute::Index);            
             });
                         

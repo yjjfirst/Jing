@@ -12,12 +12,14 @@ use crate::components::file_input::FileInput;
 use crate::components::action_buttons::ActionButtons;
 use crate::components::header::Header;
 use crate::store::{show_alert, Store};
+use crate::components::dialog::Dialog;
 use crate::services::sound_file::SoundFile;
 use crate::services::Service;
 
 #[derive(Clone, PartialEq, Properties)] 
 pub struct SoundFileProps {
     pub sound: SoundFile,
+    pub ondel: Callback<usize>    
 }
 
 #[derive(Clone, PartialEq, Properties)] 
@@ -36,9 +38,31 @@ pub enum SoundFileRoute {
 pub fn SoundFileListItem(props: &SoundFileProps) -> Html {
     let sound = props.sound.clone();
     let nav = use_navigator().unwrap();
+    let dialog_ref: NodeRef = use_node_ref();
+    let dd_ref = dialog_ref.clone();     
+    let loc: Location = use_location().unwrap().clone();
+    let (store,_) = use_store::<Store>();
+    let ondel = props.ondel.clone();
 
     let onedit: Callback<MouseEvent> = Callback::from(move|_e|{
         nav.push(&SoundFileRoute::Get {id: sound.id});
+    });
+
+    let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
+        let loc = loc.clone();
+        let store = store.clone();
+        let ondel = ondel.clone();        
+
+        wasm_bindgen_futures::spawn_local(async move {
+            let path = format!("{}/{}", loc.path(), sound.id);
+            Service::delete(&path, store.clone().selected_domain).await;
+            ondel.emit(sound.id);
+        })
+    });
+
+    let ondel = Callback::from(move|_e: MouseEvent|{
+        let d = dd_ref.cast::<HtmlDialogElement>().unwrap();
+        d.show_modal().unwrap();  
     });
 
     html! {
@@ -52,11 +76,18 @@ pub fn SoundFileListItem(props: &SoundFileProps) -> Html {
                     </div>
                 </div>
                 <div>
-                    <div class="btn btn-square btn-outline btn-sm">
+                    <div onclick={ondel} class="btn btn-square btn-outline btn-sm">
                         <Icon icon_id={IconId::LucideTrash}/>   
                     </div>
                 </div>
-            </th>             
+            </th> 
+            <Dialog
+                d_ref = {dialog_ref}
+                title={"Warning!"} 
+                contents={format!("Are you sure to delete sound file: {}", sound.name.clone())}
+                {onconfirm}
+                >
+            </Dialog>                          
         </tr>
     }
 }
@@ -66,6 +97,7 @@ pub fn SoundFileList() -> Html {
     let (store,_) = use_store::<Store>();
     let sound_files: UseStateHandle<Vec<SoundFile>> = use_state(||vec![]);
     let sound_files_1: UseStateHandle<Vec<SoundFile>> = sound_files.clone();
+    let sound_files_2 = sound_files.clone();
 
     let loc = use_location().unwrap().clone();
     let nav = use_navigator().unwrap();
@@ -83,6 +115,17 @@ pub fn SoundFileList() -> Html {
         nav.push(&SoundFileRoute::Get { id: 0 });
     });
 
+    let ondel = Callback::from(move| id: usize|{
+        let sound_files = sound_files_2.clone();
+        let filtered: Vec<SoundFile> = sound_files
+            .iter()
+            .filter(|f|f.id != id)
+            .map(|f|f.clone())
+            .collect();
+
+        sound_files.set(filtered);
+    });
+
     html! {
         <div class="grow mr-2">
             <Header title="System -> Sound Files"></Header>
@@ -97,7 +140,7 @@ pub fn SoundFileList() -> Html {
                 <tbody>
                 {sound_files.iter().map(move|s|{
                     html!{
-                        <SoundFileListItem sound={SoundFile {..s.clone()}}/>
+                        <SoundFileListItem sound={SoundFile {..s.clone()}} ondel={ondel.clone()}/>
                     }
                 }).collect::<Html>()}
                 </tbody>
@@ -119,6 +162,7 @@ pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
     let loc_1 = loc.clone();
     let (store,dispatch) = use_store::<Store>();
     let store_1 = store.clone();
+    let store_2 = store.clone();
     let id = props.id;
 
     let sound = use_state(||{
@@ -163,23 +207,38 @@ pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
                 domain_id: 0,
                 description: form_data.get("description").as_string().unwrap(),
             };
-
-            wasm_bindgen_futures::spawn_local(async move {
-                let dispatch = dispatch.clone();
-                let loc = loc.clone();
-
-                match Service::update(loc.path(), store.selected_domain, sound_file)
-                    .await {
-                        Ok(_) => {
-                            show_alert("Update sound file successfully".to_string(), dispatch);
-                            nav.push(&SoundFileRoute::Index);            
+            if id == 0 {
+                wasm_bindgen_futures::spawn_local(async move {
+                    let dispatch = dispatch.clone();
+                    let loc = loc.clone();
+                    match Service::post_form(loc.path(), store.selected_domain, form_data)
+                        .await {
+                            Ok(_) => {
+                                show_alert("Create sound file successfully".to_string(), dispatch);
+                                nav.push(&SoundFileRoute::Index);            
+                            }
+                            Err(_) => {
+                                show_alert("Create sound file failed".to_string(), dispatch);
+                            }
                         }
-                        Err(_) => {
-                            show_alert("Update sound file failed".to_string(), dispatch);
-                        }
-                    }
-            });
+                });                
+            } else {
+                wasm_bindgen_futures::spawn_local(async move {
+                    let dispatch = dispatch.clone();
+                    let loc = loc.clone();
 
+                    match Service::patch(loc.path(), store.selected_domain, sound_file)
+                        .await {
+                            Ok(_) => {
+                                show_alert("Update sound file successfully".to_string(), dispatch);
+                                nav.push(&SoundFileRoute::Index);            
+                            }
+                            Err(_) => {
+                                show_alert("Update sound file failed".to_string(), dispatch);
+                            }
+                        }
+                });
+            }
             event.prevent_default(); 
         })
     };
@@ -190,6 +249,7 @@ pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
             <div class="divider my-1"></div> 
             <form class="w-full" onsubmit={form_onsubmit} method="POST">
                 <Input value={sound.id.to_string()} id="id" hidden=true></Input>
+                <Input value={store_2.selected_domain.to_string()} id="domain_id" hidden=true></Input>
                 if id == 0 {
                     <FileInput
                     id="file_name"

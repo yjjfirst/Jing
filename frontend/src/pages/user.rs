@@ -285,7 +285,7 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
             wasm_bindgen_futures::spawn_local(async move {
                 let store = store.clone();
                 show_alert("Updating ringing user.".to_string(), dispatch);
-                Service::update(loc.path(), store.selected_domain, c).await;
+                Service::post(loc.path(), store.selected_domain, c).await;
                 nav.push(&UserRoute::Index);            
             });
 

@@ -229,7 +229,7 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
                 let loc = loc.clone();
 
                 show_alert("Updating gateway.".to_string(), dispatch);
-                Service::update(loc.path(), store.selected_domain, out).await;
+                Service::post(loc.path(), store.selected_domain, out).await;
                 nav.push(&OutboundRoute::Index);            
             });
 

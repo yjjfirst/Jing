@@ -10,6 +10,7 @@ pub mod sound_file;
 use gloo_net::http::Request;
 use gloo_net::Error;
 use serde::{Serialize, de::DeserializeOwned, Deserialize};
+use web_sys::FormData;
 #[derive(Serialize, Deserialize)]
 pub struct EmptyJson{
 
@@ -33,7 +34,7 @@ impl Service {
         response.json().await.unwrap()
     }
 
-    pub async fn update<T: Serialize + DeserializeOwned>(path: &str, domain: usize, group: T) 
+    pub async fn post<T: Serialize + DeserializeOwned>(path: &str, domain: usize, group: T) 
     -> Result<EmptyJson, Error>{
         let endpoint = Self::endpoint(path, domain);
         let request = Request::post(&endpoint).json(&group).unwrap();
@@ -41,6 +42,21 @@ impl Service {
         return response.json().await
     }
 
+    pub async fn patch<T: Serialize + DeserializeOwned>(path: &str, domain: usize, group: T) 
+    -> Result<EmptyJson, Error>{
+        let endpoint = Self::endpoint(path, domain);
+        let request = Request::patch(&endpoint).json(&group).unwrap();
+        let response = request.send().await.unwrap();
+        return response.json().await
+    }
+
+    pub async fn post_form(path: &str, domain: usize, form_data: FormData) 
+    -> Result<EmptyJson, Error>{
+        let endpoint = Self::endpoint(path, domain);
+        let request = Request::post(&endpoint).body(form_data).unwrap();
+        let response = request.send().await.unwrap();
+        return response.json().await
+    }    
     pub async fn delete(path: &str, domain: usize) {
         let endpoint = Self::endpoint(path, domain);
         Request::delete(&endpoint).send().await.unwrap();
