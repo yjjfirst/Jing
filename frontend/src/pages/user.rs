@@ -284,8 +284,14 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
 
             wasm_bindgen_futures::spawn_local(async move {
                 let store = store.clone();
-                show_alert("Updating ringing user.".to_string(), dispatch);
-                Service::post(loc.path(), store.selected_domain, c).await;
+                match Service::post(loc.path(), store.selected_domain, c).await {
+                    Ok(_) => {
+                        show_alert("Update user successfully.".to_string(), dispatch);
+                    }
+                    Err(_) => {
+                        show_alert("Update user failed.".to_string(), dispatch);
+                    }
+                }
                 nav.push(&UserRoute::Index);            
             });
 

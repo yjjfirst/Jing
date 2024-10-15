@@ -228,8 +228,14 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
                 let dispatch = dispatch.clone();
                 let loc = loc.clone();
 
-                show_alert("Updating gateway.".to_string(), dispatch);
-                Service::post(loc.path(), store.selected_domain, out).await;
+                match Service::post(loc.path(), store.selected_domain, out).await {
+                    Ok(_) => {
+                        show_alert("Update outbound route successfully.".to_string(), dispatch);
+                    }
+                    Err(_) => {
+                        show_alert("Update outbound route failed.".to_string(), dispatch);
+                    }
+                }
                 nav.push(&OutboundRoute::Index);            
             });
 
