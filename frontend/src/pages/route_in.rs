@@ -216,8 +216,14 @@ pub fn InboundDetails(_props: &InboundDetailsProps) -> Html {
                 let dispatch = dispatch.clone();
                 let loc = loc.clone();
 
-                show_alert("Updating gateway.".to_string(), dispatch);
-                Service::post(loc.path(), store.selected_domain, inbound).await;
+                match Service::post(loc.path(), store.selected_domain, inbound).await {
+                    Ok(_) => {
+                        show_alert("Update inbound route successfully.".to_string(), dispatch);
+                    }
+                    Err(_) => {
+                        show_alert("Update inbound route failed.".to_string(), dispatch);
+                    }
+                }
                 nav.push(&InboundRoute::Index);            
             });
 

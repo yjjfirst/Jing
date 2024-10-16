@@ -215,8 +215,14 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
                 let dispatch = dispatch.clone();
                 let loc = loc.clone();
 
-                show_alert("Updating gateway.".to_string(), dispatch);
-                Service::post(loc.path(), store.selected_domain, gateway).await;
+                match Service::post(loc.path(), store.selected_domain, gateway).await {
+                    Ok(_) => {
+                        show_alert("Update gateway successfully.".to_string(), dispatch);
+                    }
+                    Err(_) => {
+                        show_alert("Update gateway failed.".to_string(), dispatch);
+                    }
+                }
                 nav.push(&GatewayRoute::Index);            
             });
                         
