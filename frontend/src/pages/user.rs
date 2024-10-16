@@ -7,7 +7,7 @@ use yew::Properties;
 use yew_router::prelude::*;
 use yewdux::prelude::*;
 use yew_icons::{Icon, IconId};
-use crate::store::{show_alert, Store};
+use crate::store::{alert_info, alert_error, Store};
 
 use crate::components::header::Header;
 use crate::components::input::Input;
@@ -286,10 +286,10 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
                 let store = store.clone();
                 match Service::post(loc.path(), store.selected_domain, c).await {
                     Ok(_) => {
-                        show_alert("Update user successfully.".to_string(), dispatch);
+                        alert_info("Update user successfully.".to_string(), dispatch);
                     }
                     Err(_) => {
-                        show_alert("Update user failed.".to_string(), dispatch);
+                        alert_error("Update user failed.".to_string(), dispatch);
                     }
                 }
                 nav.push(&UserRoute::Index);            

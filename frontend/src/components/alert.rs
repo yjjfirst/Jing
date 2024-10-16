@@ -1,13 +1,13 @@
 use gloo_timers::callback::Timeout;
+use serde::{Deserialize, Serialize};
 use yew::prelude::*;
 use yewdux::prelude::use_store;
-
 use crate::store::{hide_alert, Store};
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize, Deserialize, Default, Clone)]
 pub enum AlertType {
+    #[default]
     INFO,
-    WARNING,
     ERROR
 }
 
@@ -22,6 +22,7 @@ pub struct Props {
 pub fn alert_component(props: &Props) -> Html {
     let (store, dispatch) = use_store::<Store>();
     let show_alert = store.alert_input.show_alert;
+    let alert_t: AlertType = store.alert_input.alert_type.clone();
 
     use_effect_with((show_alert, dispatch.clone(), props.delay_ms), move |(show_alert, dispatch, delay_ms)| {
             let cloned_dispatch = dispatch.clone();
@@ -41,10 +42,17 @@ pub fn alert_component(props: &Props) -> Html {
             }
         }
     );
-
+    let alert_class = match alert_t {
+        AlertType::INFO => {
+            classes!("alert", "alert-info")
+        },
+        AlertType::ERROR => {
+            classes!("alert", "alert-error")
+        }
+    };
     html! {
     <div class={format!("toast toast-top toast-center {}", if show_alert { "" } else { "hidden" })}>
-        <div class="alert alert-info">
+        <div class={alert_class}>
             <span>{props.message.clone()}</span>
         </div>
     </div>

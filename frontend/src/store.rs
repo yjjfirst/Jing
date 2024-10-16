@@ -1,11 +1,13 @@
 use serde::{Deserialize, Serialize};
 use yewdux::prelude::*;
 use crate::services::domain::Domain;
+use crate::components::alert::AlertType;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Default, Clone)]
 pub struct AlertInput {
     pub show_alert: bool,
     pub alert_message: String,
+    pub alert_type: AlertType,
 }
 
 #[derive(Debug, Serialize, Deserialize, Default, Clone, PartialEq, Store)]
@@ -15,15 +17,25 @@ pub struct Store {
     pub domains: Vec<Domain>,
 }
 
-pub fn show_alert(message: String, dispatch: Dispatch<Store>) {
+pub fn alert_info(message: String, dispatch: Dispatch<Store>) {
     dispatch.reduce_mut(move |store| {
         store.alert_input = AlertInput {
             alert_message: message,
             show_alert: true,
+            alert_type: AlertType::INFO,
         };
     })
 }
 
+pub fn alert_error(message: String, dispatch: Dispatch<Store>) {
+    dispatch.reduce_mut(move |store| {
+        store.alert_input = AlertInput {
+            alert_message: message,
+            show_alert: true,
+            alert_type: AlertType::ERROR,
+        };
+    })
+}
 pub fn hide_alert(dispatch: Dispatch<Store>) {
     dispatch.reduce_mut(move |store| {
         store.alert_input.show_alert = false;

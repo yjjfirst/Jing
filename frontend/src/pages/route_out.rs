@@ -5,7 +5,7 @@ use yewdux::prelude::*;
 use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use wasm_bindgen::JsCast;
 
-use crate::store::{show_alert, Store};
+use crate::store::{alert_info, Store};
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
 use crate::components::action_buttons::ActionButtons;
@@ -230,10 +230,10 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
 
                 match Service::post(loc.path(), store.selected_domain, out).await {
                     Ok(_) => {
-                        show_alert("Update outbound route successfully.".to_string(), dispatch);
+                        alert_info("Update outbound route successfully.".to_string(), dispatch);
                     }
                     Err(_) => {
-                        show_alert("Update outbound route failed.".to_string(), dispatch);
+                        alert_info("Update outbound route failed.".to_string(), dispatch);
                     }
                 }
                 nav.push(&OutboundRoute::Index);            

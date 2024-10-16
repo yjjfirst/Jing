@@ -11,7 +11,7 @@ use crate::components::input::Input;
 use crate::components::file_input::FileInput;
 use crate::components::action_buttons::ActionButtons;
 use crate::components::header::Header;
-use crate::store::{show_alert, Store};
+use crate::store::{alert_info, Store};
 use crate::components::dialog::Dialog;
 use crate::services::sound_file::SoundFile;
 use crate::services::Service;
@@ -214,11 +214,11 @@ pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
                     match Service::post_form(loc.path(), store.selected_domain, form_data)
                         .await {
                             Ok(_) => {
-                                show_alert("Create sound file successfully".to_string(), dispatch);
+                                alert_info("Create sound file successfully".to_string(), dispatch);
                                 nav.push(&SoundFileRoute::Index);            
                             }
                             Err(_) => {
-                                show_alert("Create sound file failed".to_string(), dispatch);
+                                alert_info("Create sound file failed".to_string(), dispatch);
                             }
                         }
                 });                
@@ -230,11 +230,11 @@ pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
                     match Service::patch(loc.path(), store.selected_domain, sound_file)
                         .await {
                             Ok(_) => {
-                                show_alert("Update sound file successfully".to_string(), dispatch);
+                                alert_info("Update sound file successfully".to_string(), dispatch);
                                 nav.push(&SoundFileRoute::Index);            
                             }
                             Err(_) => {
-                                show_alert("Update sound file failed".to_string(), dispatch);
+                                alert_info("Update sound file failed".to_string(), dispatch);
                             }
                         }
                 });
