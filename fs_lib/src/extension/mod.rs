@@ -1,10 +1,11 @@
 use crate::schema::{extensions};
 use diesel::prelude::*;
+use serde::Serialize;
 use diesel::dsl::*;
 use crate::db_connect;
 use crate::error::{Result, Error};
 
-#[derive(Queryable, Debug)]
+#[derive(Queryable, Debug, Serialize)]
 pub struct Extension {
     pub id: i32,
     pub exten: String,
@@ -50,11 +51,12 @@ pub fn del_extension(ext: &str) -> Result<()>{
     Ok(())
 }
 
-pub fn ls_extension(d_id: i32) -> Result<Vec<Extension>> {
+pub fn list(d_id: i32) -> Result<Vec<Extension>> {
     use crate::schema::extensions::dsl::*;
     let mut conn = db_connect();
     let result = extensions
         .filter(domain_id.eq(d_id))
+        .order_by(exten_type)
         .load::<Extension>(&mut conn)?;
 
     Ok(result)

@@ -13,7 +13,7 @@ pub fn exec_extension_cmd(exten: ExtensionCli) {
     let domain_id = domain::get_active().unwrap();
     match exten {
         ExtensionCli::Ls => {
-            let extensions = extension::ls_extension(domain_id).unwrap();
+            let extensions = extension::list(domain_id).unwrap();
             let mut table = Ctable::new();
 
             table.set_titles(row!["id", "exten", "type", "domain_id"]);
