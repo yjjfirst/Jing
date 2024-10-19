@@ -55,7 +55,9 @@ pub fn SoundFileListItem(props: &SoundFileProps) -> Html {
 
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), sound.id);
-            Service::delete(&path, store.clone().selected_domain).await;
+            Service::delete(&path, store.clone().selected_domain)
+                .await
+                .unwrap();
             ondel.emit(sound.id);
         })
     });
@@ -106,7 +108,10 @@ pub fn SoundFileList() -> Html {
         let store = store.clone();
         let sound_files = sound_files_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_files: Vec<SoundFile> = Service::index(loc.path(), store.selected_domain.clone()).await;
+            let fetched_files: Vec<SoundFile> = 
+                Service::index(loc.path(), store.selected_domain.clone())
+                    .await
+                    .unwrap();
             sound_files.set(fetched_files);
         });        
     });
@@ -179,7 +184,10 @@ pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
         let sound = sound_1.clone();
         let loc = loc.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_out = Service::get(loc.path(), store.selected_domain).await;
+            let fetched_out = 
+                Service::get(loc.path(), store.selected_domain)
+                    .await
+                    .unwrap();
             sound.set(fetched_out);
         });
     });

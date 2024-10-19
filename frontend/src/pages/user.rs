@@ -57,7 +57,9 @@ pub fn UserListItem(props: &UserProps) -> Html {
         let ondel = ondel.clone();        
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), id);
-            Service::delete(&path, store.clone().selected_domain).await;
+            Service::delete(&path, store.clone().selected_domain)
+                .await
+                .unwrap();
             ondel.emit(id);
         })
     });
@@ -106,7 +108,9 @@ pub fn UserList() -> Html {
         let exts  = exts.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_extensions: Vec<User> = 
-                Service::index(loc.path(), store.selected_domain.clone()).await;
+                Service::index(loc.path(), store.selected_domain.clone())
+                    .await
+                    .unwrap();
             exts.set(fetched_extensions);
         });
     });
@@ -231,7 +235,10 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
         let user = u.clone();
         let loc = loc_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_user = Service::get(loc.path(), store.selected_domain).await;
+            let fetched_user = 
+                Service::get(loc.path(), store.selected_domain)
+                    .await
+                    .unwrap();
             user.set(fetched_user);
         });
     });

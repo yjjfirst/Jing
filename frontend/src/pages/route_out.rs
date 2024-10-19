@@ -57,7 +57,9 @@ pub fn OutboundListItem(props: &OutboundProps) -> Html {
 
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), id);
-            Service::delete(&path, store.clone().selected_domain).await;
+            Service::delete(&path, store.clone().selected_domain)
+                .await
+                .unwrap();
             ondel.emit(id);
         })
 
@@ -109,7 +111,10 @@ pub fn OutboundList() -> Html {
         let store = store.clone();
         let out_routes = out_routes.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_routes: Vec<Outbound> = Service::index(loc.path(), store.selected_domain.clone()).await;
+            let fetched_routes: Vec<Outbound> = 
+                Service::index(loc.path(), store.selected_domain.clone())
+                    .await
+                    .unwrap();
             out_routes.set(fetched_routes);
         });
     });
@@ -184,7 +189,10 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
         let out = out_1.clone();
         let loc = loc.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_out = Service::get(loc.path(), store.selected_domain).await;
+            let fetched_out = 
+                Service::get(loc.path(), store.selected_domain)
+                .await
+                .unwrap();
             out.set(fetched_out);
         });
     });
@@ -193,7 +201,9 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
         let gateways = gateways_1.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let fetched_gateway: Vec<Gateway> = 
-                    Service::index("/gateway", store_1.selected_domain).await;
+                    Service::index("/gateway", store_1.selected_domain)
+                        .await
+                        .unwrap();
                 gateways.set(fetched_gateway);
         });
     });

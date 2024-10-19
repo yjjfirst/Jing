@@ -24,43 +24,37 @@ impl Service {
         format!("{}/{}{}",BASE_URL,domain, url)
     }
 
-    pub async fn index<T: Serialize + DeserializeOwned>(path: &str,domain: usize) -> Vec<T> {
+    pub async fn index<T: Serialize + DeserializeOwned>(path: &str,domain: usize) -> Result<Vec<T>, Error> {
         let endpoint = Self::endpoint(path, domain);
         let response = Request::get(&endpoint)
             .send()
-            .await.
-            unwrap();
-
+            .await?;
+        
         response
             .json()
             .await
-            .unwrap()
     }
 
-    pub async fn get<T: Serialize + DeserializeOwned>(path: &str, domain: usize) -> T {
+    pub async fn get<T: Serialize + DeserializeOwned>(path: &str, domain: usize) -> Result<T, Error> {
         let endpoint = Self::endpoint(path, domain);
         let response = Request::get(&endpoint)
             .send()
-            .await
-            .unwrap();
+            .await?;
 
         response
             .json()
             .await
-            .unwrap()
     }
 
     pub async fn post<T: Serialize + DeserializeOwned>(path: &str, domain: usize, group: T) 
     -> Result<EmptyJson, Error>{
         let endpoint = Self::endpoint(path, domain);
         let request = Request::post(&endpoint)
-            .json(&group)
-            .unwrap();
+            .json(&group)?;
 
         let response = request
             .send()
-            .await
-            .unwrap();
+            .await?;
 
         response
             .json()
@@ -71,12 +65,10 @@ impl Service {
     -> Result<EmptyJson, Error>{
         let endpoint = Self::endpoint(path, domain);
         let request = Request::patch(&endpoint)
-            .json(&group)
-            .unwrap();
+            .json(&group)?;
         let response = request
             .send()
-            .await
-            .unwrap();
+            .await?;
         
         response
             .json()
@@ -87,22 +79,24 @@ impl Service {
     -> Result<EmptyJson, Error>{
         let endpoint = Self::endpoint(path, domain);
         let request = Request::post(&endpoint)
-            .body(form_data)
-            .unwrap();
-        let response = request
+            .body(form_data)?;
+
+            let response = request
             .send()
-            .await
-            .unwrap();
+            .await?;
         
         response
             .json()
             .await
     }    
-    pub async fn delete(path: &str, domain: usize) {
+    pub async fn delete(path: &str, domain: usize) -> Result<EmptyJson, Error> {
         let endpoint = Self::endpoint(path, domain);
-        Request::delete(&endpoint)
+        let response = Request::delete(&endpoint)
             .send()
+            .await?;
+
+        response
+            .json()
             .await
-            .unwrap();
     }
 }

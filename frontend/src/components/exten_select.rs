@@ -34,7 +34,7 @@ pub fn ExtenionSelect(props: &Props) -> Html {
         wasm_bindgen_futures::spawn_local(async move {
             let ext_map = ext_map.clone();
             let mut fetched_map: HashMap<String, Vec<String>> = HashMap::new();
-            let extensions: Vec<Extension> = Service::index("/extension", store.selected_domain).await;            
+            let extensions: Vec<Extension> = Service::index("/extension", store.selected_domain).await.unwrap();            
             for e in extensions {
                 if !fetched_map.contains_key(&e.exten_type) {
                     fetched_map.insert(e.exten_type.clone(), vec![e.exten.clone()]);

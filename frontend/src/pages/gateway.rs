@@ -55,7 +55,9 @@ pub fn GatewayListItem(props: &GatewayProps) -> Html {
         let ondel = ondel.clone();        
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), gateway.id);
-            Service::delete(&path, store.clone().selected_domain).await;
+            Service::delete(&path, store.clone().selected_domain)
+                .await
+                .unwrap();
             ondel.emit(gateway.id);
         })        
     });
@@ -107,7 +109,10 @@ pub fn GatewayList() -> Html {
     use_effect_with((), move|_|{
         let gateways = gateways_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_gateways: Vec<Gateway> = Service::index(loc.path(), store.selected_domain.clone()).await;
+            let fetched_gateways: Vec<Gateway> = 
+                Service::index(loc.path(), store.selected_domain.clone())
+                    .await
+                    .unwrap();
             gateways.set(fetched_gateways);
         });
     });
@@ -174,7 +179,10 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
         let gateway = g.clone();
         let loc = loc_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_gateway = Service::get(loc.path(), store.selected_domain).await;
+            let fetched_gateway = 
+                Service::get(loc.path(), store.selected_domain)
+                    .await
+                    .unwrap();
             gateway.set(fetched_gateway);
         });
     });

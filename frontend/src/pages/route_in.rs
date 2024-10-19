@@ -56,7 +56,9 @@ pub fn InboundListItem(props: &InboundProps) -> Html {
 
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), id);
-            Service::delete(&path, store.clone().selected_domain).await;
+            Service::delete(&path, store.clone().selected_domain)
+                .await
+                .unwrap();
             ondel.emit(id);
         })
     });  
@@ -110,7 +112,10 @@ pub fn InboundList() -> Html {
         let store = store.clone();
         let in_routes = in_routes_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_routes: Vec<Inbound> = Service::index(loc.path(), store.selected_domain.clone()).await;
+            let fetched_routes: Vec<Inbound> = 
+                Service::index(loc.path(), store.selected_domain.clone())
+                    .await
+                    .unwrap();
             in_routes.set(fetched_routes);
         });
     });
@@ -184,7 +189,10 @@ pub fn InboundDetails(_props: &InboundDetailsProps) -> Html {
         let inbound = inbound_1.clone();
         let loc = loc.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_out = Service::get(loc.path(), store.selected_domain).await;
+            let fetched_out = 
+                Service::get(loc.path(), store.selected_domain)
+                    .await
+                    .unwrap();
             inbound.set(fetched_out);
         });
     });

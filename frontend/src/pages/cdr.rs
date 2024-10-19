@@ -24,7 +24,10 @@ pub fn CdrList() -> Html {
         let store = store.clone();
         let cdrs = cdrs_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_routes: Vec<Cdr> = Service::index(loc.path(), store.selected_domain.clone()).await;
+            let fetched_routes: Vec<Cdr> = 
+                Service::index(loc.path(), store.selected_domain.clone())
+                    .await
+                    .unwrap();
             cdrs.set(fetched_routes);
         });
     });    

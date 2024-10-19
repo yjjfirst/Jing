@@ -53,7 +53,9 @@ pub fn RingingGroupList() -> Html {
         let groups = groups.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_groups: Vec<RingingGroupDetail> = 
-                Service::index(loc.path(), store.selected_domain.clone()).await;
+                Service::index(loc.path(), store.selected_domain.clone())
+                    .await
+                    .unwrap();
             groups.set(fetched_groups);
         });
     });
@@ -123,7 +125,9 @@ pub fn RingingGroupListItem(props: &RingingGroupListItemProps) -> Html {
         let ondel = ondel.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), id);
-            Service::delete(&path, store.clone().selected_domain).await;
+            Service::delete(&path, store.clone().selected_domain)
+                .await
+                .unwrap();
             ondel.emit(id);
         })
     });
@@ -186,7 +190,10 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
         let loc = location.clone();
         wasm_bindgen_futures::spawn_local(async move {
             if id != 0 {
-                let fetched_group: RingingGroup = Service::get(loc.path(), store.clone().selected_domain).await;
+                let fetched_group: RingingGroup = 
+                    Service::get(loc.path(), store.clone().selected_domain)
+                        .await
+                        .unwrap();
                 g.set(fetched_group);
             }
             let fetched_extensions = User::list(store.selected_domain).await;
