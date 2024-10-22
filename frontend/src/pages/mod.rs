@@ -6,3 +6,7 @@ pub mod route_out;
 pub mod route_in;
 pub mod cdr;
 pub mod sound_file;
+pub mod sound;
+pub mod ivr;
+pub mod conference;
+pub mod queue;

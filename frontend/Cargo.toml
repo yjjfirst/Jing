@@ -33,7 +33,7 @@ yew_icons = {version = "0.8", features = ["LucideEdit",
     "LucidePlus",
     "LucideTrash"]}
 yewdux = "0.9.4"
-charming = { features = ["wasm"] }
+charming = {version = "0.4.0", features = ["wasm"] }
 
 [dependencies.web-sys]
 version = "0.3.66"

@@ -44,6 +44,31 @@ pub fn SidebarMenu() -> Html {
             onclick: onclick.clone(),
             selected: false,
         },
+        SidebarMenuItemPros {
+            caption: "Sound".to_string(),
+            route: Route::SoundRoot,
+            onclick: onclick.clone(),
+            selected: false,
+        },
+        SidebarMenuItemPros {
+            caption: "Conference".to_string(),
+            route: Route::ConferenceRoot,
+            onclick: onclick.clone(),
+            selected: false,
+        },
+        SidebarMenuItemPros {
+            caption: "IVR".to_string(),
+            route: Route::IvrRoot,
+            onclick: onclick.clone(),
+            selected: false,
+        },                 
+        SidebarMenuItemPros {
+            caption: "Queue".to_string(),
+            route: Route::QueueRoot,
+            onclick: onclick.clone(),
+            selected: false,
+        },                 
+
     ];
 
     let conn_items = vec![

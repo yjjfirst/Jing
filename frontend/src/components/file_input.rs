@@ -58,7 +58,7 @@ pub fn FileInput(props: &Props) -> Html {
 
             for file in files {
                 wasm_bindgen_futures::spawn_local(async move {
-                let data = gloo_file::futures::read_as_bytes(&file)
+                let _data = gloo_file::futures::read_as_bytes(&file)
                     .await
                     .expect_throw("read file");
 

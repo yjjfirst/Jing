@@ -49,6 +49,22 @@ pub enum Route {
     SoundFileRoot,
     #[at("/sound-file/*")]
     SoundFile,
+    #[at("/sound")]
+    SoundRoot,
+    #[at("/sound/*")]
+    Sound,
+    #[at("/ivr")]
+    IvrRoot,
+    #[at("/ivr/*")]
+    Ivr,
+    #[at("/conference")]
+    ConferenceRoot,
+    #[at("/conference/*")]
+    Conference,    
+    #[at("/queue")]
+    QueueRoot,
+    #[at("/queue/*")]
+    Queue,    
 }
 
 #[function_component(App)]
@@ -143,6 +159,30 @@ fn switch(routes: Route) -> Html {
         },
         Route::SoundFile => html! {
             <Switch<SoundFileRoute> render={sound_file_switch} />
+        },
+        Route::ConferenceRoot => html! {
+            <div>{"Conference Root"}</div>
+        },
+        Route::Conference => html! {
+            <div>{"Conference"}</div>
+        },
+        Route::SoundRoot => html! {
+            <div>{"Sound Root"}</div>
+        },
+        Route::Sound => html! {
+            <div>{"Sound"}</div>
+        },
+        Route::IvrRoot => html! {
+            <div>{"Ivr Root"}</div>
+        },
+        Route::Ivr => html! {
+            <div>{"Ivr"}</div>
+        },
+        Route::QueueRoot => html! {
+            <div>{"Queue Root"}</div>
+        },
+        Route::Queue => html! {
+            <div>{"Queue"}</div>
         },
     }
 }
