@@ -49,7 +49,7 @@ pub fn exec_sound_cmd(sound: SoundCli) {
             sound::del(id).unwrap();
         },
         SoundCli::Ls => {
-            let sounds = sound::all().unwrap();
+            let sounds = sound::list().unwrap();
             print_sounds(sounds);
         }
     }

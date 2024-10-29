@@ -1,6 +1,7 @@
+use serde::{Serialize, Deserialize};
 use crate::schema::sounds;
 
-#[derive(Identifiable,Queryable, Debug)]
+#[derive(Identifiable,Queryable, Debug, Serialize, Deserialize, AsChangeset)]
 #[derive(Clone)]
 #[diesel(belongs_to(SoundFile))]
 pub struct Sound {

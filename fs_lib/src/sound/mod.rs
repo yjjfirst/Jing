@@ -65,11 +65,24 @@ pub fn get_by(domain: i32, ext: &str) -> Result<Sound> {
     Ok(result)
 }
 
-pub fn all() -> Result<Vec<Sound>> {
+pub fn list() -> Result<Vec<Sound>> {
     use crate::schema::sounds::dsl::*;
     let mut conn = db_connect();
     let result = sounds
         .load::<Sound>(&mut conn)?;
 
     Ok(result)
+}
+
+pub fn update(s: &Sound) -> Result<()> {
+    let mut conn = db_connect();
+    use crate::schema::sounds;
+    use crate::schema::sounds::dsl::*;
+
+    diesel::update(sounds::table)
+        .filter(id.eq(s.id))
+        .set(s)
+        .execute(&mut conn)?;
+
+    Ok(())
 }
