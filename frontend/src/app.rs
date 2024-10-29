@@ -11,6 +11,7 @@ use crate::pages::route_in::{InboundRoute, inbound_switch};
 use crate::pages::cdr::{CdrRoute, cdr_switch};
 use crate::pages::dashboard::Dashboard;
 use crate::pages::sound_file::{SoundFileRoute, sound_file_switch};
+use crate::pages::sound::{SoundRoute, sound_switch};
 use crate::components::alert::{AlertType, AlertComponent, Props as AlertProps};
 use crate::components::banner::Banner;
 use crate::services::domain::Domain;
@@ -167,10 +168,10 @@ fn switch(routes: Route) -> Html {
             <div>{"Conference"}</div>
         },
         Route::SoundRoot => html! {
-            <div>{"Sound Root"}</div>
+            <Switch<SoundRoute> render={sound_switch} />
         },
         Route::Sound => html! {
-            <div>{"Sound"}</div>
+            <Switch<SoundRoute> render={sound_switch} />
         },
         Route::IvrRoot => html! {
             <div>{"Ivr Root"}</div>

@@ -47,5 +47,6 @@ features = [
     "HtmlAnchorElement",
     "HtmlDialogElement",
     "File",
-    "DataTransfer"
+    "DataTransfer",
+    "HtmlSelectElement"
 ]

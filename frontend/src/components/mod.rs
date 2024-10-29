@@ -11,3 +11,4 @@ pub mod label;
 pub mod dialog;
 pub mod action_buttons;
 pub mod exten_select;
+pub mod sound_file_select;

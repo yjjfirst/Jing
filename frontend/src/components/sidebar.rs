@@ -68,7 +68,6 @@ pub fn SidebarMenu() -> Html {
             onclick: onclick.clone(),
             selected: false,
         },                 
-
     ];
 
     let conn_items = vec![
