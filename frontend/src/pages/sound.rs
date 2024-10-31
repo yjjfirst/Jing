@@ -12,7 +12,7 @@ use crate::components::input::Input;
 use crate::components::sound_file_select::SoundFileSelect;
 use crate::components::action_buttons::ActionButtons;
 
-use crate::store::{alert_info, Store};
+use crate::store::{alert_info, alert_error, Store};
 use crate::services::Service;
 use crate::services::sound::{Sound, ApiSound};
 
@@ -253,7 +253,7 @@ pub fn SoundDetails(props: &SoundDetailProps) -> Html {
                         alert_info("Update sound successfully.".to_string(), dispatch);
                     }
                     Err(_) => {
-                        alert_info("Update sound failed.".to_string(), dispatch);
+                        alert_error("Update sound failed.".to_string(), dispatch);
                     }
                 }
                 nav.push(&SoundRoute::Index);            

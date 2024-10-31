@@ -9,7 +9,7 @@ use wasm_bindgen::JsCast;
 use crate::components::header::Header;
 use crate::services::ringing_group::{RingingGroup, RingingGroupDetail};
 use crate::services::Service;
-use crate::store::{alert_info, Store};
+use crate::store::{alert_info, alert_error, Store};
 use crate::components::input::Input;
 use crate::components::select::Select;
 use crate::components::mselect::Mselect;
@@ -253,7 +253,7 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
                         alert_info("Update inbound route successfully.".to_string(), dispatch);
                     }
                     Err(_) => {
-                        alert_info("Update inbound route failed.".to_string(), dispatch);
+                        alert_error("Update inbound route failed.".to_string(), dispatch);
                     }
                 }
                 nav.push(&RingingGroupsRoute::Index);            

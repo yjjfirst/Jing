@@ -6,7 +6,7 @@ use yew::Properties;
 use yew_router::prelude::*;
 use yewdux::prelude::*;
 use yew_icons::{Icon, IconId};
-use crate::store::{alert_info, Store};
+use crate::store::{alert_info, alert_error, Store};
 
 use crate::components::header::Header;
 use crate::components::action_buttons::ActionButtons;
@@ -228,7 +228,7 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
                         alert_info("Update gateway successfully.".to_string(), dispatch);
                     }
                     Err(_) => {
-                        alert_info("Update gateway failed.".to_string(), dispatch);
+                        alert_error("Update gateway failed.".to_string(), dispatch);
                     }
                 }
                 nav.push(&GatewayRoute::Index);            
