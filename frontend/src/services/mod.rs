@@ -8,6 +8,7 @@ pub mod cdr;
 pub mod sound_file;
 pub mod sound;
 pub mod extension;
+pub mod conference;
 
 use gloo_net::http::Request;
 use gloo_net::Error;
