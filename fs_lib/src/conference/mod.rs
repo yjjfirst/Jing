@@ -10,8 +10,9 @@ use crate::schema::{conferences};
 use crate::util_macro::{Fields};
 use crate::printable::{Printable};
 use super::extension::{add_extension, del_extension};
+use serde::{Serialize,Deserialize};
 
-#[derive(Identifiable,Queryable,Debug,PartialEq)]
+#[derive(Identifiable,Queryable,Debug,PartialEq, Serialize,Deserialize, AsChangeset)]
 #[derive(Clone)]
 #[derive(Fields)]
 pub struct Conference {
@@ -71,7 +72,7 @@ pub fn del(a_id: i32) -> Result<()>{
     Ok(())
 }
 
-pub fn all() -> Result<Vec<Conference>>{
+pub fn list() -> Result<Vec<Conference>>{
     use crate::schema::conferences::dsl::*;
     let mut conn = db_connect();
 
@@ -102,4 +103,17 @@ pub fn get_by(domain: i32, ext: &str) -> Result<Conference> {
         .first(&mut conn)?;
 
     Ok(result)
+}
+
+pub fn update(conf: &Conference) -> Result<()> {
+    let mut conn = db_connect();
+    use crate::schema::conferences;
+    use crate::schema::conferences::dsl::*;
+
+    diesel::update(conferences::table)
+        .filter(id.eq(conf.id))
+        .set(conf)
+        .execute(&mut conn)?;
+
+    Ok(())
 }

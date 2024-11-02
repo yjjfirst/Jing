@@ -8,6 +8,7 @@ pub mod cdr;
 pub mod sound_file;
 pub mod extension;
 pub mod sound;
+pub mod conference;
 
 use actix_web::{web};
 use ringing_group::ringing_group_config;
@@ -20,6 +21,7 @@ use sound_file::sound_file_config;
 use cdr::cdr_config;
 use extension::extension_config;
 use sound::sound_config;
+use conference::conf_config;
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -38,5 +40,6 @@ pub fn api_config(cfg: &mut web::ServiceConfig) {
         .service(web::scope("/{domain}/sound-file").configure(sound_file_config))
         .service(web::scope("/{domain}/extension").configure(extension_config))
         .service(web::scope("/{domain}/sound").configure(sound_config))
+        .service(web::scope("/{domain}/conference").configure(conf_config))
         .service(web::scope("/domain").configure(domain_config));
 }

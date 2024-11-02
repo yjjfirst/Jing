@@ -165,7 +165,7 @@ pub fn exec_conference_cmd(conference: ConferenceCli) {
             conference::del(id).unwrap();
         },
         ConferenceCli::Ls => {
-            let conferences = conference::all().unwrap();
+            let conferences = conference::list().unwrap();
             print_conferences(conferences);
         },
         ConferenceCli::Profile { profile } => {
