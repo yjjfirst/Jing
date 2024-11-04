@@ -13,7 +13,7 @@ pub fn serve<W: Write>(w: &mut EventWriter<W>) {
                       ("description", "IVR Menus")
                   ]));
     start_element(w, "menus", None);
-    let ivrs = ivr::all().unwrap();
+    let ivrs = ivr::list().unwrap();
     for i in ivrs {
         ivr(w, i);
     }

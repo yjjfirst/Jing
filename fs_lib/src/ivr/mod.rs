@@ -7,6 +7,7 @@ use crate::db_connect;
 use crate::extension;
 use crate::error::{Result, Error};
 use super::extension::{add_extension, del_extension};
+use serde::{Serialize, Deserialize};
 use crate::schema::ivrs;
 
 use ivr_attrs::{IvrAttr};
@@ -16,7 +17,7 @@ pub enum DestType {
     Ringgroup(i32)
 }
 
-#[derive(Identifiable,Queryable,Debug,PartialEq)]
+#[derive(Identifiable,Queryable,Debug,PartialEq,Serialize, Deserialize)]
 #[derive(Clone)]
 pub struct Ivr {
     pub id: i32,
@@ -73,7 +74,7 @@ pub fn del(i: i32) -> Result<()> {
     Ok(())
 }
 
-pub fn all() -> Result<Vec<Ivr>> {
+pub fn list() -> Result<Vec<Ivr>> {
     use crate::schema::ivrs::dsl::*;
 
     let mut conn = db_connect();

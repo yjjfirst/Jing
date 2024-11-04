@@ -90,7 +90,7 @@ pub fn exec_ivr_cmd(ivr: IvrCli) {
             ivr::del(id).unwrap();
         },
         IvrCli::Ls {} => {
-            let ivrs = ivr::all().unwrap();
+            let ivrs = ivr::list().unwrap();
             print_ivrs(ivrs);
         },
         IvrCli::Entry { entry } => {
