@@ -9,6 +9,7 @@ pub mod sound_file;
 pub mod sound;
 pub mod extension;
 pub mod conference;
+pub mod ivr;
 
 use gloo_net::http::Request;
 use gloo_net::Error;
