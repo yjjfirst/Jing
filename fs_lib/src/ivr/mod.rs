@@ -108,7 +108,21 @@ pub fn get_by(domain: i32, ext: &str) -> Result<Ivr> {
     Ok(result)
 }
 
-pub fn add_ivr_option(domain: i32, a_ivr_id: i32, ds: String, exten: String) -> Result<()> {
+pub fn add_ivr_attr(a_ivr_id: i32, a_name: String, a_value: String) -> Result<()> {
+    use crate::schema::ivr_attrs::dsl::*;
+    use crate::schema::ivr_attrs;
+    let mut conn = db_connect();
+
+    diesel::insert_into(ivr_attrs::table)
+        .values((&ivr_id.eq(a_ivr_id),
+                 &name.eq(a_name),
+                 &value.eq(a_value)))
+        .execute(&mut conn)?;
+
+    Ok(())
+}
+
+pub fn add_ivr_entry(domain: i32, a_ivr_id: i32, ds: String, exten: String) -> Result<()> {
     use crate::schema::ivr_entries::dsl::*;
     use crate::schema::ivr_entries;
     let mut conn = db_connect();
@@ -123,6 +137,30 @@ pub fn add_ivr_option(domain: i32, a_ivr_id: i32, ds: String, exten: String) -> 
         .values((&ivr_id.eq(a_ivr_id),
                  &digits.eq(ds),
                  &dest_exten.eq(exten.exten)))
+        .execute(&mut conn)?;
+
+    Ok(())
+}
+
+pub fn del_ivr_attr(attr_id: i32) -> Result<()> {
+    use crate::schema::ivr_attrs::columns::id;
+    use crate::schema::ivr_attrs;
+    let mut conn = db_connect();
+
+    diesel::delete(ivr_attrs::table)
+        .filter(id.eq(attr_id))
+        .execute(&mut conn)?;
+
+    Ok(())
+}
+
+pub fn del_ivr_entry(entry_id: i32) -> Result<()> {
+    use crate::schema::ivr_entries::columns::id;
+    use crate::schema::ivr_entries;
+    let mut conn = db_connect();
+
+    diesel::delete(ivr_entries::table)
+        .filter(id.eq(entry_id))
         .execute(&mut conn)?;
 
     Ok(())

@@ -4,7 +4,7 @@ use super::fs_lib::*;
 use super::domain;
 
 #[derive(StructOpt)]
-#[structopt(about="Manage IVR")]
+#[structopt(about="Manage IVR entry")]
 #[derive(Debug)]
 pub enum IvrEntryCli {
     #[structopt(about="Add IVR entry")]
@@ -18,9 +18,37 @@ pub enum IvrEntryCli {
     },
     #[structopt(about="Delete IVR entry")]
     Del {
+        #[structopt(long, help="Id of the entry to be deleted")]
+        id: i32,
     },
     #[structopt(about="List IVR entries")]
     Ls {
+        #[structopt(short, long, help="IVR id")]
+        ivr_id: i32,
+    }
+}
+#[derive(StructOpt)]
+#[structopt(about="Manage IVR attr")]
+#[derive(Debug)]
+pub enum IvrAttrCli {
+    #[structopt(about="Add IVR attr")]
+    Add {
+        #[structopt(short, long, help="IVR id")]
+        ivr_id: i32,
+        #[structopt(long, help="Attr name")]
+        name: String,
+        #[structopt(long, help="Attr value")]
+        value: String,
+    },
+    #[structopt(about="Delete IVR attr")]
+    Del {
+        #[structopt(long, help="Id of the attr to be deleted")]
+        id: i32,
+    },
+    #[structopt(about="List IVR attr")]
+    Ls {
+        #[structopt(short, long, help="IVR id")]
+        ivr_id: i32,
     }
 }
 
@@ -45,8 +73,12 @@ pub enum IvrCli {
     },
 
     Entry {
-        #[structopt(subcommand, help="manager IVR options")]
+        #[structopt(subcommand, help="manager IVR entries")]
         entry: IvrEntryCli,
+    },
+    Attr {
+        #[structopt(subcommand, help="manager IVR attrs")]
+        attr: IvrAttrCli,
     }
 }
 
@@ -67,17 +99,69 @@ pub fn print_ivrs(ivrs: Vec<ivr::Ivr>) {
     table.print();
 }
 
-pub fn exec_ivr_option_cmd(entry: IvrEntryCli) {
+pub fn print_ivr_entries(ivr_id: i32) {
+    let entries = ivr::entries(ivr_id).unwrap();
+    let mut table = Ctable::new();
+
+    table.set_titles(row!["id", "ivr id", "digits", "dest extension"]);
+    for e in entries {
+        table.add_row(
+            row![
+                e.id,
+                e.ivr_id,
+                e.digits,
+                e.dest_exten
+            ]);
+
+    }
+    table.print();
+}
+
+pub fn exec_ivr_entry_cmd(entry: IvrEntryCli) {
     let domain_id = domain::get_active().unwrap();
     match entry {
         IvrEntryCli::Add {ivr_id, digits, dest_exten} =>  {
-            ivr::add_ivr_option(domain_id, ivr_id, digits, dest_exten).unwrap();
+            ivr::add_ivr_entry(domain_id, ivr_id, digits, dest_exten).unwrap();
         },
-        IvrEntryCli::Del {} => {},
-        IvrEntryCli::Ls {} => {
+        IvrEntryCli::Del {id} => {
+            ivr::del_ivr_entry(id).unwrap();
+        },
+        IvrEntryCli::Ls {ivr_id} => {
+            print_ivr_entries(ivr_id);
         }
     }
+}
 
+pub fn print_ivr_attrs(ivr_id: i32) {
+    let attrs = ivr::attrs(ivr_id).unwrap();
+    let mut table = Ctable::new();
+
+    table.set_titles(row!["id", "ivr id", "name", "value"]);
+    for a in attrs {
+        table.add_row(row![
+            a.id,
+            a.ivr_id,
+            a.name,
+            a.value
+        ]);
+    }
+
+    table.print();
+}
+
+pub fn exec_ivr_attr_cmd(attr: IvrAttrCli) {
+    let domain_id = domain::get_active().unwrap();
+    match attr {
+        IvrAttrCli::Add {ivr_id, name, value} =>  {
+            ivr::add_ivr_attr(domain_id, name, value).unwrap();
+        },
+        IvrAttrCli::Del {id} => {
+            ivr::del_ivr_attr(id).unwrap();
+        },
+        IvrAttrCli::Ls {ivr_id} => {
+            print_ivr_attrs(ivr_id);
+        }
+    }
 }
 
 pub fn exec_ivr_cmd(ivr: IvrCli) {
@@ -94,7 +178,10 @@ pub fn exec_ivr_cmd(ivr: IvrCli) {
             print_ivrs(ivrs);
         },
         IvrCli::Entry { entry } => {
-            exec_ivr_option_cmd(entry);
+            exec_ivr_entry_cmd(entry);
+        },
+        IvrCli::Attr { attr } => {
+            exec_ivr_attr_cmd(attr);
         }
     }
 }
