@@ -11,6 +11,7 @@ use crate::services::ringing_group::{RingingGroup, RingingGroupDetail};
 use crate::services::Service;
 use crate::store::{alert_info, alert_error, Store};
 use crate::components::input::Input;
+use crate::components::label::Label;
 use crate::components::select::Select;
 use crate::components::mselect::Mselect;
 use crate::components::action_buttons::ActionButtons;
@@ -268,34 +269,42 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
             <Header title= {format!("Ringing Group: {}", group.0.group_id.clone())}></Header>
             <div class="divider my-1"></div> 
             <form class="w-full" onsubmit={form_onsubmit}>
+            <div class="grid grid-cols-3 gap-1">
+                <Label hidden={group.0.group_id.clone() != ""}>{"Extension"}</Label>
                 <Input 
                     value={group.0.group_id.clone()}
                     id="extension"
                     hidden={group.0.group_id.clone() != ""}
                 />
+                <Label>{"Name"}</Label>
                 <Input
                     value={group.0.name.clone()}
                     id="name"
                     />
+                <Label>{"Description"}</Label>
                 <Input 
                     value={group.0.description.clone()}
                     id="description"
                     />
+                <Label>{"Ringing Time"}</Label>
                 <Input 
                     value={group.0.ring_time.to_string()}
                     input_type="number"
                     id="ring-time"
                     />
+                <Label>{"Ring Stragegy"}</Label>
                 <Select
                     {options}
                     select = {group.0.ring_strategy.to_string()}
                     id="ring-strategy">
                 </Select>
+                <Label>{"Members"}</Label>
                 <Mselect 
                     exists = {group.1.clone()}
                     all = {extensions.iter().map(|e|e.to_string()).collect::<Vec<String>>()}
                     >
                 </Mselect>
+                </div>
                 <ActionButtons oncancel={form_oncancel}/>
             </form>
         </div>

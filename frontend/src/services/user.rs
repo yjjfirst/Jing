@@ -5,7 +5,7 @@ use serde::{Serialize, Deserialize};
 use super::BASE_URL;
 
 #[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
-pub struct UserContainer {
+pub struct UserAllData {
     pub user: User,
     pub vars: HashMap<String, Var>,
     pub params: HashMap<String, Param>

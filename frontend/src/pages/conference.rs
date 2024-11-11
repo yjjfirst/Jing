@@ -9,6 +9,7 @@ use yew_icons::{Icon, IconId};
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
 use crate::components::input::Input;
+use crate::components::label::Label;
 use crate::components::action_buttons::ActionButtons;
 
 use crate::store::{alert_info, alert_error, Store};
@@ -274,23 +275,29 @@ pub fn ConfDetails(props: &ConfDetailProps) -> Html{
             <Header title= {format!("Conference: {}", conf.exten.clone())}></Header>
             <div class="divider my-1"></div> 
             <form class="w-full" onsubmit={form_onsubmit}> 
+            <div class="grid grid-cols-3 gap-1">
+                <Label hidden = {conf_id != 0}>{"Extension"}</Label>
                 <Input
                     value={conf.exten.clone()}
                     id="exten"
                     hidden = {conf_id != 0}
-                /> 
+                />
+                <Label>{"Name"}</Label>
                 <Input
                     value={conf.name.clone()}
                     id="name"
-                /> 
+                />
+                <Label>{"Description"}</Label>
                 <Input
                     value={conf.description.clone()}
                     id="description"
                 />
+                <Label>{"Conference Profile Id"}</Label>
                 <Input
                     value={conf.conference_profile_id.to_string()}
                     id="conference_profile_id"
-                />                                                       
+                />
+                </div>
                 <ActionButtons oncancel={form_oncancel}/>
             </form>
         </div>        

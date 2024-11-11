@@ -11,6 +11,7 @@ use crate::store::{alert_info, alert_error, Store};
 use crate::components::header::Header;
 use crate::components::action_buttons::ActionButtons;
 use crate::components::input::Input;
+use crate::components::label::Label;
 use crate::components::dialog::Dialog;
 
 use crate::services::Service;
@@ -243,22 +244,28 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
             <Header title= {format!("Gateway: {}", gateway.gateway_name.clone())}></Header>
             <div class="divider my-1"></div> 
             <form class="w-full" onsubmit={form_onsubmit}>
+            <div class="grid grid-cols-3 gap-1">
+                <Label>{"name"}</Label>
                 <Input
                     value={gateway.gateway_name.clone()}
                     id="name"
                 />
+                <Label>{"proxy"}</Label>
                 <Input
                     value={gateway.proxy.clone()}
                     id="proxy"
                 />
+                <Label>{"register"}</Label>
                 <Input
                     value={gateway.register.clone()}
                     id="register"
                 />
+                <Label>{"Username"}</Label>
                 <Input
                     value={gateway.username.clone()}
                     id="username"
                 />
+                <Label>{"Password"}</Label>
                 <Input
                     value={gateway.password.clone()}
                     id="password"
@@ -267,7 +274,8 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
                     value={gateway.profile_id.to_string()}
                     id="profile_id"
                 />                
-                <ActionButtons oncancel={form_oncancel}/>
+            </div>
+            <ActionButtons oncancel={form_oncancel}/>
             </form>
         </div>
     }

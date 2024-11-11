@@ -1,4 +1,3 @@
-use wasm_bindgen::JsCast;
 use web_sys::{FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use yew::prelude::*;
 use yew::Properties;
@@ -8,11 +7,16 @@ use yew_icons::{Icon, IconId};
 
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
+use crate::components::input::Input;
+use crate::components::sound_file_select::SoundFileSelect;
+use crate::components::exten_select::ExtenionSelect;
+use crate::components::label::Label;
+
 use crate::components::action_buttons::ActionButtons;
 
 use crate::store::{alert_info, alert_error, Store};
 use crate::services::Service;
-use crate::services::ivr::Ivr;
+use crate::services::ivr::{IvrAllData, Ivr};
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum IvrRoute {
@@ -33,6 +37,12 @@ pub struct IvrListItemProps {
     exten: String,
     name: String,
     pub ondel: Callback<usize>
+}
+
+#[derive(Clone, PartialEq, Properties)] 
+pub struct IvrEntryProps {
+    pub digits: String,
+    pub dest: String
 }
 
 #[function_component]
@@ -169,19 +179,55 @@ pub fn IvrList() -> Html {
 #[function_component]
 pub fn IvrDetails(props: &IvrDetailProps) -> Html {
     let nav = use_navigator().unwrap();
-    let ivr = use_state(||Ivr::new());
+    let ivr = use_state(||IvrAllData::new());
+    let loc = use_location().unwrap();
+    let(store, dispatch) = use_store::<Store>();
+
     let form_oncancel = {
         let nav = nav.clone();
         Callback::from(move|_| {
             nav.push(&IvrRoute::Index);
         })
     };
-       
+    {
+        let ivr = ivr.clone();
+        let loc = loc.clone();
+        let store = store.clone();
+        use_effect_with((), move |_| {
+            let ivr = ivr.clone();
+            let loc = loc.clone();
+            let store = store.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                let fetched_ivr = 
+                    Service::get(loc.path(), store.selected_domain)
+                        .await
+                        .unwrap();
+                    ivr.set(fetched_ivr);
+                
+            });
+        });
+    }
+
+    let mut items: Vec<Html> = vec![];
+
+    for i in ivr.attrs.iter() {
+        items.push(html!{
+            <Label>{i.name.clone()}</Label>
+        });
+        items.push(html!{
+            <Input id={i.name.clone()} value={i.value.clone()} />
+        });
+
+    }
+
     html! {
         <div class="grow mr-2">
-            <Header title= {format!("Conference: {}", ivr.exten.clone())}></Header>
+            <Header title= {format!("Conference: {}", ivr.ivr.exten.clone())}></Header>
             <div class="divider my-1"></div> 
             <form class="w-full"> 
+                <div class="grid grid-cols-3 gap-1">
+                {items}
+                </div>
                 <ActionButtons oncancel={form_oncancel}/>
             </form>
         </div>        

@@ -2,7 +2,6 @@ use std::ops::Deref;
 
 use yew::prelude::*;
 use yew_icons::{Icon, IconId};
-use super::label::Label;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
@@ -14,7 +13,6 @@ pub struct Props {
 
 #[function_component]
 pub fn Mselect(props: &Props) -> Html {
-    let class: Classes = props.label_width_class.clone();
     let exists = props.exists.clone();
     let all = props.all.clone();
     let news: UseStateHandle<Vec<String>> = use_state(||vec![]);
@@ -46,13 +44,7 @@ pub fn Mselect(props: &Props) -> Html {
     };
 
     html! {
-        <div class="w-full px-3 mb-6 md:mb-0">
         <div class="flex w-full">
-            <Label class={class}>
-            <span class="label-text">
-                {"Extensions"}
-            </span>
-            </Label>
             <div class="flex flex-col">
             {exists.iter().map(|o|{
                 html!{
@@ -78,7 +70,6 @@ pub fn Mselect(props: &Props) -> Html {
                 </div>
             </div>
             </div>
-        </div>
         </div>
     }
 }

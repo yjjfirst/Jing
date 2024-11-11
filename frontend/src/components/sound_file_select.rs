@@ -3,8 +3,6 @@ use yew::prelude::*;
 use crate::store::Store;
 use yewdux::prelude::*;
 use crate::services::Service;
-use super::label::Label;
-use crate::utils::string::capitalize;
 use crate::services::sound_file::SoundFile;
 
 #[derive(Properties, PartialEq)]
@@ -20,11 +18,6 @@ pub fn SoundFileSelect(props: &Props) -> Html {
     let sound_file_id = props.sound_file_id;
     let name= id.clone();
     let input_ref: NodeRef = use_node_ref();
-
-    let label = name.replace("_", " ").replace("-", " ");
-    let label = capitalize(&label);
-    let label_class: Classes = props.label_width.clone();
-
     let(store,_) = use_store::<Store>();
     let sound_files: UseStateHandle<Vec<SoundFile>> = use_state(||vec![]);
     {
@@ -72,7 +65,7 @@ pub fn SoundFileSelect(props: &Props) -> Html {
     };
 
     html! {
-        <div class={classes!("w-full", "px-3", "mb-6", "md:mb-0")}>
+        <div class={classes!("w-full", "mb-6", "md:mb-0", "col-span-2")}>
             <input 
                 id={id.clone()} 
                 ref={input_ref} 
@@ -80,15 +73,6 @@ pub fn SoundFileSelect(props: &Props) -> Html {
                 name={name} 
                 value={sound_file_id.to_string()}/>
             <div class="flex mb-1">
-                if label != "" {
-                    <Label class={label_class}>
-                        <span 
-                            for={id.clone()} 
-                            class="label-text">
-                            {label}
-                        </span>
-                    </Label>
-                }
                 <select class="select select-bordered w-full" 
                     onchange={on_changed}
                 >

@@ -11,8 +11,9 @@ use crate::store::{alert_info, alert_error, Store};
 
 use crate::components::header::Header;
 use crate::components::input::Input;
+use crate::components::label::Label;
 use crate::components::action_buttons::ActionButtons;
-use crate::services::user::UserContainer;
+use crate::services::user::UserAllData;
 use crate::services::Service;
 use crate::services::user::*;
 use crate::components::dialog::Dialog;
@@ -219,7 +220,7 @@ pub fn get_param(name: &str, map: &HashMap<String, Param>) -> String
 pub fn UserDetail(_props: &UserDetailProps) -> Html {
     let(store, dispatch) = use_store::<Store>();
     let cloned_store = store.clone();
-    let user: UseStateHandle<UserContainer> = use_state(||UserContainer {
+    let user: UseStateHandle<UserAllData> = use_state(||UserAllData {
         user: User::new(),
         params: HashMap::new(),
         vars: HashMap::new()
@@ -283,7 +284,7 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
                 update_var("outbound_caller_id_number", &mut new_vars, &form_data);
             }
 
-            let c = UserContainer {
+            let c = UserAllData {
                 user: new_user,
                 vars: new_vars,
                 params: new_params
@@ -311,37 +312,47 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
         <Header title= {format!("User ID: {}", user.user.clone().user_id.clone())}></Header>
         <div class="divider my-1"></div> 
             <form class="w-full" onsubmit={form_onsubmit}>
+            <div class="grid grid-cols-3 gap-1">
+                <Label hidden={user.user.clone().user_id.clone() != ""}>{"User Id/Extension"}</Label>
                 <Input
                     value={user.user.clone().user_id.clone()}
                     id="user_id"
                     hidden={user.user.clone().user_id.clone() != ""}
                 />
                 if user.user.id != 0 {
+                    <Label>{"Password"}</Label>
                     <Input
                         value={get_param("password", &user.params)}
                         id="password"
                     />
+                    <Label>{"Effective Caller Id Name"}</Label>
                     <Input
                         value={get_var("effective_caller_id_name", &user.vars)}
                         id="effective_caller_id_name"
                     />
+                    <Label>{"Effective Caller Id Number"}</Label>
                     <Input
                             value={get_var("effective_caller_id_number", &user.vars)}
                             id="effective_caller_id_number"
                         />
+                    <Label>{"Outbound Caller Id Name"}</Label>
                     <Input
                         value={get_var("outbound_caller_id_name", &user.vars)}
                         id="outbound_caller_id_name"
                     />
+                    <Label>{"Outoubnd Caller Id Number"}</Label>
                     <Input
                         value={get_var("outbound_caller_id_number", &user.vars)}
                         id="outbound_caller_id_number"
                     />
+
+                    <Label>{"Voicemail Password"}</Label>
                     <Input
                         value={get_param("vm-password", &user.params)}
                         id="vm-password"
                     />
                 }
+                </div>
                 <ActionButtons oncancel={form_oncancel} />
             </form>
         </div>

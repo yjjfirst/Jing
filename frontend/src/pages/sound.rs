@@ -9,6 +9,7 @@ use yew_icons::{Icon, IconId};
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
 use crate::components::input::Input;
+use crate::components::label::Label;
 use crate::components::sound_file_select::SoundFileSelect;
 use crate::components::action_buttons::ActionButtons;
 
@@ -268,17 +269,22 @@ pub fn SoundDetails(props: &SoundDetailProps) -> Html {
             <Header title= {format!("Sound: {}", sound.exten.clone())}></Header>
             <div class="divider my-1"></div> 
             <form class="w-full" onsubmit={form_onsubmit}>
+            <div class="grid grid-cols-3 gap-1">
+                <Label hidden = {id != 0}>{"Extension"}</Label>
                 <Input
                     value={sound.exten.clone()}
                     id="exten"
                     hidden = {id != 0}
-                />             
+                />
+                <Label>{"Name"}</Label>
                 <Input
                     value={sound.name.clone()}
                     id="name"
                 />
+                <Label>{"Sound File"}</Label>
                 <SoundFileSelect id="sound_file" sound_file_id={sound.sound_file_id}/>
-                <ActionButtons oncancel={form_oncancel}/>
+            </div>
+            <ActionButtons oncancel={form_oncancel}/>
             </form>
         </div>
     }

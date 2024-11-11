@@ -8,6 +8,7 @@ use yewdux::prelude::*;
 use yew_icons::{Icon, IconId};
 
 use crate::components::input::Input;
+use crate::components::label::Label;
 use crate::components::file_input::FileInput;
 use crate::components::action_buttons::ActionButtons;
 use crate::components::header::Header;
@@ -256,8 +257,10 @@ pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
             <Header title= {format!("Sound File: {}", sound.name)}></Header>
             <div class="divider my-1"></div> 
             <form class="w-full" onsubmit={form_onsubmit} method="POST">
+            <div class="grid grid-cols-3 gap-1">
                 <Input value={sound.id.to_string()} id="id" hidden=true></Input>
                 <Input value={store_2.selected_domain.to_string()} id="domain_id" hidden=true></Input>
+                <Label>{"File Name"}</Label>
                 if id == 0 {
                     <FileInput
                     id="file_name"
@@ -266,7 +269,9 @@ pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
                 } else {
                     <Input value={sound.name.clone()} id="name" disabled=true></Input>
                 }
+                <Label>{"Description"}</Label>
                 <Input value={sound.description.clone()} id="description"></Input>
+                </div>
                 <ActionButtons oncancel={form_oncancel}/>
             </form>
         </div>

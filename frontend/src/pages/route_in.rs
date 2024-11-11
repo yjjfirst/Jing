@@ -10,6 +10,7 @@ use crate::components::header::Header;
 use crate::components::dialog::Dialog;
 use crate::components::action_buttons::ActionButtons;
 use crate::components::input::Input;
+use crate::components::label::Label;
 use crate::components::exten_select::ExtenionSelect;
 use crate::services::route_in::Inbound;
 use crate::services::Service;
@@ -245,10 +246,15 @@ pub fn InboundDetails(_props: &InboundDetailsProps) -> Html {
             <Header title= {format!("Inbound: {}", inbound.id)}></Header>
             <div class="divider my-1"></div> 
             <form class="w-full" onsubmit={form_onsubmit}>
+            <div class="grid grid-cols-3 gap-1">
                 <Input value={inbound.id.to_string()} id="id" hidden=true></Input>
+                <Label>{"Condition"}</Label>
                 <Input value={inbound.condition.clone()} id="condition"></Input>
+                <Label>{"Context"}</Label>
                 <Input value={inbound.context.clone()} id="context"></Input>
+                <Label>{"Destination"}</Label>
                 <ExtenionSelect id="destination" value={inbound.dest_extension.clone()}/>
+                </div>        
                 <ActionButtons oncancel={form_oncancel} />
             </form>
         </div>

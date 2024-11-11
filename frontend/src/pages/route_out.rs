@@ -10,6 +10,7 @@ use crate::components::header::Header;
 use crate::components::dialog::Dialog;
 use crate::components::action_buttons::ActionButtons;
 use crate::components::input::Input;
+use crate::components::label::Label;
 use crate::components::select::Select;
 
 use crate::services::gateway::Gateway;
@@ -258,10 +259,13 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
             <Header title= {format!("Outbound: {}", out.id)}></Header>
             <div class="divider my-1"></div> 
             <form class="w-full" onsubmit={form_onsubmit}>
+                <div class="grid grid-cols-3 gap-1">
                 <Input value={out.id.to_string()} id="id" hidden=true/>
+                <Label>{"Priority"}</Label>
                 <Input value={out.priority.to_string()} id="priority"/>
+                <Label>{"Condition"}</Label>
                 <Input value={out.condition.clone()} id="condition" />
-
+                <Label>{"Gateway"}</Label>
                 if out.gateway_id != 0 && gateways.len() != 0 {
                     <Select 
                         select={Gateway::get_gateway_by_id(out.gateway_id, &gateways).unwrap().gateway_name.clone()}
@@ -278,7 +282,8 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
                                     .map(|g|{g.gateway_name.clone()})
                                     .collect::<Vec<String>>()}
                         id="gateway"/>                    
-                } 
+                }
+                </div>
                 <ActionButtons oncancel={form_oncancel} />
             </form>
         </div>

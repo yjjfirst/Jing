@@ -3,27 +3,21 @@ use crate::store::Store;
 use yewdux::prelude::*;
 use crate::services::extension::Extension;
 use crate::services::Service;
-use super::label::Label;
-use crate::utils::string::capitalize;
-
 use std::collections::HashMap;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
     pub id: String,
     pub value: String,
-    #[prop_or(classes!("w-80"))]
-    pub label_width: Classes,
+    #[prop_or(classes!("col-span-2"))]
+    pub classes: Classes
 }
+
 #[function_component]
 pub fn ExtenionSelect(props: &Props) -> Html {
     let id = props.id.clone();
     let name= id.clone();
     let value = props.value.clone();
-
-    let label = name.replace("_", " ").replace("-", " ");
-    let label = capitalize(&label);
-    let label_class: Classes = props.label_width.clone();
 
     let(store,_) = use_store::<Store>();
     let ext_map: UseStateHandle<HashMap<String, Vec<String>>> = use_state(||HashMap::new());
@@ -66,23 +60,10 @@ pub fn ExtenionSelect(props: &Props) -> Html {
         }
     }).collect();
 
+    let classes = classes!("select", "select-bordered", "w-full", props.classes.clone());
     html! {
-        <div class={classes!("w-full", "px-3", "mb-6", "md:mb-0")}>
-            <div class="flex mb-1 ">
-                if label != "" {
-                    <Label class={label_class}>
-                        <span 
-                            for={id.clone()} 
-                            class="label-text">
-                            {label}
-                        </span>
-                    </Label>
-                }
-                <select class="select select-bordered w-full" name={name} value={value} id={id}>
-                {options_list}
-                </select>
-            </div>
-        </div>       
-
+        <select class={classes} name={name} value={value} id={id}>
+            {options_list}
+        </select>
     }
 }
