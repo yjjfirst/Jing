@@ -13,9 +13,9 @@ use crate::components::input::Input;
 use crate::components::label::Label;
 use crate::components::select::Select;
 
-use crate::services::gateway::Gateway;
-use crate::services::route_out::Outbound;
-use crate::services::Service;
+use crate::models::gateway::Gateway;
+use crate::models::route_out::Outbound;
+use crate::models::Service;
 
 use yew_icons::{Icon, IconId};
 

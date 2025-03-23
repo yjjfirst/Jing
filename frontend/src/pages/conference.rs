@@ -13,8 +13,8 @@ use crate::components::label::Label;
 use crate::components::action_buttons::ActionButtons;
 
 use crate::store::{alert_info, alert_error, Store};
-use crate::services::Service;
-use crate::services::conference::Conf;
+use crate::models::Service;
+use crate::models::conference::Conf;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum ConfRoute {

@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use yewdux::prelude::*;
-use crate::services::domain::Domain;
+use crate::models::domain::Domain;
 use crate::components::alert::AlertType;
 
 #[derive(Debug, PartialEq, Serialize, Deserialize, Default, Clone)]

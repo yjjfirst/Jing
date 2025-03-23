@@ -34,6 +34,7 @@ yew_icons = {version = "0.8", features = ["LucideEdit",
     "LucideTrash"]}
 yewdux = "0.9.4"
 charming = {version = "0.4.0", features = ["wasm"] }
+util_macro = {version = "0.1.0", path = "../util_macro"}
 
 [dependencies.web-sys]
 version = "0.3.66"

@@ -1,5 +1,5 @@
 mod app;
-mod services;
+mod models;
 mod components;
 mod pages;
 mod store;

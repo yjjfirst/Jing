@@ -2,8 +2,8 @@ use web_sys::{HtmlInputElement, HtmlSelectElement};
 use yew::prelude::*;
 use crate::store::Store;
 use yewdux::prelude::*;
-use crate::services::Service;
-use crate::services::sound_file::SoundFile;
+use crate::models::Service;
+use crate::models::sound_file::SoundFile;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
@@ -35,7 +35,7 @@ pub fn SoundFileSelect(props: &Props) -> Html {
         });
     }
 
-    let options: Vec<Html> = sound_files
+    let mut options: Vec<Html> = sound_files
         .iter()
         .map(|s|{
             html!{
@@ -47,6 +47,16 @@ pub fn SoundFileSelect(props: &Props) -> Html {
             }
         })
         .collect();
+
+    options.insert(0, 
+        html!{
+            <option value={"".to_string()} 
+                selected=true 
+                disabled=true 
+                hidden=true>{""}
+            </option>
+        }
+    );
 
     let on_changed = {
         let input_ref = input_ref.clone();

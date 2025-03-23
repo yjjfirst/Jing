@@ -16,7 +16,7 @@ use crate::pages::conference::{ConfRoute, conf_switch};
 use crate::pages::ivr::{IvrRoute, ivr_switch};
 use crate::components::alert::{AlertType, AlertComponent, Props as AlertProps};
 use crate::components::banner::Banner;
-use crate::services::domain::Domain;
+use crate::models::domain::Domain;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Env {

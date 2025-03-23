@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct Ivr {
@@ -15,7 +16,6 @@ pub struct IvrEntry {
     pub dest_exten: String
 }
 
-
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct IvrAttr {
     pub id: i32,
@@ -26,7 +26,7 @@ pub struct IvrAttr {
 #[derive(Clone, Debug, PartialEq,Serialize, Deserialize)]
 pub struct IvrAllData {
     pub ivr: Ivr,
-    pub attrs: Vec<IvrAttr>,
+    pub attrs: HashMap<String, IvrAttr>,
     pub entries: Vec<IvrEntry>
 }
 
@@ -39,7 +39,7 @@ impl IvrAllData {
                 name: "".to_string(),
                 domain_id: 0
             },
-            attrs: vec![],
+            attrs: HashMap::new(),
             entries: vec![]
         }
     }

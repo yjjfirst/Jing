@@ -7,15 +7,15 @@ use yew_icons::{Icon, IconId};
 use wasm_bindgen::JsCast;
 
 use crate::components::header::Header;
-use crate::services::ringing_group::{RingingGroup, RingingGroupDetail};
-use crate::services::Service;
+use crate::models::ringing_group::{RingingGroup, RingingGroupDetail};
+use crate::models::Service;
 use crate::store::{alert_info, alert_error, Store};
 use crate::components::input::Input;
 use crate::components::label::Label;
 use crate::components::select::Select;
 use crate::components::mselect::Mselect;
 use crate::components::action_buttons::ActionButtons;
-use crate::services::user::User;
+use crate::models::user::User;
 use crate::components::dialog::Dialog;
 
 #[derive(Clone, Routable, PartialEq)]

@@ -13,9 +13,9 @@ use crate::components::header::Header;
 use crate::components::input::Input;
 use crate::components::label::Label;
 use crate::components::action_buttons::ActionButtons;
-use crate::services::user::UserAllData;
-use crate::services::Service;
-use crate::services::user::*;
+use crate::models::user::UserAllData;
+use crate::models::Service;
+use crate::models::user::*;
 use crate::components::dialog::Dialog;
 
 #[derive(Clone, Routable, PartialEq)]
@@ -161,61 +161,6 @@ pub fn UserList() -> Html {
     }
 }
 
-pub fn update_var(name: &str, map: &mut HashMap<String, Var>, form_data: &FormData) 
-{
-    let value = &form_data.get(name).as_string().unwrap();
-    let old = map.get(name);
-    let mut user_id: usize = 0;
-    let mut id: usize = 0;
-    
-    match old {
-        Some(h) => {user_id = h.user_id; id = h.id;}
-        _ => {}
-    };
-
-    map.insert(name.to_string(), Var {
-        id, user_id,
-        name: name.to_string(),
-        value: value.to_string()
-
-    });
-}
-pub fn update_param(name: &str, map: &mut HashMap<String, Param>, form_data: &FormData) 
-{
-    let value = &form_data.get(name).as_string().unwrap();
-    let old = map.get(name);
-    let mut user_id: usize = 0;
-    let mut id: usize = 0;
-    
-    match old {
-        Some(h) => {user_id = h.user_id; id = h.id;}
-        _ => {}
-    };
-
-    map.insert(name.to_string(), Param {
-        id, user_id,
-        name: name.to_string(),
-        value: value.to_string()
-
-    });
-}
-
-pub fn get_var(name: &str, map: &HashMap<String, Var>) -> String
-{
-    match map.get(name) {
-        Some(v) => v.value.clone(),
-        None => "".to_string()
-    }
-}
-
-pub fn get_param(name: &str, map: &HashMap<String, Param>) -> String
-{
-    match map.get(name) {
-        Some(v) => v.value.clone(),
-        None => "".to_string()
-    }
-}
-
 #[function_component]
 pub fn UserDetail(_props: &UserDetailProps) -> Html {
     let(store, dispatch) = use_store::<Store>();
@@ -276,12 +221,12 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
             let mut new_params = user.params.clone();
 
             if new_user.id != 0 {
-                update_param("password", &mut new_params, &form_data);
-                update_param("vm-password", &mut new_params, &form_data);
-                update_var("effective_caller_id_name", &mut new_vars, &form_data);
-                update_var("effective_caller_id_number", &mut new_vars, &form_data);
-                update_var("outbound_caller_id_name", &mut new_vars, &form_data);
-                update_var("outbound_caller_id_number", &mut new_vars, &form_data);
+                Param::update("password", &mut new_params, &form_data);
+                Param::update("vm-password", &mut new_params, &form_data);
+                Var::update("effective_caller_id_name", &mut new_vars, &form_data);
+                Var::update("effective_caller_id_number", &mut new_vars, &form_data);
+                Var::update("outbound_caller_id_name", &mut new_vars, &form_data);
+                Var::update("outbound_caller_id_number", &mut new_vars, &form_data);
             }
 
             let c = UserAllData {
@@ -322,33 +267,33 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
                 if user.user.id != 0 {
                     <Label>{"Password"}</Label>
                     <Input
-                        value={get_param("password", &user.params)}
+                        value={Param::get("password", &user.params)}
                         id="password"
                     />
                     <Label>{"Effective Caller Id Name"}</Label>
                     <Input
-                        value={get_var("effective_caller_id_name", &user.vars)}
+                        value={Var::get("effective_caller_id_name", &user.vars)}
                         id="effective_caller_id_name"
                     />
                     <Label>{"Effective Caller Id Number"}</Label>
                     <Input
-                            value={get_var("effective_caller_id_number", &user.vars)}
+                            value={Var::get("effective_caller_id_number", &user.vars)}
                             id="effective_caller_id_number"
                         />
                     <Label>{"Outbound Caller Id Name"}</Label>
                     <Input
-                        value={get_var("outbound_caller_id_name", &user.vars)}
+                        value={Var::get("outbound_caller_id_name", &user.vars)}
                         id="outbound_caller_id_name"
                     />
                     <Label>{"Outoubnd Caller Id Number"}</Label>
                     <Input
-                        value={get_var("outbound_caller_id_number", &user.vars)}
+                        value={Var::get("outbound_caller_id_number", &user.vars)}
                         id="outbound_caller_id_number"
                     />
 
                     <Label>{"Voicemail Password"}</Label>
                     <Input
-                        value={get_param("vm-password", &user.params)}
+                        value={Param::get("vm-password", &user.params)}
                         id="vm-password"
                     />
                 }

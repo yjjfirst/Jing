@@ -14,9 +14,10 @@ use crate::components::label::Label;
 
 use crate::components::action_buttons::ActionButtons;
 
+use crate::models::ivr::IvrEntry;
 use crate::store::{alert_info, alert_error, Store};
-use crate::services::Service;
-use crate::services::ivr::{IvrAllData, Ivr};
+use crate::models::Service;
+use crate::models::ivr::{IvrAllData, Ivr};
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum IvrRoute {
@@ -28,21 +29,21 @@ pub enum IvrRoute {
 
 #[derive(Clone, PartialEq, Properties)] 
 pub struct IvrDetailProps {
-    id: usize,
+    pub id: usize,
 }
 
 #[derive(Clone, PartialEq, Properties)] 
 pub struct IvrListItemProps {
-    id: usize,
-    exten: String,
-    name: String,
+    pub id: usize,
+    pub exten: String,
+    pub name: String,
     pub ondel: Callback<usize>
 }
 
 #[derive(Clone, PartialEq, Properties)] 
 pub struct IvrEntryProps {
     pub digits: String,
-    pub dest: String
+    pub exten: String,
 }
 
 #[function_component]
@@ -177,18 +178,29 @@ pub fn IvrList() -> Html {
 }
 
 #[function_component]
+pub fn IvrEntryComponent(props: &IvrEntryProps) -> Html {
+    html!{
+        <div class="flex">
+            <Input id="entry" value={props.digits.clone()}></Input>
+            <ExtenionSelect id="destination" value={props.exten.clone()}/>
+        </div>                  
+    }
+}
+
+#[function_component]
 pub fn IvrDetails(props: &IvrDetailProps) -> Html {
     let nav = use_navigator().unwrap();
     let ivr = use_state(||IvrAllData::new());
     let loc = use_location().unwrap();
     let(store, dispatch) = use_store::<Store>();
-
+    let new_entries: UseStateHandle<Vec<IvrEntry>> = use_state(||vec![]);
     let form_oncancel = {
         let nav = nav.clone();
         Callback::from(move|_| {
             nav.push(&IvrRoute::Index);
         })
     };
+
     {
         let ivr = ivr.clone();
         let loc = loc.clone();
@@ -202,31 +214,90 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
                     Service::get(loc.path(), store.selected_domain)
                         .await
                         .unwrap();
-                    ivr.set(fetched_ivr);
-                
+                ivr.set(fetched_ivr);
             });
         });
     }
+    
+    
+    let attr_htmls: Vec<Html> = vec![
+        html! {
+            <Label>{"Greet Long"}</Label>
+        },        
+        html!{
+            <Input
+                id="greet_long"
+                value={
+                    if let Some(v) = ivr.attrs.get("greet-long") {
+                        v.value.clone()
+                    } else {
+                        "".to_string()
+                    }
+                }
+            ></Input>
+        }
+    ];
+    
 
-    let mut items: Vec<Html> = vec![];
+    let entries: Vec<Html> = ivr.entries.iter().map(|e|{
+        html!{
+            <IvrEntryComponent digits={e.digits.clone()} exten={e.dest_exten.clone()} />
+        }
+    }).collect();
 
-    for i in ivr.attrs.iter() {
-        items.push(html!{
-            <Label>{i.name.clone()}</Label>
-        });
-        items.push(html!{
-            <Input id={i.name.clone()} value={i.value.clone()} />
-        });
+    let add_entry = {
+        let new_entries = new_entries.clone();
+        Callback::from(move |_e: MouseEvent|{
+            let new_entries = new_entries.clone();
+            let mut entries: Vec<IvrEntry> = new_entries.iter().map(|e|{
+                e.clone()
+            }).collect();
 
-    }
+            let entry = IvrEntry {
+                id: 0, 
+                ivr_id: 0,
+                digits: "".to_string(),
+                dest_exten: "".to_string()
+            };
+            entries.push(entry);
+            new_entries.set(entries);
+        })
+    };
 
+    let form_onsubmit = {
+        Callback::from(move|e: SubmitEvent| {
+            e.prevent_default();
+        })
+    };
     html! {
         <div class="grow mr-2">
-            <Header title= {format!("Conference: {}", ivr.ivr.exten.clone())}></Header>
+            <Header title= {format!("IVR: {}", ivr.ivr.exten.clone())}></Header>
             <div class="divider my-1"></div> 
-            <form class="w-full"> 
+            <form class="w-full" onsubmit={form_onsubmit}> 
                 <div class="grid grid-cols-3 gap-1">
-                {items}
+                    <Label>{"Name"}</Label>
+                    <Input id="name" value={ivr.ivr.name.clone()}></Input>
+                    {attr_htmls}
+                    <Label>{"Entries"}</Label>
+                    <div>
+                        {entries}
+                        {   
+                            new_entries.iter().map(|e|{
+                                html!{
+                                    <IvrEntryComponent
+                                        digits={e.digits.clone()}
+                                        exten={e.dest_exten.clone()}
+                                    />
+                                }
+                            }).collect::<Vec<Html>>()
+                        }
+                        <div>
+                            <div class="btn btn-link btn-sm mr-4" onclick={add_entry}>
+                                <Icon icon_id={IconId::LucidePlus}/>
+                                {"Add"}
+                            </div>
+                        </div>                        
+                    </div>
                 </div>
                 <ActionButtons oncancel={form_oncancel}/>
             </form>

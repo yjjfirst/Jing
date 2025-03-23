@@ -14,8 +14,8 @@ use crate::components::sound_file_select::SoundFileSelect;
 use crate::components::action_buttons::ActionButtons;
 
 use crate::store::{alert_info, alert_error, Store};
-use crate::services::Service;
-use crate::services::sound::{Sound, ApiSound};
+use crate::models::Service;
+use crate::models::sound::{Sound, ApiSound};
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum SoundRoute {

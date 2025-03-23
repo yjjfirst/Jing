@@ -14,8 +14,8 @@ use crate::components::action_buttons::ActionButtons;
 use crate::components::header::Header;
 use crate::store::{alert_info, alert_error, Store};
 use crate::components::dialog::Dialog;
-use crate::services::sound_file::SoundFile;
-use crate::services::Service;
+use crate::models::sound_file::SoundFile;
+use crate::models::Service;
 
 #[derive(Clone, PartialEq, Properties)] 
 pub struct SoundFileProps {

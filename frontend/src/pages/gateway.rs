@@ -14,8 +14,8 @@ use crate::components::input::Input;
 use crate::components::label::Label;
 use crate::components::dialog::Dialog;
 
-use crate::services::Service;
-use crate::services::gateway::Gateway;
+use crate::models::Service;
+use crate::models::gateway::Gateway;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum GatewayRoute {

@@ -1,6 +1,9 @@
 use gloo_net::http::Request;
 use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
+use web_sys::FormData;
+use util_macro::HashMapHelper;
+
 
 use super::BASE_URL;
 
@@ -18,20 +21,31 @@ pub struct User {
     pub user_id: String
 }
 
-#[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
+#[derive(Clone, PartialEq, Deserialize, Serialize, Debug, HashMapHelper)]
 pub struct Param {
     pub id: usize,
     pub user_id: usize,
     pub name: String,
     pub value: String
 }
+impl Param {
+    pub fn new() -> Param {
+        Param {id: 0, user_id: 0, name: "".to_string(), value: "".to_string()}
+    }
+}
 
-#[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
+#[derive(Clone, PartialEq, Deserialize, Serialize, Debug, HashMapHelper)]
 pub struct Var {
     pub id: usize,
     pub user_id: usize,
     pub name: String,
     pub value: String
+}
+
+impl Var {
+    pub fn new() -> Var {
+        Var {id: 0, user_id: 0, name: "".to_string(), value: "".to_string()}
+    }
 }
 
 impl User {

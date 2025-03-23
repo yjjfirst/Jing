@@ -12,8 +12,8 @@ use crate::components::action_buttons::ActionButtons;
 use crate::components::input::Input;
 use crate::components::label::Label;
 use crate::components::exten_select::ExtenionSelect;
-use crate::services::route_in::Inbound;
-use crate::services::Service;
+use crate::models::route_in::Inbound;
+use crate::models::Service;
 
 use yew_icons::{Icon, IconId};
 

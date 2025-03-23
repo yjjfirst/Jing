@@ -1,8 +1,8 @@
 use yew::prelude::*;
 use crate::store::Store;
 use yewdux::prelude::*;
-use crate::services::extension::Extension;
-use crate::services::Service;
+use crate::models::extension::Extension;
+use crate::models::Service;
 use std::collections::HashMap;
 
 #[derive(Properties, PartialEq)]

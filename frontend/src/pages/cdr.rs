@@ -2,10 +2,10 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 use yewdux::prelude::*;
 
-use crate::services::cdr::Cdr;
+use crate::models::cdr::Cdr;
 use crate::components::header::Header;
 use crate::store::Store;
-use crate::services::Service;
+use crate::models::Service;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum CdrRoute {
