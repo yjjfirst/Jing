@@ -99,6 +99,40 @@ pub fn param_derive(input: TokenStream) -> TokenStream {
     output.into()
 }
 
+#[proc_macro_derive(HashMapHelper)]
+pub fn hashmap_helper_derive(input: TokenStream) -> TokenStream {
+    let DeriveInput {ident, ..} = parse_macro_input!(input);
+
+    let output = quote!{
+        impl #ident {
+            pub fn get(name: &str, map: &HashMap<String, #ident>) -> String {
+                match map.get(name) {
+                    Some(v) => v.value.to_string(),
+                    None => "".to_string()
+                }
+            }
+
+            pub fn update(name: &str, map: &mut HashMap<String, #ident>, form_data: &FormData) {
+                let value = &form_data.get(name).as_string().unwrap();
+                let old = map.get(name);
+                
+                let mut new = match old {
+                    Some(h) => { #ident {
+                        ..(*h).clone()
+                    }}
+                    _ => {#ident::new()}
+                };
+            
+                new.name = name.to_string();
+                new.value = value.to_string();
+                map.insert(name.to_string(), new);                
+            }
+        }
+    };
+
+    output.into()
+}
+
 fn get_field(fields_punct: &syn::punctuated::Punctuated<Field, Comma>, a: String) -> Option<&syn::Ident>{
     for f in fields_punct {
         let attr = f
