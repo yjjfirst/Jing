@@ -1,3 +1,4 @@
+use charming::element::label;
 use web_sys::{FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use yew::prelude::*;
 use yew::Properties;
@@ -14,7 +15,7 @@ use crate::components::label::Label;
 
 use crate::components::action_buttons::ActionButtons;
 
-use crate::models::ivr::IvrEntry;
+use crate::models::ivr::{IvrEntry, IvrAttr};
 use crate::store::{alert_info, alert_error, Store};
 use crate::models::Service;
 use crate::models::ivr::{IvrAllData, Ivr};
@@ -219,26 +220,52 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
         });
     }
     
-    
-    let attr_htmls: Vec<Html> = vec![
-        html! {
-            <Label>{"Greet Long"}</Label>
-        },        
+    let label = |id:&str| {
         html!{
-            <Input
-                id="greet_long"
-                value={
-                    if let Some(v) = ivr.attrs.get("greet-long") {
-                        v.value.clone()
-                    } else {
-                        "".to_string()
-                    }
-                }
-            ></Input>
+            <Label>{id}</Label>
         }
-    ];
-    
+    };
 
+    let input =  |id :&str, value: &str| {
+        html!{
+            <Input id={id.to_string()} value={value.to_string()}></Input>
+        }
+    };
+    
+    let sound_file_select = |id: &str, sound_file_id: usize| {
+        html!{
+            <SoundFileSelect 
+                id={id.to_string()} 
+                sound_file_id={sound_file_id}>
+            </SoundFileSelect>
+        }
+    };
+
+    let attr_htmls: Vec<Html> = 
+        vec![
+            label("Greet Long"),
+            sound_file_select("greet-long", IvrAttr::get("greet-long", &ivr.attrs).parse::<usize>().unwrap_or(0)),
+            label("Greet Short"),
+            sound_file_select("greet-short", IvrAttr::get("greet-short", &ivr.attrs).parse::<usize>().unwrap_or(0)),
+            label("Invalid Sound"),
+            sound_file_select("invalid-sound", IvrAttr::get("invalid-sound", &ivr.attrs).parse::<usize>().unwrap_or(0)), 
+            label("Exit Sound"),
+            sound_file_select("exit-sound", IvrAttr::get("exit-sound", &ivr.attrs).parse::<usize>().unwrap_or(0)),
+            label("Timeout"),
+            input("timeout", &IvrAttr::get("timeout", &ivr.attrs)),
+            label("Inter Digit Timeout"),
+            input("inter-digit-timeout", &IvrAttr::get("inter-digit-timeout", &ivr.attrs)),
+            label("Max Failures"),
+            input("max-failures", &IvrAttr::get("max-failures", &ivr.attrs)),
+            label("Max Timeouts"),
+            input("max-timeouts", &IvrAttr::get("max-timeouts", &ivr.attrs)),
+            label("Digit Len"),
+            input("digit-len", &IvrAttr::get("digit-len", &ivr.attrs)),
+            label("Confirm attempts"),
+            input("confirm-attempts", &IvrAttr::get("confirm-attempts", &ivr.attrs)), 
+        ];
+    
+    
     let entries: Vec<Html> = ivr.entries.iter().map(|e|{
         html!{
             <IvrEntryComponent digits={e.digits.clone()} exten={e.dest_exten.clone()} />
@@ -253,12 +280,7 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
                 e.clone()
             }).collect();
 
-            let entry = IvrEntry {
-                id: 0, 
-                ivr_id: 0,
-                digits: "".to_string(),
-                dest_exten: "".to_string()
-            };
+            let entry = IvrEntry::new();
             entries.push(entry);
             new_entries.set(entries);
         })

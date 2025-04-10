@@ -40,7 +40,7 @@ pub fn SoundFileSelect(props: &Props) -> Html {
         .map(|s|{
             html!{
                 if (s.id) == props.sound_file_id {
-                    <option value={s.name.clone()} selected=true >{s.name.clone()}</option>
+                    <option value={s.name.clone()} selected=true>{s.name.clone()}</option>
                 } else {
                     <option value={s.name.clone()}>{s.name.clone()}</option>
                 }
@@ -48,16 +48,17 @@ pub fn SoundFileSelect(props: &Props) -> Html {
         })
         .collect();
 
-    options.insert(0, 
-        html!{
-            <option value={"".to_string()} 
-                selected=true 
-                disabled=true 
-                hidden=true>{""}
-            </option>
-        }
-    );
-
+    if  props.sound_file_id == 0 {
+        options.push(
+                html!{
+                    <option value={"".to_string()}
+                        selected=true
+                        disabled=true
+                        hidden=true>{""}
+                    </option>
+                });
+    }
+        
     let on_changed = {
         let input_ref = input_ref.clone();
         let sound_files = sound_files.clone();
