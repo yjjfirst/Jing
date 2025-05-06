@@ -17,12 +17,15 @@ pub fn SoundFileSelect(props: &Props) -> Html {
     let id = props.id.clone();
     let sound_file_id = props.sound_file_id;
     let name= id.clone();
+    let select_ref: NodeRef = use_node_ref();
     let input_ref: NodeRef = use_node_ref();
     let(store,_) = use_store::<Store>();
     let sound_files: UseStateHandle<Vec<SoundFile>> = use_state(||vec![]);
     {
         let sound_files = sound_files.clone();
+        let select_ref = select_ref.clone();
         use_effect_with((), move|_| {
+            let select_ref = select_ref.clone();
             let store = store.clone();
             let sound_files = sound_files.clone();
             wasm_bindgen_futures::spawn_local(async move {
@@ -31,6 +34,8 @@ pub fn SoundFileSelect(props: &Props) -> Html {
                         .await
                         .unwrap();
                 sound_files.set(fetched_files);
+                let s = select_ref.cast::<HtmlSelectElement>().unwrap();
+                s.set_disabled(false);
             });        
         });
     }
@@ -40,7 +45,7 @@ pub fn SoundFileSelect(props: &Props) -> Html {
         .map(|s|{
             html!{
                 if (s.id) == props.sound_file_id {
-                    <option value={s.name.clone()} selected=true >{s.name.clone()}</option>
+                    <option value={s.name.clone()} selected=true>{s.name.clone()}</option>
                 } else {
                     <option value={s.name.clone()}>{s.name.clone()}</option>
                 }
@@ -48,16 +53,17 @@ pub fn SoundFileSelect(props: &Props) -> Html {
         })
         .collect();
 
-    options.insert(0, 
-        html!{
-            <option value={"".to_string()} 
-                selected=true 
-                disabled=true 
-                hidden=true>{""}
-            </option>
-        }
-    );
-
+    if  props.sound_file_id == 0 {
+        options.push(
+                html!{
+                    <option value={"".to_string()}
+                        selected=true
+                        disabled=true
+                        hidden=true>{""}
+                    </option>
+                });
+    }
+        
     let on_changed = {
         let input_ref = input_ref.clone();
         let sound_files = sound_files.clone();
@@ -83,8 +89,10 @@ pub fn SoundFileSelect(props: &Props) -> Html {
                 name={name} 
                 value={sound_file_id.to_string()}/>
             <div class="flex mb-1">
-                <select class="select select-bordered w-full" 
+                <select class="select select-bordered w-full"
                     onchange={on_changed}
+                    disabled=true
+                    ref={select_ref}
                 >
                 {options}
                 </select>

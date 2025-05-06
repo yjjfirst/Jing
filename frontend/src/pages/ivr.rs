@@ -1,3 +1,6 @@
+
+use std::collections::HashMap;
+use wasm_bindgen::JsCast;
 use web_sys::{FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use yew::prelude::*;
 use yew::Properties;
@@ -14,10 +17,10 @@ use crate::components::label::Label;
 
 use crate::components::action_buttons::ActionButtons;
 
-use crate::models::ivr::IvrEntry;
+use crate::models::ivr::{IvrEntry, IvrAttr};
 use crate::store::{alert_info, alert_error, Store};
 use crate::models::Service;
-use crate::models::ivr::{IvrAllData, Ivr};
+use crate::models::ivr::Ivr;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum IvrRoute {
@@ -188,18 +191,18 @@ pub fn IvrEntryComponent(props: &IvrEntryProps) -> Html {
 }
 
 #[function_component]
-pub fn IvrDetails(props: &IvrDetailProps) -> Html {
+pub fn IvrDetails(_props: &IvrDetailProps) -> Html {
     let nav = use_navigator().unwrap();
-    let ivr = use_state(||IvrAllData::new());
+    let ivr = use_state(||Ivr::new());
     let loc = use_location().unwrap();
     let(store, dispatch) = use_store::<Store>();
-    let new_entries: UseStateHandle<Vec<IvrEntry>> = use_state(||vec![]);
     let form_oncancel = {
         let nav = nav.clone();
         Callback::from(move|_| {
             nav.push(&IvrRoute::Index);
         })
     };
+    let store_cloned = store.clone();
 
     {
         let ivr = ivr.clone();
@@ -219,78 +222,157 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
         });
     }
     
-    
-    let attr_htmls: Vec<Html> = vec![
-        html! {
-            <Label>{"Greet Long"}</Label>
-        },        
+    let label = |id:&str| {
         html!{
-            <Input
-                id="greet_long"
-                value={
-                    if let Some(v) = ivr.attrs.get("greet-long") {
-                        v.value.clone()
-                    } else {
-                        "".to_string()
-                    }
-                }
-            ></Input>
+            <Label>{id}</Label>
         }
-    ];
-    
+    };
 
-    let entries: Vec<Html> = ivr.entries.iter().map(|e|{
+    let input =  |id :&str, value: &str| {
+        html!{
+            <Input id={id.to_string()} value={value.to_string()}></Input>
+        }
+    };
+    
+    let sound_file_select = |id: &str, sound_file_id: usize| {
+        html!{
+            <SoundFileSelect 
+                id={id.to_string()} 
+                sound_file_id={sound_file_id}>
+            </SoundFileSelect>
+        }
+    };
+
+    let attr_htmls: Vec<Html> = 
+        vec![
+            label("Greet Long"),
+            sound_file_select("greet-long", IvrAttr::get("greet-long", &ivr.attrs).parse::<usize>().unwrap_or(0)),
+            label("Greet Short"),
+            sound_file_select("greet-short", IvrAttr::get("greet-short", &ivr.attrs).parse::<usize>().unwrap_or(0)),
+            label("Invalid Sound"),
+            sound_file_select("invalid-sound", IvrAttr::get("invalid-sound", &ivr.attrs).parse::<usize>().unwrap_or(0)), 
+            label("Exit Sound"),
+            sound_file_select("exit-sound", IvrAttr::get("exit-sound", &ivr.attrs).parse::<usize>().unwrap_or(0)),
+            label("Timeout"),
+            input("timeout", &IvrAttr::get("timeout", &ivr.attrs)),
+            label("Inter Digit Timeout"),
+            input("inter-digit-timeout", &IvrAttr::get("inter-digit-timeout", &ivr.attrs)),
+            label("Max Failures"),
+            input("max-failures", &IvrAttr::get("max-failures", &ivr.attrs)),
+            label("Max Timeouts"),
+            input("max-timeouts", &IvrAttr::get("max-timeouts", &ivr.attrs)),
+            label("Digit Len"),
+            input("digit-len", &IvrAttr::get("digit-len", &ivr.attrs)),
+            label("Confirm attempts"),
+            input("confirm-attempts", &IvrAttr::get("confirm-attempts", &ivr.attrs)), 
+        ];
+    
+    
+    let entries_html: Vec<Html> = ivr.entries.iter().map(|e|{
         html!{
             <IvrEntryComponent digits={e.digits.clone()} exten={e.dest_exten.clone()} />
         }
     }).collect();
 
     let add_entry = {
-        let new_entries = new_entries.clone();
+        let ivr = ivr.clone();
         Callback::from(move |_e: MouseEvent|{
-            let new_entries = new_entries.clone();
-            let mut entries: Vec<IvrEntry> = new_entries.iter().map(|e|{
-                e.clone()
-            }).collect();
-
-            let entry = IvrEntry {
-                id: 0, 
-                ivr_id: 0,
-                digits: "".to_string(),
-                dest_exten: "".to_string()
-            };
-            entries.push(entry);
-            new_entries.set(entries);
+            let ivr = ivr.clone();
+            let mut entries = ivr.entries.clone();
+            entries.push(IvrEntry::new());
+            ivr.set(Ivr { 
+                    id: ivr.id,
+                    domain_id: ivr.domain_id,
+                    name: ivr.name.clone(),
+                    exten: ivr.exten.clone(), 
+                    attrs: ivr.attrs.clone(), 
+                    entries})
         })
     };
 
-    let form_onsubmit = {
-        Callback::from(move|e: SubmitEvent| {
-            e.prevent_default();
+    let form_onsubmit  = {
+        let dispatch: Dispatch<Store> = dispatch.clone();
+        let store_cloned = store_cloned.clone();
+        let loc = loc.clone();
+        let nav = nav.clone();
+        let ivr = ivr.clone();
+
+        Callback::from(move|event: SubmitEvent| {
+            let ivr = ivr.clone();
+            let nav = nav.clone();
+            let dispatch: Dispatch<Store> = dispatch.clone();
+            let store_cloned = store_cloned.clone();
+            let loc = loc.clone();
+
+            let target = event.target().unwrap();
+            let form = target.dyn_into().unwrap();            
+            let form_data = FormData::new_with_form(&form).unwrap();
+
+            let new_attrs = ivr
+                .attrs
+                .clone()
+                .into_iter()
+                .map(|a|{
+                    let key = a.0;
+                    let mut attr = a.1;
+                    attr.value = form_data.get(&key).as_string().unwrap();
+                    (key, attr)
+                })
+                .collect::<HashMap<String, IvrAttr>>();
+
+            let new_entries: Vec<IvrEntry> = ivr
+                .entries
+                .clone()
+                .into_iter()
+                .enumerate()
+                .map(|(i,e)|{
+                    let index = i.try_into().unwrap();
+                    IvrEntry { 
+                        id: e.id, 
+                        ivr_id: ivr.id, 
+                        digits: form_data.get_all("entry").get(index).as_string().unwrap(),
+                        dest_exten: form_data.get_all("destination").get(index).as_string().unwrap()
+                    }
+                })
+                .collect();
+
+            let all_data = Ivr {
+                id: ivr.id,
+                domain_id: ivr.domain_id,
+                name: form_data.get("name").as_string().unwrap(),
+                exten: ivr.exten.clone(),
+                attrs: new_attrs,
+                entries: new_entries
+            };
+
+            wasm_bindgen_futures::spawn_local(async move {
+                let dispatch = dispatch.clone();
+                match Service::post(loc.path(), store_cloned.selected_domain, all_data).await {
+                    Ok(_) => {
+                        alert_info("Update IVR successfully.".to_string(), dispatch);
+                    }
+                    Err(_) => {
+                        alert_error("Update IVR failed.".to_string(), dispatch);
+                    }
+                }
+                nav.push(&IvrRoute::Index);            
+            });
+
+            event.prevent_default();
         })
     };
     html! {
         <div class="grow mr-2">
-            <Header title= {format!("IVR: {}", ivr.ivr.exten.clone())}></Header>
+            <Header title= {format!("IVR: {}", ivr.exten.clone())}></Header>
             <div class="divider my-1"></div> 
             <form class="w-full" onsubmit={form_onsubmit}> 
                 <div class="grid grid-cols-3 gap-1">
                     <Label>{"Name"}</Label>
-                    <Input id="name" value={ivr.ivr.name.clone()}></Input>
+                    <Input id="name" value={ivr.name.clone()}></Input>
                     {attr_htmls}
                     <Label>{"Entries"}</Label>
                     <div>
-                        {entries}
-                        {   
-                            new_entries.iter().map(|e|{
-                                html!{
-                                    <IvrEntryComponent
-                                        digits={e.digits.clone()}
-                                        exten={e.dest_exten.clone()}
-                                    />
-                                }
-                            }).collect::<Vec<Html>>()
-                        }
+                        {entries_html}
                         <div>
                             <div class="btn btn-link btn-sm mr-4" onclick={add_entry}>
                                 <Icon icon_id={IconId::LucidePlus}/>
