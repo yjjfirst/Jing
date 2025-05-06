@@ -1,6 +1,6 @@
 CREATE TABLE sound_files (
        id SERIAL,
-       name VARCHAR(32) NOT NULL UNIQUE,
+       name VARCHAR(256) NOT NULL UNIQUE,
        domain_id INT NOT NULL,
        description VARCHAR(1024),
        PRIMARY KEY(id),

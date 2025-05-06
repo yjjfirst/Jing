@@ -4,20 +4,17 @@ pub mod ivr_entry;
 use diesel::prelude::*;
 use diesel::dsl::*;
 use crate::db_connect;
-use crate::extension;
-use crate::error::{Result, Error};
+use crate::error::{Result};
 use super::extension::{add_extension, del_extension};
 use serde::{Serialize, Deserialize};
 use crate::schema::ivrs;
 
-use ivr_attrs::{IvrAttr};
-use ivr_entry::{IvrEntry};
 pub enum DestType {
     User(i32),
     Ringgroup(i32)
 }
 
-#[derive(Identifiable,Queryable,Debug,PartialEq,Serialize, Deserialize)]
+#[derive(Identifiable,Queryable,Debug,PartialEq,Serialize, Deserialize, AsChangeset)]
 #[derive(Clone)]
 pub struct Ivr {
     pub id: i32,
@@ -34,7 +31,7 @@ pub struct NewIvr<'a> {
     pub domain_id: i32,
 }
 
-pub fn add(name: &str, exten: &str, domain_id: i32) -> Result<()> {
+pub fn add(name: &str, exten: &str, domain_id: i32, greet_long: &str, greet_short: &str) -> Result<()> {
     let mut conn = db_connect();
     let new_ivr = NewIvr {
         name, exten, domain_id
@@ -46,7 +43,7 @@ pub fn add(name: &str, exten: &str, domain_id: i32) -> Result<()> {
         .values(&new_ivr)
         .get_result(&mut conn)?;
 
-    ivr_attrs::add_defaults(inserted.id)?;
+    ivr_attrs::add_defaults(inserted.id, greet_long, greet_short)?;
 
     Ok(())
 }
@@ -96,6 +93,19 @@ pub fn get(i: i32) -> Result<Ivr> {
     Ok(result)
 }
 
+pub fn update(ivr: Ivr) -> Result<()> {
+    use crate::schema::ivrs;
+    use crate::schema::ivrs::dsl::*;
+
+    let mut conn = db_connect();
+    diesel::update(ivrs::table)
+        .filter(id.eq(ivr.id))
+        .set(ivr)
+        .execute(&mut conn)?;
+
+    Ok(())
+}
+
 pub fn get_by(domain: i32, ext: &str) -> Result<Ivr> {
     use crate::schema::ivrs::dsl::*;
     let mut conn = db_connect();
@@ -106,90 +116,4 @@ pub fn get_by(domain: i32, ext: &str) -> Result<Ivr> {
         .first(&mut conn)?;
 
     Ok(result)
-}
-
-pub fn add_ivr_attr(a_ivr_id: i32, a_name: String, a_value: String) -> Result<()> {
-    use crate::schema::ivr_attrs::dsl::*;
-    use crate::schema::ivr_attrs;
-    let mut conn = db_connect();
-
-    diesel::insert_into(ivr_attrs::table)
-        .values((&ivr_id.eq(a_ivr_id),
-                 &name.eq(a_name),
-                 &value.eq(a_value)))
-        .execute(&mut conn)?;
-
-    Ok(())
-}
-
-pub fn add_ivr_entry(domain: i32, a_ivr_id: i32, ds: String, exten: String) -> Result<()> {
-    use crate::schema::ivr_entries::dsl::*;
-    use crate::schema::ivr_entries;
-    let mut conn = db_connect();
-
-    if !ivr_exists(a_ivr_id)? {
-        return Err(Error::Fslib("IVR doesn't exist".to_string()));
-    }
-
-    let exten = extension::get_extension(&exten, domain)?;
-
-    diesel::insert_into(ivr_entries::table)
-        .values((&ivr_id.eq(a_ivr_id),
-                 &digits.eq(ds),
-                 &dest_exten.eq(exten.exten)))
-        .execute(&mut conn)?;
-
-    Ok(())
-}
-
-pub fn del_ivr_attr(attr_id: i32) -> Result<()> {
-    use crate::schema::ivr_attrs::columns::id;
-    use crate::schema::ivr_attrs;
-    let mut conn = db_connect();
-
-    diesel::delete(ivr_attrs::table)
-        .filter(id.eq(attr_id))
-        .execute(&mut conn)?;
-
-    Ok(())
-}
-
-pub fn del_ivr_entry(entry_id: i32) -> Result<()> {
-    use crate::schema::ivr_entries::columns::id;
-    use crate::schema::ivr_entries;
-    let mut conn = db_connect();
-
-    diesel::delete(ivr_entries::table)
-        .filter(id.eq(entry_id))
-        .execute(&mut conn)?;
-
-    Ok(())
-}
-
-pub fn attrs(ivr_id: i32) -> Result<Vec<ivr_attrs::IvrAttr>> {
-    use crate::schema::ivrs::dsl::*;
-    let mut conn = db_connect();
-
-    let ivr = ivrs
-        .find(ivr_id)
-        .first::<Ivr>(&mut conn)?;
-
-    let attrs = IvrAttr::belonging_to(&ivr)
-        .load::<IvrAttr>(&mut conn)?;
-
-    Ok(attrs)
-}
-
-pub fn entries(ivr_id: i32) -> Result<Vec<IvrEntry>> {
-    use crate::schema::ivrs::dsl::*;
-    let mut conn =db_connect();
-
-    let ivr = ivrs
-        .find(ivr_id)
-        .first::<Ivr>(&mut conn)?;
-
-    let  entries = IvrEntry::belonging_to(&ivr)
-        .load::<IvrEntry>(&mut conn)?;
-
-    return Ok(entries);
 }

@@ -30,6 +30,8 @@ REGISTER_IP_ADDR=${IP_ADDR}
 ./target/debug/fs_cmd ivr add  --exten 8000 --name martin_test
 ./target/debug/fs_cmd ivr entry add --digits 1 --ivr-id 1 --dest-exten 1000
 
+./target/debug/fs_cmd sound-file import --path ivr/ivr-that_was_an_invalid_entry.wav
+./target/debug/fs_cmd sound-file import --path voicemail/vm-goodbye.wav
 ./target/debug/fs_cmd sound-file add --name ttt.wav --path sounds/play-profiles.mp3 --desc "test"
 ./target/debug/fs_cmd sound add --exten 3000 --name test --sound-file-id 1
 

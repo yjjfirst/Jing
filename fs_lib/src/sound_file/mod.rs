@@ -2,6 +2,7 @@ pub mod models;
 
 use std::process::Command;
 use std::env::temp_dir;
+use std::path::Path;
 use uuid::Uuid;
 
 use models::*;
@@ -10,6 +11,29 @@ use crate::db_connect;
 use crate::schema::sound_files;
 use crate::rt;
 use crate::error::{Result, Error};
+
+pub fn import(domain_id: i32, path: String) -> Result<()> {
+    let mut conn = db_connect();
+    let parts: Vec<&str> = path.split('/').collect();
+    let sound_dir = rt::eval("$${sounds_dir}");
+    let full_path = format!("{}/en/us/callie/{}/8000/{}", sound_dir, parts[0], parts[1]);
+
+    if !Path::new(&full_path).exists() {
+        return Err(Error::Fslib("Import file dosen't exist".to_string()));
+    }
+
+    let soundfile = NewSoundFile {
+        name: &path,
+        domain_id: domain_id,
+        description: Some("FS sound imported"),
+    };
+
+    diesel::insert_into(sound_files::table)
+        .values(&soundfile)
+        .execute(&mut conn)?;
+
+    Ok(())
+}
 
 pub fn add(domain: i32,name: String, path: String, desc: String) -> Result<()>{
     let mut conn = db_connect();

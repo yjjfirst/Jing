@@ -7,7 +7,7 @@ members = [
     "fs_cmd",
     "util_macro",
 ]
-
+resolver = "2"
 exclude = [
     "frontend",
 ]

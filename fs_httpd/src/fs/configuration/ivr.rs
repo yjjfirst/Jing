@@ -23,7 +23,7 @@ pub fn serve<W: Write>(w: &mut EventWriter<W>) {
 }
 
 pub fn ivr<W: Write>(w: &mut EventWriter<W>, ivr: ivr::Ivr) {
-    let ivr_attrs = ivr::attrs(ivr.id).unwrap();
+    let ivr_attrs = ivr::ivr_attrs::list(ivr.id).unwrap();
     let mut vec_attrs: Vec<(&str, &str)> = Vec::new();
 
     vec_attrs.push(("name", &ivr.name));
@@ -38,7 +38,7 @@ pub fn ivr<W: Write>(w: &mut EventWriter<W>, ivr: ivr::Ivr) {
 }
 
 fn entries<W: Write>(w: &mut EventWriter<W>, ivr: ivr::Ivr) {
-    let ivr_entries = ivr::entries(ivr.id).unwrap();
+    let ivr_entries = ivr::ivr_entry::list(ivr.id).unwrap();
     for i in ivr_entries {
         entry(w, &i.digits, &i.dest_exten);
     }

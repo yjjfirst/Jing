@@ -16,6 +16,10 @@ pub enum SoundFileCli {
         #[structopt(short, long)]
         desc: String,
     },
+    Import {
+        #[structopt(short, long)]
+        path: String,
+    },
     Del {
         #[structopt(short, long)]
         id: i32,
@@ -42,6 +46,9 @@ pub fn exec_soundfile_cmd(soundfile: SoundFileCli) {
     match soundfile {
         SoundFileCli::Add {name, path, desc} => {
             sound_file::add(domain_id, name, path, desc).unwrap();
+        },
+        SoundFileCli::Import {path} => {
+            sound_file::import(domain_id, path).unwrap();
         },
         SoundFileCli::Del {id} =>{
             sound_file::del(id).unwrap();

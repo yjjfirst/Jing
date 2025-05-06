@@ -62,6 +62,10 @@ pub enum IvrCli {
         name: String,
         #[structopt(short, long, help="Extension of the IVR")]
         exten: String,
+        #[structopt(long, help="Greet long")]
+        greet_long: String,
+        #[structopt(long, help="Greet short")]
+        greet_short: String
     },
     #[structopt(about="Delete IVR.")]
     Del {
@@ -100,7 +104,7 @@ pub fn print_ivrs(ivrs: Vec<ivr::Ivr>) {
 }
 
 pub fn print_ivr_entries(ivr_id: i32) {
-    let entries = ivr::entries(ivr_id).unwrap();
+    let entries = ivr::ivr_entry::list(ivr_id).unwrap();
     let mut table = Ctable::new();
 
     table.set_titles(row!["id", "ivr id", "digits", "dest extension"]);
@@ -121,10 +125,10 @@ pub fn exec_ivr_entry_cmd(entry: IvrEntryCli) {
     let domain_id = domain::get_active().unwrap();
     match entry {
         IvrEntryCli::Add {ivr_id, digits, dest_exten} =>  {
-            ivr::add_ivr_entry(domain_id, ivr_id, digits, dest_exten).unwrap();
+            ivr::ivr_entry::add_entry(domain_id, ivr_id, digits, dest_exten).unwrap();
         },
         IvrEntryCli::Del {id} => {
-            ivr::del_ivr_entry(id).unwrap();
+            ivr::ivr_entry::del_entry(id).unwrap();
         },
         IvrEntryCli::Ls {ivr_id} => {
             print_ivr_entries(ivr_id);
@@ -133,7 +137,7 @@ pub fn exec_ivr_entry_cmd(entry: IvrEntryCli) {
 }
 
 pub fn print_ivr_attrs(ivr_id: i32) {
-    let attrs = ivr::attrs(ivr_id).unwrap();
+    let attrs = ivr::ivr_attrs::list(ivr_id).unwrap();
     let mut table = Ctable::new();
 
     table.set_titles(row!["id", "ivr id", "name", "value"]);
@@ -150,13 +154,12 @@ pub fn print_ivr_attrs(ivr_id: i32) {
 }
 
 pub fn exec_ivr_attr_cmd(attr: IvrAttrCli) {
-    let domain_id = domain::get_active().unwrap();
     match attr {
         IvrAttrCli::Add {ivr_id, name, value} =>  {
-            ivr::add_ivr_attr(domain_id, name, value).unwrap();
+            ivr::ivr_attrs::add_attr(ivr_id, name, value).unwrap();
         },
         IvrAttrCli::Del {id} => {
-            ivr::del_ivr_attr(id).unwrap();
+            ivr::ivr_attrs::del_attr(id).unwrap();
         },
         IvrAttrCli::Ls {ivr_id} => {
             print_ivr_attrs(ivr_id);
@@ -167,8 +170,8 @@ pub fn exec_ivr_attr_cmd(attr: IvrAttrCli) {
 pub fn exec_ivr_cmd(ivr: IvrCli) {
     let domain_id = domain::get_active().unwrap();
     match ivr {
-        IvrCli::Add {name, exten} => {
-            ivr::add(&name, &exten, domain_id).unwrap();
+        IvrCli::Add {name, exten, greet_long, greet_short} => {
+            ivr::add(&name, &exten, domain_id, &greet_long, &greet_short).unwrap();
         },
         IvrCli::Del {id} => {
             ivr::del(id).unwrap();

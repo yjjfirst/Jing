@@ -2,6 +2,7 @@ mod sofia;
 mod conference;
 mod callcenter;
 mod ivr;
+mod acl;
 
 extern crate fs_lib;
 
@@ -27,6 +28,8 @@ pub fn serve (fs_req: FsRequest) -> Result<String> {
         callcenter::serve(&mut w);
     } else if fs_req.key_value == "ivr.conf" {
         ivr::serve(&mut w);
+    } else if fs_req.key_value == "acl.conf" {
+        acl::serve(&mut w);
     }
 
     end_element(&mut w);
@@ -34,6 +37,9 @@ pub fn serve (fs_req: FsRequest) -> Result<String> {
 
     let response = buf.into_inner().unwrap();
     let response: String = String::from_utf8(response).unwrap();
+    if fs_req.key_value == "acl.conf" {
+        println!("{}", response);
+    }
 
     Ok(response.into())
 }

@@ -1,6 +1,23 @@
 // @generated automatically by Diesel CLI.
 
 diesel::table! {
+    acl_lists (id) {
+        id -> Int4,
+        acl_name -> Varchar,
+        acl_default -> Varchar,
+    }
+}
+
+diesel::table! {
+    acl_nodes (id) {
+        id -> Int4,
+        list_id -> Nullable<Int4>,
+        node_type -> Varchar,
+        cidr -> Varchar,
+    }
+}
+
+diesel::table! {
     agent_params (id) {
         id -> Int4,
         agent_id -> Int4,
@@ -316,6 +333,8 @@ diesel::joinable!(users -> domains (domain_id));
 diesel::joinable!(voicemails -> users (user_id));
 
 diesel::allow_tables_to_appear_in_same_query!(
+    acl_lists,
+    acl_nodes,
     agent_params,
     agents,
     cdr,
