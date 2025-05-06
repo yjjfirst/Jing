@@ -3,6 +3,7 @@ extern crate fs_lib;
 use xml::writer::{EventWriter};
 use std::io::Write;
 use fs_lib::ivr;
+use fs_lib::sound_file;
 use crate::fs::xml_utils::{start_element, end_element, attrs, entry};
 
 pub fn serve<W: Write>(w: &mut EventWriter<W>) {
@@ -23,11 +24,20 @@ pub fn serve<W: Write>(w: &mut EventWriter<W>) {
 }
 
 pub fn ivr<W: Write>(w: &mut EventWriter<W>, ivr: ivr::Ivr) {
-    let ivr_attrs = ivr::ivr_attrs::list(ivr.id).unwrap();
+    let mut ivr_attrs = ivr::ivr_attrs::list(ivr.id).unwrap();
     let mut vec_attrs: Vec<(&str, &str)> = Vec::new();
 
     vec_attrs.push(("name", &ivr.name));
-    for a in &ivr_attrs {
+    for a in &mut ivr_attrs {
+        if a.name == "greet-long"
+            || a.name == "greet-short"
+            || a.name == "exit-sound"
+            || a.name == "invalid-sound" {
+            let sound_file_id = a.value.parse::<i32>().unwrap();
+            let sound_file = sound_file::get(sound_file_id).unwrap();
+            a.value = sound_file.name.clone();
+        }
+
         vec_attrs.push((&a.name, &a.value));
     }
 
