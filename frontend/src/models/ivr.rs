@@ -9,11 +9,27 @@ pub struct Ivr {
     pub exten: String,
     pub name: String,
     pub domain_id: usize,
+    pub attrs: HashMap<String, IvrAttr>,
+    pub entries: Vec<IvrEntry>
 }
+
+impl Ivr {
+    pub fn new() -> Ivr {
+        Ivr {
+            id: 0,
+            exten: "".to_string(),
+            name: "".to_string(),
+            domain_id: 0,
+            attrs: HashMap::new(),
+            entries: vec![]
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq,Serialize, Deserialize)]
 pub struct IvrEntry {
     pub id: i32,
-    pub ivr_id: i32,
+    pub ivr_id: usize,
     pub digits: String,
     pub dest_exten: String
 }
@@ -32,7 +48,7 @@ impl IvrEntry {
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, HashMapHelper)]
 pub struct IvrAttr {
     pub id: i32,
-    pub ivr_id: i32,
+    pub ivr_id: usize,
     pub name: String,
     pub value: String
 }
@@ -46,26 +62,4 @@ impl IvrAttr {
             value: "".to_string()
         }
     }    
-}
-
-#[derive(Clone, Debug, PartialEq,Serialize, Deserialize)]
-pub struct IvrAllData {
-    pub ivr: Ivr,
-    pub attrs: HashMap<String, IvrAttr>,
-    pub entries: Vec<IvrEntry>
-}
-
-impl IvrAllData {
-    pub fn new() -> IvrAllData {
-        IvrAllData {
-            ivr: Ivr {
-                id: 0,
-                exten: "".to_string(),
-                name: "".to_string(),
-                domain_id: 0
-            },
-            attrs: HashMap::new(),
-            entries: vec![]
-        }
-    }
 }
