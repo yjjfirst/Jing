@@ -138,8 +138,16 @@ pub fn IvrList() -> Html {
         nav.push(&IvrRoute::Get {id: 0});        
     });
 
-    let ondel: Callback<usize> = {
+    let ondel: Callback<usize> = {        
+        let ivrs = ivrs.clone();
         Callback::from(move|id: usize|{
+            let ivrs = ivrs.clone();
+            let filtered = ivrs
+                .iter()
+                .filter(|i| id != i.id)
+                .map(|i| i.clone())
+                .collect();
+            ivrs.set(filtered);
         })
     };    
 
@@ -191,7 +199,7 @@ pub fn IvrEntryComponent(props: &IvrEntryProps) -> Html {
 }
 
 #[function_component]
-pub fn IvrDetails(_props: &IvrDetailProps) -> Html {
+pub fn IvrDetails(props: &IvrDetailProps) -> Html {
     let nav = use_navigator().unwrap();
     let ivr = use_state(||Ivr::new());
     let loc = use_location().unwrap();
@@ -340,7 +348,7 @@ pub fn IvrDetails(_props: &IvrDetailProps) -> Html {
                 id: ivr.id,
                 domain_id: ivr.domain_id,
                 name: form_data.get("name").as_string().unwrap(),
-                exten: ivr.exten.clone(),
+                exten: form_data.get("extension").as_string().unwrap(),
                 attrs: new_attrs,
                 entries: new_entries
             };
@@ -367,6 +375,12 @@ pub fn IvrDetails(_props: &IvrDetailProps) -> Html {
             <div class="divider my-1"></div> 
             <form class="w-full" onsubmit={form_onsubmit}> 
                 <div class="grid grid-cols-3 gap-1">
+                    <Label hidden = {props.id != 0}>{"Extension"}</Label>
+                    <Input
+                        value={ivr.exten.clone()}
+                        id="extension"
+                        hidden = {props.id != 0}
+                    />                
                     <Label>{"Name"}</Label>
                     <Input id="name" value={ivr.name.clone()}></Input>
                     {attr_htmls}
