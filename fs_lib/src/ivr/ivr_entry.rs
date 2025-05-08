@@ -64,6 +64,18 @@ pub fn update(e: &IvrEntry) -> Result<()> {
     Ok(())
 }
 
+pub fn del_entries_of(a_ivr_id: i32) -> Result<()> {
+    use crate::schema::ivr_entries::columns::ivr_id;
+    use crate::schema::ivr_entries;
+    let mut conn = db_connect();
+
+    diesel::delete(ivr_entries::table)
+        .filter(ivr_id.eq(a_ivr_id))
+        .execute(&mut conn)?;
+
+    Ok(())
+}
+
 pub fn del_entry(entry_id: i32) -> Result<()> {
     use crate::schema::ivr_entries::columns::id;
     use crate::schema::ivr_entries;

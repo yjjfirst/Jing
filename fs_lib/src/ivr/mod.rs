@@ -31,7 +31,7 @@ pub struct NewIvr<'a> {
     pub domain_id: i32,
 }
 
-pub fn add(name: &str, exten: &str, domain_id: i32, greet_long: &str, greet_short: &str) -> Result<()> {
+pub fn add(name: &str, exten: &str, domain_id: i32, greet_long: &str, greet_short: &str) -> Result<Ivr> {
     let mut conn = db_connect();
     let new_ivr = NewIvr {
         name, exten, domain_id
@@ -45,7 +45,7 @@ pub fn add(name: &str, exten: &str, domain_id: i32, greet_long: &str, greet_shor
 
     ivr_attrs::add_defaults(inserted.id, greet_long, greet_short)?;
 
-    Ok(())
+    Ok(inserted)
 }
 
 pub fn ivr_exists(i: i32) -> Result<bool> {

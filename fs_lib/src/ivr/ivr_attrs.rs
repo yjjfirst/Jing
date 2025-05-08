@@ -23,22 +23,36 @@ pub struct NewIvrAttr {
     pub value: String
 }
 
+pub fn default_attrs<'a>() -> Vec<(&'a str, &'a str)>{
+    let attrs = vec![
+        ("greet-long", "3"),
+        ("greet-short", "3"),
+        ("invalid-sound", "1"),
+        ("exit-sound", "2"),
+        ("confirm-attempts", "3"),
+        ("timeout", "10000"),
+        ("inter-digit-timeout", "2000"),
+        ("max-failures", "3"),
+        ("max-timeouts", "3"),
+        ("digit-len", "4")
+    ];
+
+    attrs
+}
+
 pub fn add_defaults(ivr: i32, greet_long: &str, greet_short: &str) -> Result<()> {
     use crate::schema::ivr_attrs::columns::*;
     let mut conn = db_connect();
+    let attrs = default_attrs();
+
     diesel::insert_into(ivr_attrs::table)
-        .values(&vec![
-            (name.eq("greet-long"), value.eq(""), ivr_id.eq(ivr)),
-            (name.eq("greet-short"), value.eq(""), ivr_id.eq(ivr)),
-            (name.eq("invalid-sound"), value.eq("1"), ivr_id.eq(ivr)),
-            (name.eq("exit-sound"), value.eq("2"), ivr_id.eq(ivr)),
-            (name.eq("confirm-attempts"), value.eq("3"), ivr_id.eq(ivr)),
-            (name.eq("timeout"), value.eq("10000"), ivr_id.eq(ivr)),
-            (name.eq("inter-digit-timeout"), value.eq("2000"), ivr_id.eq(ivr)),
-            (name.eq("max-failures"), value.eq("3"), ivr_id.eq(ivr)),
-            (name.eq("max-timeouts"), value.eq("3"), ivr_id.eq(ivr)),
-            (name.eq("digit-len"), value.eq("4"), ivr_id.eq(ivr))
-        ])
+        .values(
+            attrs.iter().map(|a| {
+                (name.eq(a.0.to_string()),
+                 value.eq(a.1.to_string()),
+                 ivr_id.eq(ivr))
+            }).collect::<Vec<_>>()
+        )
         .execute(&mut conn)?;
 
     Ok(())
@@ -69,6 +83,19 @@ pub fn update(i: &IvrAttr) -> Result<()> {
         .execute(&mut conn)?;
 
     Ok(())
+}
+
+pub fn del_attrs_of(a_ivr_id: i32) -> Result<()> {
+    use crate::schema::ivr_attrs::columns::ivr_id;
+    use crate::schema::ivr_attrs;
+    let mut conn = db_connect();
+
+    diesel::delete(ivr_attrs::table)
+        .filter(ivr_id.eq(a_ivr_id))
+        .execute(&mut conn)?;
+
+    Ok(())
+
 }
 
 pub fn del_attr(attr_id: i32) -> Result<()> {
