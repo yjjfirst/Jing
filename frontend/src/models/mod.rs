@@ -10,6 +10,7 @@ pub mod sound;
 pub mod extension;
 pub mod conference;
 pub mod ivr;
+pub mod callcenter;
 
 use gloo_net::http::Request;
 use gloo_net::Error;

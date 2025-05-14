@@ -63,8 +63,8 @@ pub fn SidebarMenu() -> Html {
             selected: false,
         },                 
         SidebarMenuItemPros {
-            caption: "Queue".to_string(),
-            route: Route::QueueRoot,
+            caption: "Call Center".to_string(),
+            route: Route::CallcenterRoot,
             onclick: onclick.clone(),
             selected: false,
         },                 

@@ -9,4 +9,4 @@ pub mod sound_file;
 pub mod sound;
 pub mod ivr;
 pub mod conference;
-pub mod queue;
+pub mod callcenter;

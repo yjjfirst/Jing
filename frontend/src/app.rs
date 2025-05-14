@@ -14,6 +14,7 @@ use crate::pages::sound_file::{SoundFileRoute, sound_file_switch};
 use crate::pages::sound::{SoundRoute, sound_switch};
 use crate::pages::conference::{ConfRoute, conf_switch};
 use crate::pages::ivr::{IvrRoute, ivr_switch};
+use crate::pages::callcenter::{CallcenterRootRoute, callcenter_root_switch};
 use crate::components::alert::{AlertType, AlertComponent, Props as AlertProps};
 use crate::components::banner::Banner;
 use crate::models::domain::Domain;
@@ -64,10 +65,10 @@ pub enum Route {
     ConferenceRoot,
     #[at("/conference/*")]
     Conference,    
-    #[at("/queue")]
-    QueueRoot,
-    #[at("/queue/*")]
-    Queue,    
+    #[at("/callcenter/queue")]
+    CallcenterRoot,
+    #[at("/callcenter/*")]
+    Callcenter,    
 }
 
 #[function_component(App)]
@@ -181,11 +182,11 @@ fn switch(routes: Route) -> Html {
         Route::Ivr => html! {
             <Switch<IvrRoute> render={ivr_switch} />
         },
-        Route::QueueRoot => html! {
-            <div>{"Queue Root"}</div>
+        Route::CallcenterRoot => html! {
+            <Switch<CallcenterRootRoute> render={callcenter_root_switch} />
         },
-        Route::Queue => html! {
-            <div>{"Queue"}</div>
-        },
+        Route::Callcenter => html! {
+            <Switch<CallcenterRootRoute> render={callcenter_root_switch} />
+        },        
     }
 }

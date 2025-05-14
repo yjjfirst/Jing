@@ -1,7 +1,7 @@
 
 use std::collections::HashMap;
 use wasm_bindgen::JsCast;
-use web_sys::{FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
+use web_sys::{FormData, SubmitEvent, HtmlDialogElement};
 use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
