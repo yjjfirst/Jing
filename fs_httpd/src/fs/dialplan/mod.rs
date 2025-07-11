@@ -98,6 +98,9 @@ fn user<W: Write>(w: &mut EventWriter<W>)  {
     action(w, "set","hangup_after_bridge=true");
     action(w, "set","continue_on_fail=true");
     action(w, "bridge", "user/${dialed_extension}@${domain_name}");
+    action(w, "answer","");
+    action(w, "sleep", "1000");
+    action(w, "bridge", "loopback/app=voicemail:default ${domain_name} ${dialed_extension}");
 }
 
 fn outbounds<W: Write>(w: &mut EventWriter<W>) {
