@@ -32,7 +32,7 @@ yew_icons = {version = "0.8", features = ["LucideEdit",
     "LucideChevronUp",
     "LucidePlus",
     "LucideTrash"]}
-yewdux = "0.9.4"
+yewdux = "0.11.0"
 charming = {version = "0.4.0", features = ["wasm"] }
 util_macro = {version = "0.1.0", path = "../util_macro"}
 
