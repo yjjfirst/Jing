@@ -18,6 +18,8 @@ use crate::components::header::Header;
 #[derive(Clone, Routable, PartialEq)]
 pub enum CallcenterRootRoute {
     #[at("/callcenter/queue")]
+    QueueRoot,
+    #[at("/callcenter/queue/*")]
     Queue,
     #[at("/callcenter/agent")]
     Agent,
@@ -40,7 +42,7 @@ pub fn Callcenter() -> Html {
             .target_dyn_into::<HtmlInputElement>()
             .unwrap();
         if i.value() == "queue" {
-            nav.push(&CallcenterRootRoute::Queue);
+            nav.push(&CallcenterRootRoute::QueueRoot);
         } else if i.value() == "agent" {
             nav.push(&CallcenterRootRoute::Agent);
         } else {
@@ -91,6 +93,7 @@ pub fn Callcenter() -> Html {
 
 pub fn callcenter_root_switch(route: CallcenterRootRoute) -> Html {
     match route {
+        CallcenterRootRoute::QueueRoot => html!{<Callcenter/>},
         CallcenterRootRoute::Queue => html!{<Callcenter/>},
         CallcenterRootRoute::Agent => html!{<Callcenter/>},
         CallcenterRootRoute::Tier => html!{<Callcenter/>},

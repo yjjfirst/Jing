@@ -295,7 +295,7 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
                 <Label>{"Ring Stragegy"}</Label>
                 <Select
                     {options}
-                    select = {group.0.ring_strategy.to_string()}
+                    selected = {group.0.ring_strategy.to_string()}
                     id="ring-strategy">
                 </Select>
                 <Label>{"Members"}</Label>

@@ -8,7 +8,7 @@ pub struct Props {
     pub label_width: Classes,
     pub options: Vec<String>,
     #[prop_or("".to_string())]
-    pub select: String,
+    pub selected: String,
 }
 
 #[function_component]
@@ -26,7 +26,7 @@ pub fn Select(props: &Props) -> Html {
         {
             options.into_iter().map(|o| {
                 html!{
-                    if props.select == o {
+                    if props.selected == o {
                         <option selected=true>{o}</option>
                     } else{
                         <option>{o}</option>

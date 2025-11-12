@@ -268,7 +268,7 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
                 <Label>{"Gateway"}</Label>
                 if out.gateway_id != 0 && gateways.len() != 0 {
                     <Select 
-                        select={Gateway::get_gateway_by_id(out.gateway_id, &gateways).unwrap().gateway_name.clone()}
+                        selected={Gateway::get_gateway_by_id(out.gateway_id, &gateways).unwrap().gateway_name.clone()}
                         options={gateways
                                     .iter()
                                     .map(|g|{g.gateway_name.clone()})
@@ -276,7 +276,7 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
                         id="gateway"/>
                 } else {
                     <Select 
-                        select={""}
+                        selected={""}
                             options={gateways
                                     .iter()
                                     .map(|g|{g.gateway_name.clone()})
