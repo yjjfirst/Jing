@@ -4,13 +4,15 @@ pub mod agent_param;
 pub mod tier;
 
 use diesel::prelude::*;
+use serde::{Serialize, Deserialize};
+
 use crate::error::{Result};
 use crate::db_connect;
 use crate::schema::{queues};
 use super::extension::{add_extension, del_extension};
 use queue_param::{QueueParam};
 
-#[derive(Identifiable,Queryable,Debug,PartialEq)]
+#[derive(Identifiable,Queryable,Debug,PartialEq,Serialize, Deserialize, AsChangeset)]
 #[derive(Clone)]
 pub struct Queue {
     pub id: i32,
@@ -29,7 +31,7 @@ pub struct NewQueue<'a> {
 
 pub fn add(domain_id: i32,
            exten: String,
-           name: String) -> Result<()>
+           name: String) -> Result<i32>
 {
     let mut conn = db_connect();
 
@@ -47,6 +49,19 @@ pub fn add(domain_id: i32,
 
     queue_param::add_defaults(queue.id)?;
 
+    Ok(queue.id)
+}
+
+pub fn update(queue: Queue) -> Result<()> {
+    use crate::schema::queues;
+    use crate::schema::queues::dsl::*;
+
+    let mut conn = db_connect();
+    diesel::update(queues::table)
+        .filter(id.eq(queue.id))
+        .set(queue)
+        .execute(&mut conn)?;
+
     Ok(())
 }
 
@@ -63,7 +78,7 @@ pub fn del(a_id: i32) -> Result<()> {
     Ok(())
 }
 
-pub fn all() -> Result<Vec<Queue>> {
+pub fn list() -> Result<Vec<Queue>> {
     use crate::schema::queues::dsl::*;
     let mut conn = db_connect();
 

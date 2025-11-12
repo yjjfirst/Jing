@@ -40,7 +40,7 @@ pub fn default_attrs<'a>() -> Vec<(&'a str, &'a str)>{
     attrs
 }
 
-pub fn add_defaults(ivr: i32, greet_long: &str, greet_short: &str) -> Result<()> {
+pub fn add_defaults(ivr: i32, _greet_long: &str, _greet_short: &str) -> Result<()> {
     use crate::schema::ivr_attrs::columns::*;
     let mut conn = db_connect();
     let attrs = default_attrs();

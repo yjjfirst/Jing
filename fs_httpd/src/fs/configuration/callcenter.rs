@@ -89,7 +89,7 @@ pub fn tier<W: Write>(w: &mut EventWriter<W>, tier: tier::Tier) {
 }
 
 pub fn queues<W: Write>(w: &mut EventWriter<W>) {
-    let queues = queue::all().unwrap();
+    let queues = queue::list().unwrap();
     start_element(w, "queues", None);
     for q in queues {
         queue(w, q);
