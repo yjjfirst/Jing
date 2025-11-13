@@ -1,10 +1,5 @@
-use wasm_bindgen::JsCast;
-use web_sys::{FormData, SubmitEvent, HtmlDialogElement};
 use yew::prelude::*;
-use yew::Properties;
 use yew_router::prelude::*;
-use yewdux::prelude::*;
-use yew_icons::{Icon, IconId};
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum AgentRoute {
@@ -15,7 +10,7 @@ pub enum AgentRoute {
 #[function_component]
 pub fn AgentList() -> Html {
     html!{
-        <div>{"Agent List"}</div>
+
     }
 }
 

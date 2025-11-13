@@ -9,9 +9,7 @@ use tiers::{TierRoute,tier_switch};
 
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
-use yew::Properties;
 use yew_router::prelude::*;
-use yew_icons::{Icon, IconId};
 
 use crate::components::header::Header;
 
@@ -25,11 +23,6 @@ pub enum CallcenterRootRoute {
     Agent,
     #[at("/callcenter/tier")]
     Tier,
-}
-
-#[derive(Clone, PartialEq, Properties)] 
-pub struct CallcenterDetailProps {
-    pub id: usize,
 }
 
 #[function_component]

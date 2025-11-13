@@ -1,5 +1,5 @@
 use serde::{Deserialize, Serialize};
-use std::{collections::HashMap, hash::Hash};
+use std::{collections::HashMap};
 use util_macro::HashMapHelper;
 use web_sys::FormData;
 
@@ -34,7 +34,7 @@ pub struct QueueParam {
 }
 
 impl QueueParam {
-    pub fn new() -> QueueParam {
+    pub fn _new() -> QueueParam {
         QueueParam { 
             id: 0, 
             queue_id: 0, 

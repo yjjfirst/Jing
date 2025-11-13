@@ -54,7 +54,7 @@ pub struct IvrAttr {
 }
 
 impl IvrAttr {
-    pub fn new() -> IvrAttr {
+    pub fn _new() -> IvrAttr {
         IvrAttr {
             id: 0,
             ivr_id: 0,

@@ -29,7 +29,7 @@ pub struct Param {
     pub value: String
 }
 impl Param {
-    pub fn new() -> Param {
+    pub fn _new() -> Param {
         Param {id: 0, user_id: 0, name: "".to_string(), value: "".to_string()}
     }
 }
@@ -43,7 +43,7 @@ pub struct Var {
 }
 
 impl Var {
-    pub fn new() -> Var {
+    pub fn _new() -> Var {
         Var {id: 0, user_id: 0, name: "".to_string(), value: "".to_string()}
     }
 }
