@@ -120,7 +120,7 @@ pub fn hashmap_helper_derive(input: TokenStream) -> TokenStream {
                     Some(h) => { #ident {
                         ..(*h).clone()
                     }}
-                    _ => {#ident::new()}
+                    _ => {#ident::_new()}
                 };
             
                 new.name = name.to_string();

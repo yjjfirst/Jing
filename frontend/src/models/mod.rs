@@ -20,7 +20,7 @@ use web_sys::FormData;
 pub struct EmptyJson{
 
 }
-const BASE_URL: &str = "http://teleman.me:9090/api";
+const BASE_URL: &str = "http://telman.me:9090/api";
 
 pub struct Service {}
 impl Service {

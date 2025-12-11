@@ -20,7 +20,9 @@ pub enum CallcenterRootRoute {
     #[at("/callcenter/queue/*")]
     Queue,
     #[at("/callcenter/agent")]
-    Agent,
+    AgentRoot,
+    #[at("/callcenter/agent/*")]
+    Agent,    
     #[at("/callcenter/tier")]
     Tier,
 }
@@ -37,7 +39,7 @@ pub fn Callcenter() -> Html {
         if i.value() == "queue" {
             nav.push(&CallcenterRootRoute::QueueRoot);
         } else if i.value() == "agent" {
-            nav.push(&CallcenterRootRoute::Agent);
+            nav.push(&CallcenterRootRoute::AgentRoot);
         } else {
             nav.push(&CallcenterRootRoute::Tier);
         }
@@ -88,6 +90,7 @@ pub fn callcenter_root_switch(route: CallcenterRootRoute) -> Html {
     match route {
         CallcenterRootRoute::QueueRoot => html!{<Callcenter/>},
         CallcenterRootRoute::Queue => html!{<Callcenter/>},
+        CallcenterRootRoute::AgentRoot => html!{<Callcenter/>},
         CallcenterRootRoute::Agent => html!{<Callcenter/>},
         CallcenterRootRoute::Tier => html!{<Callcenter/>},
     }
