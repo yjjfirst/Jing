@@ -1,8 +1,8 @@
-use super::customtable::{Ctable};
+ use super::customtable::{Ctable};
 use structopt::StructOpt;
-use super::fs_lib::*;
 use super::domain;
-use super::fs_lib::queue::{Queue};
+use super::fs_lib::callcenter::queue::{Queue};
+use super::fs_lib::callcenter::queue;
 
 #[derive(StructOpt)]
 #[derive(Debug)]
@@ -47,7 +47,7 @@ pub fn exec_queue_cmd(queue: QueueCli) {
             queue::del(id).unwrap();
         },
         QueueCli::Ls => {
-            let queues = queue::queues_in(domain_id).unwrap();
+            let queues = queue::list(domain_id).unwrap();
             print_queues(queues);
         }
     }

@@ -1,8 +1,8 @@
 use super::customtable::{Ctable};
 use structopt::StructOpt;
 use super::domain;
-use super::fs_lib::queue::agent;
-use super::fs_lib::queue::agent::{Agent};
+use super::fs_lib::callcenter::agent;
+use super::fs_lib::callcenter::agent::{Agent};
 
 #[derive(StructOpt)]
 #[derive(Debug)]
@@ -31,7 +31,7 @@ pub fn exec_agent_cmd(agent: AgentCli) {
             agent::del(id).unwrap();
         },
         AgentCli::Ls => {
-            let agents = agent::all().unwrap();
+            let agents = agent::list(domain_id).unwrap();
             print_agents(agents);
         }
     }

@@ -15,7 +15,7 @@ use fs_lib::domain;
 use fs_lib::sound;
 use fs_lib::sound_file;
 use fs_lib::conference;
-use fs_lib::queue;
+use fs_lib::callcenter::queue;
 use fs_lib::ivr;
 
 use super::FsRequest;

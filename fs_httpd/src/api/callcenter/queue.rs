@@ -4,9 +4,9 @@ use super::Status;
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
-use fs_lib::queue;
-use fs_lib::queue::queue_param;
-use fs_lib::queue::queue_param::QueueParam;
+use fs_lib::callcenter::queue;
+use fs_lib::callcenter::queue_param;
+use fs_lib::callcenter::queue_param::QueueParam;
 
 #[derive(Serialize, Deserialize)]
 pub struct Queue {
@@ -19,7 +19,7 @@ pub struct Queue {
 
 pub async fn index(path: web::Path<i32>) -> impl Responder {
     let domain_id = path.into_inner();
-    let queues = queue::queues_in(domain_id).unwrap();
+    let queues = queue::list(domain_id).unwrap();
 
     web::Json(queues.into_iter().map(|q|{
         Queue {
@@ -80,7 +80,7 @@ pub async fn post(queue: web::Json<Queue>) -> impl Responder {
         update_params(queue, queue.id);
     } else {
         let id = queue::add(queue.domain_id,
-                   queue.exten.clone(),
+                            queue.exten.clone(),
                             queue.name.clone()).unwrap();
         update_params(queue, id);
     }
@@ -89,7 +89,7 @@ pub async fn post(queue: web::Json<Queue>) -> impl Responder {
 }
 
 pub async fn delete(path: web::Path<(i32, i32)>) -> impl Responder {
-    let (domain_id, id) = path.into_inner();
+    let (_domain_id, id) = path.into_inner();
     queue::del(id).unwrap();
 
     web::Json(Status {status: "Ok".to_string()})

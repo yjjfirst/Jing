@@ -1,16 +1,11 @@
-pub mod queue_param;
-pub mod agent;
-pub mod agent_param;
-pub mod tier;
-
 use diesel::prelude::*;
 use serde::{Serialize, Deserialize};
 
 use crate::error::{Result};
 use crate::db_connect;
 use crate::schema::{queues};
-use super::extension::{add_extension, del_extension};
-use queue_param::{QueueParam};
+use super::super::extension::{add_extension, del_extension};
+use super::queue_param::{QueueParam, add_defaults};
 
 #[derive(Identifiable,Queryable,Debug,PartialEq,Serialize, Deserialize, AsChangeset)]
 #[derive(Clone)]
@@ -47,7 +42,7 @@ pub fn add(domain_id: i32,
         .values(&new_queue)
         .get_result::<Queue>(&mut conn)?;
 
-    queue_param::add_defaults(queue.id)?;
+    add_defaults(queue.id)?;
 
     Ok(queue.id)
 }
@@ -78,23 +73,21 @@ pub fn del(a_id: i32) -> Result<()> {
     Ok(())
 }
 
-pub fn list() -> Result<Vec<Queue>> {
+pub fn list(domain: i32) -> Result<Vec<Queue>> {
     use crate::schema::queues::dsl::*;
     let mut conn = db_connect();
 
-    let result = queues
-        .load::<Queue>(&mut conn)?;
-
-    Ok(result)
-}
-
-pub fn queues_in(domain: i32) -> Result<Vec<Queue>> {
-    use crate::schema::queues::dsl::*;
-    let mut conn = db_connect();
-
-    let result = queues
+    let mut result = queues
         .filter(domain_id.eq(domain))
         .load::<Queue>(&mut conn)?;
+
+    if domain != 0 {
+        result = result
+            .iter()
+            .filter(|q| q.domain_id == domain)
+            .map(|q|q.clone())
+            .collect();
+    }
 
     Ok(result)
 

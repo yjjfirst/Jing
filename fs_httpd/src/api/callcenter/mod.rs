@@ -1,10 +1,8 @@
 pub mod queue;
+pub mod agent;
 
-use std::ops::Deref;
-use actix_web::{web, Responder};
+use actix_web::{web};
 use super::Status;
-use serde::{Serialize, Deserialize};
-use std::collections::HashMap;
 
 pub fn cc_config(cfg: & mut web::ServiceConfig) {
     cfg
@@ -15,6 +13,13 @@ pub fn cc_config(cfg: & mut web::ServiceConfig) {
             web::resource("/queue/{id}")
                 .route(web::get().to(queue::get))
                 .route(web::post().to(queue::post))
-                .route(web::delete().to(queue::delete))
-        );
+                .route(web::delete().to(queue::delete)))
+        .service(
+            web::resource("agent")
+                .route(web::get().to(agent::index)))
+        .service(
+            web::resource("agent/{id}")
+                .route(web::get().to(agent::get))
+                .route(web::post().to(agent::post))
+                .route(web::delete().to(agent::delete)));
 }

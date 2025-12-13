@@ -2,9 +2,9 @@ use xml::writer::{EventWriter};
 use std::io::Write;
 use crate::fs::xml_utils::{start_element, end_element, attrs, param};
 
-use fs_lib::queue;
-use fs_lib::queue::agent;
-use fs_lib::queue::tier;
+use fs_lib::callcenter::queue;
+use fs_lib::callcenter::agent;
+use fs_lib::callcenter::tier;
 use fs_lib::user;
 use fs_lib::user::ByField;
 use fs_lib::domain;
@@ -31,7 +31,7 @@ pub fn settings <W: Write>(w: &mut EventWriter<W>) {
 
 pub fn agents <W: Write>(w: &mut EventWriter<W>) {
     start_element(w, "agents", None);
-    let agents = agent::all().unwrap();
+    let agents = agent::list(0).unwrap();
 
     for a in agents {
         agent(w, a);
@@ -89,7 +89,7 @@ pub fn tier<W: Write>(w: &mut EventWriter<W>, tier: tier::Tier) {
 }
 
 pub fn queues<W: Write>(w: &mut EventWriter<W>) {
-    let queues = queue::list().unwrap();
+    let queues = queue::list(0).unwrap();
     start_element(w, "queues", None);
     for q in queues {
         queue(w, q);

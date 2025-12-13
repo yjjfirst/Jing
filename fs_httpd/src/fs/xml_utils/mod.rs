@@ -12,7 +12,7 @@ impl<'a> Attr<'a> {
     }
 }
 
-pub fn attrs<'a>(attrs: Vec<(&'a str, &'a str)>) -> Option<Vec<Attr>>{
+pub fn attrs<'a>(attrs: Vec<(&'a str, &'a str)>) -> Option<Vec<Attr<'a>>>{
     Some(attrs.iter().map(|attr| {
         Attr {
             name: attr.0,

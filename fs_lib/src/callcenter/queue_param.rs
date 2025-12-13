@@ -2,7 +2,7 @@ use diesel::prelude::*;
 use crate::error::{Result};
 use crate::db_connect;
 use crate::schema::{queue_params};
-use super::{Queue};
+use super::{queue::Queue};
 use serde::{Serialize, Deserialize};
 
 #[derive(Identifiable,Queryable,Associations,Debug, AsChangeset)]
