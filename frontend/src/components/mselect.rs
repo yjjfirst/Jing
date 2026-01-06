@@ -45,7 +45,7 @@ pub fn Mselect(props: &Props) -> Html {
 
     html! {
         <div class="flex w-full">
-            <div class="flex flex-col">
+            <div class="flex flex-col w-full">
             {exists.iter().map(|o|{
                 html!{
                     <select class="select select-bordered w-full" name="members">

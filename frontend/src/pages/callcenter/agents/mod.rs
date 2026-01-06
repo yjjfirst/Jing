@@ -1,4 +1,4 @@
-pub mod agent;
+pub mod model;
 
 use std::collections::HashMap;
 use yew::prelude::*;
@@ -19,7 +19,7 @@ use crate::components::user_select::UserSelect;
 use crate::components::select::Select;
 use crate::components::dialog::Dialog;
 
-use agent::{Agent, AgentParam};
+use model::{Agent, AgentParam};
 
 #[derive(Clone, Properties, PartialEq)]
 pub struct AgentDetailsProps {

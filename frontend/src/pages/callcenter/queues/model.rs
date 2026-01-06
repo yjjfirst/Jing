@@ -1,13 +1,16 @@
+use gloo_net::http::Request;
 use serde::{Deserialize, Serialize};
 use std::{collections::HashMap};
 use util_macro::HashMapHelper;
 use web_sys::FormData;
 
+use crate::models::BASE_URL;
+
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 
 pub struct Queue {
-    pub id: usize,
-    pub domain_id: usize,
+    pub id: i32,
+    pub domain_id: i32,
     pub exten: String,
     pub name: String,
     pub params: HashMap<String, QueueParam>
@@ -22,6 +25,14 @@ impl Queue {
             name: "".to_string(),
             params: HashMap::new(),
         }
+    }
+
+    pub async fn list(domain: usize) -> Vec<Queue> {
+        let endpoint = format!("{}/{domain}/callcenter/queue", BASE_URL);
+        let response = Request::get(&endpoint).send().await.unwrap();
+
+        let queues: Vec<Queue> = response.json().await.unwrap();
+        queues
     }
 }
 

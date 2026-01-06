@@ -3,7 +3,10 @@ use yew_icons::{Icon, IconId};
 
 #[derive(Clone, PartialEq, Properties)] 
 pub struct ActionButtonsProps {
+    #[prop_or_default]
     pub oncancel: Callback<MouseEvent>,
+    #[prop_or(true)]
+    pub has_cancel: bool,
 }
 
 #[function_component]
@@ -17,12 +20,14 @@ pub fn ActionButtons (props: &ActionButtonsProps) -> Html {
                     {"Apply"}
                 </button>
             </div>
-            <div>
-                <button class="btn btn-warning btn-sm"  onclick={form_oncancel}>
-                    <Icon icon_id={IconId::LucideX}/>
-                    {"Cancel"}
-                </button>
-            </div>
+            if props.has_cancel {
+                <div>
+                    <button class="btn btn-warning btn-sm"  onclick={form_oncancel}>
+                        <Icon icon_id={IconId::LucideX}/>
+                        {"Cancel"}
+                    </button>
+                </div>
+            }
         </div>            
     }
 }

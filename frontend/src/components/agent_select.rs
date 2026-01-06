@@ -1,6 +1,6 @@
 use yew::prelude::*;
 use yewdux::prelude::*;
-use crate::models::user::User;
+use crate::pages::callcenter::agents::model::Agent;
 use crate::store::Store;
 
 use crate::components::select::Select;
@@ -12,25 +12,25 @@ pub struct Props {
 }
 
 #[function_component]
-pub fn UserSelect(props: &Props) -> Html {
+pub fn AgentSelect(props: &Props) -> Html {
     let(store, _) = use_store::<Store>();
 
-    let users: UseStateHandle<Vec<String>> = use_state(||vec![]);
+    let agents: UseStateHandle<Vec<String>> = use_state(||vec![]);
 
     {
-        let users = users.clone();
+        let agents = agents.clone();
         use_effect_with((), move |_| {
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_users = User::list(store.selected_domain).await;
-                users.set(fetched_users)
+                let fetched_agents = Agent::list(store.selected_domain).await;
+                agents.set(fetched_agents)
             });
         });
-    }
+    }    
     
     html! {
         <Select
             id={props.id.clone()}
-            options = {users.iter().map(|e|e.to_string()).collect::<Vec<String>>()}
+            options = {agents.iter().map(|e|e.to_string()).collect::<Vec<String>>()}
             selected = {props.value.clone()}
         >
         </Select>

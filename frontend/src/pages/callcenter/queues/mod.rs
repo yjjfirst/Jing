@@ -1,5 +1,6 @@
-use std::collections::HashMap;
+pub mod model;
 
+use std::collections::HashMap;
 use wasm_bindgen::JsCast;
 use web_sys::{FormData, SubmitEvent, HtmlDialogElement};
 use yew::prelude::*;
@@ -8,7 +9,7 @@ use yew_router::prelude::*;
 use yewdux::prelude::*;
 use yew_icons::{Icon, IconId};
 
-use crate::models::callcenter::queue::{Queue, QueueParam};
+use model::{Queue, QueueParam};
 use crate::store::{alert_info, alert_error, Store};
 use crate::models::Service;
 
@@ -24,21 +25,21 @@ pub enum QueueRoute {
     #[at("/callcenter/queue")]
     Index,
     #[at("/callcenter/queue/:id")]
-    Get {id: usize}
+    Get {id: i32}
 }
 
 #[derive(Clone, PartialEq, Properties)] 
 pub struct QueueDetailsProps {
     #[prop_or(0)]
-    pub id: usize,
+    pub id: i32,
 }
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct QueueListItemProps {
-    pub id: usize,
+    pub id: i32,
     pub exten: String,
     pub name: String,
-    pub ondel: Callback<usize>
+    pub ondel: Callback<i32>
 }
 
 #[function_component]
@@ -108,24 +109,18 @@ pub fn QueueListItem(props: &QueueListItemProps) -> Html {
 
 #[function_component]
 pub fn QueueList() -> Html {
-    let loc = use_location().unwrap().clone();
     let nav = use_navigator().unwrap();
-
     let (store,_) = use_store::<Store>();
     let queues: UseStateHandle<Vec<Queue>> = use_state(||vec![]);
         
     {
-        let loc = loc.clone();
         let store = store.clone();
         let queues = queues.clone();
         use_effect_with((), move|_| {
             let queues = queues.clone();
-            let url = format!("{}", loc.path());
             wasm_bindgen_futures::spawn_local(async move {
                 let fetched_queues: Vec<Queue> =
-                    Service::index(&url, store.selected_domain.clone())
-                        .await
-                        .unwrap();
+                    Queue::list(store.selected_domain).await;
                 queues.set(fetched_queues);
             });
         });
@@ -138,9 +133,9 @@ pub fn QueueList() -> Html {
         })
     };
 
-    let handle_del: Callback<usize>  = {
+    let handle_del: Callback<i32>  = {
         let queues = queues.clone();
-        Callback::from(move | id: usize| {
+        Callback::from(move | id: i32| {
             let filtered: Vec<Queue> = queues
                 .iter()
                 .filter(|q|q.id != id)
@@ -372,7 +367,7 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
                         options={vec!["true".to_string(), "false".to_string()]}                                            
                         selected = {QueueParam::get("abandoned-resume-allowed", &queue.params)}
                         id="abandoned-resume-allowed"
-                    />                                                                                                                                                                                                                                 
+                    />
                 </div>
                 <ActionButtons oncancel={handle_cancel}/>
             </form>
