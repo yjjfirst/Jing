@@ -30,17 +30,13 @@ impl Agent {
         }
     }
 
-    pub async fn list(domain_id: usize) -> Vec<String> {
+    pub async fn list(domain_id: usize) -> Vec<Agent> {
         let endpoint = format!("{}/{}/callcenter/agent", BASE_URL, domain_id);
         let response = Request::get(&endpoint).send().await.unwrap();
-
         let agents: Vec<Agent> = response.json().await.unwrap();
 
-        agents.iter().map(|e|{
-            e.name.clone()
-        }).collect::<Vec<String>>()    
-    }
-    
+        agents
+    }    
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, HashMapHelper)]

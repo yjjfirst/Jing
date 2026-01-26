@@ -13,7 +13,7 @@ use crate::store::{alert_info, alert_error, Store};
 use crate::components::input::Input;
 use crate::components::label::Label;
 use crate::components::select::Select;
-use crate::components::mselect::Mselect;
+use crate::components::select_multi::MultiSelect;
 use crate::components::action_buttons::ActionButtons;
 use crate::models::user::User;
 use crate::components::dialog::Dialog;
@@ -299,11 +299,11 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
                     id="ring-strategy">
                 </Select>
                 <Label>{"Members"}</Label>
-                <Mselect 
+                <MultiSelect 
                     exists = {group.1.clone()}
                     all = {extensions.iter().map(|e|e.to_string()).collect::<Vec<String>>()}
                     >
-                </Mselect>
+                </MultiSelect>
                 </div>
                 <ActionButtons oncancel={form_oncancel}/>
             </form>

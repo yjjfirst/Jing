@@ -12,7 +12,7 @@ pub struct Props {
 }
 
 #[function_component]
-pub fn Mselect(props: &Props) -> Html {
+pub fn MultiSelect(props: &Props) -> Html {
     let exists = props.exists.clone();
     let all = props.all.clone();
     let news: UseStateHandle<Vec<String>> = use_state(||vec![]);

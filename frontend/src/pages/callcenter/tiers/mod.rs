@@ -1,5 +1,8 @@
 pub mod model;
 
+use std::ops::Deref;
+use web_sys::{FormData, SubmitEvent, HtmlDialogElement};
+use wasm_bindgen::JsCast;
 use yew::prelude::*;
 use yew_router::prelude::*;
 use yewdux::prelude::*;
@@ -31,7 +34,8 @@ pub struct TiersProps {
 #[derive(Properties, PartialEq)]
 pub struct TierComponentProps {
     pub id: i32,
-    pub name: String,
+    pub agent_id: usize,
+    pub agent_name: String,
     pub level: i32,
     pub position: i32,
 }
@@ -47,7 +51,7 @@ pub fn TierComponent(props: &TierComponentProps) -> Html {
         <div class="grid grid-cols-4 gap-2 pr-4 items-center mb-1">
             <div class="col-span-1">
                 <AgentSelect
-                    value={props.name.clone()}
+                    selected_agent_id={props.agent_id}
                     id="tier_agent"
                 />
             </div>
@@ -111,6 +115,7 @@ pub fn Tiers(props: &TiersProps) -> Html {
     let (store, _) = use_store::<Store>();
     let queue_id = props.queue_id;
     let tiers: UseStateHandle<Vec<Tier>> = use_state(||vec![]);
+    let new_tiers:  UseStateHandle<Vec<Tier>> = use_state(||vec![]);
 
     {
         let tiers = tiers.clone();
@@ -128,54 +133,86 @@ pub fn Tiers(props: &TiersProps) -> Html {
         });
     };
 
-    let onadd =  {
-        let tiers = tiers.clone();  
+    let handle_add = {
+        let new_tiers = new_tiers.clone();  
         Callback::from(move|_e: MouseEvent|{
-            let tiers = tiers.clone();
-            tiers.set({
-                let mut v = (*tiers).clone();
-                v.push(Tier {
+            let mut ts: Vec<Tier> = (*new_tiers).clone();
+            ts.push(Tier {
                     id: 0,
-                    queue_id,
+                    queue_id: queue_id,
                     level: 1,
                     position: 1,
                     agent: Agent::new()
-                });
-                v
             });
+            
+            new_tiers.set(ts);
         })
     };
+
+    let handle_submit = {
+        Callback::from(move |event: SubmitEvent|{            
+            event.prevent_default();
+
+            let target = event.target().unwrap();
+            let form = target.dyn_into().unwrap();            
+            let form_data = FormData::new_with_form(&form).unwrap();
+
+            gloo_console::log!(form_data.get_all("tier_agent"));
+            gloo_console::log!(form_data.get_all("tier_level"));
+            
+        })
+    };
+
     html!{
         <div>
             <div class="divider my-1"></div>         
             <div class="w-full grid grid-cols-3 gap-1">
                 <Label>{props.queue_name.clone()}</Label>
                 <div class="col-span-2">
-                    <div class="grid grid-cols-4 gap-2 pr-4 text-xs font-bold mb-2">
-                        <label class="mb-1">{"Agent"}</label>
-                        <label class="mb-1">{"Level"}</label>
-                        <label class="mb-1">{"Position"}</label>
-                        <div>{""}</div>
-                    </div>
-                    <div>
-                    {
-                        for tiers.iter().map(|tier| {
-                            html!{
-                                <TierComponent 
-                                    id={tier.id} 
-                                    name={tier.agent.name.clone()} 
-                                    level={tier.level} 
-                                    position={tier.position} />
-                            }
-                        })
-                    }
-                    </div>
-                    <div class="flex pr-4 mt-2 items-center justify-between">
-                        <div class="btn btn-square btn-outline btn-sm mt-4" >
-                            <Icon onclick={onadd} icon_id={IconId::LucidePlus}/>   
+                    <form onsubmit={handle_submit}>
+                        <div class="grid grid-cols-4 gap-2 pr-4 text-xs font-bold mb-2">
+                            <label class="mb-1">{"Agent"}</label>
+                            <label class="mb-1">{"Level"}</label>
+                            <label class="mb-1">{"Position"}</label>
+                            <div>{""}</div>
                         </div>
-                        <ActionButtons has_cancel={false}/>      
-                    </div>                     
+                        <div>
+                        {
+                            for tiers.clone().iter().map(|tier| {
+                                html!{
+                                    <TierComponent 
+                                        id={tier.id} 
+                                        agent_id={tier.agent.id}
+                                        agent_name={tier.agent.name.clone()} 
+                                        level={tier.level} 
+                                        position={tier.position} />
+                                }
+                            })                            
+                        }
+                        
+                        </div>
+                        <div>
+                        {
+                            for new_tiers.clone().iter().map(|tier| {
+                                html!{
+                                    <TierComponent 
+                                        id={tier.id} 
+                                        agent_id={tier.agent.id}
+                                        agent_name={tier.agent.name.clone()} 
+                                        level={tier.level} 
+                                        position={tier.position} />
+                                }
+                            })                            
+                        }
+                        
+                        </div>                        
+                        <div class="flex pr-4 mt-2 items-center justify-between">
+                            <div class="btn btn-square btn-outline btn-sm mt-4" >
+                                <Icon onclick={handle_add} icon_id={IconId::LucidePlus}/>   
+                            </div>
+                            <ActionButtons has_cancel={false}/>      
+                        </div>
+                    </form>                     
                 </div>               
             </div>
         </div>        
