@@ -5,7 +5,10 @@ use fs_lib::callcenter::tier;
 #[derive(StructOpt)]
 #[derive(Debug)]
 pub enum TierCli {
-    Ls,
+    Ls {
+        #[structopt(short, long)]
+        queue_id: Option<i32>
+    },
     Add {
         #[structopt(short, long)]
         agent_id: i32,
@@ -30,8 +33,13 @@ pub fn exec_tier_cmd(tier: TierCli) {
         TierCli::Del { id } => {
             tier::del(id).unwrap();
         },
-        TierCli::Ls => {
-            let tiers = tier::all().unwrap();
+        TierCli::Ls {queue_id}=> {
+            let tiers = if let Some(id) = queue_id {
+                tier::list(id).unwrap()
+            } else {
+                tier::list(0).unwrap()
+            };
+
             print_tiers(tiers);
         }
     }

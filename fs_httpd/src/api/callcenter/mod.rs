@@ -1,5 +1,6 @@
 pub mod queue;
 pub mod agent;
+pub mod tier;
 
 use actix_web::{web};
 use super::Status;
@@ -21,5 +22,12 @@ pub fn cc_config(cfg: & mut web::ServiceConfig) {
             web::resource("agent/{id}")
                 .route(web::get().to(agent::get))
                 .route(web::post().to(agent::post))
-                .route(web::delete().to(agent::delete)));
+                .route(web::delete().to(agent::delete)))
+        .service(
+            web::resource("tier")
+                .route(web::get().to(tier::index)))
+        .service(
+            web::resource("tier/{id}")
+                .route(web::post().to(tier::post))
+                .route(web::delete().to(tier::delete)));
 }

@@ -66,7 +66,7 @@ pub fn agent<W: Write>(w: &mut EventWriter<W>, agent: agent::Agent) {
 
 pub fn tiers <W: Write>(w: &mut EventWriter<W>) {
     start_element(w, "tiers", None);
-    let tiers = tier::all().unwrap();
+    let tiers = tier::list(0).unwrap();
     for t in tiers {
         tier(w, t);
     }

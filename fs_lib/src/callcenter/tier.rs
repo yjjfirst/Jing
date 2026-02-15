@@ -1,9 +1,10 @@
 use diesel::prelude::*;
+use serde::{Serialize, Deserialize};
 use crate::error::{Result};
 use crate::db_connect;
 use crate::schema::{tiers};
 
-#[derive(Identifiable,Queryable,Debug,PartialEq)]
+#[derive(Identifiable,Queryable,Debug,PartialEq,Serialize, Deserialize, AsChangeset)]
 #[derive(Clone)]
 pub struct Tier {
     pub id: i32,
@@ -50,12 +51,29 @@ pub fn del(tier_id: i32) -> Result<()>{
     Ok(())
 }
 
-pub fn all() -> Result<Vec<Tier>> {
+pub fn list(q_id: i32) -> Result<Vec<Tier>> {
     use crate::schema::tiers::dsl::*;
     let mut conn = db_connect();
 
-    let result = tiers
+    let mut result = tiers
         .load::<Tier>(&mut conn)?;
 
+    if q_id != 0 {
+        result.retain(|t| t.queue_id == q_id);
+    }
+
     Ok(result)
+}
+
+pub fn update(tier: Tier) -> Result<()> {
+    use crate::schema::tiers;
+    use crate::schema::tiers::dsl::*;
+
+    let mut conn = db_connect();
+    diesel::update(tiers::table)
+        .filter(id.eq(tier.id))
+        .set(tier)
+        .execute(&mut conn)?;
+
+    Ok(())
 }
