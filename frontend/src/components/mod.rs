@@ -13,5 +13,4 @@ pub mod action_buttons;
 pub mod exten_select;
 pub mod sound_file_select;
 pub mod user_select;
-pub mod agent_select;
 pub mod select_id;

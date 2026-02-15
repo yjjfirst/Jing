@@ -16,11 +16,25 @@ pub struct Props {
 #[function_component]
 pub fn IdSelect(props: &Props) -> Html {
     let id = props.id.clone();
-    let options = props.options.clone();
-    let options_id = props.options_id.clone();
+    let mut options = props.options.clone();
+    let mut options_id = props.options_id.clone();
     let input_ref = use_node_ref();
-    let value = use_state(||props.selected);
+    let length = options.len();
+    
+    options.push("".to_string());
+    options_id.push(0);
 
+
+
+    let selected = if props.selected != 0 {
+        props.selected
+    } else {
+        match options_id.clone().last() {
+            Some(s) => *s,
+            None => 0
+        }
+    };
+    
     let handle_change = {
         let input_ref = input_ref.clone();
         Callback::from(move |e: Event| {
@@ -31,7 +45,7 @@ pub fn IdSelect(props: &Props) -> Html {
 
             let target = e.target_dyn_into::<HtmlSelectElement>().unwrap();
             let selected = target.selected_options().item(0).unwrap();
-            input.set_value(&selected.id())
+            input.set_value(&selected.id());
         })
     };
     
@@ -43,10 +57,12 @@ pub fn IdSelect(props: &Props) -> Html {
             {
                 options.into_iter().enumerate().map(|(i, o)| {
                     html!{
-                        if *value == options_id[i] {
+                        if selected == options_id[i] {
                             <option selected=true id={options_id[i].to_string()}>{o}</option>
-                        } else{
+                        } else if i < length {
                             <option id={options_id[i].to_string()}>{o}</option>
+                        } else {
+                            <option class="hidden"></option>
                         }
                     }                                       
                 }).collect::<Html>()
@@ -54,8 +70,9 @@ pub fn IdSelect(props: &Props) -> Html {
             </select>
             <input
                 ref = {input_ref} 
-                name={id.clone()} 
-                value={value.to_string()}/>
+                name={id.clone()}
+                class={"hidden"}
+                value={selected.to_string()}/>
         </div>
     }
 }

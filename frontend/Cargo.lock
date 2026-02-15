@@ -918,6 +918,7 @@ dependencies = [
  "gloo-file 0.3.0",
  "gloo-net 0.4.0",
  "gloo-timers 0.3.0",
+ "gloo-utils 0.2.0",
  "js-sys",
  "serde",
  "serde_json",
