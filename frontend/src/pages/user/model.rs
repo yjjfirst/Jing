@@ -5,7 +5,7 @@ use web_sys::FormData;
 use util_macro::HashMapHelper;
 
 
-use super::BASE_URL;
+use crate::models::BASE_URL;
 
 #[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
 pub struct UserAllData {

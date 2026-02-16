@@ -1,3 +1,5 @@
+pub mod model;
+
 use wasm_bindgen::JsCast;
 use web_sys::{FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use yew::prelude::*;
@@ -10,78 +12,72 @@ use crate::components::header::Header;
 use crate::components::dialog::Dialog;
 use crate::components::input::Input;
 use crate::components::label::Label;
+use crate::components::sound_file_select::SoundFileSelect;
 use crate::components::action_buttons::ActionButtons;
 
 use crate::store::{alert_info, alert_error, Store};
 use crate::models::Service;
-use crate::models::conference::Conf;
+use model::{Sound, ApiSound};
 
 #[derive(Clone, Routable, PartialEq)]
-pub enum ConfRoute {
-    #[at("/conference")]
+pub enum SoundRoute {
+    #[at("/sound")]
     Index,
-    #[at("/conference/:id")]
+    #[at("/sound/:id")]
     Get {id: usize},
 }
 
 #[derive(Clone, PartialEq, Properties)] 
-pub struct ConfDetailProps {
+pub struct SoundDetailProps {
     id: usize,
 }
 
-
 #[derive(Clone, PartialEq, Properties)] 
-pub struct ConfListItemProps {
-    id: usize,
-    exten: String,
-    name: String,
-    desc: String,
+pub struct SoundListItemProps {
+    pub sound_id: usize,
+    pub name: String,
+    pub sound_file: String,
+    pub exten: String,
     pub ondel: Callback<usize>
 }
 
 #[function_component]
-pub fn ConfListItem(props: &ConfListItemProps) -> Html {
+pub fn SoundListItem(props: &SoundListItemProps) -> Html {
     let nav = use_navigator().unwrap();
     let dialog_ref: NodeRef = use_node_ref();
-    let loc: Location = use_location().unwrap();
+    let dd_ref = dialog_ref.clone(); 
+    let loc: Location = use_location().unwrap().clone();
     let (store,_) = use_store::<Store>();
     let ondel = props.ondel.clone();
-    let conf_id = props.id;
-    
-    let onedit: Callback<MouseEvent> = {
-        let props = props.clone();
-        Callback::from(move |_e|{
-            let nav = nav.clone();
-            nav.push(&ConfRoute::Get {id: props.id});
-        })
-    };
+    let sound_id = props.sound_id;
 
-    let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{  
+    let onedit: Callback<MouseEvent> = Callback::from(move |_e|{
+        nav.push(&SoundRoute::Get {id: sound_id});
+    });
+
+    let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
         let loc = loc.clone();
         let store = store.clone();
         let ondel = ondel.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let path = format!("{}/{}", loc.path(), conf_id);
+            let path = format!("{}/{}", loc.path(), sound_id);
             Service::delete(&path, store.clone().selected_domain)
                 .await
                 .unwrap();
-            ondel.emit(conf_id);
-        });    
+            ondel.emit(sound_id);
+        });        
     });
 
-    let ondel: Callback<MouseEvent> = {
-        let dialog_ref = dialog_ref.clone();
-        Callback::from(move |_e| {
-            let d = dialog_ref.cast::<HtmlDialogElement>().unwrap();
-                d.show_modal().unwrap();
-        })
-    };
+    let ondel: Callback<MouseEvent> = Callback::from(move |_e| {
+        let d = dd_ref.cast::<HtmlDialogElement>().unwrap();
+        d.show_modal().unwrap();
+    });
 
-    html! {
+    html!{
         <tr>
             <th>{props.exten.clone()}</th>
             <th>{props.name.clone()}</th>
-            <th>{props.desc.clone()}</th>
+            <th>{props.sound_file.clone()}</th>
             <th class="flex justify-end">
                 <div class="mr-1">
                     <div onclick={onedit} class="btn btn-square btn-outline btn-sm">
@@ -93,80 +89,85 @@ pub fn ConfListItem(props: &ConfListItemProps) -> Html {
                         <Icon icon_id={IconId::LucideTrash}/>   
                     </div>
                 </div>
-            </th> 
+            </th>  
             <Dialog
                 d_ref = {dialog_ref}
                 title={"Warning!"} 
-                contents={format!("Are you sure to delete Conference: {}?", props.exten.clone())}
+                contents={format!("Are you sure to delete sound: {}?", props.name.clone())}
                 {onconfirm}
                 >
-            </Dialog>                          
+            </Dialog>                     
+
         </tr>
-        
     }
-    
 }
 
 #[function_component]
-pub fn ConfList() -> Html {
+pub fn SoundList() -> Html {
     let loc = use_location().unwrap().clone();
-    let nav = use_navigator().unwrap();    
+    let nav = use_navigator().unwrap();
     let (store,_) = use_store::<Store>();
-
-    let confs = use_state(||vec![]);
+    let sounds = use_state(||vec![]);
     {
-        let confs = confs.clone();
+        let sounds = sounds.clone();
         use_effect_with((), move|_|{
-            let confs = confs.clone();
+            let sounds = sounds.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_confs: Vec<Conf> = 
+                let fetched_sounds: Vec<ApiSound> = 
                     Service::index(loc.path(), store.selected_domain.clone())
                         .await
                         .unwrap();
-                confs.set(fetched_confs);
+                sounds.set(fetched_sounds);
             });
         });
     }
+
     let ondel: Callback<usize> = {
-        let confs = confs.clone();
+        let sounds = sounds.clone();
         Callback::from(move|id: usize|{
-            let filtered: Vec<Conf> = confs
+            let filtered: Vec<ApiSound> = sounds
                 .iter()
-                .filter(|c|c.id != id)
+                .filter(|s|s.sound.id != id)
                 .map(|s|s.clone())
                 .collect();
-            confs.set(filtered);            
+            sounds.set(filtered);            
         })
-    };    
-    let item_list: Vec<Html> = confs.clone().iter().map(|c|{
-        html! {
-            <ConfListItem 
-                id={c.id} 
-                exten={c.exten.clone()}
-                name={c.name.clone()}                 
-                desc={c.description.clone()}
-                ondel={ondel.clone()}/>
-        }
-    }).collect();
+    };
 
+    let sounds_html: Vec<Html> = sounds
+        .iter()
+        .map(|s| {
+            html! {
+                <SoundListItem 
+                    name={s.sound.name.clone()}
+                    exten={s.sound.exten.clone()}
+                    sound_file={s.sound_file.name.clone()}
+                    sound_id={s.sound.id}
+                    ondel={ondel.clone()}
+                />
+            }
+        })
+        .collect();
+    
     let onadd: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent|{
-        nav.push(&ConfRoute::Get {id: 0});        
+        nav.push(&SoundRoute::Get {id: 0});        
     });
 
     html! {
         <div class="grow mr-2">
-            <Header title="Application -> Conference"></Header>
+            <Header title="Application -> Sound"></Header>
             <div class="divider my-1"></div>
             <table class="table table-zebra">
                 <thead>
                     <tr>
                         <th>{"Extension"}</th>
                         <th>{"Name"}</th>
-                        <th>{"Description"}</th>
+                        <th>{"Sound File"}</th>
                     </tr>
-                </thead>
+                    {sounds_html}
+                </thead>    
                 <tbody>
-                    {item_list}
+
                 </tbody>
             </table>
             <div class="flex flex-row-reverse pr-4">
@@ -175,138 +176,125 @@ pub fn ConfList() -> Html {
                 </div>
             </div>             
         </div>        
+
     }
 }
 
 #[function_component]
-pub fn ConfDetails(props: &ConfDetailProps) -> Html{
-    let conf_id = props.id;
-    let nav = use_navigator().unwrap();
+pub fn SoundDetails(props: &SoundDetailProps) -> Html {
+    let id = props.id;
     let loc = use_location().unwrap();
-    let conf = use_state(||Conf::new());
+    let nav = use_navigator().unwrap();
+    let sound = use_state(||Sound::new());
     let(store, dispatch) = use_store::<Store>();
 
     {
+        let sound = sound.clone();
         let loc = loc.clone();
         let store = store.clone();
-        let conf = conf.clone();
         use_effect_with((), move |_|{
-            let conf = conf.clone();
+            let s = sound.clone();
             let loc = loc.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_conf = 
+                let fetched_sound = 
                     Service::get(loc.path(), store.selected_domain)
                         .await
                         .unwrap();
-                conf.set(fetched_conf);
+                s.set(fetched_sound);
             });
-        });        
+        });
     }
 
     let form_oncancel = {
         let nav = nav.clone();
         Callback::from(move|_| {
-            nav.push(&ConfRoute::Index);
+            nav.push(&SoundRoute::Index);
         })
-
     };
 
     let form_onsubmit = {
-        let loc = loc.clone();
-        let nav = nav.clone();
         let store = store.clone();
-            Callback::from(move|e: SubmitEvent| {
+        let dispatch = dispatch.clone();
+        let sound = sound.clone();
+        let nav = nav.clone();
+    
+        Callback::from(move|e: SubmitEvent| {
             let dispatch = dispatch.clone();
             let loc = loc.clone();
             let store = store.clone();
             let nav = nav.clone();
-
+            
             let form_data = FormData::new_with_form(
                 &e
                     .target()
                     .unwrap()
                     .dyn_into::<HtmlFormElement>()
                     .unwrap()).unwrap();
-            let conf: Conf = Conf {
-                id: conf_id,
-                name: form_data
-                        .get("name")
-                        .as_string()
-                        .unwrap(),
-                exten: form_data  
-                        .get("exten")
-                        .as_string()
-                        .unwrap(),
-
-                description: form_data
-                        .get("description")
-                        .as_string()
-                        .unwrap(),
-                conference_profile_id: form_data
-                        .get("conference_profile_id")
-                        .as_string()
-                        .unwrap()
-                        .parse::<usize>()
-                        .unwrap(),
-                domain_id: store.selected_domain
+                
+            let s = Sound {
+                id: sound.id,
+                name: form_data.get("name").as_string().unwrap(),
+                domain_id: store.selected_domain,
+                sound_file_id: form_data
+                                    .get("sound_file")
+                                    .as_string()
+                                    .unwrap()
+                                    .parse::<usize>()
+                                    .unwrap(),
+                exten: form_data
+                            .get("exten")
+                            .as_string()
+                            .unwrap()
             };
 
             wasm_bindgen_futures::spawn_local(async move {
                 let dispatch = dispatch.clone();
                 let loc = loc.clone();
 
-                match Service::post(loc.path(), store.selected_domain, conf).await {
+                match Service::post(loc.path(), store.selected_domain, s).await {
                     Ok(_) => {
-                        alert_info("Update conference successfully.".to_string(), dispatch);
+                        alert_info("Update sound successfully.".to_string(), dispatch);
                     }
                     Err(_) => {
-                        alert_error("Update conference failed.".to_string(), dispatch);
+                        alert_error("Update sound failed.".to_string(), dispatch);
                     }
                 }
-                nav.push(&ConfRoute::Index);            
+                nav.push(&SoundRoute::Index);            
             });
 
-            e.prevent_default();
+            e.prevent_default();    
         })
     };
 
     html!{
         <div class="grow mr-2">
-            <Header title= {format!("Conference: {}", conf.exten.clone())}></Header>
+            <Header title= {format!("Sound: {}", sound.exten.clone())}></Header>
             <div class="divider my-1"></div> 
-            <form class="w-full" onsubmit={form_onsubmit}> 
+            <form class="w-full" onsubmit={form_onsubmit}>
             <div class="grid grid-cols-3 gap-1">
-                <Label hidden = {conf_id != 0}>{"Extension"}</Label>
+                <Label hidden = {id != 0}>{"Extension"}</Label>
                 <Input
-                    value={conf.exten.clone()}
+                    value={sound.exten.clone()}
                     id="exten"
-                    hidden = {conf_id != 0}
+                    hidden = {id != 0}
                 />
                 <Label>{"Name"}</Label>
                 <Input
-                    value={conf.name.clone()}
+                    value={sound.name.clone()}
                     id="name"
                 />
-                <Label>{"Description"}</Label>
-                <Input
-                    value={conf.description.clone()}
-                    id="description"
-                />
-                <Label>{"Conference Profile Id"}</Label>
-                <Input
-                    value={conf.conference_profile_id.to_string()}
-                    id="conference_profile_id"
-                />
-                </div>
-                <ActionButtons oncancel={form_oncancel}/>
+                <Label>{"Sound File"}</Label>
+                <SoundFileSelect id="sound_file" sound_file_id={sound.sound_file_id}/>
+            </div>
+            <ActionButtons oncancel={form_oncancel}/>
             </form>
-        </div>        
+        </div>
     }
 }
 
-pub fn conf_switch(route: ConfRoute) -> Html {
+pub fn sound_switch(route: SoundRoute) -> Html {
     match route {
-        ConfRoute::Index => html!{<ConfList />},
-        ConfRoute::Get { id } => html !{<ConfDetails id={id}/>}
+        SoundRoute::Index => html!{<SoundList />},
+        SoundRoute::Get { id } => html !{<SoundDetails id={id}/>}
     }
 }

@@ -1,3 +1,5 @@
+pub mod model;
+
 use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
@@ -11,45 +13,46 @@ use crate::components::dialog::Dialog;
 use crate::components::action_buttons::ActionButtons;
 use crate::components::input::Input;
 use crate::components::label::Label;
-use crate::components::exten_select::ExtenionSelect;
-use crate::models::route_in::Inbound;
+use crate::components::select::Select;
+
+use crate::pages::gateway::model::Gateway;
+use model::Outbound;
 use crate::models::Service;
 
 use yew_icons::{Icon, IconId};
 
 #[derive(Clone, Routable, PartialEq)]
-pub enum InboundRoute {
-    #[at("/inbound")]
+pub enum OutboundRoute {
+    #[at("/outbound")]
     Index,
-    #[at("/inbound/:id")]
+    #[at("/outbound/:id")]
     Get {id: usize},
 }
 #[derive(Clone, PartialEq, Properties)] 
-pub struct InboundProps {
-    pub inbound: Inbound,
+pub struct OutboundProps {
+    pub out: Outbound,
     pub ondel: Callback<usize>    
 }
 #[derive(Clone, PartialEq, Properties)] 
-pub struct InboundDetailsProps {
+pub struct OutboundDetailsProps {
     id: usize,
 }
 
 #[function_component]
-pub fn InboundListItem(props: &InboundProps) -> Html {
+pub fn OutboundListItem(props: &OutboundProps) -> Html {
     let nav = use_navigator().unwrap();
+    let out = props.out.clone();
+    let dialog_ref: NodeRef = use_node_ref();
+    let dd_ref = dialog_ref.clone();    
     let loc: Location = use_location().unwrap().clone();
     let (store,_) = use_store::<Store>();
-    let id = props.inbound.id;
+    let id = props.out.id;
     let ondel = props.ondel.clone();
-    
-    let inbound = props.inbound.clone();
-    let dialog_ref: NodeRef = use_node_ref();
-    let dd_ref = dialog_ref.clone(); 
 
     let onedit: Callback<MouseEvent> = Callback::from(move|_e|{
-        nav.push(&InboundRoute::Get {id: inbound.id});
+        nav.push(&OutboundRoute::Get {id: out.id});
     });
-
+    
     let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
         let loc = loc.clone();
         let store = store.clone();
@@ -62,20 +65,19 @@ pub fn InboundListItem(props: &InboundProps) -> Html {
                 .unwrap();
             ondel.emit(id);
         })
-    });  
+
+    });    
 
     let ondel = Callback::from(move|_e: MouseEvent|{
         let d = dd_ref.cast::<HtmlDialogElement>().unwrap();
         d.show_modal().unwrap();  
     });
 
-    html!{
+    html! {
         <tr>
-            <th>{inbound.id}</th>
-            <th>{inbound.context}</th>
-            <th>{inbound.condition.clone()}</th>
-            <th>{inbound.dest_extension.clone()}</th>
-
+            <th>{out.id}</th>
+            <th>{out.priority}</th>
+            <th>{out.condition.clone()}</th>
             <th class="flex justify-end">
                 <div class="mr-1">
                     <div onclick={onedit} class="btn btn-square btn-outline btn-sm">
@@ -91,7 +93,7 @@ pub fn InboundListItem(props: &InboundProps) -> Html {
             <Dialog
                 d_ref = {dialog_ref}
                 title={"Warning!"} 
-                contents={format!("Are you sure to delete the user: {}?", inbound.id)}
+                contents={format!("Are you sure to delete the user: {}?", out.id)}
                 {onconfirm}
                 >
             </Dialog>                
@@ -100,30 +102,33 @@ pub fn InboundListItem(props: &InboundProps) -> Html {
 }
 
 #[function_component] 
-pub fn InboundList() -> Html {
-    let nav = use_navigator().unwrap();
+pub fn OutboundList() -> Html {
     let loc = use_location().unwrap().clone();
     let (store,_) = use_store::<Store>();
+    let nav = use_navigator().unwrap();
 
-    let in_routes: UseStateHandle<Vec<Inbound>> = use_state(||vec![]);
-    let in_routes_1 = in_routes.clone();
-    let in_routes_2 = in_routes.clone();
-
+    let out_routes: UseStateHandle<Vec<Outbound>> = use_state(||vec![]);
+    let out_routes_1 = out_routes.clone();
+    let out = out_routes.clone();
     use_effect_with((), move|_|{
         let store = store.clone();
-        let in_routes = in_routes_1.clone();
+        let out_routes = out_routes.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_routes: Vec<Inbound> = 
+            let fetched_routes: Vec<Outbound> = 
                 Service::index(loc.path(), store.selected_domain.clone())
                     .await
                     .unwrap();
-            in_routes.set(fetched_routes);
+            out_routes.set(fetched_routes);
         });
     });
 
-    let ondel = Callback::from(move| id: usize|{
-        let routes = in_routes_2.clone();
-        let filtered: Vec<Inbound> = routes
+    let onadd: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent| {
+        nav.push(&OutboundRoute::Get {id: 0});
+    });
+
+    let ondel = Callback::from(move| id:usize|{
+        let routes = out_routes_1.clone();
+        let filtered: Vec<Outbound> = routes
                             .iter()
                             .filter(|r|r.id != id)
                             .map(|r|r.clone())
@@ -131,34 +136,29 @@ pub fn InboundList() -> Html {
 
         routes.set(filtered);
     });
-
-    let onadd = Callback::from(move|_e: MouseEvent|{
-        nav.push(&InboundRoute::Get { id: 0 });
-    });
-
-    let in_list: Vec<Html> = in_routes.iter().map(|i| {
-        html!{
-            <InboundListItem inbound={Inbound {..i.clone()}} ondel={ondel.clone()}></InboundListItem>
+    
+    let out_list: Vec<Html> = out.iter().map(|o|{
+        html! {
+            <OutboundListItem out={Outbound {..o.clone()}} ondel={ondel.clone()} ></OutboundListItem>
         }
     }).collect();
+
     html! {
         <div class="grow mr-2">
-            <Header title="Connection -> Inbound Routes"></Header>
+            <Header title="Connection -> Outbound Routes"></Header>
             <div class="divider my-1"></div>
             <table class="table table-zebra">
                 <thead>
                     <tr>
                         <th>{"ID"}</th>
-                        <th>{"Context"}</th>
+                        <th>{"Priority"}</th>
                         <th>{"Condition"}</th>
-                        <th>{"Destination"}</th>
                     </tr>
                 </thead>
                 <tbody>
-                {in_list}
+                    {out_list}
                 </tbody>
             </table>
-
             <div class="flex flex-row-reverse pr-4">
                 <div onclick={onadd} class="btn btn-square btn-outline btn-sm" >
                     <Icon icon_id={IconId::LucidePlus}/>   
@@ -170,71 +170,86 @@ pub fn InboundList() -> Html {
 }
 
 #[function_component]
-pub fn InboundDetails(_props: &InboundDetailsProps) -> Html {
+pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
+    let nav = use_navigator().unwrap();
     let loc = use_location().unwrap();
     let loc_1 = loc.clone();
-    let nav = use_navigator().unwrap();
-
     let (store,dispatch) = use_store::<Store>();
     let store_1 = store.clone();
+    let store_2 = store.clone();
 
-    let inbound: UseStateHandle<Inbound> = use_state(|| Inbound {
-        id: 0, 
-        condition: "".to_string(), 
-        context: "".to_string(), 
-        dest_extension: "".to_string()
+    let out: UseStateHandle<Outbound> = use_state(||Outbound {
+        id: 0, condition: "".to_string(), gateway_id:0, priority:100
     });
-    let inbound_1 = inbound.clone();
+    let out_1 = out.clone();
+    let out_2 = out.clone();
+
+    let gateways: UseStateHandle<Vec<Gateway>> = use_state(||vec![]);
+    let gateways_1 = gateways.clone();
+    let gateways_2 = gateways.clone();
 
     use_effect_with((), move |_| {
-        let inbound = inbound_1.clone();
+        let out = out_1.clone();
         let loc = loc.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_out = 
                 Service::get(loc.path(), store.selected_domain)
-                    .await
-                    .unwrap();
-            inbound.set(fetched_out);
+                .await
+                .unwrap();
+            out.set(fetched_out);
         });
     });
-    
+
+    use_effect_with(out_2.clone(), move |_| {
+        let gateways = gateways_1.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                let fetched_gateway: Vec<Gateway> = 
+                    Service::index("/gateway", store_1.selected_domain)
+                        .await
+                        .unwrap();
+                gateways.set(fetched_gateway);
+        });
+    });
+
     let form_oncancel = {
         let nav = nav.clone();
         Callback::from(move|_| {
-            nav.push(&InboundRoute::Index);
+            nav.push(&OutboundRoute::Index);
         })
     };
 
     let form_onsubmit = {        
         Callback::from(move|event: SubmitEvent| {
+            let dispatch = dispatch.clone();
+            let loc = loc_1.clone();
+            let store = store_2.clone();
+            let nav = nav.clone();
             let target: Option<EventTarget> = event.target();
             let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();            
             let form_data = FormData::new_with_form(&form).unwrap();  
-            let dispatch = dispatch.clone();
-            let loc = loc_1.clone();
-            let nav = nav.clone();
-            let store = store_1.clone();
 
-            let inbound = Inbound {
+            let gateway_name = form_data.get("gateway").as_string().unwrap();
+            let gateway = Gateway::get_gateway_by_name(gateway_name.clone(), &gateways_2).unwrap();
+            let out = Outbound {
                 id: form_data.get("id").as_string().unwrap().parse::<usize>().unwrap(),
-                context: form_data.get("context").as_string().unwrap(),
                 condition: form_data.get("condition").as_string().unwrap(),
-                dest_extension: form_data.get("destination").as_string().unwrap()
+                priority: form_data.get("priority").as_string().unwrap().parse::<usize>().unwrap(),
+                gateway_id: gateway.id
             };
 
             wasm_bindgen_futures::spawn_local(async move {
                 let dispatch = dispatch.clone();
                 let loc = loc.clone();
 
-                match Service::post(loc.path(), store.selected_domain, inbound).await {
+                match Service::post(loc.path(), store.selected_domain, out).await {
                     Ok(_) => {
-                        alert_info("Update inbound route successfully.".to_string(), dispatch);
+                        alert_info("Update outbound route successfully.".to_string(), dispatch);
                     }
                     Err(_) => {
-                        alert_error("Update inbound route failed.".to_string(), dispatch);
+                        alert_error("Update outbound route failed.".to_string(), dispatch);
                     }
                 }
-                nav.push(&InboundRoute::Index);            
+                nav.push(&OutboundRoute::Index);            
             });
 
             event.prevent_default(); 
@@ -243,27 +258,43 @@ pub fn InboundDetails(_props: &InboundDetailsProps) -> Html {
 
     html!{
         <div class="grow mr-2">
-            <Header title= {format!("Inbound: {}", inbound.id)}></Header>
+            <Header title= {format!("Outbound: {}", out.id)}></Header>
             <div class="divider my-1"></div> 
             <form class="w-full" onsubmit={form_onsubmit}>
-            <div class="grid grid-cols-3 gap-1">
-                <Input value={inbound.id.to_string()} id="id" hidden=true></Input>
+                <div class="grid grid-cols-3 gap-1">
+                <Input value={out.id.to_string()} id="id" hidden=true/>
+                <Label>{"Priority"}</Label>
+                <Input value={out.priority.to_string()} id="priority"/>
                 <Label>{"Condition"}</Label>
-                <Input value={inbound.condition.clone()} id="condition"></Input>
-                <Label>{"Context"}</Label>
-                <Input value={inbound.context.clone()} id="context"></Input>
-                <Label>{"Destination"}</Label>
-                <ExtenionSelect id="destination" value={inbound.dest_extension.clone()}/>
-                </div>        
+                <Input value={out.condition.clone()} id="condition" />
+                <Label>{"Gateway"}</Label>
+                if out.gateway_id != 0 && gateways.len() != 0 {
+                    <Select 
+                        selected={Gateway::get_gateway_by_id(out.gateway_id, &gateways).unwrap().gateway_name.clone()}
+                        options={gateways
+                                    .iter()
+                                    .map(|g|{g.gateway_name.clone()})
+                                    .collect::<Vec<String>>()}
+                        id="gateway"/>
+                } else {
+                    <Select 
+                        selected={""}
+                            options={gateways
+                                    .iter()
+                                    .map(|g|{g.gateway_name.clone()})
+                                    .collect::<Vec<String>>()}
+                        id="gateway"/>                    
+                }
+                </div>
                 <ActionButtons oncancel={form_oncancel} />
             </form>
         </div>
     }
 }
 
-pub fn inbound_switch(route: InboundRoute) -> Html {
+pub fn outbound_switch(route: OutboundRoute) -> Html {
     match route {
-        InboundRoute::Index => html!{<InboundList />},
-        InboundRoute::Get { id } => html !{<InboundDetails id={id}/>}
+        OutboundRoute::Index => html!{<OutboundList />},
+        OutboundRoute::Get { id } => html !{<OutboundDetails id={id}/>}
     }
 }

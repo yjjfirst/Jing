@@ -1,3 +1,5 @@
+pub mod model;
+
 use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use wasm_bindgen::JsCast;
 
@@ -14,7 +16,7 @@ use crate::components::action_buttons::ActionButtons;
 use crate::components::header::Header;
 use crate::store::{alert_info, alert_error, Store};
 use crate::components::dialog::Dialog;
-use crate::models::sound_file::SoundFile;
+use model::SoundFile;
 use crate::models::Service;
 
 #[derive(Clone, PartialEq, Properties)] 

@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use super::sound_file::SoundFile;
+use crate::pages::sound_file::model::SoundFile;
 
 #[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
 pub struct Sound {

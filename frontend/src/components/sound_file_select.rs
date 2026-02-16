@@ -3,7 +3,7 @@ use yew::prelude::*;
 use crate::store::Store;
 use yewdux::prelude::*;
 use crate::models::Service;
-use crate::models::sound_file::SoundFile;
+use crate::pages::sound_file::model::SoundFile;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {

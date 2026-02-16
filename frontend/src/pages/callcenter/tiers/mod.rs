@@ -119,7 +119,7 @@ pub fn TierComponent(props: &TierComponentProps) -> Html {
                 position,
                 agent
             };
-            gloo_console::log!(tier_id);
+
             wasm_bindgen_futures::spawn_local(async move {
                 let onupdate = onupdate.clone();
                 let url = format!("{}/{}", loc.path(), tier.id);

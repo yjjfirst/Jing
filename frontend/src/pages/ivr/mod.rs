@@ -1,3 +1,4 @@
+pub mod model;
 
 use std::collections::HashMap;
 use wasm_bindgen::JsCast;
@@ -17,10 +18,9 @@ use crate::components::label::Label;
 
 use crate::components::action_buttons::ActionButtons;
 
-use crate::models::ivr::{IvrEntry, IvrAttr};
+use model::{IvrEntry, IvrAttr, Ivr};
 use crate::store::{alert_info, alert_error, Store};
 use crate::models::Service;
-use crate::models::ivr::Ivr;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum IvrRoute {

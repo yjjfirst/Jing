@@ -1,8 +1,10 @@
+mod model;
+
 use yew::prelude::*;
 use yew_router::prelude::*;
 use yewdux::prelude::*;
 
-use crate::models::cdr::Cdr;
+use model::Cdr;
 use crate::components::header::Header;
 use crate::store::Store;
 use crate::models::Service;

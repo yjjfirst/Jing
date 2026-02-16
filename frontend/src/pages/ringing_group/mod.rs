@@ -1,3 +1,5 @@
+pub mod model;
+
 use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use yew::prelude::*;
 use yew::Properties;
@@ -7,7 +9,7 @@ use yew_icons::{Icon, IconId};
 use wasm_bindgen::JsCast;
 
 use crate::components::header::Header;
-use crate::models::ringing_group::{RingingGroup, RingingGroupDetail};
+use model::{RingingGroup, RingingGroupDetail};
 use crate::models::Service;
 use crate::store::{alert_info, alert_error, Store};
 use crate::components::input::Input;
@@ -15,7 +17,7 @@ use crate::components::label::Label;
 use crate::components::select::Select;
 use crate::components::select_multi::MultiSelect;
 use crate::components::action_buttons::ActionButtons;
-use crate::models::user::User;
+use crate::pages::user::model::User;
 use crate::components::dialog::Dialog;
 
 #[derive(Clone, Routable, PartialEq)]

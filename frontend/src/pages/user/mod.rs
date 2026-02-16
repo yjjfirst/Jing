@@ -1,3 +1,5 @@
+pub mod model;
+
 use std::collections::HashMap;
 use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use wasm_bindgen::JsCast;
@@ -13,9 +15,9 @@ use crate::components::header::Header;
 use crate::components::input::Input;
 use crate::components::label::Label;
 use crate::components::action_buttons::ActionButtons;
-use crate::models::user::UserAllData;
+use model::UserAllData;
 use crate::models::Service;
-use crate::models::user::*;
+use model::*;
 use crate::components::dialog::Dialog;
 
 #[derive(Clone, Routable, PartialEq)]

@@ -1,3 +1,5 @@
+pub mod model;
+
 use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use wasm_bindgen::JsCast;
 
@@ -15,7 +17,7 @@ use crate::components::label::Label;
 use crate::components::dialog::Dialog;
 
 use crate::models::Service;
-use crate::models::gateway::Gateway;
+use model::Gateway;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum GatewayRoute {

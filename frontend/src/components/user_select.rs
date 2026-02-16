@@ -1,6 +1,6 @@
 use yew::prelude::*;
 use yewdux::prelude::*;
-use crate::models::user::User;
+use crate::pages::user::model::User;
 use crate::store::Store;
 
 use crate::components::select::Select;
