@@ -39,7 +39,7 @@ pub fn SidebarMenu() -> Html {
             selected: false,
         },
         SidebarMenuItemPros {
-            caption: "Ringing Group".to_string(),
+            caption: "Ring Group".to_string(),
             route: Route::RingingGroupsRoot,
             onclick: onclick.clone(),
             selected: false,

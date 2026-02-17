@@ -2,7 +2,7 @@ use yew::Properties;
 use serde::{Serialize, Deserialize};
 
 #[derive(Clone, PartialEq, Deserialize, Properties, Serialize, Debug)]
-pub struct RingingGroupDetail {
+pub struct RingGroupDetail {
     pub id: usize,
     pub name: String,
     pub group_id: String,
@@ -13,13 +13,13 @@ pub struct RingingGroupDetail {
 }
 
 #[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
-pub struct RingingGroup (pub RingingGroupDetail, pub Vec<String>);
+pub struct RingGroup (pub RingGroupDetail, pub Vec<String>);
 
 
-impl RingingGroup {
-    pub fn new_empty() -> RingingGroup {
-        RingingGroup (
-            RingingGroupDetail {
+impl RingGroup {
+    pub fn new_empty() -> RingGroup {
+        RingGroup (
+            RingGroupDetail {
                 id: 0,
                 name: "".to_string(),
                 group_id: "".to_string(),
@@ -36,9 +36,9 @@ impl RingingGroup {
         domain_id: i32,
         ring_time: i32, 
         ring_strategy: String,
-        members: Vec<String>) -> RingingGroup {
-        RingingGroup(
-            RingingGroupDetail {
+        members: Vec<String>) -> RingGroup {
+        RingGroup(
+            RingGroupDetail {
                 id, 
                 name, 
                 group_id, 

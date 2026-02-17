@@ -3,7 +3,7 @@ use yew_router::prelude::*;
 use yewdux::prelude::use_store;
 use crate::store::{Store, select_domain, set_domains};
 use super::components::sidebar::SideBar;
-use crate::pages::ringing_group::{RingingGroupsRoute, ringinggroups_switch};
+use crate::pages::ring_group::{RingingGroupsRoute, ringgroups_switch};
 use crate::pages::user::{UserRoute, user_switch};
 use crate::pages::gateway::{GatewayRoute, gateway_switch};
 use crate::pages::route_out::{OutboundRoute, outbound_switch};
@@ -126,10 +126,10 @@ fn switch(routes: Route) -> Html {
             <Dashboard />
         },
         Route::RingingGroupsRoot => html! {
-            <Switch<RingingGroupsRoute> render={ringinggroups_switch}/>
+            <Switch<RingingGroupsRoute> render={ringgroups_switch}/>
         },
         Route::RingingGroups => html! {
-            <Switch<RingingGroupsRoute> render={ringinggroups_switch}/>
+            <Switch<RingingGroupsRoute> render={ringgroups_switch}/>
         },
         Route::ExtensionRoot => html! {
             <Switch<UserRoute> render={user_switch}/>

@@ -9,7 +9,7 @@ use yew_icons::{Icon, IconId};
 use wasm_bindgen::JsCast;
 
 use crate::components::header::Header;
-use model::{RingingGroup, RingingGroupDetail};
+use model::{RingGroup, RingGroupDetail};
 use crate::models::Service;
 use crate::store::{alert_info, alert_error, Store};
 use crate::components::input::Input;
@@ -43,10 +43,10 @@ pub struct RingingGroupListItemProps {
 }
 
 #[function_component]
-pub fn RingingGroupList() -> Html {
+pub fn RingGroupList() -> Html {
     let loc = use_location().unwrap().clone();    
     let (store,_) = use_store::<Store>();
-    let ringing_groups: UseStateHandle<Vec<RingingGroupDetail>> = use_state(||vec![]);
+    let ringing_groups: UseStateHandle<Vec<RingGroupDetail>> = use_state(||vec![]);
     let groups = ringing_groups.clone();
     let groups_1 = ringing_groups.clone();
 
@@ -55,7 +55,7 @@ pub fn RingingGroupList() -> Html {
     use_effect_with((), move |_| {
         let groups = groups.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_groups: Vec<RingingGroupDetail> = 
+            let fetched_groups: Vec<RingGroupDetail> = 
                 Service::index(loc.path(), store.selected_domain.clone())
                     .await
                     .unwrap();
@@ -65,7 +65,7 @@ pub fn RingingGroupList() -> Html {
     
     let ondel = Callback::from(move |id: usize|{
         let groups = groups_1.clone();
-        let filtered: Vec<RingingGroupDetail> = groups
+        let filtered: Vec<RingGroupDetail> = groups
             .iter()
             .filter(|g|id != g.id)
             .map(|g|{g.clone()})
@@ -75,12 +75,12 @@ pub fn RingingGroupList() -> Html {
     });
 
     let groups: Vec<Html> = ringing_groups.iter().map(|g| html! {
-        <RingingGroupListItem 
+        <RingGroupListItem 
             ondel={ondel.clone()} 
             id={g.id} 
             group_id={g.group_id.clone()}
             name={g.name.clone()}>
-        </RingingGroupListItem>
+        </RingGroupListItem>
     }).collect();
 
     let onadd: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent| {
@@ -111,7 +111,7 @@ pub fn RingingGroupList() -> Html {
 }
 
 #[function_component]
-pub fn RingingGroupListItem(props: &RingingGroupListItemProps) -> Html {
+pub fn RingGroupListItem(props: &RingingGroupListItemProps) -> Html {
     let props = props.clone();
     let id = props.id;
     let nav = use_navigator().unwrap();
@@ -173,12 +173,12 @@ pub fn RingingGroupListItem(props: &RingingGroupListItemProps) -> Html {
 }
 
 #[function_component]
-pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
+pub fn RingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
     let(store, dispatch) = use_store::<Store>();
     let store_cloned = store.clone();
 
     let id = props.id;
-    let group: UseStateHandle<RingingGroup> = use_state(||RingingGroup::new_empty());
+    let group: UseStateHandle<RingGroup> = use_state(||RingGroup::new_empty());
     let g = group.clone();
 
     let loc = use_location().unwrap();
@@ -193,7 +193,7 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
         let loc = location.clone();
         wasm_bindgen_futures::spawn_local(async move {
             if id != 0 {
-                let fetched_group: RingingGroup = 
+                let fetched_group: RingGroup = 
                     Service::get(loc.path(), store.clone().selected_domain)
                         .await
                         .unwrap();
@@ -233,7 +233,7 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
             let form_data = FormData::new_with_form(&form).unwrap();
             let members = form_data.get_all("members");
 
-            let group = RingingGroup::new(
+            let group = RingGroup::new(
                 id,
                 form_data.get("name").as_string().unwrap(),
                 form_data.get("extension").as_string().unwrap(),
@@ -313,9 +313,9 @@ pub fn RingingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
     }
 }
 
-pub fn ringinggroups_switch(route: RingingGroupsRoute) -> Html {
+pub fn ringgroups_switch(route: RingingGroupsRoute) -> Html {
     match route {
-        RingingGroupsRoute::Index => html!{ <RingingGroupList />},
-        RingingGroupsRoute::Get { id } => html!{<RingingGroupDetailComponent id={id}/>}
+        RingingGroupsRoute::Index => html!{ <RingGroupList />},
+        RingingGroupsRoute::Get { id } => html!{<RingGroupDetailComponent id={id}/>}
     }
 }
