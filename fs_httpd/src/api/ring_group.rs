@@ -5,7 +5,7 @@ use fs_lib::ringgroup;
 use fs_lib::user;
 use super::Status;
 
-pub fn ringing_group_config(cfg: &mut web::ServiceConfig) {
+pub fn ring_group_config(cfg: &mut web::ServiceConfig) {
     cfg
         .service(
             web::resource("")
