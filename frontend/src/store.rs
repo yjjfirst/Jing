@@ -15,6 +15,7 @@ pub struct Store {
     pub alert_input: AlertInput,
     pub selected_domain: usize,
     pub domains: Vec<Domain>,
+    pub is_authenticated: bool,
 }
 
 pub fn alert_info(message: String, dispatch: Dispatch<Store>) {
@@ -51,5 +52,11 @@ pub fn select_domain(domain: usize, dispatch: Dispatch<Store>) {
 pub fn set_domains(domains: Vec<Domain>, dispatch: Dispatch<Store>) {
     dispatch.reduce_mut(move|store: &mut Store| {
         store.domains = domains;
+    })
+}
+
+pub fn set_is_authenticated(is_authenticated: bool, dispatch: Dispatch<Store>) {
+    dispatch.reduce_mut(move |store|{
+        store.is_authenticated = is_authenticated;
     })
 }

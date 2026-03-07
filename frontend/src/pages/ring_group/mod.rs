@@ -21,21 +21,21 @@ use crate::pages::user::model::User;
 use crate::components::dialog::Dialog;
 
 #[derive(Clone, Routable, PartialEq)]
-pub enum RingingGroupsRoute {
-    #[at("/ringing-group")]
+pub enum RingGroupsRoute {
+    #[at("/ring-group")]
     Index,
-    #[at("/ringing-group/:id")]
+    #[at("/ring-group/:id")]
     Get {id: usize},
 }
 
 #[derive(Clone, PartialEq, Properties)] 
-pub struct RingingGroupDetailsProps {
+pub struct RingGroupDetailsProps {
     #[prop_or(0)]
     pub id: usize,
 }
 
 #[derive(Clone, PartialEq, Properties)]
-pub struct RingingGroupListItemProps {
+pub struct RingGroupListItemProps {
     pub id: usize,
     pub group_id: String,
     pub name: String,
@@ -46,9 +46,9 @@ pub struct RingingGroupListItemProps {
 pub fn RingGroupList() -> Html {
     let loc = use_location().unwrap().clone();    
     let (store,_) = use_store::<Store>();
-    let ringing_groups: UseStateHandle<Vec<RingGroupDetail>> = use_state(||vec![]);
-    let groups = ringing_groups.clone();
-    let groups_1 = ringing_groups.clone();
+    let ring_groups: UseStateHandle<Vec<RingGroupDetail>> = use_state(||vec![]);
+    let groups = ring_groups.clone();
+    let groups_1 = ring_groups.clone();
 
     let nav = use_navigator().unwrap();
 
@@ -74,7 +74,7 @@ pub fn RingGroupList() -> Html {
         groups.set(filtered);
     });
 
-    let groups: Vec<Html> = ringing_groups.iter().map(|g| html! {
+    let groups: Vec<Html> = ring_groups.iter().map(|g| html! {
         <RingGroupListItem 
             ondel={ondel.clone()} 
             id={g.id} 
@@ -84,12 +84,12 @@ pub fn RingGroupList() -> Html {
     }).collect();
 
     let onadd: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent| {
-        nav.push(&RingingGroupsRoute::Get {id: 0});
+        nav.push(&RingGroupsRoute::Get {id: 0});
     });
 
     html! {
         <div class="grow mr-2">
-            <Header title="Application -> Ringing Group"></Header>
+            <Header title="Application -> Ring Group"></Header>
             <div class="divider my-1"></div>
             <table class="table table-zebra">
                 <thead>
@@ -111,7 +111,7 @@ pub fn RingGroupList() -> Html {
 }
 
 #[function_component]
-pub fn RingGroupListItem(props: &RingingGroupListItemProps) -> Html {
+pub fn RingGroupListItem(props: &RingGroupListItemProps) -> Html {
     let props = props.clone();
     let id = props.id;
     let nav = use_navigator().unwrap();
@@ -137,7 +137,7 @@ pub fn RingGroupListItem(props: &RingingGroupListItemProps) -> Html {
 
     let onedit: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent| {
         let nav = nav.clone();
-        nav.push(&RingingGroupsRoute::Get {id});
+        nav.push(&RingGroupsRoute::Get {id});
     });
 
     let ondel: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent| {
@@ -173,7 +173,7 @@ pub fn RingGroupListItem(props: &RingingGroupListItemProps) -> Html {
 }
 
 #[function_component]
-pub fn RingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
+pub fn RingGroupDetailComponent(props: &RingGroupDetailsProps) -> Html {
     let(store, dispatch) = use_store::<Store>();
     let store_cloned = store.clone();
 
@@ -212,7 +212,7 @@ pub fn RingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
     let form_oncancel = {
         let nav = nav.clone();
         Callback::from(move|_| {
-            nav.push(&RingingGroupsRoute::Index);
+            nav.push(&RingGroupsRoute::Index);
         })
     };
 
@@ -259,7 +259,7 @@ pub fn RingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
                         alert_error("Update inbound route failed.".to_string(), dispatch);
                     }
                 }
-                nav.push(&RingingGroupsRoute::Index);            
+                nav.push(&RingGroupsRoute::Index);            
             });
                         
             event.prevent_default();
@@ -268,7 +268,7 @@ pub fn RingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
 
     html! { 
         <div class="grow mr-2">
-            <Header title= {format!("Ringing Group: {}", group.0.group_id.clone())}></Header>
+            <Header title= {format!("Ring Group: {}", group.0.group_id.clone())}></Header>
             <div class="divider my-1"></div> 
             <form class="w-full" onsubmit={form_onsubmit}>
             <div class="grid grid-cols-3 gap-1">
@@ -313,9 +313,9 @@ pub fn RingGroupDetailComponent(props: &RingingGroupDetailsProps) -> Html {
     }
 }
 
-pub fn ringgroups_switch(route: RingingGroupsRoute) -> Html {
+pub fn ringgroups_switch(route: RingGroupsRoute) -> Html {
     match route {
-        RingingGroupsRoute::Index => html!{ <RingGroupList />},
-        RingingGroupsRoute::Get { id } => html!{<RingGroupDetailComponent id={id}/>}
+        RingGroupsRoute::Index => html!{ <RingGroupList />},
+        RingGroupsRoute::Get { id } => html!{<RingGroupDetailComponent id={id}/>}
     }
 }

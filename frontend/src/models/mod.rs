@@ -10,11 +10,13 @@ pub struct EmptyJson{
 
 }
 pub const BASE_URL: &str = "http://telman.me:9090/api";
+pub const PORTAL_BASE: &str = "/admin";
 
 pub struct Service {}
 impl Service {
     pub fn endpoint (url: &str, domain: usize) -> String {
-        format!("{}/{}{}",BASE_URL,domain, url)
+        let path = url.strip_prefix(PORTAL_BASE).unwrap();
+        format!("{}/{}{}",BASE_URL,domain, path)
     }
 
     pub async fn index<T: Serialize + DeserializeOwned>(path: &str,domain: usize) -> Result<Vec<T>, Error> {
@@ -39,11 +41,11 @@ impl Service {
             .await
     }
 
-    pub async fn post<T: Serialize + DeserializeOwned>(path: &str, domain: usize, group: T) 
+    pub async fn post<T: Serialize + DeserializeOwned>(path: &str, domain: usize, data: T) 
     -> Result<EmptyJson, Error>{
         let endpoint = Self::endpoint(path, domain);
         let request = Request::post(&endpoint)
-            .json(&group)?;
+            .json(&data)?;
 
         let response = request
             .send()
@@ -54,11 +56,11 @@ impl Service {
             .await
     }
 
-    pub async fn patch<T: Serialize + DeserializeOwned>(path: &str, domain: usize, group: T) 
+    pub async fn patch<T: Serialize + DeserializeOwned>(path: &str, domain: usize, data: T) 
     -> Result<EmptyJson, Error>{
         let endpoint = Self::endpoint(path, domain);
         let request = Request::patch(&endpoint)
-            .json(&group)?;
+            .json(&data)?;
         let response = request
             .send()
             .await?;

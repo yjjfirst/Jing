@@ -1,9 +1,12 @@
 use yew::prelude::*;
 use yew_router::prelude::*;
 use yewdux::prelude::use_store;
-use crate::store::{Store, select_domain, set_domains};
+
+use gloo_net::http::Request;
+
+use crate::store::{Store, select_domain, set_domains, set_is_authenticated};
 use super::components::sidebar::SideBar;
-use crate::pages::ring_group::{RingingGroupsRoute, ringgroups_switch};
+use crate::pages::ring_group::{RingGroupsRoute, ringgroups_switch};
 use crate::pages::user::{UserRoute, user_switch};
 use crate::pages::gateway::{GatewayRoute, gateway_switch};
 use crate::pages::route_out::{OutboundRoute, outbound_switch};
@@ -15,9 +18,11 @@ use crate::pages::sound::{SoundRoute, sound_switch};
 use crate::pages::conference::{ConfRoute, conf_switch};
 use crate::pages::ivr::{IvrRoute, ivr_switch};
 use crate::pages::callcenter::{CallcenterRootRoute, callcenter_root_switch};
+use crate::pages::login::Login;
 use crate::components::alert::{AlertType, AlertComponent, Props as AlertProps};
 use crate::components::banner::Banner;
 use crate::models::domain::Domain;
+use crate::models::BASE_URL;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Env {
@@ -27,10 +32,10 @@ pub struct Env {
 pub enum Route {
     #[at("/")]
     Dashboard,
-    #[at("/ringing-group")]
-    RingingGroupsRoot,
-    #[at("/ringing-group/*")]
-    RingingGroups,
+    #[at("/ring-group")]
+    RingGroupsRoot,
+    #[at("/ring-group/*")]
+    RingGroups,
     #[at("/user")]
     ExtensionRoot,
     #[at("/user/*")]
@@ -81,41 +86,76 @@ pub fn app() -> Html {
         message,
         delay_ms: 5000,
         alert_type: AlertType::INFO
-    };    
+    };
+
     let ctx = use_state (|| Env {
     });
 
-    use_effect_with((), move |_| {
-        let disp = dispatch.clone();
-        wasm_bindgen_futures::spawn_local(async move {
-            let domains = Domain::index().await;
-            select_domain(domains.first().unwrap().id, dispatch);
-            set_domains(domains, disp);                
-        })
-    });
+    {
+        let dispatch = dispatch.clone();
+        use_effect_with((),move |_| {
+            wasm_bindgen_futures::spawn_local(async move {
+                let url = format!("{}/login/verify", BASE_URL);
+                let response = Request::get(&url)
+                    .send()
+                    .await;
+                match response {
+                    Ok(res) => {
+                        if res.ok() {
+                            set_is_authenticated(true, dispatch);
+                       } else {
+                            set_is_authenticated(false, dispatch);
+                       }
+                    }
+                    Err(_) => {
+                        set_is_authenticated(false, dispatch);
+                    }
+                }
+            });
+        });
+    }
 
+    {
+        let store = store.clone();
+        let dispatch = dispatch.clone();
+        use_effect_with(store.is_authenticated, move |_| {
+            if store.is_authenticated {
+                let dispatch = dispatch.clone();
+                wasm_bindgen_futures::spawn_local(async move {
+                    let domains = Domain::index().await;
+                    select_domain(domains.first().unwrap().id, dispatch.clone());
+                    set_domains(domains, dispatch.clone());                
+                })
+            }
+        });
+    }
+    
     html! {
         <ContextProvider<Env> context={(*ctx).clone()}>
-            <BrowserRouter>
-                if show_alert {
-                    <AlertComponent
-                        message={alert_props.message}
-                        delay_ms={alert_props.delay_ms}
-                        alert_type={alert_props.alert_type}
-                    />
-                }
-                if store.selected_domain != 0 {
-                    <div class="flex flex-col">
-                        <Banner></Banner>
-                        <div class="flex grow ml-4 mr-1">
-                            <SideBar></SideBar>
-                            <div class="grow ml-4 mr-1">
-                                <Switch<Route> render={switch} />    
-                            </div>
-                        </div>                    
-                    </div>
-                }
-            </BrowserRouter>
+            if store.is_authenticated == true {
+                <BrowserRouter>
+                    if show_alert {
+                        <AlertComponent
+                            message={alert_props.message}
+                            delay_ms={alert_props.delay_ms}
+                            alert_type={alert_props.alert_type}
+                        />
+                    }
+                    if store.selected_domain != 0 {
+                        <div class="flex flex-col">
+                            <Banner></Banner>
+                            <div class="flex grow ml-4 mr-1">
+                                <SideBar></SideBar>
+                                <div class="grow ml-4 mr-1">
+                                    <Switch<Route> render={switch} />    
+                                </div>
+                            </div>                    
+                        </div>
+                    }
+                </BrowserRouter>
+            } else {
+                <Login />
+            }
         </ContextProvider<Env>>
     }
 }
@@ -125,11 +165,11 @@ fn switch(routes: Route) -> Html {
         Route::Dashboard => html! {
             <Dashboard />
         },
-        Route::RingingGroupsRoot => html! {
-            <Switch<RingingGroupsRoute> render={ringgroups_switch}/>
+        Route::RingGroupsRoot => html! {
+            <Switch<RingGroupsRoute> render={ringgroups_switch}/>
         },
-        Route::RingingGroups => html! {
-            <Switch<RingingGroupsRoute> render={ringgroups_switch}/>
+        Route::RingGroups => html! {
+            <Switch<RingGroupsRoute> render={ringgroups_switch}/>
         },
         Route::ExtensionRoot => html! {
             <Switch<UserRoute> render={user_switch}/>
