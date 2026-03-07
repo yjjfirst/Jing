@@ -27,16 +27,20 @@ async fn cookie_middleware(
         Some(c) => {
             if !is_expired(c.value()) {
                 return next.call(req).await;
-            } else {
-                return Err(actix_web::error::ErrorUnauthorized("Unauthorized"));
             }
+
+            if req.path() == "/api/login" {
+                return next.call(req).await;
+            }
+
+            return Err(actix_web::error::ErrorUnauthorized("Unauthorized"));
         },
         None => {
             if req.path() == "/api/login" {
                 return next.call(req).await;
-            } else {
-                return Err(actix_web::error::ErrorUnauthorized("Unauthorized"));
             }
+
+            return Err(actix_web::error::ErrorUnauthorized("Unauthorized"));
         }
     };
 
