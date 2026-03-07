@@ -3,12 +3,12 @@ mod api;
 mod cdr;
 use actix_web::{web, App, HttpServer};
 use actix_cors::Cors;
-use actix_files::Files;
+use actix_files::{Files, NamedFile};
 use actix_web::{
     body::MessageBody,
     dev::{ServiceRequest, ServiceResponse},
     middleware::{from_fn, Next},
-    Error,
+    Error, Result
 };
 use api::{api_config};
 use fs_lib::portal_token::is_expired;
@@ -18,8 +18,6 @@ async fn cookie_middleware(
     next: Next<impl MessageBody>,
 ) -> Result<ServiceResponse<impl MessageBody>, Error> {
     let cookie = req.cookie("token");
-
-    println!("{}", req.path());
 
     if !req.path().starts_with("/api") {
             return next.call(req).await;
@@ -44,6 +42,10 @@ async fn cookie_middleware(
 
 }
 
+async fn index() -> Result<NamedFile> {
+    Ok(NamedFile::open("html/index.html")?)
+}
+
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(||{
@@ -56,6 +58,7 @@ async fn main() -> std::io::Result<()> {
             .service(fs::fs_post)
             .service(cdr::cdr_post)
             .service(web::scope("/api").configure(api_config))
+            .default_service(web::route().to(index))
     })
         .bind("0.0.0.0:9090")?
         .run()
