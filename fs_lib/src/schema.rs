@@ -186,6 +186,23 @@ diesel::table! {
 }
 
 diesel::table! {
+    portal_tokens (id) {
+        id -> Int4,
+        portal_user_id -> Int4,
+        token -> Varchar,
+        expire_at -> Timestamptz,
+    }
+}
+
+diesel::table! {
+    portal_users (id) {
+        id -> Int4,
+        username -> Varchar,
+        password -> Varchar,
+    }
+}
+
+diesel::table! {
     profile_params (id) {
         id -> Int4,
         profile_id -> Int4,
@@ -316,6 +333,7 @@ diesel::joinable!(ivr_attrs -> ivrs (ivr_id));
 diesel::joinable!(ivr_entries -> ivrs (ivr_id));
 diesel::joinable!(ivrs -> domains (domain_id));
 diesel::joinable!(outbound_routes -> gateways (gateway_id));
+diesel::joinable!(portal_tokens -> portal_users (portal_user_id));
 diesel::joinable!(profile_params -> profiles (profile_id));
 diesel::joinable!(queue_params -> queues (queue_id));
 diesel::joinable!(queues -> domains (domain_id));
@@ -353,6 +371,8 @@ diesel::allow_tables_to_appear_in_same_query!(
     ivr_entries,
     ivrs,
     outbound_routes,
+    portal_tokens,
+    portal_users,
     profile_params,
     profiles,
     queue_params,

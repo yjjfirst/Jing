@@ -17,6 +17,8 @@ pub mod conference;
 pub mod callcenter;
 pub mod feature_code;
 pub mod printable;
+pub mod portal_user;
+pub mod portal_token;
 
 #[macro_use]
 extern crate diesel;
@@ -25,7 +27,7 @@ extern crate util_macro;
 
 use diesel::prelude::*;
 use diesel::pg::PgConnection;
-//use diesel::mysql::MysqlConnection;
+use rand::Rng;
 use dotenv::dotenv;
 use std::env;
 
@@ -36,4 +38,36 @@ pub fn db_connect() -> PgConnection {
         .expect("DATABASE_URL must be set");
     PgConnection::establish(&database_url)
         .expect(&format!("Error connecting to {}", database_url))
+}
+
+fn generate_token(length: usize, options: Option<(bool, bool, bool)>) -> Result<String, &'static str> {
+    let (uppercase, lowercase, numbers) = match options {
+        Some((uppercase, lowercase, numbers)) => (uppercase, lowercase, numbers),
+        None => (true, true, true),
+    };
+
+    let mut charset = String::new();
+    if uppercase {
+        charset += "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    }
+    if lowercase {
+        charset += "abcdefghijklmnopqrstuvwxyz";
+    }
+    if numbers {
+        charset += "0123456789";
+    }
+
+    if charset.is_empty() {
+        return Err("At least one character set must be selected.");
+    }
+
+    let mut rng = rand::thread_rng();
+    let token: String = (0..length)
+        .map(|_| {
+            let idx = rng.gen_range(0..charset.len());
+            charset.chars().nth(idx).unwrap()
+        })
+        .collect();
+
+    Ok(token)
 }
