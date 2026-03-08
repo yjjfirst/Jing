@@ -5,7 +5,7 @@ use web_sys::FormData;
 use util_macro::HashMapHelper;
 
 
-use crate::models::BASE_URL;
+use crate::models::API_BASE;
 
 #[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
 pub struct UserAllData {
@@ -53,7 +53,7 @@ impl User {
         User {id: 0, domain_id: 0, user_id: "".to_string()}
     }
     pub async fn list(domain: usize) -> Vec<String> {
-        let endpoint = format!("{}/{}/user", BASE_URL, domain);
+        let endpoint = format!("{}/{}/user", API_BASE, domain);
         let response = Request::get(&endpoint).send().await.unwrap();
 
         let extensions: Vec<User> = response.json().await.unwrap();

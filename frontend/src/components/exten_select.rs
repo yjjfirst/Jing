@@ -2,7 +2,7 @@ use yew::prelude::*;
 use crate::store::Store;
 use yewdux::prelude::*;
 use crate::models::extension::Extension;
-use crate::models::{BASE_URL, Service};
+use crate::models::{API_BASE, Service};
 use std::collections::HashMap;
 
 #[derive(Properties, PartialEq)]
@@ -28,7 +28,7 @@ pub fn ExtenionSelect(props: &Props) -> Html {
         wasm_bindgen_futures::spawn_local(async move {
             let ext_map = ext_map.clone();
             let mut fetched_map: HashMap<String, Vec<String>> = HashMap::new();
-            let url = format!("{}/extension", BASE_URL);
+            let url = format!("/extension");
             let extensions: Vec<Extension> = Service::index(&url, store.selected_domain).await.unwrap();            
             for e in extensions {
                 if !fetched_map.contains_key(&e.exten_type) {

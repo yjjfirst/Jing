@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use util_macro::HashMapHelper;
 use web_sys::FormData;
 
-use crate::models::BASE_URL;
+use crate::models::API_BASE;
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct Agent {
@@ -31,7 +31,7 @@ impl Agent {
     }
 
     pub async fn list(domain_id: usize) -> Vec<Agent> {
-        let endpoint = format!("{}/{}/callcenter/agent", BASE_URL, domain_id);
+        let endpoint = format!("{}/{}/callcenter/agent", API_BASE, domain_id);
         let response = Request::get(&endpoint).send().await.unwrap();
         let agents: Vec<Agent> = response.json().await.unwrap();
 

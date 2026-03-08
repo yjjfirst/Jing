@@ -9,14 +9,22 @@ use web_sys::FormData;
 pub struct EmptyJson{
 
 }
-pub const BASE_URL: &str = "http://telman.me:9090/api";
+pub const API_BASE: &str = "/api";
 pub const PORTAL_BASE: &str = "/admin";
 
 pub struct Service {}
 impl Service {
     pub fn endpoint (url: &str, domain: usize) -> String {
-        let path = url.strip_prefix(PORTAL_BASE).unwrap();
-        format!("{}/{}{}",BASE_URL,domain, path)
+        let path = match url.strip_prefix(PORTAL_BASE) {
+            Some(p) => {
+                p
+            },
+            None => {
+                url
+            }
+        };
+
+        format!("{}/{}{}",API_BASE,domain, path)
     }
 
     pub async fn index<T: Serialize + DeserializeOwned>(path: &str,domain: usize) -> Result<Vec<T>, Error> {

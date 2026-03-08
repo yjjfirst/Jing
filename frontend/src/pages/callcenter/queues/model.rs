@@ -4,7 +4,7 @@ use std::{collections::HashMap};
 use util_macro::HashMapHelper;
 use web_sys::FormData;
 
-use crate::models::BASE_URL;
+use crate::models::API_BASE;
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 
@@ -28,7 +28,7 @@ impl Queue {
     }
 
     pub async fn list(domain: usize) -> Vec<Queue> {
-        let endpoint = format!("{}/{domain}/callcenter/queue", BASE_URL);
+        let endpoint = format!("{}/{domain}/callcenter/queue", API_BASE);
         let response = Request::get(&endpoint).send().await.unwrap();
 
         let queues: Vec<Queue> = response.json().await.unwrap();

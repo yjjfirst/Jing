@@ -22,7 +22,7 @@ use crate::pages::login::Login;
 use crate::components::alert::{AlertType, AlertComponent, Props as AlertProps};
 use crate::components::banner::Banner;
 use crate::models::domain::Domain;
-use crate::models::BASE_URL;
+use crate::models::API_BASE;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Env {
@@ -95,7 +95,7 @@ pub fn app() -> Html {
         let dispatch = dispatch.clone();
         use_effect_with((),move |_| {
             wasm_bindgen_futures::spawn_local(async move {
-                let url = format!("{}/login/verify", BASE_URL);
+                let url = format!("{}/login/verify", API_BASE);
                 let response = Request::get(&url)
                     .send()
                     .await;

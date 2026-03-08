@@ -6,7 +6,7 @@ use serde::{Deserialize, Serialize};
 use yewdux::prelude::use_store;
 
 use crate::store::{Store, set_is_authenticated};
-use crate::models::BASE_URL;
+use crate::models::API_BASE;
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
 pub struct LoginData {
@@ -40,7 +40,7 @@ pub fn Login() -> Html {
             };
 
             wasm_bindgen_futures::spawn_local(async move {
-                let url = format!("{}/login", BASE_URL);
+                let url = format!("{}/login", API_BASE);
                 let req = Request::post(&url)
                     .json(&data).unwrap();
                     

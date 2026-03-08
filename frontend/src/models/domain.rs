@@ -3,7 +3,7 @@ use gloo_net::http::Request;
 use serde::{Deserialize, Serialize};
 use gloo_console::log;
 
-use super::BASE_URL;
+use super::API_BASE;
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Properties, Serialize)]
 pub struct Domain {
@@ -13,7 +13,7 @@ pub struct Domain {
 
 impl Domain {
     pub async fn index() ->Vec<Domain> {
-        let endpoint = format!("{}/domain", BASE_URL);
+        let endpoint = format!("{}/domain", API_BASE);
 
         log!(&endpoint);
         let response = Request::get(&endpoint).send().await.unwrap();
