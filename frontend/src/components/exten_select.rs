@@ -2,7 +2,7 @@ use yew::prelude::*;
 use crate::store::Store;
 use yewdux::prelude::*;
 use crate::models::extension::Extension;
-use crate::models::{API_BASE, Service};
+use crate::models::Service;
 use std::collections::HashMap;
 
 #[derive(Properties, PartialEq)]

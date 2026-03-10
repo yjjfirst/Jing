@@ -9,6 +9,12 @@ use web_sys::FormData;
 pub struct EmptyJson{
 
 }
+
+#[derive(Serialize, Deserialize)]
+pub struct Status {
+    pub status: String
+}
+
 pub const API_BASE: &str = "/api";
 pub const PORTAL_BASE: &str = "/admin";
 

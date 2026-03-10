@@ -8,11 +8,16 @@ use yew_router::prelude::*;
 
 #[function_component]
 pub fn Banner() -> Html {
+    let (store, _) = use_store::<Store>();
+
     html! {
         <div class="flex justify-end grow items-center ml-4 mr-4">
             <DomainComponent/>
-            <div class="btn btn-circle btn-outline btn-sm">
-                <Icon icon_id={IconId::LucideUser}/>
+            <div class="flex items-center">
+                <div class="btn btn-circle btn-outline btn-sm">
+                    <Icon icon_id={IconId::LucideUser}/>
+                </div>
+                <p class="ml-2">{store.username.clone()}</p>
             </div>
         </div>
     }

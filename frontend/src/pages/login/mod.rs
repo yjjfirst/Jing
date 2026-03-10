@@ -5,7 +5,7 @@ use yew::prelude::*;
 use serde::{Deserialize, Serialize};
 use yewdux::prelude::use_store;
 
-use crate::store::{Store, set_is_authenticated};
+use crate::store::{Store, set_is_authenticated, set_username};
 use crate::models::API_BASE;
 
 #[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
@@ -36,7 +36,7 @@ pub fn Login() -> Html {
                 .as_string()
                 .unwrap();
             let data = LoginData {
-                username, password
+                username: username.clone(), password
             };
 
             wasm_bindgen_futures::spawn_local(async move {
@@ -49,7 +49,8 @@ pub fn Login() -> Html {
                     .await
                     .unwrap();
                 if res.ok() {
-                    set_is_authenticated(true, dispatch);
+                    set_is_authenticated(true, dispatch.clone());
+                    set_username(username, dispatch);
                 }
             });
         })

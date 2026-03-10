@@ -4,7 +4,7 @@ use yewdux::prelude::use_store;
 
 use gloo_net::http::Request;
 
-use crate::store::{Store, select_domain, set_domains, set_is_authenticated};
+use crate::store::{Store, select_domain, set_domains, set_is_authenticated, set_username};
 use super::components::sidebar::SideBar;
 use crate::pages::ring_group::{RingGroupsRoute, ringgroups_switch};
 use crate::pages::user::{UserRoute, user_switch};
@@ -22,7 +22,7 @@ use crate::pages::login::Login;
 use crate::components::alert::{AlertType, AlertComponent, Props as AlertProps};
 use crate::components::banner::Banner;
 use crate::models::domain::Domain;
-use crate::models::API_BASE;
+use crate::models::{API_BASE, Status};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct Env {
@@ -102,6 +102,8 @@ pub fn app() -> Html {
                 match response {
                     Ok(res) => {
                         if res.ok() {
+                            let s: Status = res.json().await.unwrap();
+                            set_username(s.status, dispatch.clone());
                             set_is_authenticated(true, dispatch);
                        } else {
                             set_is_authenticated(false, dispatch);
