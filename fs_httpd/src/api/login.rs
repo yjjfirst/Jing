@@ -1,9 +1,10 @@
 use std::ops::Deref;
-use actix_web::{web, Responder, cookie::Cookie, HttpResponse};
+use actix_web::{web, Responder, cookie::Cookie, HttpResponse, HttpRequest};
 use serde::Deserialize;
 
 use super::Status;
-use fs_lib::portal_user::{authorize};
+use fs_lib::portal_user::{authorize, get as get_portal_user};
+use fs_lib::portal_token::{get};
 
 #[derive(Deserialize)]
 pub struct Credential {
@@ -22,8 +23,12 @@ pub fn login_config(cfg: &mut web::ServiceConfig) {
         );
 }
 
-async fn verify() -> impl Responder {
-    web::Json(Status {status: "Ok".to_string()})
+async fn verify(req: HttpRequest) -> impl Responder {
+    let c = req.cookie("token").unwrap();
+    let token = get(c.value());
+    let user = get_portal_user(token.portal_user_id).unwrap();
+
+    web::Json(Status {status: user.username})
 }
 
 async fn login(c: web::Json<Credential>) -> impl Responder {

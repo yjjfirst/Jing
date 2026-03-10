@@ -44,6 +44,18 @@ pub fn del(portal_user_id: i32) -> Result<()> {
     Ok(())
 }
 
+pub fn get(portal_user_id: i32) -> Result<PortalUser> {
+    use crate::schema::portal_users::dsl::*;
+    let mut conn = db_connect();
+
+    let user: PortalUser = portal_users
+        .filter(id.eq(portal_user_id))
+        .first(&mut conn)
+        .unwrap();
+
+    Ok(user)
+}
+
 pub fn authorize(name: &str, passwd: &str) -> Result<String> {
     use crate::schema::portal_users::dsl::*;
     let mut conn = db_connect();

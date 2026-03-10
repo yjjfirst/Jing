@@ -25,15 +25,15 @@ async fn cookie_middleware(
 
     match cookie {
         Some(c) => {
-            if !is_expired(c.value()) {
-                return next.call(req).await;
+            if is_expired(c.value()) {
+                if req.path() == "/api/login" {
+                    return next.call(req).await;
+                }
+
+                return Err(actix_web::error::ErrorUnauthorized("Unauthorized"));
             }
 
-            if req.path() == "/api/login" {
-                return next.call(req).await;
-            }
-
-            return Err(actix_web::error::ErrorUnauthorized("Unauthorized"));
+            return next.call(req).await;
         },
         None => {
             if req.path() == "/api/login" {

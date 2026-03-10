@@ -52,3 +52,14 @@ pub fn is_expired(t: &str) -> bool {
         true
     }
 }
+
+pub fn get(t: &str) -> PortalToken {
+    use crate::schema::portal_tokens::dsl::*;
+    let mut conn = db_connect();
+
+    let tok = portal_tokens.filter(token.eq(t))
+        .first::<PortalToken>(&mut conn)
+        .unwrap();
+
+    return tok;
+}
