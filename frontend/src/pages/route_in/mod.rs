@@ -59,7 +59,7 @@ pub fn InboundListItem(props: &InboundProps) -> Html {
 
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), id);
-            Service::delete(&path, store.clone().selected_domain)
+            Service::delete(&path, store.clone().selected_domain_id)
                 .await
                 .unwrap();
             ondel.emit(id);
@@ -116,7 +116,7 @@ pub fn InboundList() -> Html {
         let in_routes = in_routes_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_routes: Vec<Inbound> = 
-                Service::index(loc.path(), store.selected_domain.clone())
+                Service::index(loc.path(), store.selected_domain_id.clone())
                     .await
                     .unwrap();
             in_routes.set(fetched_routes);
@@ -193,7 +193,7 @@ pub fn InboundDetails(_props: &InboundDetailsProps) -> Html {
         let loc = loc.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_out = 
-                Service::get(loc.path(), store.selected_domain)
+                Service::get(loc.path(), store.selected_domain_id)
                     .await
                     .unwrap();
             inbound.set(fetched_out);
@@ -228,7 +228,7 @@ pub fn InboundDetails(_props: &InboundDetailsProps) -> Html {
                 let dispatch = dispatch.clone();
                 let loc = loc.clone();
 
-                match Service::post(loc.path(), store.selected_domain, inbound).await {
+                match Service::post(loc.path(), store.selected_domain_id, inbound).await {
                     Ok(_) => {
                         alert_info("Update inbound route successfully.".to_string(), dispatch);
                     }

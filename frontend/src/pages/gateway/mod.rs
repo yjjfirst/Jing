@@ -58,7 +58,7 @@ pub fn GatewayListItem(props: &GatewayProps) -> Html {
         let ondel = ondel.clone();        
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), gateway.id);
-            Service::delete(&path, store.clone().selected_domain)
+            Service::delete(&path, store.clone().selected_domain_id)
                 .await
                 .unwrap();
             ondel.emit(gateway.id);
@@ -113,7 +113,7 @@ pub fn GatewayList() -> Html {
         let gateways = gateways_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_gateways: Vec<Gateway> = 
-                Service::index(loc.path(), store.selected_domain.clone())
+                Service::index(loc.path(), store.selected_domain_id.clone())
                     .await
                     .unwrap();
             gateways.set(fetched_gateways);
@@ -183,7 +183,7 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
         let loc = loc_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_gateway = 
-                Service::get(loc.path(), store.selected_domain)
+                Service::get(loc.path(), store.selected_domain_id)
                     .await
                     .unwrap();
             gateway.set(fetched_gateway);
@@ -226,7 +226,7 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
                 let dispatch = dispatch.clone();
                 let loc = loc.clone();
 
-                match Service::post(loc.path(), store.selected_domain, gateway).await {
+                match Service::post(loc.path(), store.selected_domain_id, gateway).await {
                     Ok(_) => {
                         alert_info("Update gateway successfully.".to_string(), dispatch);
                     }

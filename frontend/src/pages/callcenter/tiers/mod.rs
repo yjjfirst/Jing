@@ -69,7 +69,7 @@ pub fn TierComponent(props: &TierComponentProps) -> Html {
         let agents = agents.clone();
         use_effect_with((), move |_| {
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_agents = Agent::list(store.selected_domain).await;
+                let fetched_agents = Agent::list(store.selected_domain_id).await;
                 agents.set(fetched_agents)
             });
         });
@@ -123,7 +123,7 @@ pub fn TierComponent(props: &TierComponentProps) -> Html {
             wasm_bindgen_futures::spawn_local(async move {
                 let onupdate = onupdate.clone();
                 let url = format!("{}/{}", loc.path(), tier.id);
-                match Service::post(&url, store.selected_domain, tier).await {
+                match Service::post(&url, store.selected_domain_id, tier).await {
                     Ok(_) => {                        
                         alert_info("Tier updated successfully.".to_string(), dispatch);
                         onupdate.emit(0);
@@ -151,7 +151,7 @@ pub fn TierComponent(props: &TierComponentProps) -> Html {
         let onupdate = onupdate.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), tier_id);
-            Service::delete(&path, store.clone().selected_domain)
+            Service::delete(&path, store.clone().selected_domain_id)
                 .await
                 .unwrap();
             onupdate.emit(0);
@@ -231,7 +231,7 @@ pub fn Queues() -> Html {
             let queues = queues.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let fetched_queues: Vec<Queue> =
-                    Queue::list(store.selected_domain).await;
+                    Queue::list(store.selected_domain_id).await;
                 queues.set(fetched_queues);
             });
         });
@@ -270,7 +270,7 @@ pub fn Tiers(props: &TiersProps) -> Html {
             wasm_bindgen_futures::spawn_local(async move {
                 let url = format!("/callcenter/tier?queue_id={}", queue_id);
                 let fetched_tiers =
-                    Service::get(&url, store.selected_domain)
+                    Service::get(&url, store.selected_domain_id)
                         .await
                         .unwrap();
                 tiers.set(fetched_tiers);

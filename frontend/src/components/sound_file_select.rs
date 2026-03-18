@@ -30,7 +30,7 @@ pub fn SoundFileSelect(props: &Props) -> Html {
             let sound_files = sound_files.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let fetched_files: Vec<SoundFile> = 
-                    Service::index("/sound-file", store.selected_domain.clone())
+                    Service::index("/sound-file", store.selected_domain_id.clone())
                         .await
                         .unwrap();
                 sound_files.set(fetched_files);

@@ -61,7 +61,7 @@ pub fn SoundListItem(props: &SoundListItemProps) -> Html {
         let ondel = ondel.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), sound_id);
-            Service::delete(&path, store.clone().selected_domain)
+            Service::delete(&path, store.clone().selected_domain_id)
                 .await
                 .unwrap();
             ondel.emit(sound_id);
@@ -114,7 +114,7 @@ pub fn SoundList() -> Html {
             let sounds = sounds.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let fetched_sounds: Vec<ApiSound> = 
-                    Service::index(loc.path(), store.selected_domain.clone())
+                    Service::index(loc.path(), store.selected_domain_id.clone())
                         .await
                         .unwrap();
                 sounds.set(fetched_sounds);
@@ -197,7 +197,7 @@ pub fn SoundDetails(props: &SoundDetailProps) -> Html {
             let loc = loc.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let fetched_sound = 
-                    Service::get(loc.path(), store.selected_domain)
+                    Service::get(loc.path(), store.selected_domain_id)
                         .await
                         .unwrap();
                 s.set(fetched_sound);
@@ -234,7 +234,7 @@ pub fn SoundDetails(props: &SoundDetailProps) -> Html {
             let s = Sound {
                 id: sound.id,
                 name: form_data.get("name").as_string().unwrap(),
-                domain_id: store.selected_domain,
+                domain_id: store.selected_domain_id,
                 sound_file_id: form_data
                                     .get("sound_file")
                                     .as_string()
@@ -251,7 +251,7 @@ pub fn SoundDetails(props: &SoundDetailProps) -> Html {
                 let dispatch = dispatch.clone();
                 let loc = loc.clone();
 
-                match Service::post(loc.path(), store.selected_domain, s).await {
+                match Service::post(loc.path(), store.selected_domain_id, s).await {
                     Ok(_) => {
                         alert_info("Update sound successfully.".to_string(), dispatch);
                     }

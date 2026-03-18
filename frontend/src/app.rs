@@ -4,7 +4,7 @@ use yewdux::prelude::use_store;
 
 use gloo_net::http::Request;
 
-use crate::store::{Store, select_domain, set_domains, set_is_authenticated, set_username};
+use crate::store::{Store, set_domains, set_is_authenticated, set_selected_domain_id, set_selected_domain_name, set_username};
 use super::components::sidebar::SideBar;
 use crate::pages::ring_group::{RingGroupsRoute, ringgroups_switch};
 use crate::pages::user::{UserRoute, user_switch};
@@ -125,7 +125,8 @@ pub fn app() -> Html {
                 let dispatch = dispatch.clone();
                 wasm_bindgen_futures::spawn_local(async move {
                     let domains = Domain::index().await;
-                    select_domain(domains.first().unwrap().id, dispatch.clone());
+                    set_selected_domain_id(domains.first().unwrap().id, dispatch.clone());
+                    set_selected_domain_name(domains.first().unwrap().domain_name.clone(), dispatch.clone());
                     set_domains(domains, dispatch.clone());                
                 })
             }
@@ -143,7 +144,7 @@ pub fn app() -> Html {
                             alert_type={alert_props.alert_type}
                         />
                     }
-                    if store.selected_domain != 0 {
+                    if store.selected_domain_id != 0 {
                         <div class="flex flex-col">
                             <Banner></Banner>
                             <div class="flex grow ml-4 mr-1">

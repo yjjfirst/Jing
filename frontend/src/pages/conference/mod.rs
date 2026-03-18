@@ -64,7 +64,7 @@ pub fn ConfListItem(props: &ConfListItemProps) -> Html {
         let ondel = ondel.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), conf_id);
-            Service::delete(&path, store.clone().selected_domain)
+            Service::delete(&path, store.clone().selected_domain_id)
                 .await
                 .unwrap();
             ondel.emit(conf_id);
@@ -122,7 +122,7 @@ pub fn ConfList() -> Html {
             let confs = confs.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let fetched_confs: Vec<Conf> = 
-                    Service::index(loc.path(), store.selected_domain.clone())
+                    Service::index(loc.path(), store.selected_domain_id.clone())
                         .await
                         .unwrap();
                 confs.set(fetched_confs);
@@ -197,7 +197,7 @@ pub fn ConfDetails(props: &ConfDetailProps) -> Html{
             let loc = loc.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let fetched_conf = 
-                    Service::get(loc.path(), store.selected_domain)
+                    Service::get(loc.path(), store.selected_domain_id)
                         .await
                         .unwrap();
                 conf.set(fetched_conf);
@@ -250,14 +250,14 @@ pub fn ConfDetails(props: &ConfDetailProps) -> Html{
                         .unwrap()
                         .parse::<usize>()
                         .unwrap(),
-                domain_id: store.selected_domain
+                domain_id: store.selected_domain_id
             };
 
             wasm_bindgen_futures::spawn_local(async move {
                 let dispatch = dispatch.clone();
                 let loc = loc.clone();
 
-                match Service::post(loc.path(), store.selected_domain, conf).await {
+                match Service::post(loc.path(), store.selected_domain_id, conf).await {
                     Ok(_) => {
                         alert_info("Update conference successfully.".to_string(), dispatch);
                     }

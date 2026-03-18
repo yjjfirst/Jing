@@ -71,7 +71,7 @@ pub fn IvrListItem(props: &IvrListItemProps) -> Html {
         let ondel = ondel.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), ivr_id);
-            Service::delete(&path, store.clone().selected_domain)
+            Service::delete(&path, store.clone().selected_domain_id)
                 .await
                 .unwrap();
             ondel.emit(ivr_id);
@@ -127,7 +127,7 @@ pub fn IvrList() -> Html {
             let ivrs = ivrs.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let fetched_ivrs: Vec<Ivr> = 
-                    Service::index(loc.path(), store.selected_domain.clone())
+                    Service::index(loc.path(), store.selected_domain_id.clone())
                         .await
                         .unwrap();
                 ivrs.set(fetched_ivrs);
@@ -222,7 +222,7 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
             let store = store.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let fetched_ivr = 
-                    Service::get(loc.path(), store.selected_domain)
+                    Service::get(loc.path(), store.selected_domain_id)
                         .await
                         .unwrap();
                 ivr.set(fetched_ivr);
@@ -355,7 +355,7 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
 
             wasm_bindgen_futures::spawn_local(async move {
                 let dispatch = dispatch.clone();
-                match Service::post(loc.path(), store_cloned.selected_domain, all_data).await {
+                match Service::post(loc.path(), store_cloned.selected_domain_id, all_data).await {
                     Ok(_) => {
                         alert_info("Update IVR successfully.".to_string(), dispatch);
                     }

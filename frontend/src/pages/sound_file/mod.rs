@@ -58,7 +58,7 @@ pub fn SoundFileListItem(props: &SoundFileProps) -> Html {
 
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), sound.id);
-            Service::delete(&path, store.clone().selected_domain)
+            Service::delete(&path, store.clone().selected_domain_id)
                 .await
                 .unwrap();
             ondel.emit(sound.id);
@@ -112,7 +112,7 @@ pub fn SoundFileList() -> Html {
         let sound_files = sound_files_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_files: Vec<SoundFile> = 
-                Service::index(loc.path(), store.selected_domain.clone())
+                Service::index(loc.path(), store.selected_domain_id.clone())
                     .await
                     .unwrap();
             sound_files.set(fetched_files);
@@ -188,7 +188,7 @@ pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
         let loc = loc.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_out = 
-                Service::get(loc.path(), store.selected_domain)
+                Service::get(loc.path(), store.selected_domain_id)
                     .await
                     .unwrap();
             sound.set(fetched_out);
@@ -222,7 +222,7 @@ pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
                 wasm_bindgen_futures::spawn_local(async move {
                     let dispatch = dispatch.clone();
                     let loc = loc.clone();
-                    match Service::post_form(loc.path(), store.selected_domain, form_data)
+                    match Service::post_form(loc.path(), store.selected_domain_id, form_data)
                         .await {
                             Ok(_) => {
                                 alert_info("Create sound file successfully".to_string(), dispatch);
@@ -238,7 +238,7 @@ pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
                     let dispatch = dispatch.clone();
                     let loc = loc.clone();
 
-                    match Service::patch(loc.path(), store.selected_domain, sound_file)
+                    match Service::patch(loc.path(), store.selected_domain_id, sound_file)
                         .await {
                             Ok(_) => {
                                 alert_info("Update sound file successfully".to_string(), dispatch);
@@ -261,7 +261,7 @@ pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
             <form class="w-full" onsubmit={form_onsubmit} method="POST">
             <div class="grid grid-cols-3 gap-1">
                 <Input value={sound.id.to_string()} id="id" hidden=true></Input>
-                <Input value={store_2.selected_domain.to_string()} id="domain_id" hidden=true></Input>
+                <Input value={store_2.selected_domain_id.to_string()} id="domain_id" hidden=true></Input>
                 <Label>{"File Name"}</Label>
                 if id == 0 {
                     <FileInput

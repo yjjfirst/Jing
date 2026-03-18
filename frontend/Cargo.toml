@@ -32,6 +32,7 @@ yew_icons = {version = "0.8", features = ["LucideEdit",
     "LucideChevronDown",
     "LucideChevronUp",
     "LucidePlus",
+    "LucideLogOut",
     "LucideTrash"]}
 yewdux = "0.11.0"
 charming = {version = "0.4.0", features = ["wasm"] }

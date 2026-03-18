@@ -27,7 +27,7 @@ pub fn CdrList() -> Html {
         let cdrs = cdrs_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_routes: Vec<Cdr> = 
-                Service::index(loc.path(), store.selected_domain.clone())
+                Service::index(loc.path(), store.selected_domain_id.clone())
                     .await
                     .unwrap();
             cdrs.set(fetched_routes);

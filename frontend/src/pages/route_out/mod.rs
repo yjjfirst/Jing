@@ -60,7 +60,7 @@ pub fn OutboundListItem(props: &OutboundProps) -> Html {
 
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), id);
-            Service::delete(&path, store.clone().selected_domain)
+            Service::delete(&path, store.clone().selected_domain_id)
                 .await
                 .unwrap();
             ondel.emit(id);
@@ -115,7 +115,7 @@ pub fn OutboundList() -> Html {
         let out_routes = out_routes.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_routes: Vec<Outbound> = 
-                Service::index(loc.path(), store.selected_domain.clone())
+                Service::index(loc.path(), store.selected_domain_id)
                     .await
                     .unwrap();
             out_routes.set(fetched_routes);
@@ -193,7 +193,7 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
         let loc = loc.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_out = 
-                Service::get(loc.path(), store.selected_domain)
+                Service::get(loc.path(), store.selected_domain_id)
                 .await
                 .unwrap();
             out.set(fetched_out);
@@ -204,7 +204,7 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
         let gateways = gateways_1.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let fetched_gateway: Vec<Gateway> = 
-                    Service::index("/gateway", store_1.selected_domain)
+                    Service::index("/gateway", store_1.selected_domain_id)
                         .await
                         .unwrap();
                 gateways.set(fetched_gateway);
@@ -241,7 +241,7 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
                 let dispatch = dispatch.clone();
                 let loc = loc.clone();
 
-                match Service::post(loc.path(), store.selected_domain, out).await {
+                match Service::post(loc.path(), store.selected_domain_id, out).await {
                     Ok(_) => {
                         alert_info("Update outbound route successfully.".to_string(), dispatch);
                     }

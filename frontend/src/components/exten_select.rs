@@ -29,7 +29,7 @@ pub fn ExtenionSelect(props: &Props) -> Html {
             let ext_map = ext_map.clone();
             let mut fetched_map: HashMap<String, Vec<String>> = HashMap::new();
             let url = format!("/extension");
-            let extensions: Vec<Extension> = Service::index(&url, store.selected_domain).await.unwrap();            
+            let extensions: Vec<Extension> = Service::index(&url, store.selected_domain_id).await.unwrap();            
             for e in extensions {
                 if !fetched_map.contains_key(&e.exten_type) {
                     fetched_map.insert(e.exten_type.clone(), vec![e.exten.clone()]);

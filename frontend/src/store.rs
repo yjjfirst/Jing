@@ -13,7 +13,8 @@ pub struct AlertInput {
 #[derive(Debug, Serialize, Deserialize, Default, Clone, PartialEq, Store)]
 pub struct Store {
     pub alert_input: AlertInput,
-    pub selected_domain: usize,
+    pub selected_domain_id: usize,
+    pub selected_domain_name: String,
     pub domains: Vec<Domain>,
     pub is_authenticated: bool,
     pub username: String
@@ -44,10 +45,16 @@ pub fn hide_alert(dispatch: Dispatch<Store>) {
     })
 }
 
-pub fn select_domain(domain: usize, dispatch: Dispatch<Store>) {
+pub fn set_selected_domain_id(domain_id: usize, dispatch: Dispatch<Store>) {
     dispatch.reduce_mut(move|store| {
-        store.selected_domain = domain;
+        store.selected_domain_id = domain_id;
     })
+}
+
+pub fn set_selected_domain_name(domain_name: String, dispatch: Dispatch<Store>) {
+    dispatch.reduce_mut(move|store| {
+        store.selected_domain_name = domain_name;
+    })    
 }
 
 pub fn set_domains(domains: Vec<Domain>, dispatch: Dispatch<Store>) {

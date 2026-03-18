@@ -21,7 +21,7 @@ pub fn UserSelect(props: &Props) -> Html {
         let users = users.clone();
         use_effect_with((), move |_| {
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_users = User::list(store.selected_domain).await;
+                let fetched_users = User::list(store.selected_domain_id).await;
                 users.set(fetched_users)
             });
         });

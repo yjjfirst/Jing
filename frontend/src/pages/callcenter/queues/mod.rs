@@ -58,7 +58,7 @@ pub fn QueueListItem(props: &QueueListItemProps) -> Html {
         let ondel = ondel.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), id);
-            Service::delete(&path, store.clone().selected_domain)
+            Service::delete(&path, store.clone().selected_domain_id)
                 .await
                 .unwrap();
             ondel.emit(id);
@@ -120,7 +120,7 @@ pub fn QueueList() -> Html {
             let queues = queues.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let fetched_queues: Vec<Queue> =
-                    Queue::list(store.selected_domain).await;
+                    Queue::list(store.selected_domain_id).await;
                 queues.set(fetched_queues);
             });
         });
@@ -197,7 +197,7 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
             let store = store.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let fetched_queue = 
-                    Service::get(loc.path(), store.selected_domain)
+                    Service::get(loc.path(), store.selected_domain_id)
                         .await
                         .unwrap();
                 queue.set(fetched_queue);
@@ -250,7 +250,7 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
 
             wasm_bindgen_futures::spawn_local(async move {
                 let dispatch = dispatch.clone();
-                match Service::post(loc.path(), store.selected_domain, data).await {
+                match Service::post(loc.path(), store.selected_domain_id, data).await {
                     Ok(_) => {
                         if id != 0 {
                             alert_info("Update Queue successfully.".to_string(), dispatch);

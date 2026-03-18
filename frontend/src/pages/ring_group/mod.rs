@@ -56,7 +56,7 @@ pub fn RingGroupList() -> Html {
         let groups = groups.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_groups: Vec<RingGroupDetail> = 
-                Service::index(loc.path(), store.selected_domain.clone())
+                Service::index(loc.path(), store.selected_domain_id.clone())
                     .await
                     .unwrap();
             groups.set(fetched_groups);
@@ -128,7 +128,7 @@ pub fn RingGroupListItem(props: &RingGroupListItemProps) -> Html {
         let ondel = ondel.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), id);
-            Service::delete(&path, store.clone().selected_domain)
+            Service::delete(&path, store.clone().selected_domain_id)
                 .await
                 .unwrap();
             ondel.emit(id);
@@ -194,12 +194,12 @@ pub fn RingGroupDetailComponent(props: &RingGroupDetailsProps) -> Html {
         wasm_bindgen_futures::spawn_local(async move {
             if id != 0 {
                 let fetched_group: RingGroup = 
-                    Service::get(loc.path(), store.clone().selected_domain)
+                    Service::get(loc.path(), store.clone().selected_domain_id)
                         .await
                         .unwrap();
                 g.set(fetched_group);
             }
-            let fetched_extensions = User::list(store.selected_domain).await;
+            let fetched_extensions = User::list(store.selected_domain_id).await;
             es.set(fetched_extensions);
         });
     });
@@ -251,7 +251,7 @@ pub fn RingGroupDetailComponent(props: &RingGroupDetailsProps) -> Html {
             wasm_bindgen_futures::spawn_local(async move {
                 let dispatch = dispatch.clone();
 
-                match Service::post(loc.path(), store_cloned.selected_domain, group).await {
+                match Service::post(loc.path(), store_cloned.selected_domain_id, group).await {
                     Ok(_) => {
                         alert_info("Update inbound route successfully.".to_string(), dispatch);
                     }

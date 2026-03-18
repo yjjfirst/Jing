@@ -60,7 +60,7 @@ pub fn UserListItem(props: &UserProps) -> Html {
         let ondel = ondel.clone();        
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), id);
-            Service::delete(&path, store.clone().selected_domain)
+            Service::delete(&path, store.clone().selected_domain_id)
                 .await
                 .unwrap();
             ondel.emit(id);
@@ -111,7 +111,7 @@ pub fn UserList() -> Html {
         let exts  = exts.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_extensions: Vec<User> = 
-                Service::index(loc.path(), store.selected_domain.clone())
+                Service::index(loc.path(), store.selected_domain_id.clone())
                     .await
                     .unwrap();
             exts.set(fetched_extensions);
@@ -184,7 +184,7 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
         let loc = loc_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let fetched_user = 
-                Service::get(loc.path(), store.selected_domain)
+                Service::get(loc.path(), store.selected_domain_id)
                     .await
                     .unwrap();
             user.set(fetched_user);
@@ -239,7 +239,7 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
 
             wasm_bindgen_futures::spawn_local(async move {
                 let store = store.clone();
-                match Service::post(loc.path(), store.selected_domain, c).await {
+                match Service::post(loc.path(), store.selected_domain_id, c).await {
                     Ok(_) => {
                         alert_info("Update user successfully.".to_string(), dispatch);
                     }

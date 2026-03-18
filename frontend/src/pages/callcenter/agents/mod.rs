@@ -59,7 +59,7 @@ pub fn AgentListItem(props: &AgentListItemProps) -> Html {
         let ondel = ondel.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), id);
-            Service::delete(&path, store.clone().selected_domain)
+            Service::delete(&path, store.clone().selected_domain_id)
                 .await
                 .unwrap();
             ondel.emit(id);
@@ -124,7 +124,7 @@ pub fn AgentList() -> Html {
             let url = format!("{}", loc.path());
             wasm_bindgen_futures::spawn_local(async move {
                 let fetched_agents: Vec<Agent> =
-                    Service::index(&url, store.selected_domain.clone())
+                    Service::index(&url, store.selected_domain_id.clone())
                         .await
                         .unwrap();
                     agents.set(fetched_agents);
@@ -201,7 +201,7 @@ pub fn AgentDetails(_props: &AgentDetailsProps) -> Html {
 
             wasm_bindgen_futures::spawn_local( async move {
                 let fetched = 
-                    Service::get(loc.path(), store.selected_domain)
+                    Service::get(loc.path(), store.selected_domain_id)
                         .await
                         .unwrap();
                 agent.set(fetched);
@@ -258,7 +258,7 @@ pub fn AgentDetails(_props: &AgentDetailsProps) -> Html {
 
             wasm_bindgen_futures::spawn_local(async move {
                 let dispatch = dispatch.clone();
-                match Service::post(loc.path(), store.selected_domain, data).await {
+                match Service::post(loc.path(), store.selected_domain_id, data).await {
                     Ok(_) => {
                         if id == 0 {
                             alert_info("Agent created successfully.".to_string(), dispatch);
