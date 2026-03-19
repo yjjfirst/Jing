@@ -1,19 +1,37 @@
 use yew::prelude::*;
 use yewdux::prelude::*;
-use crate::store::{Store, set_selected_domain_id, set_selected_domain_name};
+use gloo_net::http::Request;
+use crate::store::{Store, set_username, set_is_authenticated, set_selected_domain_id, set_selected_domain_name};
 use yew_icons::{Icon, IconId};
 use crate::app::Route;
 use yew_router::prelude::*;
 
+use crate::models::API_BASE;
+
 #[function_component]
 pub fn Banner() -> Html {
-    let (store, _) = use_store::<Store>();
+    let (store, dispatch) = use_store::<Store>();
+    let handle_logout = {
+        Callback::from(move |_|{
+            let dispatch = dispatch.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                let url = format!("{}/logout", API_BASE);
+                let req = Request::post(&url).body("").unwrap(); 
+                let dispatch = dispatch.clone();
+                let res = req.send().await.unwrap();
+                if res.ok() {
+                    set_is_authenticated(false, dispatch.clone());
+                    set_username("".to_string(), dispatch);
+                }
+            });
+        })
+    };
 
     html! {
-        <div class="flex justify-end grow items-center ml-1 mr-1">
+        <div class="flex justify-end grow items-center ml-4 mr-4">
             <DomainComponent/>
             <div class="flex items-center">
-                <div class="btn btn-ghost btn-sm">
+                <div class="btn btn-ghost btn-sm" onclick={handle_logout}>
                     <Icon icon_id={IconId::LucideLogOut}/>
                 </div>
                 <p>{store.username.clone()}</p>
