@@ -43,13 +43,18 @@ pub fn is_expired(t: &str) -> bool {
     let mut conn = db_connect();
 
     let tok = portal_tokens.filter(token.eq(t))
-        .first::<PortalToken>(&mut conn)
-        .unwrap();
-
-    if Local::now() <= tok.expire_at {
-        false
-    } else {
-        true
+        .first::<PortalToken>(&mut conn);
+    match tok {
+        Ok(tok) => {
+            if Local::now() <= tok.expire_at {
+                false
+            } else {
+                true
+            }
+        },
+        Err(_) => {
+            true
+        }
     }
 }
 
