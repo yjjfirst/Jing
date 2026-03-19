@@ -63,3 +63,14 @@ pub fn get(t: &str) -> PortalToken {
 
     return tok;
 }
+
+pub fn revoke(t: &str) -> Result<()> {
+    use crate::schema::portal_tokens::columns::*;
+    let mut conn = db_connect();
+
+    diesel::delete(portal_tokens::table)
+        .filter(token.eq(t))
+        .execute(&mut conn)?;
+
+    Ok(())
+}
