@@ -36,4 +36,11 @@ impl UserParam {
 
         Ok(())
     }
+
+    pub fn defaults() -> Vec<(String, String)> {
+        vec![
+            ("password".to_string(), generate_token(12, Some((true, true, true))).unwrap()),
+            ("vm_password".to_string(), generate_token(4, Some((false, false, true))).unwrap())
+        ]
+    }
 }
