@@ -46,7 +46,7 @@ async fn cookie_middleware(
 
 }
 
-async fn index() -> Result<NamedFile> {
+async fn index() -> Result<NamedFile, Error> {
     Ok(NamedFile::open("html/index.html")?)
 }
 
