@@ -3,7 +3,9 @@
 diesel::table! {
     acl_lists (id) {
         id -> Int4,
+        #[max_length = 128]
         acl_name -> Varchar,
+        #[max_length = 128]
         acl_default -> Varchar,
     }
 }
@@ -12,7 +14,9 @@ diesel::table! {
     acl_nodes (id) {
         id -> Int4,
         list_id -> Nullable<Int4>,
+        #[max_length = 128]
         node_type -> Varchar,
+        #[max_length = 128]
         cidr -> Varchar,
     }
 }
@@ -21,7 +25,9 @@ diesel::table! {
     agent_params (id) {
         id -> Int4,
         agent_id -> Int4,
+        #[max_length = 128]
         name -> Varchar,
+        #[max_length = 128]
         value -> Varchar,
     }
 }
@@ -31,6 +37,7 @@ diesel::table! {
         id -> Int4,
         domain_id -> Int4,
         user_id -> Int4,
+        #[max_length = 128]
         name -> Varchar,
         leg_timeout -> Int4,
     }
@@ -55,7 +62,9 @@ diesel::table! {
     conference_control_details (id) {
         id -> Int4,
         conference_control_id -> Int4,
+        #[max_length = 32]
         action -> Varchar,
+        #[max_length = 8]
         digits -> Varchar,
     }
 }
@@ -63,7 +72,9 @@ diesel::table! {
 diesel::table! {
     conference_controls (id) {
         id -> Int4,
+        #[max_length = 128]
         name -> Varchar,
+        #[max_length = 512]
         description -> Varchar,
     }
 }
@@ -72,7 +83,9 @@ diesel::table! {
     conference_profile_params (id) {
         id -> Int4,
         conference_profile_id -> Int4,
+        #[max_length = 128]
         name -> Varchar,
+        #[max_length = 128]
         value -> Varchar,
     }
 }
@@ -80,7 +93,9 @@ diesel::table! {
 diesel::table! {
     conference_profiles (id) {
         id -> Int4,
+        #[max_length = 128]
         name -> Varchar,
+        #[max_length = 512]
         description -> Varchar,
     }
 }
@@ -88,10 +103,13 @@ diesel::table! {
 diesel::table! {
     conferences (id) {
         id -> Int4,
+        #[max_length = 32]
         exten -> Varchar,
+        #[max_length = 128]
         name -> Varchar,
         domain_id -> Int4,
         conference_profile_id -> Int4,
+        #[max_length = 512]
         description -> Varchar,
     }
 }
@@ -99,6 +117,7 @@ diesel::table! {
 diesel::table! {
     domains (id) {
         id -> Int4,
+        #[max_length = 128]
         domain_name -> Varchar,
     }
 }
@@ -106,6 +125,7 @@ diesel::table! {
 diesel::table! {
     extension_types (id) {
         id -> Int4,
+        #[max_length = 32]
         name -> Varchar,
     }
 }
@@ -113,7 +133,9 @@ diesel::table! {
 diesel::table! {
     extensions (id) {
         id -> Int4,
+        #[max_length = 128]
         exten -> Varchar,
+        #[max_length = 64]
         exten_type -> Varchar,
         domain_id -> Int4,
     }
@@ -123,7 +145,9 @@ diesel::table! {
     feature_codes (id) {
         id -> Int4,
         domain_id -> Int4,
+        #[max_length = 8]
         digits -> Varchar,
+        #[max_length = 128]
         action -> Varchar,
     }
 }
@@ -132,10 +156,15 @@ diesel::table! {
     gateways (id) {
         id -> Int4,
         profile_id -> Int4,
+        #[max_length = 256]
         gateway_name -> Varchar,
+        #[max_length = 256]
         proxy -> Varchar,
+        #[max_length = 256]
         register -> Varchar,
+        #[max_length = 256]
         username -> Nullable<Varchar>,
+        #[max_length = 256]
         password -> Nullable<Varchar>,
     }
 }
@@ -143,8 +172,11 @@ diesel::table! {
 diesel::table! {
     inbound_routes (id) {
         id -> Int4,
+        #[max_length = 64]
         context -> Varchar,
+        #[max_length = 512]
         condition -> Varchar,
+        #[max_length = 64]
         dest_extension -> Varchar,
     }
 }
@@ -153,7 +185,9 @@ diesel::table! {
     ivr_attrs (id) {
         id -> Int4,
         ivr_id -> Int4,
+        #[max_length = 128]
         name -> Varchar,
+        #[max_length = 128]
         value -> Varchar,
     }
 }
@@ -162,7 +196,9 @@ diesel::table! {
     ivr_entries (id) {
         id -> Int4,
         ivr_id -> Int4,
+        #[max_length = 8]
         digits -> Varchar,
+        #[max_length = 64]
         dest_exten -> Varchar,
     }
 }
@@ -170,7 +206,9 @@ diesel::table! {
 diesel::table! {
     ivrs (id) {
         id -> Int4,
+        #[max_length = 32]
         exten -> Varchar,
+        #[max_length = 128]
         name -> Varchar,
         domain_id -> Int4,
     }
@@ -181,6 +219,7 @@ diesel::table! {
         id -> Int4,
         gateway_id -> Int4,
         priority -> Int4,
+        #[max_length = 512]
         condition -> Varchar,
     }
 }
@@ -189,6 +228,7 @@ diesel::table! {
     portal_tokens (id) {
         id -> Int4,
         portal_user_id -> Int4,
+        #[max_length = 256]
         token -> Varchar,
         expire_at -> Timestamptz,
     }
@@ -197,7 +237,9 @@ diesel::table! {
 diesel::table! {
     portal_users (id) {
         id -> Int4,
+        #[max_length = 128]
         username -> Varchar,
+        #[max_length = 128]
         password -> Varchar,
     }
 }
@@ -206,7 +248,9 @@ diesel::table! {
     profile_params (id) {
         id -> Int4,
         profile_id -> Int4,
+        #[max_length = 256]
         name -> Varchar,
+        #[max_length = 256]
         value -> Varchar,
     }
 }
@@ -214,6 +258,7 @@ diesel::table! {
 diesel::table! {
     profiles (id) {
         id -> Int4,
+        #[max_length = 256]
         name -> Varchar,
     }
 }
@@ -222,7 +267,9 @@ diesel::table! {
     queue_params (id) {
         id -> Int4,
         queue_id -> Int4,
+        #[max_length = 128]
         name -> Varchar,
+        #[max_length = 128]
         value -> Varchar,
     }
 }
@@ -230,7 +277,9 @@ diesel::table! {
 diesel::table! {
     queues (id) {
         id -> Int4,
+        #[max_length = 128]
         name -> Varchar,
+        #[max_length = 32]
         exten -> Varchar,
         domain_id -> Int4,
     }
@@ -247,11 +296,15 @@ diesel::table! {
 diesel::table! {
     ringing_groups (id) {
         id -> Int4,
+        #[max_length = 32]
         name -> Varchar,
+        #[max_length = 32]
         group_id -> Varchar,
         domain_id -> Int4,
+        #[max_length = 256]
         description -> Nullable<Varchar>,
         ring_time -> Int4,
+        #[max_length = 32]
         ring_strategy -> Varchar,
     }
 }
@@ -259,8 +312,10 @@ diesel::table! {
 diesel::table! {
     sound_files (id) {
         id -> Int4,
+        #[max_length = 256]
         name -> Varchar,
         domain_id -> Int4,
+        #[max_length = 1024]
         description -> Nullable<Varchar>,
     }
 }
@@ -268,7 +323,9 @@ diesel::table! {
 diesel::table! {
     sounds (id) {
         id -> Int4,
+        #[max_length = 32]
         exten -> Varchar,
+        #[max_length = 32]
         name -> Varchar,
         domain_id -> Int4,
         sound_file_id -> Int4,
@@ -289,7 +346,9 @@ diesel::table! {
     user_params (id) {
         id -> Int4,
         user_id -> Int4,
+        #[max_length = 128]
         name -> Varchar,
+        #[max_length = 128]
         value -> Varchar,
     }
 }
@@ -298,7 +357,9 @@ diesel::table! {
     user_variables (id) {
         id -> Int4,
         user_id -> Int4,
+        #[max_length = 128]
         name -> Varchar,
+        #[max_length = 128]
         value -> Varchar,
     }
 }
@@ -307,6 +368,7 @@ diesel::table! {
     users (id) {
         id -> Int4,
         domain_id -> Int4,
+        #[max_length = 128]
         user_id -> Varchar,
     }
 }
@@ -315,7 +377,9 @@ diesel::table! {
     voicemails (id) {
         id -> Int4,
         user_id -> Int4,
+        #[max_length = 32]
         password -> Varchar,
+        #[max_length = 128]
         email -> Nullable<Varchar>,
     }
 }
