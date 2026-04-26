@@ -58,10 +58,10 @@ async fn main() -> std::io::Result<()> {
             .app_data(web::FormConfig::default().limit(327_680))
             .wrap(cors)
             .wrap(from_fn(cookie_middleware))
-            .service(Files::new("/admin", "./html").index_file("index.html"))
             .service(fs::fs_post)
             .service(cdr::cdr_post)
             .service(web::scope("/api").configure(api_config))
+            .service(Files::new("/", "/var/www/pbx").index_file("index.html"))
             .default_service(web::route().to(index))
     })
         .bind("0.0.0.0:9090")?
