@@ -1,0 +1,6 @@
+default: install
+
+install:
+	trunk build
+	rm -f /var/www/pbx/*
+	cp dist/* /var/www/pbx
