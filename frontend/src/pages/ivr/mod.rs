@@ -30,12 +30,12 @@ pub enum IvrRoute {
     Get {id: usize},
 }
 
-#[derive(Clone, PartialEq, Properties)] 
+#[derive(Clone, PartialEq, Properties)]
 pub struct IvrDetailProps {
     pub id: usize,
 }
 
-#[derive(Clone, PartialEq, Properties)] 
+#[derive(Clone, PartialEq, Properties)]
 pub struct IvrListItemProps {
     pub id: usize,
     pub exten: String,
@@ -43,7 +43,7 @@ pub struct IvrListItemProps {
     pub ondel: Callback<usize>
 }
 
-#[derive(Clone, PartialEq, Properties)] 
+#[derive(Clone, PartialEq, Properties)]
 pub struct IvrEntryProps {
     pub digits: String,
     pub exten: String,
@@ -65,7 +65,7 @@ pub fn IvrListItem(props: &IvrListItemProps) -> Html {
             nav.push(&IvrRoute::Get {id: props.id});
         })
     };
-    let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{  
+    let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
         let loc = loc.clone();
         let store = store.clone();
         let ondel = ondel.clone();
@@ -75,7 +75,7 @@ pub fn IvrListItem(props: &IvrListItemProps) -> Html {
                 .await
                 .unwrap();
             ondel.emit(ivr_id);
-        });    
+        });
     });
 
     let ondel: Callback<MouseEvent> = {
@@ -93,29 +93,29 @@ pub fn IvrListItem(props: &IvrListItemProps) -> Html {
             <th class="flex justify-end">
                 <div class="mr-1">
                     <div onclick={onedit} class="btn btn-square btn-outline btn-sm">
-                        <Icon icon_id={IconId::LucideEdit}/>   
+                        <Icon icon_id={IconId::LucideEdit}/>
                     </div>
                 </div>
                 <div>
                     <div onclick={ondel} class="btn btn-square btn-outline btn-sm">
-                        <Icon icon_id={IconId::LucideTrash}/>   
+                        <Icon icon_id={IconId::LucideTrash}/>
                     </div>
                 </div>
             </th>
             <Dialog
                 d_ref = {dialog_ref}
-                title={"Warning!"} 
+                title={"Warning!"}
                 contents={format!("Are you sure to delete IVR: {}?", props.exten.clone())}
                 {onconfirm}
                 >
-            </Dialog>                         
+            </Dialog>
         </tr>
     }
 }
 
 #[function_component]
 pub fn IvrList() -> Html {
-    let nav = use_navigator().unwrap();    
+    let nav = use_navigator().unwrap();
     let loc = use_location().unwrap().clone();
     let (store,_) = use_store::<Store>();
 
@@ -126,7 +126,7 @@ pub fn IvrList() -> Html {
         use_effect_with((), move|_|{
             let ivrs = ivrs.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_ivrs: Vec<Ivr> = 
+                let fetched_ivrs: Vec<Ivr> =
                     Service::index(loc.path(), store.selected_domain_id.clone())
                         .await
                         .unwrap();
@@ -135,10 +135,10 @@ pub fn IvrList() -> Html {
         });
     }
     let onadd: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent|{
-        nav.push(&IvrRoute::Get {id: 0});        
+        nav.push(&IvrRoute::Get {id: 0});
     });
 
-    let ondel: Callback<usize> = {        
+    let ondel: Callback<usize> = {
         let ivrs = ivrs.clone();
         Callback::from(move|id: usize|{
             let ivrs = ivrs.clone();
@@ -149,15 +149,15 @@ pub fn IvrList() -> Html {
                 .collect();
             ivrs.set(filtered);
         })
-    };    
+    };
 
     let list_items: Vec<Html> = ivrs
         .iter()
         .map(|i|{
             html! {
-                <IvrListItem 
-                    id={i.id} 
-                    exten={i.exten.clone()} 
+                <IvrListItem
+                    id={i.id}
+                    exten={i.exten.clone()}
                     name={i.name.clone()}
                     ondel={ondel.clone()}/>
             }
@@ -181,10 +181,10 @@ pub fn IvrList() -> Html {
             </table>
             <div class="flex flex-row-reverse pr-4">
                 <div onclick={onadd} class="btn btn-square btn-outline btn-sm" >
-                    <Icon icon_id={IconId::LucidePlus}/>   
+                    <Icon icon_id={IconId::LucidePlus}/>
                 </div>
-            </div>             
-        </div>             
+            </div>
+        </div>
     }
 }
 
@@ -194,7 +194,7 @@ pub fn IvrEntryComponent(props: &IvrEntryProps) -> Html {
         <div class="flex">
             <Input id="entry" value={props.digits.clone()}></Input>
             <ExtenionSelect id="destination" value={props.exten.clone()}/>
-        </div>                  
+        </div>
     }
 }
 
@@ -221,7 +221,7 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
             let loc = loc.clone();
             let store = store.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_ivr = 
+                let fetched_ivr =
                     Service::get(loc.path(), store.selected_domain_id)
                         .await
                         .unwrap();
@@ -229,7 +229,7 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
             });
         });
     }
-    
+
     let label = |id:&str| {
         html!{
             <Label>{id}</Label>
@@ -241,24 +241,24 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
             <Input id={id.to_string()} value={value.to_string()}></Input>
         }
     };
-    
+
     let sound_file_select = |id: &str, sound_file_id: usize| {
         html!{
-            <SoundFileSelect 
-                id={id.to_string()} 
+            <SoundFileSelect
+                id={id.to_string()}
                 sound_file_id={sound_file_id}>
             </SoundFileSelect>
         }
     };
 
-    let attr_htmls: Vec<Html> = 
+    let attr_htmls: Vec<Html> =
         vec![
             label("Greet Long"),
             sound_file_select("greet-long", IvrAttr::get("greet-long", &ivr.attrs).parse::<usize>().unwrap_or(0)),
             label("Greet Short"),
             sound_file_select("greet-short", IvrAttr::get("greet-short", &ivr.attrs).parse::<usize>().unwrap_or(0)),
             label("Invalid Sound"),
-            sound_file_select("invalid-sound", IvrAttr::get("invalid-sound", &ivr.attrs).parse::<usize>().unwrap_or(0)), 
+            sound_file_select("invalid-sound", IvrAttr::get("invalid-sound", &ivr.attrs).parse::<usize>().unwrap_or(0)),
             label("Exit Sound"),
             sound_file_select("exit-sound", IvrAttr::get("exit-sound", &ivr.attrs).parse::<usize>().unwrap_or(0)),
             label("Timeout"),
@@ -272,10 +272,10 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
             label("Digit Len"),
             input("digit-len", &IvrAttr::get("digit-len", &ivr.attrs)),
             label("Confirm attempts"),
-            input("confirm-attempts", &IvrAttr::get("confirm-attempts", &ivr.attrs)), 
+            input("confirm-attempts", &IvrAttr::get("confirm-attempts", &ivr.attrs)),
         ];
-    
-    
+
+
     let entries_html: Vec<Html> = ivr.entries.iter().map(|e|{
         html!{
             <IvrEntryComponent digits={e.digits.clone()} exten={e.dest_exten.clone()} />
@@ -288,12 +288,12 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
             let ivr = ivr.clone();
             let mut entries = ivr.entries.clone();
             entries.push(IvrEntry::new());
-            ivr.set(Ivr { 
+            ivr.set(Ivr {
                     id: ivr.id,
                     domain_id: ivr.domain_id,
                     name: ivr.name.clone(),
-                    exten: ivr.exten.clone(), 
-                    attrs: ivr.attrs.clone(), 
+                    exten: ivr.exten.clone(),
+                    attrs: ivr.attrs.clone(),
                     entries})
         })
     };
@@ -306,6 +306,8 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
         let ivr = ivr.clone();
 
         Callback::from(move|event: SubmitEvent| {
+            event.prevent_default();
+
             let ivr = ivr.clone();
             let nav = nav.clone();
             let dispatch: Dispatch<Store> = dispatch.clone();
@@ -313,7 +315,7 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
             let loc = loc.clone();
 
             let target = event.target().unwrap();
-            let form = target.dyn_into().unwrap();            
+            let form = target.dyn_into().unwrap();
             let form_data = FormData::new_with_form(&form).unwrap();
 
             let new_attrs = ivr
@@ -335,9 +337,9 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
                 .enumerate()
                 .map(|(i,e)|{
                     let index = i.try_into().unwrap();
-                    IvrEntry { 
-                        id: e.id, 
-                        ivr_id: ivr.id, 
+                    IvrEntry {
+                        id: e.id,
+                        ivr_id: ivr.id,
                         digits: form_data.get_all("entry").get(index).as_string().unwrap(),
                         dest_exten: form_data.get_all("destination").get(index).as_string().unwrap()
                     }
@@ -363,24 +365,22 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
                         alert_error("Update IVR failed.".to_string(), dispatch);
                     }
                 }
-                nav.push(&IvrRoute::Index);            
+                nav.push(&IvrRoute::Index);
             });
-
-            event.prevent_default();
         })
     };
     html! {
         <div class="grow mr-2">
             <Header title= {format!("IVR: {}", ivr.exten.clone())}></Header>
-            <div class="divider my-1"></div> 
-            <form class="w-full" onsubmit={form_onsubmit}> 
+            <div class="divider my-1"></div>
+            <form class="w-full" onsubmit={form_onsubmit}>
                 <div class="grid grid-cols-3 gap-1">
                     <Label hidden = {props.id != 0}>{"Extension"}</Label>
                     <Input
                         value={ivr.exten.clone()}
                         id="extension"
                         hidden = {props.id != 0}
-                    />                
+                    />
                     <Label>{"Name"}</Label>
                     <Input id="name" value={ivr.name.clone()}></Input>
                     {attr_htmls}
@@ -392,12 +392,12 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
                                 <Icon icon_id={IconId::LucidePlus}/>
                                 {"Add"}
                             </div>
-                        </div>                        
+                        </div>
                     </div>
                 </div>
                 <ActionButtons oncancel={form_oncancel}/>
             </form>
-        </div>        
+        </div>
     }
 }
 
