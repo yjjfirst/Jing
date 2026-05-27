@@ -16,7 +16,7 @@ pub fn Banner() -> Html {
             let dispatch = dispatch.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let url = format!("{}/logout", API_BASE);
-                let req = Request::post(&url).body("").unwrap(); 
+                let req = Request::post(&url).body("").unwrap();
                 let dispatch = dispatch.clone();
                 let res = req.send().await.unwrap();
                 if res.ok() {
@@ -31,10 +31,10 @@ pub fn Banner() -> Html {
         <div class="flex justify-end grow items-center ml-4 mr-4">
             <DomainComponent/>
             <div class="flex items-center">
+                <p>{store.username.clone()}</p>
                 <div class="btn btn-ghost btn-sm" onclick={handle_logout}>
                     <Icon icon_id={IconId::LucideLogOut}/>
                 </div>
-                <p>{store.username.clone()}</p>
             </div>
         </div>
     }
@@ -58,7 +58,7 @@ pub fn DomainComponent() -> Html {
              		<ul
                			tabindex="-1"
                			class="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-36 p-2 shadow">
-                        {   
+                        {
                             store.domains.clone().into_iter().map(move |d| {
                                 let dd = d.clone();
                                 let dispatch = dispatch.clone();
@@ -77,7 +77,7 @@ pub fn DomainComponent() -> Html {
                                         </a>
                                     </li>}
                             }).collect::<Html>()
-                        } 
+                        }
              		</ul>
               	</div>
           	</div>
