@@ -76,12 +76,11 @@ async fn main() -> std::io::Result<()> {
                      })
             )
     })
-        .bind_rustls_0_23("137.220.37.143:9090", config)?
-        .bind("127.0.0.1:9090")?
+        .bind_rustls_0_23("0.0.0.0:9090", config)?
+        .bind("127.0.0.1:9091")?
         .run()
         .await
 }
-
 
 fn load_rustls_config() -> ServerConfig {
     // Example helper to load cert.pem and key.pem
