@@ -29,7 +29,7 @@ pub fn ExtenionSelect(props: &Props) -> Html {
             let ext_map = ext_map.clone();
             let mut fetched_map: HashMap<String, Vec<String>> = HashMap::new();
             let url = format!("/extension");
-            let extensions: Vec<Extension> = Service::index(&url, store.selected_domain_id).await.unwrap();            
+            let extensions: Vec<Extension> = Service::index(&url, store.selected_domain_id).await.unwrap();
             for e in extensions {
                 if !fetched_map.contains_key(&e.exten_type) {
                     fetched_map.insert(e.exten_type.clone(), vec![e.exten.clone()]);
@@ -42,6 +42,7 @@ pub fn ExtenionSelect(props: &Props) -> Html {
         })
     });
 
+    let value_2 = value.clone();
     let options_list: Vec<Html> = ext_map_1.iter().map(|(k,v)|{
         let e_list: Vec<Html> =
             v.into_iter().map(|e|{
@@ -64,6 +65,9 @@ pub fn ExtenionSelect(props: &Props) -> Html {
     let classes = classes!("select", "select-bordered", "w-full", props.classes.clone());
     html! {
         <select class={classes} name={name} value={value} id={id}>
+            if value_2 == "" {
+                <option value="" disabled={true} selected={true} hidden={true}>{"Select a extension"}</option>
+            }
             {options_list}
         </select>
     }
