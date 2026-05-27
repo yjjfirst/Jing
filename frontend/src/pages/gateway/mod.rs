@@ -1,5 +1,6 @@
 pub mod model;
 
+use std::collections::HashMap;
 use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use wasm_bindgen::JsCast;
 
@@ -17,6 +18,7 @@ use crate::components::label::Label;
 use crate::components::dialog::Dialog;
 
 use crate::models::Service;
+use model::Param;
 use model::Gateway;
 
 #[derive(Clone, Routable, PartialEq)]
@@ -27,13 +29,13 @@ pub enum GatewayRoute {
     Get {id: usize},
 }
 
-#[derive(Clone, PartialEq, Properties)] 
+#[derive(Clone, PartialEq, Properties)]
 pub struct GatewayProps {
     pub gateway: Gateway,
     pub ondel: Callback<usize>
 }
 
-#[derive(Clone, PartialEq, Properties)] 
+#[derive(Clone, PartialEq, Properties)]
 pub struct GatewayDetailProps {
     pub id: usize,
 }
@@ -42,11 +44,11 @@ pub fn GatewayListItem(props: &GatewayProps) -> Html {
     let gateway = props.gateway.clone();
     let nav = use_navigator().unwrap();
     let loc: Location = use_location().unwrap().clone();
-    let (store,_) = use_store::<Store>();    
+    let (store,_) = use_store::<Store>();
     let ondel = props.ondel.clone();
 
     let dialog_ref: NodeRef = use_node_ref();
-    let dd_ref = dialog_ref.clone(); 
+    let dd_ref = dialog_ref.clone();
 
     let onedit: Callback<MouseEvent> = Callback::from(move |_e|{
         nav.push(&GatewayRoute::Get {id: gateway.id});
@@ -55,16 +57,16 @@ pub fn GatewayListItem(props: &GatewayProps) -> Html {
     let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
         let loc = loc.clone();
         let store = store.clone();
-        let ondel = ondel.clone();        
+        let ondel = ondel.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), gateway.id);
             Service::delete(&path, store.clone().selected_domain_id)
                 .await
                 .unwrap();
             ondel.emit(gateway.id);
-        })        
+        })
     });
-    
+
     let ondel: Callback<MouseEvent> = Callback::from(move |_e| {
         let d = dd_ref.cast::<HtmlDialogElement>().unwrap();
         d.show_modal().unwrap();
@@ -73,28 +75,25 @@ pub fn GatewayListItem(props: &GatewayProps) -> Html {
     html! {
         <tr>
             <th>{gateway.gateway_name.clone()}</th>
-            <th>{gateway.proxy.clone()}</th>
-            <th>{gateway.register.clone()}</th>
-            <th>{gateway.username.clone()}</th>
             <th class="flex justify-end">
                 <div class="mr-1">
                     <div onclick={onedit} class="btn btn-square btn-outline btn-sm">
-                        <Icon icon_id={IconId::LucideEdit}/>   
+                        <Icon icon_id={IconId::LucideEdit}/>
                     </div>
                 </div>
                 <div>
                     <div onclick={ondel} class="btn btn-square btn-outline btn-sm">
-                        <Icon icon_id={IconId::LucideTrash}/>   
+                        <Icon icon_id={IconId::LucideTrash}/>
                     </div>
                 </div>
-            </th>  
+            </th>
             <Dialog
                 d_ref = {dialog_ref}
-                title={"Warning!"} 
+                title={"Warning!"}
                 contents={format!("Are you sure to delete gateway: {}?", gateway.gateway_name.clone())}
                 {onconfirm}
                 >
-            </Dialog>                     
+            </Dialog>
         </tr>
     }
 }
@@ -112,7 +111,7 @@ pub fn GatewayList() -> Html {
     use_effect_with((), move|_|{
         let gateways = gateways_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_gateways: Vec<Gateway> = 
+            let fetched_gateways: Vec<Gateway> =
                 Service::index(loc.path(), store.selected_domain_id.clone())
                     .await
                     .unwrap();
@@ -132,7 +131,7 @@ pub fn GatewayList() -> Html {
     });
 
     let onadd: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent|{
-        nav.push(&GatewayRoute::Get {id: 0});        
+        nav.push(&GatewayRoute::Get {id: 0});
     });
 
     let gateways_list: Vec<Html> = gateways.iter().map(|g|{
@@ -149,9 +148,6 @@ pub fn GatewayList() -> Html {
                 <thead>
                     <tr>
                         <th>{"Name"}</th>
-                        <th>{"Proxy"}</th>
-                        <th>{"Register"}</th>
-                        <th>{"Username"}</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -160,10 +156,10 @@ pub fn GatewayList() -> Html {
             </table>
             <div class="flex flex-row-reverse pr-4">
                 <div onclick={onadd} class="btn btn-square btn-outline btn-sm" >
-                    <Icon icon_id={IconId::LucidePlus}/>   
+                    <Icon icon_id={IconId::LucidePlus}/>
                 </div>
-            </div>             
-        </div>        
+            </div>
+        </div>
     }
 }
 
@@ -182,7 +178,7 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
         let gateway = g.clone();
         let loc = loc_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_gateway = 
+            let fetched_gateway =
                 Service::get(loc.path(), store.selected_domain_id)
                     .await
                     .unwrap();
@@ -198,28 +194,35 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
 
     };
     let form_onsubmit = {
+        let gateway = gateway.clone();
         let dispatch = dispatch.clone();
         Callback::from(move|e: SubmitEvent| {
             let store = store_cloned.clone();
             let target: Option<EventTarget> = e.target();
-            let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();            
+            let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();
             let form_data = FormData::new_with_form(&form).unwrap();
             let dispatch = dispatch.clone();
             let loc = loc.clone();
             let nav = nav.clone();
-
+            let params = gateway.params
+                .clone()
+                .into_iter()
+                .map(|p|{
+                    let key = p.0;
+                    let mut param = p.1;
+                    param.value = form_data.get(&key).as_string().unwrap();
+                    (key, param)
+                })
+                .collect::<HashMap<String, Param>>();
             let gateway = Gateway {
                 id,
                 gateway_name: form_data.get("name").as_string().unwrap(),
-                proxy: form_data.get("proxy").as_string().unwrap(),
-                register: form_data.get("register").as_string().unwrap(),
-                username: form_data.get("username").as_string().unwrap(),
-                password: form_data.get("password").as_string().unwrap(),
                 profile_id: form_data.get("profile_id")
                     .as_string()
                     .unwrap()
                     .parse::<usize>()
                     .unwrap(),
+                params
             };
 
             wasm_bindgen_futures::spawn_local(async move {
@@ -234,17 +237,17 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
                         alert_error("Update gateway failed.".to_string(), dispatch);
                     }
                 }
-                nav.push(&GatewayRoute::Index);            
+                nav.push(&GatewayRoute::Index);
             });
-                        
-            e.prevent_default();            
+
+            e.prevent_default();
         })
     };
 
     html! {
         <div class="grow mr-2">
             <Header title= {format!("Gateway: {}", gateway.gateway_name.clone())}></Header>
-            <div class="divider my-1"></div> 
+            <div class="divider my-1"></div>
             <form class="w-full" onsubmit={form_onsubmit}>
             <div class="grid grid-cols-3 gap-1">
                 <Label>{"name"}</Label>
@@ -254,28 +257,30 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
                 />
                 <Label>{"proxy"}</Label>
                 <Input
-                    value={gateway.proxy.clone()}
+                    value={Param::get("proxy", &gateway.params)}
                     id="proxy"
                 />
+
                 <Label>{"register"}</Label>
                 <Input
-                    value={gateway.register.clone()}
+                    value={Param::get("register", &gateway.params)}
                     id="register"
                 />
                 <Label>{"Username"}</Label>
                 <Input
-                    value={gateway.username.clone()}
+                    value={Param::get("username", &gateway.params)}
                     id="username"
                 />
                 <Label>{"Password"}</Label>
                 <Input
-                    value={gateway.password.clone()}
+                    value={Param::get("password", &gateway.params)}
                     id="password"
                 />
-                <Input hidden=true
+                <Label>{"Profile ID"}</Label>
+                <Input
                     value={gateway.profile_id.to_string()}
                     id="profile_id"
-                />                
+                />
             </div>
             <ActionButtons oncancel={form_oncancel}/>
             </form>

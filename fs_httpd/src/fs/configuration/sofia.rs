@@ -1,6 +1,7 @@
 use xml::writer::{EventWriter};
 use std::io::Write;
 use fs_lib::gateway::models::{Gateway};
+use fs_lib::gateway::{get_params};
 use fs_lib::profile::models::{Profile};
 use fs_lib::profile;
 
@@ -47,12 +48,19 @@ fn gateways<W: Write>(w: &mut EventWriter<W>, profile_id: i32) {
 }
 
 fn gateway<W: Write>(w: &mut EventWriter<W>, g: &Gateway) {
-    start_element(w, "gateway", Some(vec![Attr {name: "name", value: g.gateway_name.as_str()}]));
+    start_element(w,
+                  "gateway",
+                  Some(vec![
+                      Attr {
+                          name: "name",
+                          value: g.gateway_name.as_str()
+                      }]));
 
-    param(w, "proxy", g.proxy.as_str());
-    param(w, "username", g.username.as_ref().unwrap());
-    param(w, "password", g.password.as_ref().unwrap());
-    param(w, "register", g.register.as_str());
+    let params = get_params(g.id).unwrap();
+
+    for p in &params {
+        param(w, &p.name, &p.value);
+    }
 
     end_element(w)
 }

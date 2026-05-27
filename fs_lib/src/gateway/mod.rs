@@ -1,35 +1,31 @@
 pub mod models;
+pub mod gateway_param;
 
+use std::collections::HashMap;
 use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
 use crate::schema::gateways;
+use gateway_param::{GatewayParam};
 use crate::error::{Result, Error};
 
-pub fn add (
-    profile_id: i32,
-    gateway_name: String,
-    proxy: String,
-    register: String,
-    username: Option<String>,
-    password: Option<String>) -> Result<()> {
 
+pub fn add(profile_id: i32, gateway_name: String, params: HashMap<String,String>) -> Result<i32> {
     let mut conn = db_connect();
-
     let new_gateway = NewGateway {
         profile_id,
         gateway_name,
-        proxy,
-        register,
-        username,
-        password
     };
 
-    diesel::insert_into(gateways::table)
+    let inserted: Vec<Gateway> = diesel::insert_into(gateways::table)
         .values(&new_gateway)
-        .execute(&mut conn)?;
+        .load(&mut conn)?;
 
-    Ok(())
+    for (key, value) in &params {
+        GatewayParam::add(inserted.first().unwrap().id, key, value).unwrap();
+    }
+
+    Ok(inserted[0].id)
 }
 
 pub fn del(gateway_id: i32) -> Result<()>{
@@ -80,4 +76,14 @@ pub fn update(g: &Gateway) -> Result<()> {
         .execute(&mut conn)?;
 
     Ok(())
+}
+
+pub fn get_params(g_id: i32) -> Result<Vec<GatewayParam>> {
+    let mut conn = db_connect();
+    let gateway = get(g_id)?;
+
+    let params = GatewayParam::belonging_to(&gateway)
+        .load::<GatewayParam>(&mut conn)?;
+
+    Ok(params)
 }

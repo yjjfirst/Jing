@@ -12,6 +12,7 @@ mod extension;
 mod user;
 mod feature_code;
 mod cdr;
+mod gateway;
 
 #[macro_use]
 extern crate prettytable;
@@ -38,7 +39,7 @@ enum Cli {
     },
     Gateway {
         #[structopt(subcommand)]
-        gateway: GatewayCli,
+        gateway: gateway::GatewayCli,
     },
 
     Route {
@@ -107,31 +108,6 @@ enum ProfileCli {
         #[structopt(short, long)]
         profile: String,
     }
-}
-
-#[derive(StructOpt)]
-#[derive(Debug)]
-enum GatewayCli {
-    Ls,
-    Add {
-        #[structopt(long)]
-        profile: i32,
-        #[structopt(short, long)]
-        name: String,
-        #[structopt(long)]
-        proxy: String,
-        #[structopt(short, long)]
-        register: String,
-        #[structopt(short, long)]
-        username: String,
-        #[structopt(long)]
-        password: String
-    },
-    Del {
-        #[structopt(short, long)]
-        id: i32
-    }
-
 }
 
 #[derive(StructOpt)]
@@ -220,7 +196,7 @@ fn main() {
             domain::exec_domain_cmd(domain);
         },
         Cli::Gateway { gateway } => {
-            exec_gateway_cmd(gateway);
+            gateway::exec_gateway_cmd(gateway);
         },
         Cli::Route { route } => {
             exec_route_cmd(route)
@@ -308,51 +284,6 @@ fn exec_profile_cmd(profile: ProfileCli) {
     }
 }
 
-fn print_gateways(gateways: Vec<gateway::models::Gateway>)  {
-
-    let mut table = Ctable::new();
-
-    table.set_titles(row!["Id", "Profile_id", "name", "proxy", "register", "username", "password"]);
-
-    for g in gateways
-    {
-        let username = g.username.unwrap_or("".to_string());
-        let password = g.password.unwrap_or("".to_string());
-
-        table.add_row(row![g.id, g.profile_id, g.gateway_name, g.proxy, g.register, username, password]);
-    }
-
-    table.print();
-
-}
-
-fn exec_gateway_cmd(gateway: GatewayCli) {
-    match gateway {
-        GatewayCli::Add {profile, name, proxy, register, username, password} => {
-            gateway::add(
-                profile,
-                name,
-                proxy,
-                register,
-                Some(username),
-                Some(password)
-            ).unwrap_or_else(|err| println!("{}",err));
-
-        },
-
-        GatewayCli::Del {id} => {
-            gateway::del(id)
-                .unwrap_or_else(|err| println!("{}",err));
-        },
-
-        GatewayCli::Ls => {
-            match gateway::list() {
-                Ok(gateways) => print_gateways(gateways),
-                Err(err) => println!("{}", err),
-            }
-        }
-    }
-}
 
 fn print_inbounds(routes: Vec<route::inbound_models::InboundRoute>) {
 

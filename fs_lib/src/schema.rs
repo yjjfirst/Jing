@@ -153,19 +153,22 @@ diesel::table! {
 }
 
 diesel::table! {
+    gateway_params (id) {
+        id -> Int4,
+        gateway_id -> Int4,
+        #[max_length = 128]
+        name -> Varchar,
+        #[max_length = 128]
+        value -> Varchar,
+    }
+}
+
+diesel::table! {
     gateways (id) {
         id -> Int4,
         profile_id -> Int4,
         #[max_length = 256]
         gateway_name -> Varchar,
-        #[max_length = 256]
-        proxy -> Varchar,
-        #[max_length = 256]
-        register -> Varchar,
-        #[max_length = 256]
-        username -> Nullable<Varchar>,
-        #[max_length = 256]
-        password -> Nullable<Varchar>,
     }
 }
 
@@ -392,6 +395,7 @@ diesel::joinable!(conference_profile_params -> conference_profiles (conference_p
 diesel::joinable!(conferences -> conference_profiles (conference_profile_id));
 diesel::joinable!(conferences -> domains (domain_id));
 diesel::joinable!(feature_codes -> domains (domain_id));
+diesel::joinable!(gateway_params -> gateways (gateway_id));
 diesel::joinable!(gateways -> profiles (profile_id));
 diesel::joinable!(ivr_attrs -> ivrs (ivr_id));
 diesel::joinable!(ivr_entries -> ivrs (ivr_id));
@@ -429,6 +433,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     extension_types,
     extensions,
     feature_codes,
+    gateway_params,
     gateways,
     inbound_routes,
     ivr_attrs,
