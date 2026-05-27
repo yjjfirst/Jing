@@ -3,7 +3,7 @@ use crate::store::Store;
 use yewdux::prelude::*;
 use crate::models::extension::Extension;
 use crate::models::Service;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
@@ -20,14 +20,14 @@ pub fn ExtenionSelect(props: &Props) -> Html {
     let value = props.value.clone();
 
     let(store,_) = use_store::<Store>();
-    let ext_map: UseStateHandle<HashMap<String, Vec<String>>> = use_state(||HashMap::new());
+    let ext_map: UseStateHandle<BTreeMap<String, Vec<String>>> = use_state(||BTreeMap::new());
     let ext_map_1 = ext_map.clone();
 
     use_effect_with((), move |_|{
         let ext_map = ext_map.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let ext_map = ext_map.clone();
-            let mut fetched_map: HashMap<String, Vec<String>> = HashMap::new();
+            let mut fetched_map: BTreeMap<String, Vec<String>> = BTreeMap::new();
             let url = format!("/extension");
             let extensions: Vec<Extension> = Service::index(&url, store.selected_domain_id).await.unwrap();
             for e in extensions {
