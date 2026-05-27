@@ -2,13 +2,13 @@
 
 export FS_ACTIVE_DOMAIN=1
 
-IP_ADDR=45.76.243.82
+IP_ADDR=137.220.37.143
 PROXY_IP_ADDR=${IP_ADDR}
 REGISTER_IP_ADDR=${IP_ADDR}
 
 #add domain and users
 ./target/debug/fs_cmd domain add --name $IP_ADDR
-./target/debug/fs_cmd domain add --name teleman.me
+./target/debug/fs_cmd domain add --name pbx.telman.me
 ./target/debug/fs_cmd user add  -u 1000
 ./target/debug/fs_cmd user add  -u 1001
 
