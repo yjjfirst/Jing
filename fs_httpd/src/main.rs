@@ -51,10 +51,6 @@ async fn cookie_middleware(
 
 }
 
-async fn index() -> Result<NamedFile, Error> {
-    Ok(NamedFile::open("html/index.html")?)
-}
-
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let config = load_rustls_config();
@@ -68,8 +64,17 @@ async fn main() -> std::io::Result<()> {
             .service(fs::fs_post)
             .service(cdr::cdr_post)
             .service(web::scope("/api").configure(api_config))
-            .service(Files::new("/", "/var/www/pbx").index_file("index.html"))
-            .default_service(web::route().to(index))
+            .service(Files::new("/", "/var/www/pbx")
+                     .index_file("index.html")
+                     .default_handler(|req: ServiceRequest| {
+                         let (http_req, _payload) = req.into_parts();
+                         async {
+                             let response = NamedFile::open("/var/www/pbx/index.html")?
+                                 .into_response(&http_req);
+                             Ok(ServiceResponse::new(http_req, response))
+                         }
+                     })
+            )
     })
         .bind_rustls_0_23("137.220.37.143:9090", config)?
         .bind("127.0.0.1:9090")?
