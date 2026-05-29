@@ -56,6 +56,7 @@ pub fn list(q_id: i32) -> Result<Vec<Tier>> {
     let mut conn = db_connect();
 
     let mut result = tiers
+        .order(id.asc())
         .load::<Tier>(&mut conn)?;
 
     if q_id != 0 {
