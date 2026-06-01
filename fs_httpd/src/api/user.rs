@@ -2,15 +2,17 @@ use std::collections::HashMap;
 use actix_web::{web, Responder};
 use fs_lib::{user};
 use fs_lib::user::{ByField};
-use fs_lib::user::models::User;
+use fs_lib::user::models;
 use fs_lib::user::user_param::UserParam;
 use fs_lib::user::user_variable::UserVariable;
 use serde::{Serialize, Deserialize};
 
 use super::Status;
 #[derive(Serialize, Deserialize)]
-pub struct UserContainer {
-    user: User,
+pub struct User {
+    pub id: i32,
+    pub domain_id: i32,
+    pub user_id: String,
     vars: HashMap<String, UserVariable>,
     params: HashMap<String, UserParam>,
 }
@@ -28,10 +30,9 @@ pub fn user_config(cfg: &mut web::ServiceConfig) {
         );
 }
 
-async fn post(uc: web::Json<UserContainer>) -> impl Responder {
-    let user = &uc.user;
-    let vars = &uc.vars;
-    let params = &uc.params;
+async fn post(user: web::Json<User>) -> impl Responder {
+    let vars = &user.vars;
+    let params = &user.params;
 
     if user.id != 0 {
         for (name, var) in vars.into_iter() {
@@ -68,7 +69,7 @@ async fn delete(path: web::Path<(i32, i32)>) -> impl Responder {
 }
 async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
     let (domain_id,id) = path.into_inner();
-    let user = user::get_user(ByField::Id(id)).unwrap_or(User {
+    let user = user::get_user(ByField::Id(id)).unwrap_or(models::User {
         id: 0, domain_id, user_id: "".to_string()
     });
 
@@ -83,13 +84,26 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
         (v.name.clone(), v.clone())
     }).collect::<HashMap<String, UserVariable>>();
 
-    web::Json(UserContainer {
-        user, params, vars
+    web::Json(User {
+        id: user.id,
+        domain_id: user.domain_id,
+        user_id: user.user_id,
+        params,
+        vars
     })
 }
 
 async fn index(path: web::Path<i32>) -> impl Responder {
     let domain = path.into_inner();
     let users = user::users_within(domain).unwrap();
-    web::Json(users)
+
+    web::Json(users.into_iter().map(|u|{
+        User {
+            id: u.id,
+            user_id: u.user_id,
+            domain_id: u.domain_id,
+            params: HashMap::new(),
+            vars: HashMap::new(),
+        }
+    }).collect::<Vec<User>>())
 }

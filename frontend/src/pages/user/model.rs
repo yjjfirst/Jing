@@ -8,17 +8,12 @@ use util_macro::HashMapHelper;
 use crate::models::API_BASE;
 
 #[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
-pub struct UserAllData {
-    pub user: User,
-    pub vars: HashMap<String, Var>,
-    pub params: HashMap<String, Param>
-}
-
-#[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
 pub struct User {
     pub id: usize,
     pub domain_id: i32,
-    pub user_id: String
+    pub user_id: String,
+    pub vars: HashMap<String, Var>,
+    pub params: HashMap<String, Param>
 }
 
 #[derive(Clone, PartialEq, Deserialize, Serialize, Debug, HashMapHelper)]
@@ -50,8 +45,15 @@ impl Var {
 
 impl User {
     pub fn new() -> User{
-        User {id: 0, domain_id: 0, user_id: "".to_string()}
+        User {
+            id: 0,
+            domain_id: 0,
+            user_id: "".to_string(),
+            params: HashMap::new(),
+            vars: HashMap::new(),
+        }
     }
+
     pub async fn list(domain: usize) -> Vec<String> {
         let endpoint = format!("{}/{}/user", API_BASE, domain);
         let response = Request::get(&endpoint).send().await.unwrap();

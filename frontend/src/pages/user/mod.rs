@@ -15,7 +15,7 @@ use crate::components::header::Header;
 use crate::components::input::Input;
 use crate::components::label::Label;
 use crate::components::action_buttons::ActionButtons;
-use model::UserAllData;
+use model::User;
 use crate::models::Service;
 use model::*;
 use crate::components::dialog::Dialog;
@@ -30,7 +30,9 @@ pub enum UserRoute {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct UserProps {
-    pub user: User,
+    pub id: usize,
+    pub domain_id: i32,
+    pub user_id: String,
     pub ondel: Callback<usize>
 }
 
@@ -48,10 +50,10 @@ pub fn UserListItem(props: &UserProps) -> Html {
     let loc: Location = use_location().unwrap().clone();
     let (store,_) = use_store::<Store>();
     let ondel = props.ondel.clone();
-    let id = props.user.id;
+    let id = props.id;
 
     let onedit: Callback<MouseEvent> = Callback::from(move |_e|{
-        nav.push(&UserRoute::Get {id: user_props.user.id});
+        nav.push(&UserRoute::Get {id: user_props.id});
     });
 
     let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
@@ -74,7 +76,7 @@ pub fn UserListItem(props: &UserProps) -> Html {
 
     html!{
     <tr>
-        <th>{user_props.user.user_id.clone()}</th>
+        <th>{user_props.user_id.clone()}</th>
         <th class="flex justify-end">
            <div onclick={onedit} class="mr-1">
                 <div class="btn btn-square btn-outline btn-sm">
@@ -90,7 +92,7 @@ pub fn UserListItem(props: &UserProps) -> Html {
         <Dialog
             d_ref = {dialog_ref}
             title={"Warning!"}
-            contents={format!("Are you sure to delete the user: {}?", user_props.user.user_id.clone())}
+            contents={format!("Are you sure to delete the user: {}?", user_props.user_id.clone())}
             {onconfirm}
             >
         </Dialog>
@@ -135,9 +137,10 @@ pub fn UserList() -> Html {
 
     let extensions_list: Vec<Html> = extensions.iter().map(|e|{
         html! {
-            <UserListItem ondel={ondel.clone()} user={User {
-                id: e.id, domain_id: e.domain_id, user_id: e.user_id.clone()
-            }}></UserListItem>
+            <UserListItem
+                ondel={ondel.clone()}
+                id={e.id} domain_id={e.domain_id}  user_id={e.user_id.clone()}>
+                </UserListItem>
         }
     }).collect();
 
@@ -167,11 +170,7 @@ pub fn UserList() -> Html {
 pub fn UserDetail(_props: &UserDetailProps) -> Html {
     let(store, dispatch) = use_store::<Store>();
     let cloned_store = store.clone();
-    let user: UseStateHandle<UserAllData> = use_state(||UserAllData {
-        user: User::new(),
-        params: HashMap::new(),
-        vars: HashMap::new()
-    });
+    let user: UseStateHandle<User> = use_state(||User::new());
 
     let u = user.clone();
     let loc = use_location().unwrap();
@@ -215,16 +214,10 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
             let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();
             let form_data = FormData::new_with_form(&form).unwrap();
 
-            let new_user = User {
-                id: user.user.id,
-                domain_id: user.user.domain_id,
-                user_id:  form_data.get("user_id").as_string().unwrap_or(user.user.id.to_string()),
-            };
-
             let mut new_vars = user.vars.clone();
             let mut new_params = user.params.clone();
 
-            if user.user.id != 0 {
+            if user.id != 0 {
                 Param::update("password", &mut new_params, &form_data);
                 Param::update("vm-password", &mut new_params, &form_data);
             }
@@ -234,8 +227,10 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
             Var::update("outbound_caller_id_name", &mut new_vars, &form_data);
             Var::update("outbound_caller_id_number", &mut new_vars, &form_data);
 
-            let c = UserAllData {
-                user: new_user,
+            let c = User {
+                id: user.id,
+                domain_id: user.domain_id,
+                user_id:  form_data.get("user_id").as_string().unwrap_or(user.id.to_string()),
                 vars: new_vars,
                 params: new_params
             };
@@ -257,22 +252,22 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
 
     html! {
         <div class="grow mr-2">
-        <Header title= {format!("User ID: {}", user.user.clone().user_id.clone())}></Header>
+        <Header title= {format!("User ID: {}", user.clone().user_id.clone())}></Header>
         <div class="divider my-1"></div>
             <form class="w-full" onsubmit={form_onsubmit}>
             <div class="grid grid-cols-3 gap-1">
                 <Label>{"User Id"}</Label>
-                <input class="pbx-input" disabled={user.user.id != 0}
-                    value={user.user.clone().user_id.clone()}
+                <input class="pbx-input" disabled={user.id != 0}
+                    value={user.clone().user_id.clone()}
                     name="user_id"
                 />
                 <Label>{"Password"}</Label>
-                <Input disabled={user.user.id == 0}
+                <Input disabled={user.id == 0}
                     value={Param::get("password", &user.params)}
                     id="password"
                 />
                     <Label>{"Voicemail Password"}</Label>
-                <Input disabled={user.user.id == 0}
+                <Input disabled={user.id == 0}
                     value={Param::get("vm-password", &user.params)}
                     id="vm-password"
                 />
