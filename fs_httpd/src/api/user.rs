@@ -50,7 +50,10 @@ async fn post(uc: web::Json<UserContainer>) -> impl Responder {
             }
         }
     } else {
-        user::add_user(user.domain_id, &user.user_id).unwrap();
+        let id = user::add_user(user.domain_id, &user.user_id).unwrap();
+        for (name, var) in vars.into_iter() {
+            UserVariable::add(id, name, &var.value).unwrap();
+        }
     }
 
     web::Json(Status {status: "Ok".to_string()})

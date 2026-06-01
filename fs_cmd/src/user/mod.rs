@@ -39,7 +39,10 @@ pub fn exec_user_cmd(user: UserCli) {
         UserCli::Add {user_id} => {
             user::add_user(
                 domain_id,
-                &user_id).unwrap_or_else(|err| println!("{}",err));
+                &user_id).unwrap_or_else(|err| {
+                    println!("{}",err);
+                    0
+                });
         }
 
         UserCli::Ls => {

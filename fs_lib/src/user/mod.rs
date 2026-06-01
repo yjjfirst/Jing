@@ -17,7 +17,7 @@ pub enum ByField {
 
 pub fn add_user<'a> (
     domain: i32,
-    user_id: &'a str) -> Result<()> {
+    user_id: &'a str) -> Result<i32> {
 
     use crate::schema::users;
     let mut conn = db_connect();
@@ -36,7 +36,7 @@ pub fn add_user<'a> (
     UserParam::add_defaults(inserted[0].id)?;
     UserVariable::add_defaults(inserted[0].id)?;
 
-    Ok(())
+    Ok(inserted[0].id)
 }
 
 pub fn del_user(a_id: i32) -> Result<()> {
