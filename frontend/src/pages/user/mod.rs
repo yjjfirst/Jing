@@ -28,13 +28,13 @@ pub enum UserRoute {
     Get {id: usize},
 }
 
-#[derive(Clone, PartialEq, Properties)] 
+#[derive(Clone, PartialEq, Properties)]
 pub struct UserProps {
     pub user: User,
     pub ondel: Callback<usize>
 }
 
-#[derive(Clone, PartialEq, Properties)] 
+#[derive(Clone, PartialEq, Properties)]
 pub struct UserDetailProps {
     pub id: usize,
 }
@@ -46,7 +46,7 @@ pub fn UserListItem(props: &UserProps) -> Html {
     let dialog_ref: NodeRef = use_node_ref();
     let dd_ref = dialog_ref.clone();
     let loc: Location = use_location().unwrap().clone();
-    let (store,_) = use_store::<Store>();    
+    let (store,_) = use_store::<Store>();
     let ondel = props.ondel.clone();
     let id = props.user.id;
 
@@ -57,7 +57,7 @@ pub fn UserListItem(props: &UserProps) -> Html {
     let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
         let loc = loc.clone();
         let store = store.clone();
-        let ondel = ondel.clone();        
+        let ondel = ondel.clone();
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), id);
             Service::delete(&path, store.clone().selected_domain_id)
@@ -69,38 +69,38 @@ pub fn UserListItem(props: &UserProps) -> Html {
 
     let ondel = Callback::from(move|_e|{
         let d = dd_ref.cast::<HtmlDialogElement>().unwrap();
-        d.show_modal().unwrap();  
+        d.show_modal().unwrap();
     });
 
-    html!{    
+    html!{
     <tr>
         <th>{user_props.user.user_id.clone()}</th>
         <th class="flex justify-end">
            <div onclick={onedit} class="mr-1">
                 <div class="btn btn-square btn-outline btn-sm">
-                    <Icon icon_id={IconId::LucideEdit}/>   
+                    <Icon icon_id={IconId::LucideEdit}/>
                 </div>
             </div>
             <div onclick ={ondel}>
                 <div class="btn btn-square btn-outline btn-sm">
-                    <Icon icon_id={IconId::LucideTrash}/>   
+                    <Icon icon_id={IconId::LucideTrash}/>
                 </div>
             </div>
         </th>
         <Dialog
             d_ref = {dialog_ref}
-            title={"Warning!"} 
+            title={"Warning!"}
             contents={format!("Are you sure to delete the user: {}?", user_props.user.user_id.clone())}
             {onconfirm}
             >
-        </Dialog>         
+        </Dialog>
     </tr>
     }
 }
 
 #[function_component]
 pub fn UserList() -> Html {
-    let loc = use_location().unwrap().clone();    
+    let loc = use_location().unwrap().clone();
     let (store,_) = use_store::<Store>();
     let extensions: UseStateHandle<Vec<User>> = use_state(||vec![]);
     let exts = extensions.clone();
@@ -110,14 +110,14 @@ pub fn UserList() -> Html {
     use_effect_with((), move |_| {
         let exts  = exts.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_extensions: Vec<User> = 
+            let fetched_extensions: Vec<User> =
                 Service::index(loc.path(), store.selected_domain_id.clone())
                     .await
                     .unwrap();
             exts.set(fetched_extensions);
         });
     });
-    
+
     let ondel = Callback::from(move| id:usize|{
         let users = users.clone();
         let filtered: Vec<User> = users
@@ -125,7 +125,7 @@ pub fn UserList() -> Html {
             .filter(|u|{id != u.id})
             .map(|u|{u.clone()})
             .collect();
-        
+
         users.set(filtered);
     });
 
@@ -156,9 +156,9 @@ pub fn UserList() -> Html {
             </table>
             <div class="flex flex-row-reverse pr-4">
                 <div onclick={onadd} class="btn btn-square btn-outline btn-sm" >
-                    <Icon icon_id={IconId::LucidePlus}/>   
+                    <Icon icon_id={IconId::LucidePlus}/>
                 </div>
-            </div>             
+            </div>
         </div>
     }
 }
@@ -183,7 +183,7 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
         let user = u.clone();
         let loc = loc_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_user = 
+            let fetched_user =
                 Service::get(loc.path(), store.selected_domain_id)
                     .await
                     .unwrap();
@@ -203,6 +203,8 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
         let user = user.clone();
         let store = cloned_store.clone();
         Callback::from (move|event: SubmitEvent| {
+            event.prevent_default();
+
             let dispatch = dispatch.clone();
             let store = store.clone();
             let loc = loc.clone();
@@ -210,26 +212,27 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
             let user = user.clone();
 
             let target: Option<EventTarget> = event.target();
-            let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();            
+            let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();
             let form_data = FormData::new_with_form(&form).unwrap();
 
             let new_user = User {
                 id: user.user.id,
                 domain_id: user.user.domain_id,
-                user_id: form_data.get("user_id").as_string().unwrap()
+                user_id:  form_data.get("user_id").as_string().unwrap_or(user.user.id.to_string()),
             };
 
             let mut new_vars = user.vars.clone();
             let mut new_params = user.params.clone();
 
-            if new_user.id != 0 {
+            if user.user.id != 0 {
                 Param::update("password", &mut new_params, &form_data);
                 Param::update("vm-password", &mut new_params, &form_data);
-                Var::update("effective_caller_id_name", &mut new_vars, &form_data);
-                Var::update("effective_caller_id_number", &mut new_vars, &form_data);
-                Var::update("outbound_caller_id_name", &mut new_vars, &form_data);
-                Var::update("outbound_caller_id_number", &mut new_vars, &form_data);
             }
+
+            Var::update("effective_caller_id_name", &mut new_vars, &form_data);
+            Var::update("effective_caller_id_number", &mut new_vars, &form_data);
+            Var::update("outbound_caller_id_name", &mut new_vars, &form_data);
+            Var::update("outbound_caller_id_number", &mut new_vars, &form_data);
 
             let c = UserAllData {
                 user: new_user,
@@ -247,31 +250,33 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
                         alert_error("Update user failed.".to_string(), dispatch);
                     }
                 }
-                nav.push(&UserRoute::Index);            
+                nav.push(&UserRoute::Index);
             });
-
-            event.prevent_default();
         })
     };
 
     html! {
         <div class="grow mr-2">
         <Header title= {format!("User ID: {}", user.user.clone().user_id.clone())}></Header>
-        <div class="divider my-1"></div> 
+        <div class="divider my-1"></div>
             <form class="w-full" onsubmit={form_onsubmit}>
             <div class="grid grid-cols-3 gap-1">
-                <Label hidden={user.user.clone().user_id.clone() != ""}>{"User Id/Extension"}</Label>
-                <Input
+                <Label>{"User Id"}</Label>
+                <input class="pbx-input" disabled={user.user.id != 0}
                     value={user.user.clone().user_id.clone()}
-                    id="user_id"
-                    hidden={user.user.clone().user_id.clone() != ""}
+                    name="user_id"
                 />
-                if user.user.id != 0 {
-                    <Label>{"Password"}</Label>
-                    <Input
-                        value={Param::get("password", &user.params)}
-                        id="password"
-                    />
+                <Label>{"Password"}</Label>
+                <Input disabled={user.user.id == 0}
+                    value={Param::get("password", &user.params)}
+                    id="password"
+                />
+                    <Label>{"Voicemail Password"}</Label>
+                <Input disabled={user.user.id == 0}
+                    value={Param::get("vm-password", &user.params)}
+                    id="vm-password"
+                />
+
                     <Label>{"Effective Caller Id Name"}</Label>
                     <Input
                         value={Var::get("effective_caller_id_name", &user.vars)}
@@ -292,13 +297,6 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
                         value={Var::get("outbound_caller_id_number", &user.vars)}
                         id="outbound_caller_id_number"
                     />
-
-                    <Label>{"Voicemail Password"}</Label>
-                    <Input
-                        value={Param::get("vm-password", &user.params)}
-                        id="vm-password"
-                    />
-                }
                 </div>
                 <ActionButtons oncancel={form_oncancel} />
             </form>

@@ -3,7 +3,7 @@
 @import "tailwindcss";
 
 @plugin "daisyui" {
-  themes: light --default, dark --prefersdark, cupcake, dim;    
+  themes: light --default, dark --prefersdark, cupcake, dim;
 }
 
 @layer base {
@@ -24,4 +24,8 @@ body * {
 
 html {
     font-family: 'Poppins', sans-serif;
+}
+
+@utility pbx-input {
+    @apply input block w-full input-neutral col-span-2;
 }
