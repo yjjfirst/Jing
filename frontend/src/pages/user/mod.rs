@@ -1,6 +1,5 @@
 pub mod model;
 
-use std::collections::HashMap;
 use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use wasm_bindgen::JsCast;
 
