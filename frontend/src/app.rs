@@ -20,7 +20,7 @@ use crate::pages::ivr::{IvrRoute, ivr_switch};
 use crate::pages::callcenter::{CallcenterRootRoute, callcenter_root_switch};
 use crate::pages::login::Login;
 use crate::components::alert::{AlertType, AlertComponent, Props as AlertProps};
-use crate::components::banner::Banner;
+use crate::components::navbar::Navbar;
 use crate::models::domain::Domain;
 use crate::models::{API_BASE, Status};
 
@@ -69,11 +69,11 @@ pub enum Route {
     #[at("/conference")]
     ConferenceRoot,
     #[at("/conference/*")]
-    Conference,    
+    Conference,
     #[at("/callcenter/queue")]
     CallcenterRoot,
     #[at("/callcenter/*")]
-    Callcenter,    
+    Callcenter,
 }
 
 #[function_component(App)]
@@ -81,7 +81,7 @@ pub fn app() -> Html {
     let (store, dispatch) = use_store::<Store>();
     let message = store.alert_input.alert_message.clone();
     let show_alert: bool = store.alert_input.show_alert;
-    
+
     let alert_props = AlertProps {
         message,
         delay_ms: 5000,
@@ -127,12 +127,12 @@ pub fn app() -> Html {
                     let domains = Domain::index().await;
                     set_selected_domain_id(domains.first().unwrap().id, dispatch.clone());
                     set_selected_domain_name(domains.first().unwrap().domain_name.clone(), dispatch.clone());
-                    set_domains(domains, dispatch.clone());                
+                    set_domains(domains, dispatch.clone());
                 })
             }
         });
     }
-    
+
     html! {
         <ContextProvider<Env> context={(*ctx).clone()}>
             if store.is_authenticated == true {
@@ -146,13 +146,13 @@ pub fn app() -> Html {
                     }
                     if store.selected_domain_id != 0 {
                         <div class="flex flex-col">
-                            <Banner></Banner>
+                            <Navbar></Navbar>
                             <div class="flex grow ml-4 mr-1">
                                 <SideBar></SideBar>
                                 <div class="grow ml-4 mr-1">
-                                    <Switch<Route> render={switch} />    
+                                    <Switch<Route> render={switch} />
                                 </div>
-                            </div>                    
+                            </div>
                         </div>
                     }
                 </BrowserRouter>
@@ -194,7 +194,7 @@ fn switch(routes: Route) -> Html {
         },
         Route::InboundRoot => html! {
             <Switch<InboundRoute> render={inbound_switch} />
-        },        
+        },
         Route::Inbounds => html! {
             <Switch<InboundRoute> render={inbound_switch} />
         },
@@ -230,6 +230,6 @@ fn switch(routes: Route) -> Html {
         },
         Route::Callcenter => html! {
             <Switch<CallcenterRootRoute> render={callcenter_root_switch} />
-        },        
+        },
     }
 }

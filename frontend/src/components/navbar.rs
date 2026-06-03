@@ -9,7 +9,7 @@ use yew_router::prelude::*;
 use crate::models::API_BASE;
 
 #[function_component]
-pub fn Banner() -> Html {
+pub fn Navbar() -> Html {
     let (store, dispatch) = use_store::<Store>();
     let handle_logout = {
         Callback::from(move |_|{

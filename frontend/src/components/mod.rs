@@ -3,7 +3,7 @@ pub mod sidebar;
 pub mod alert;
 pub mod input;
 pub mod file_input;
-pub mod banner;
+pub mod navbar;
 pub mod select;
 pub mod select_multi;
 pub mod label;
