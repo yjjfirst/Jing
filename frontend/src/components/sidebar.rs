@@ -61,13 +61,13 @@ pub fn SidebarMenu() -> Html {
             route: Route::IvrRoot,
             onclick: onclick.clone(),
             selected: false,
-        },                 
+        },
         SidebarMenuItemPros {
             caption: "Call Center".to_string(),
             route: Route::CallcenterRoot,
             onclick: onclick.clone(),
             selected: false,
-        },                 
+        },
     ];
 
     let conn_items = vec![
@@ -88,7 +88,7 @@ pub fn SidebarMenu() -> Html {
             route: Route::InboundRoot,
             onclick: onclick.clone(),
             selected: false,
-        },     
+        },
     ];
 
     let report_items = vec![SidebarMenuItemPros {
@@ -97,12 +97,26 @@ pub fn SidebarMenu() -> Html {
         onclick: onclick.clone(),
         selected: false,
     }];
-    let sys_items = vec![SidebarMenuItemPros {
-        caption: "Sound File".to_string(),
-        route: Route::SoundFileRoot,
-        onclick: onclick.clone(),
-        selected: false,
-    }];
+    let sys_items = vec![
+        SidebarMenuItemPros {
+            caption: "ACL".to_string(),
+            route: Route::AclRoot,
+            onclick: onclick.clone(),
+            selected: false,
+        },
+        SidebarMenuItemPros {
+            caption: "SIP Profile".to_string(),
+            route: Route::SoundFileRoot,
+            onclick: onclick.clone(),
+            selected: false,
+        },
+        SidebarMenuItemPros {
+            caption: "Sound File".to_string(),
+            route: Route::SoundFileRoot,
+            onclick: onclick.clone(),
+            selected: false,
+        }
+    ];
     html! {
           <div class="flex flex-col">
           <ul class="menu bg-base-200 w-60">
@@ -147,6 +161,23 @@ pub fn SidebarMenu() -> Html {
             </ul>
           </details>
         </li>
+      <li>
+      <details>
+        <summary>{"System"}</summary>
+        <ul>
+        {sys_items.iter().map(|i|{
+            html! {
+                <SidebarMenuItem
+                    route={i.route.clone()}
+                    caption={i.caption.clone()}
+                    onclick={i.onclick.clone()}
+                    selected = {*selected == i.caption.clone()}>
+                </SidebarMenuItem>
+            }
+        }).collect::<Vec<Html>>()}
+        </ul>
+      </details>
+      </li>
         <li>
         <details>
           <summary>{"Reports"}</summary>
@@ -164,23 +195,6 @@ pub fn SidebarMenu() -> Html {
           </ul>
         </details>
       </li>
-      <li>
-      <details>
-        <summary>{"System"}</summary>
-        <ul>
-        {sys_items.iter().map(|i|{
-            html! {
-                <SidebarMenuItem
-                    route={i.route.clone()}
-                    caption={i.caption.clone()}
-                    onclick={i.onclick.clone()}
-                    selected = {*selected == i.caption.clone()}>
-                </SidebarMenuItem>
-            }
-        }).collect::<Vec<Html>>()}
-        </ul>
-      </details>
-    </li>
     </ul>
     </div>
       }
