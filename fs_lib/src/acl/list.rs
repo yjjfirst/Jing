@@ -21,3 +21,41 @@ pub fn list() -> Result<Vec<AclList>> {
 
     Ok(lists)
 }
+
+pub fn add(name: &str, default: &str) -> Result<i32> {
+    use crate::schema::acl_lists::dsl::*;
+
+    let mut conn = db_connect();
+    let inserted: Vec<AclList> = diesel::insert_into(acl_lists)
+        .values((acl_name.eq(name), acl_default.eq(default)))
+        .load(&mut conn)?;
+
+    if let Some(first) = inserted.first() {
+        Ok(first.id)
+    } else {
+        Err(Error::Fslib("Failed to insert acl_list".to_string()))
+    }
+}
+
+pub fn del(list_id_arg: i32) -> Result<()> {
+    use crate::schema::acl_lists::dsl::*;
+
+    let mut conn = db_connect();
+
+    diesel::delete(acl_lists.filter(id.eq(list_id_arg)))
+        .execute(&mut conn)?;
+
+    Ok(())
+}
+
+pub fn edit(list_id_arg: i32, new_name: &str, new_default: &str) -> Result<()> {
+    use crate::schema::acl_lists::dsl::*;
+
+    let mut conn = db_connect();
+
+    diesel::update(acl_lists.filter(id.eq(list_id_arg)))
+        .set((acl_name.eq(new_name), acl_default.eq(new_default)))
+        .execute(&mut conn)?;
+
+    Ok(())
+}

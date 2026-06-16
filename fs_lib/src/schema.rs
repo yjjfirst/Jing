@@ -387,6 +387,7 @@ diesel::table! {
     }
 }
 
+diesel::joinable!(acl_nodes -> acl_lists (list_id));
 diesel::joinable!(agent_params -> agents (agent_id));
 diesel::joinable!(agents -> domains (domain_id));
 diesel::joinable!(agents -> users (user_id));
