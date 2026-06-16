@@ -12,6 +12,7 @@ pub mod conference;
 pub mod ivr;
 pub mod callcenter;
 pub mod profile;
+pub mod acl;
 pub mod login;
 pub mod logout;
 
@@ -54,6 +55,7 @@ pub fn api_config(cfg: &mut web::ServiceConfig) {
         .service(web::scope("/{domain}/ivr").configure(ivr_config))
         .service(web::scope("/{domain}/callcenter").configure(cc_config))
         .service(web::scope("/{domain}/profile").configure(profile_config))
+        .service(web::scope("/{domain}/acl").configure(acl::acl_config))
         .service(web::scope("/domain").configure(domain_config))
         .service(web::scope("/login").configure(login_config))
         .service(web::scope("/logout").configure(logout_config));
