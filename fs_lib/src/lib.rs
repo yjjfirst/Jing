@@ -15,6 +15,7 @@ pub mod sound_file;
 pub mod sound;
 pub mod conference;
 pub mod callcenter;
+pub mod acl;
 pub mod feature_code;
 pub mod printable;
 pub mod portal_user;
