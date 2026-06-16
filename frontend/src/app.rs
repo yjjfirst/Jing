@@ -20,6 +20,7 @@ use crate::pages::ivr::{IvrRoute, ivr_switch};
 use crate::pages::callcenter::{CallcenterRootRoute, callcenter_root_switch};
 use crate::pages::login::Login;
 use crate::pages::acl::{AclRoute, acl_switch};
+use crate::pages::profile::{ProfileRoute, profile_switch};
 use crate::components::alert::{AlertType, AlertComponent, Props as AlertProps};
 use crate::components::navbar::Navbar;
 use crate::models::domain::Domain;
@@ -79,6 +80,10 @@ pub enum Route {
     AclRoot,
     #[at("/acl/*")]
     Acl,
+    #[at("/profile")]
+    ProfileRoot,
+    #[at("/profile/*")]
+    Profile,
 
 }
 
@@ -242,6 +247,12 @@ fn switch(routes: Route) -> Html {
         },
         Route::Acl => html! {
             <Switch<AclRoute> render={acl_switch} />
+        },
+        Route::ProfileRoot => html! {
+            <Switch<ProfileRoute> render={profile_switch} />
+        },
+        Route::Profile => html! {
+            <Switch<ProfileRoute> render={profile_switch} />
         },
     }
 }

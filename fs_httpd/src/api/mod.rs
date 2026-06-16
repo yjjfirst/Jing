@@ -11,6 +11,7 @@ pub mod sound;
 pub mod conference;
 pub mod ivr;
 pub mod callcenter;
+pub mod profile;
 pub mod login;
 pub mod logout;
 
@@ -28,6 +29,7 @@ use sound::sound_config;
 use conference::conf_config;
 use ivr::ivr_config;
 use callcenter::cc_config;
+use profile::profile_config;
 use login::login_config;
 use logout::logout_config;
 use serde::Serialize;
@@ -51,6 +53,7 @@ pub fn api_config(cfg: &mut web::ServiceConfig) {
         .service(web::scope("/{domain}/conference").configure(conf_config))
         .service(web::scope("/{domain}/ivr").configure(ivr_config))
         .service(web::scope("/{domain}/callcenter").configure(cc_config))
+        .service(web::scope("/{domain}/profile").configure(profile_config))
         .service(web::scope("/domain").configure(domain_config))
         .service(web::scope("/login").configure(login_config))
         .service(web::scope("/logout").configure(logout_config));

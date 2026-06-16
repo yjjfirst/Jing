@@ -269,7 +269,7 @@ fn print_profile_params(params: Vec<profile::models::ProfileParam>) {
 fn exec_profile_cmd(profile: ProfileCli) {
     match profile {
         ProfileCli::Ls => {
-            match profile::all_profiles() {
+            match profile::list() {
                 Ok(profiles) => print_profiles(profiles),
                 Err(err) => println!("{}", err),
             }

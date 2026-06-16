@@ -1,6 +1,7 @@
+use serde::{Serialize, Deserialize};
 use crate::schema::{profiles};
 
-#[derive(Queryable)]
+#[derive(Queryable, Serialize, Deserialize)]
 #[derive(Debug)]
 pub struct ProfileParam {
     pub id: i32,
@@ -9,7 +10,7 @@ pub struct ProfileParam {
     pub value: String
 }
 
-#[derive(Queryable, Identifiable, PartialEq, Debug)]
+#[derive(Queryable, Identifiable, PartialEq, Debug, Serialize, Deserialize)]
 #[diesel(table_name=profiles)]
 pub struct Profile {
     pub id: i32,

@@ -22,7 +22,7 @@ pub fn serve<W: Write>(w: &mut EventWriter<W>) {
 fn profiles<W: Write>(w: &mut EventWriter<W>) {
     start_element(w,"profiles", None);
 
-    let profiles = profile::all_profiles().unwrap();
+    let profiles = profile::list().unwrap();
     for p in profiles {
         profile(w, p);
     }

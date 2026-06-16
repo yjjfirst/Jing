@@ -6,7 +6,7 @@ use crate::db_connect;
 use crate::error::{Error, Result};
 use super::gateway::models::Gateway;
 
-pub fn all_profiles() -> Result<Vec<Profile>> {
+pub fn list() -> Result<Vec<Profile>> {
     use crate::schema::profiles::dsl::*;
     let mut conn = db_connect();
 

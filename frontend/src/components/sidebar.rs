@@ -106,7 +106,7 @@ pub fn SidebarMenu() -> Html {
         },
         SidebarMenuItemPros {
             caption: "SIP Profile".to_string(),
-            route: Route::SoundFileRoot,
+            route: Route::ProfileRoot,
             onclick: onclick.clone(),
             selected: false,
         },
