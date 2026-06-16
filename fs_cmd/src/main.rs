@@ -13,6 +13,7 @@ mod user;
 mod feature_code;
 mod cdr;
 mod gateway;
+mod acl;
 
 #[macro_use]
 extern crate prettytable;
@@ -40,6 +41,10 @@ enum Cli {
     Gateway {
         #[structopt(subcommand)]
         gateway: gateway::GatewayCli,
+    },
+    Acl {
+        #[structopt(subcommand)]
+        acl: acl::AclCli,
     },
 
     Route {
@@ -197,6 +202,9 @@ fn main() {
         },
         Cli::Gateway { gateway } => {
             gateway::exec_gateway_cmd(gateway);
+        },
+        Cli::Acl { acl } => {
+            acl::exec_acl_cmd(acl);
         },
         Cli::Route { route } => {
             exec_route_cmd(route)

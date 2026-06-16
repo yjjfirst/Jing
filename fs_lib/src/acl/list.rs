@@ -7,9 +7,9 @@ use crate::error::{Error, Result};
 
 #[derive(Debug, Queryable, Serialize, Deserialize)]
 pub struct AclList {
-    id: i32,
-    acl_name: String,
-    acl_default: String
+    pub id: i32,
+    pub acl_name: String,
+    pub acl_default: String
 }
 
 pub fn list() -> Result<Vec<AclList>> {
