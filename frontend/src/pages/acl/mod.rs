@@ -1,3 +1,5 @@
+pub mod model;
+
 use std::collections::HashMap;
 use web_sys::HtmlDialogElement;
 use wasm_bindgen::JsCast;
@@ -7,8 +9,12 @@ use yew_router::prelude::*;
 use yew_icons::{Icon, IconId};
 use yewdux::prelude::*;
 
+use model::AclList;
+use model::AclNode;
+
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
+use crate::components::action_buttons::ActionButtons;
 use crate::models::Service;
 use crate::store::Store;
 
@@ -18,21 +24,6 @@ pub enum AclRoute {
     Index,
     #[at("/acl/:id")]
     Get {id: usize},
-}
-
-#[derive(Clone, PartialEq, serde::Deserialize, serde::Serialize)]
-pub struct AclList {
-    pub id: i32,
-    pub acl_name: String,
-    pub acl_default: String,
-}
-
-#[derive(Clone, PartialEq, serde::Deserialize, serde::Serialize)]
-pub struct AclNode {
-    pub id: i32,
-    pub list_id: Option<i32>,
-    pub node_type: String,
-    pub cidr: String,
 }
 
 #[derive(Clone, PartialEq, Properties)]
@@ -183,29 +174,27 @@ pub fn AclDetails(props: &AclDetailProps) -> Html {
     let loc = use_location().unwrap();
     let (store,_) = use_store::<Store>();
 
-    let acl = use_state(|| AclList { id:0, acl_name: "".to_string(), acl_default: "".to_string()});
+    let acl = use_state(|| AclList::new());
     let nodes = use_state(|| vec![] as Vec<AclNode>);
     let acl_cloned = acl.clone();
     let nodes_cloned = nodes.clone();
-    let loc_1 = loc.clone();
-    use_effect_with((), move |_|{
-        let acl = acl_cloned.clone();
-        let nodes = nodes_cloned.clone();
-        let loc = loc_1.clone();
-        let domain = store.selected_domain_id;
-        wasm_bindgen_futures::spawn_local(async move {
-            let path = format!("{}/{}", loc.path(), id);
-            let fetched: serde_json::Value = Service::get(&path, domain).await.unwrap_or(serde_json::json!(null));
-            if let Some(list) = fetched.get("list").and_then(|v| v.as_object()) {
-                let list: AclList = serde_json::from_value(serde_json::Value::Object(list.clone())).unwrap_or(AclList {id:0, acl_name: "".to_string(), acl_default: "".to_string()});
-                acl.set(list);
-            }
-            if let Some(n) = fetched.get("nodes") {
-                let nodes_vec: Vec<AclNode> = serde_json::from_value(n.clone()).unwrap_or_default();
-                nodes.set(nodes_vec);
-            }
+    {
+        let loc = loc.clone();
+        use_effect_with((), move |_|{
+            let acl = acl_cloned.clone();
+            let nodes = nodes_cloned.clone();
+            let loc = loc.clone();
+            let domain = store.selected_domain_id;
+            wasm_bindgen_futures::spawn_local(async move {
+                let path = loc.path();
+                let fetched = Service::get(&path, domain)
+                    .await
+                    .unwrap();
+
+                acl.set(fetched);
+            });
         });
-    });
+    }
 
     let nodes_html: Html = nodes.iter().map(|n|{
         html!{<tr><td>{n.cidr.clone()}</td><td>{n.node_type.clone()}</td></tr>}
@@ -213,19 +202,14 @@ pub fn AclDetails(props: &AclDetailProps) -> Html {
 
     html!{
         <div class="grow mr-2">
-            <Header title={format!("System -> ACL -> {}", acl.acl_name.clone())}></Header>
+            <Header title={format!("ACL -> {}", acl.acl_name.clone())}></Header>
             <div class="divider my-1"></div>
-            <table class="table table-zebra">
-                <thead>
-                    <tr>
-                        <th>{"CIDR"}</th>
-                        <th>{"Type"}</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {nodes_html}
-                </tbody>
-            </table>
+            <form class="w-full">
+                <div class="grid grid-cols-3 gap-1">
+                </div>
+                <ActionButtons />
+            </form>
+
         </div>
     }
 }
