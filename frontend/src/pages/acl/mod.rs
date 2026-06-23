@@ -206,6 +206,11 @@ pub fn AclDetails(props: &AclDetailProps) -> Html {
             <div class="divider my-1"></div>
             <form class="w-full">
                 <div class="grid grid-cols-3 gap-1">
+                    <label class="pbx-label">{"Name"}</label>
+                    <input id="acl_name" name="acl_name" class="pbx-input" type="text" value={acl.acl_name.clone()} />
+                    <label class="pbx-label">{"Default"}</label>
+                    <input id="acl_default" name="acl_default" class="pbx-input" type="text" value={acl.acl_default.clone()} />
+                    <div></div>
                 </div>
                 <ActionButtons />
             </form>

@@ -27,5 +27,9 @@ html {
 }
 
 @utility pbx-input {
-    @apply input block w-full input-neutral col-span-2;
+    @apply input block w-full col-span-2;
+}
+
+@utility pbx-label {
+    @apply label shrink-0 flex justify-end items-center pr-2 bg-base-200;
 }
