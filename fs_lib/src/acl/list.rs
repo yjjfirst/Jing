@@ -59,3 +59,13 @@ pub fn edit(list_id_arg: i32, new_name: &str, new_default: &str) -> Result<()> {
 
     Ok(())
 }
+
+pub fn get(list_id_arg: i32) -> Result<AclList> {
+    use crate::schema::acl_lists::dsl::*;
+
+    let mut conn = db_connect();
+
+    let list = acl_lists.filter(id.eq(list_id_arg)).first::<AclList>(&mut conn)?;
+
+    Ok(list)
+}

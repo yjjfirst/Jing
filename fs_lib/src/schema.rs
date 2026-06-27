@@ -13,7 +13,7 @@ diesel::table! {
 diesel::table! {
     acl_nodes (id) {
         id -> Int4,
-        list_id -> Nullable<Int4>,
+        list_id -> Int4,
         #[max_length = 128]
         node_type -> Varchar,
         #[max_length = 128]
