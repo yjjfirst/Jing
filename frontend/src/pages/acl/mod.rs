@@ -1,4 +1,5 @@
 pub mod model;
+pub mod node;
 
 use std::collections::HashMap;
 use web_sys::HtmlDialogElement;
@@ -9,6 +10,7 @@ use yew_router::prelude::*;
 use yew_icons::{Icon, IconId};
 use yewdux::prelude::*;
 
+use node::Nodes;
 use model::AclList;
 use model::AclNode;
 
@@ -210,7 +212,10 @@ pub fn AclDetails(props: &AclDetailProps) -> Html {
                     <input id="acl_name" name="acl_name" class="pbx-input" type="text" value={acl.acl_name.clone()} />
                     <label class="pbx-label">{"Default"}</label>
                     <input id="acl_default" name="acl_default" class="pbx-input" type="text" value={acl.acl_default.clone()} />
-                    <div></div>
+            <label class="pbx-label">{"Nodes"}</label>
+            <div>
+
+            </div>
                 </div>
                 <ActionButtons />
             </form>
