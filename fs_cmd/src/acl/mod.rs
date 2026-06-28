@@ -1,6 +1,23 @@
 use structopt::StructOpt;
 use crate::customtable::Ctable;
 use crate::fs_lib::acl::list as acl_list;
+use crate::fs_lib::acl::node;
+
+#[derive(StructOpt)]
+#[derive(Debug)]
+pub enum NodeCli {
+    Ls,
+    Add {
+        #[structopt(long)]
+        list_id: i32,
+        #[structopt(long)]
+        node_cidr: String,
+        #[structopt(long)]
+        node_type: String
+    },
+    Del,
+    Edit
+}
 
 #[derive(StructOpt)]
 #[derive(Debug)]
@@ -24,6 +41,24 @@ pub enum AclCli {
         #[structopt(short, long)]
         default: String,
     },
+    Node {
+        #[structopt(subcommand)]
+        node: NodeCli,
+    }
+}
+
+pub fn exec_node_cmd(node: NodeCli) {
+    match node {
+        NodeCli::Ls => {
+        },
+        NodeCli::Add { list_id, node_cidr, node_type } => {
+            node::add(list_id, &node_type, &node_cidr).unwrap();
+        },
+        NodeCli::Del => {
+        },
+        NodeCli::Edit => {
+        },
+    }
 }
 
 pub fn exec_acl_cmd(acl: AclCli) {
@@ -52,6 +87,9 @@ pub fn exec_acl_cmd(acl: AclCli) {
                 }
                 Err(err) => println!("{}", err),
             }
+        }
+        AclCli::Node {node} => {
+            exec_node_cmd(node);
         }
     }
 }

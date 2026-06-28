@@ -1,7 +1,6 @@
 use serde::{Serialize, Deserialize};
 use diesel::prelude::*;
 
-use crate::schema::acl_lists;
 use crate::db_connect;
 use crate::error::{Error, Result};
 
