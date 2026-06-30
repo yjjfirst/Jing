@@ -65,7 +65,7 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
 
     match acl_list::get(id) {
         Ok(list) => {
-            let nodes = acl_node::list_by(id).unwrap_or_default();
+            let nodes = acl_node::list_by(Some(id)).unwrap_or_default();
             let node_dtos: Vec<AclNode> = nodes.into_iter().map(|n| {
                 AclNode {
                     id: n.id,

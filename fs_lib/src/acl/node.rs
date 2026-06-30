@@ -22,13 +22,21 @@ pub struct NewAclNode {
     pub cidr: String,
 }
 
-pub fn list_by(list_id_arg: i32) -> Result<Vec<AclNode>> {
+pub fn list_by(a_list_id: Option<i32>) -> Result<Vec<AclNode>> {
     use crate::schema::acl_nodes::dsl::*;
 
     let mut conn = db_connect();
-    let rows = acl_nodes
-        .filter(list_id.eq(list_id_arg))
-        .load::<AclNode>(&mut conn)?;
+    let rows = match a_list_id {
+        Some(a_list_id) => {
+            acl_nodes
+                .filter(list_id.eq(a_list_id))
+                .load::<AclNode>(&mut conn)?
+        },
+        None => {
+            acl_nodes
+                .load::<AclNode>(&mut conn)?
+        }
+    };
 
     Ok(rows)
 }

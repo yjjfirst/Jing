@@ -6,7 +6,10 @@ use crate::fs_lib::acl::node;
 #[derive(StructOpt)]
 #[derive(Debug)]
 pub enum NodeCli {
-    Ls,
+    Ls {
+        #[structopt(long)]
+        list_id: Option<i32>
+    },
     Add {
         #[structopt(long)]
         list_id: i32,
@@ -49,7 +52,18 @@ pub enum AclCli {
 
 pub fn exec_node_cmd(node: NodeCli) {
     match node {
-        NodeCli::Ls => {
+        NodeCli::Ls {list_id}=> {
+            match node::list_by(list_id) {
+                Ok(nodes) => {
+                    let mut table = Ctable::new();
+                    table.set_titles(row!["Id", "List Id", "CIDR", "Type"]);
+                    for n in nodes {
+                        table.add_row(row![n.id, n.list_id, n.cidr, n.node_type]);
+                    }
+                    table.print();
+                },
+                Err(err) => println!("{}", err)
+            }
         },
         NodeCli::Add { list_id, node_cidr, node_type } => {
             node::add(list_id, &node_type, &node_cidr).unwrap();
