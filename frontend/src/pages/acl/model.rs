@@ -4,6 +4,7 @@ pub struct AclList {
     pub id: i32,
     pub acl_name: String,
     pub acl_default: String,
+    pub nodes: Vec<AclNode>,
 }
 
 #[derive(Clone, PartialEq, serde::Deserialize, serde::Serialize)]
@@ -18,7 +19,8 @@ impl AclList {
         AclList {
             id:0,
             acl_name: "".to_string(),
-            acl_default: "".to_string()
+            acl_default: "".to_string(),
+            nodes: vec![]
         }
     }
 }

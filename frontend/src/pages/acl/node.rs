@@ -1,6 +1,5 @@
 use yew::prelude::*;
-
-use super::model::AclNode;
+use yew_icons::{Icon, IconId};
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct NodeProps {
@@ -10,12 +9,30 @@ pub struct NodeProps {
 
 #[function_component]
 pub fn Node(props: &NodeProps) -> Html {
-    let nodes: UseStateHandle<Vec<AclNode>> = use_state(||vec![]);
-    wasm_bindgen_futures::spawn_local(async move {
-
-    });
-
     html!{
-        <div>{format!("node type: {}, cidr {}", props.node_type.clone(), props.cidr.clone())}</div>
+        <div class="grid grid-cols-3 w-full gap-1">
+            <div>
+                {props.cidr.clone()}
+            </div>
+            <div>
+                {props.node_type.clone()}
+            </div>
+            <div class="btn btn-square btn-outline btn-sm">
+                <Icon icon_id={IconId::LucideTrash}/>
+            </div>
+        </div>
+    }
+}
+
+#[function_component]
+pub fn NewNode() -> Html {
+    html! {
+        <div class="grid grid-cols-6 w-full gap-1">
+            <input class="pbx-input"/>
+            <input class="pbx-input"/>
+            <div class="btn btn-square btn-outline btn-sm">
+                <Icon icon_id={IconId::LucidePlus}/>
+            </div>
+        </div>
     }
 }

@@ -1,8 +1,7 @@
 pub mod model;
 pub mod node;
 
-use std::collections::HashMap;
-use web_sys::HtmlDialogElement;
+use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use wasm_bindgen::JsCast;
 use yew::prelude::*;
 use yew::Properties;
@@ -10,9 +9,8 @@ use yew_router::prelude::*;
 use yew_icons::{Icon, IconId};
 use yewdux::prelude::*;
 
-use node::Nodes;
+use node::{Node, NewNode};
 use model::AclList;
-use model::AclNode;
 
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
@@ -171,22 +169,19 @@ pub struct AclDetailProps {
 }
 
 #[function_component]
-pub fn AclDetails(props: &AclDetailProps) -> Html {
-    let id = props.id;
+pub fn AclDetails(_props: &AclDetailProps) -> Html {
     let loc = use_location().unwrap();
+    let nav = use_navigator().unwrap();
     let (store,_) = use_store::<Store>();
 
     let acl = use_state(|| AclList::new());
-    let nodes = use_state(|| vec![] as Vec<AclNode>);
-    let acl_cloned = acl.clone();
-    let nodes_cloned = nodes.clone();
+    let domain = store.selected_domain_id;
     {
+        let acl = acl.clone();
         let loc = loc.clone();
         use_effect_with((), move |_|{
-            let acl = acl_cloned.clone();
-            let nodes = nodes_cloned.clone();
+            let acl = acl.clone();
             let loc = loc.clone();
-            let domain = store.selected_domain_id;
             wasm_bindgen_futures::spawn_local(async move {
                 let path = loc.path();
                 let fetched = Service::get(&path, domain)
@@ -198,26 +193,84 @@ pub fn AclDetails(props: &AclDetailProps) -> Html {
         });
     }
 
-    let nodes_html: Html = nodes.iter().map(|n|{
-        html!{<tr><td>{n.cidr.clone()}</td><td>{n.node_type.clone()}</td></tr>}
+    let oncancel = {
+        let nav = nav.clone();
+        Callback::from(move |_e: MouseEvent| {
+            nav.push(&AclRoute::Index);
+        })
+    };
+
+    let form_onsubmit = {
+        let acl = acl.clone();
+        Callback::from(move |e: SubmitEvent| {
+            e.prevent_default();
+            let target: Option<EventTarget> = e.target();
+            let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();
+            let form_data = FormData::new_with_form(&form).unwrap();
+
+            let acl_name = form_data.get("acl_name").as_string().unwrap_or_default();
+            let acl_default = form_data.get("acl_default").as_string().unwrap_or_default();
+
+            let acl_dto = AclList {
+                id: acl.id,
+                acl_name,
+                acl_default,
+                nodes: vec![],
+            };
+
+            let loc = loc.clone();
+            let store = store.clone();
+            let nav = nav.clone();
+
+            wasm_bindgen_futures::spawn_local(async move {
+                match Service::post(loc.path(), store.selected_domain_id, acl_dto).await {
+                    Ok(_) => {
+                        nav.push(&AclRoute::Index);
+                    }
+                    Err(_) => {
+                        web_sys::console::error_1(&"Failed to save ACL".into());
+                    }
+                }
+            });
+        })
+    };
+
+    let nodes_html: Html = acl.nodes.iter().map(|n|{
+        html!{
+            <Node
+                cidr={n.cidr.clone()}
+                node_type={n.node_type.clone()}>
+            </Node>
+        }
     }).collect();
 
     html!{
         <div class="grow mr-2">
             <Header title={format!("ACL -> {}", acl.acl_name.clone())}></Header>
             <div class="divider my-1"></div>
-            <form class="w-full">
+            <form class="w-full" onsubmit={form_onsubmit}>
                 <div class="grid grid-cols-3 gap-1">
                     <label class="pbx-label">{"Name"}</label>
                     <input id="acl_name" name="acl_name" class="pbx-input" type="text" value={acl.acl_name.clone()} />
                     <label class="pbx-label">{"Default"}</label>
                     <input id="acl_default" name="acl_default" class="pbx-input" type="text" value={acl.acl_default.clone()} />
             <label class="pbx-label">{"Nodes"}</label>
-            <div>
-
-            </div>
+            <div class="col-span-2">
+            <div class="grid grid-cols-3 w-full gap-1">
+                <div clsss="col-span-1">
+                    {"CIDR"}
                 </div>
-                <ActionButtons />
+                <div class="col-span-1">
+                    {"TYPE"}
+                </div>
+                <div class="col-span-1">
+                </div>
+            </div>
+        {nodes_html}
+        <NewNode></NewNode>
+        </div>
+            </div>
+                <ActionButtons {oncancel} />
             </form>
 
         </div>
