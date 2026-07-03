@@ -18,7 +18,10 @@ pub enum NodeCli {
         #[structopt(long)]
         node_type: String
     },
-    Del,
+    Del {
+        #[structopt(long)]
+        id: i32,
+    },
     Edit
 }
 
@@ -68,7 +71,8 @@ pub fn exec_node_cmd(node: NodeCli) {
         NodeCli::Add { list_id, node_cidr, node_type } => {
             node::add(list_id, &node_type, &node_cidr).unwrap();
         },
-        NodeCli::Del => {
+        NodeCli::Del {id}=> {
+            node::del(id).unwrap();
         },
         NodeCli::Edit => {
         },
