@@ -1,35 +1,37 @@
 pub mod model;
 pub mod node;
 
-use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
+use web_sys::{ EventTarget, FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement };
 use wasm_bindgen::JsCast;
 use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
-use yew_icons::{Icon, IconId};
+use yew_icons::{ Icon, IconId };
 use yewdux::prelude::*;
 
-use node::{Node, NewNode};
+use node::{ Node, NewNode };
 use model::AclList;
 
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
 use crate::components::action_buttons::ActionButtons;
 use crate::models::Service;
-use crate::store::Store;
+use crate::store::{alert_info, alert_error, Store};
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum AclRoute {
     #[at("/acl")]
     Index,
-    #[at("/acl/:id")]
-    Get {id: usize},
+    #[at("/acl/:id")] 
+    Get {
+        id: usize,
+    },
 }
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct AclProps {
     pub acl: AclList,
-    pub ondel: Callback<usize>
+    pub ondel: Callback<usize>,
 }
 
 #[function_component]
@@ -37,7 +39,7 @@ pub fn AclListItem(props: &AclProps) -> Html {
     let acl = props.acl.clone();
     let nav = use_navigator().unwrap();
     let loc: Location = use_location().unwrap().clone();
-    let (store,_) = use_store::<Store>();
+    let (store, _) = use_store::<Store>();
     let ondel = props.ondel.clone();
 
     let dialog_ref: NodeRef = use_node_ref();
@@ -48,15 +50,15 @@ pub fn AclListItem(props: &AclProps) -> Html {
     let acl_id_for_confirm = acl.id as i32;
     let acl_name_for_display = acl.acl_name.clone();
 
-    let onedit: Callback<MouseEvent> = Callback::from(move |_e|{
-        nav.push(&AclRoute::Get {id: acl_id_for_edit});
+    let onedit: Callback<MouseEvent> = Callback::from(move |_e| {
+        nav.push(&(AclRoute::Get { id: acl_id_for_edit }));
     });
 
     let onconfirm: Callback<bool> = {
         let loc = loc.clone();
         let ondel = ondel.clone();
         let store_id = store.selected_domain_id;
-        Callback::from(move |_e: bool|{
+        Callback::from(move |_e: bool| {
             let loc = loc.clone();
             let ondel = ondel.clone();
             let acl_id = acl_id_for_confirm;
@@ -104,41 +106,47 @@ pub fn AclListPage() -> Html {
     let loc = use_location().unwrap().clone();
     let nav = use_navigator().unwrap();
 
-    let (store,_) = use_store::<Store>();
-    let acls: UseStateHandle<Vec<AclList>> = use_state(||vec![]);
+    let (store, _) = use_store::<Store>();
+    let acls: UseStateHandle<Vec<AclList>> = use_state(|| vec![]);
     let acls_1 = acls.clone();
     let acls_2 = acls.clone();
 
-    use_effect_with((), move|_|{
+    use_effect_with((), move |_| {
         let acls = acls_1.clone();
         let loc = loc.clone();
         let store = store.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched: Vec<AclList> = Service::index(loc.path(), store.selected_domain_id.clone()).await.unwrap_or_default();
+            let fetched: Vec<AclList> = Service::index(
+                loc.path(),
+                store.selected_domain_id.clone()
+            ).await.unwrap_or_default();
             acls.set(fetched);
         });
     });
 
-    let ondel: Callback<usize> = Callback::from(move|id: usize|{
+    let ondel: Callback<usize> = Callback::from(move |id: usize| {
         let acls = acls_2.clone();
         let filtered: Vec<AclList> = acls
             .iter()
-            .filter(|g| {g.id as usize !=id})
-            .map(|g|{g.clone()})
+            .filter(|g| { (g.id as usize) != id })
+            .map(|g| { g.clone() })
             .collect();
 
         acls.set(filtered);
     });
 
-    let onadd: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent|{
-        nav.push(&AclRoute::Get {id: 0});
+    let onadd: Callback<MouseEvent> = Callback::from(move |_e: MouseEvent| {
+        nav.push(&(AclRoute::Get { id: 0 }));
     });
 
-    let acls_list: Vec<Html> = acls.iter().map(|g|{
-        html! {
+    let acls_list: Vec<Html> = acls
+        .iter()
+        .map(|g| {
+            html! {
             <AclListItem acl={AclList {..g.clone()}} ondel={ondel.clone()}></AclListItem>
         }
-    }).collect();
+        })
+        .collect();
 
     html! {
         <div class="grow mr-2">
@@ -172,21 +180,19 @@ pub struct AclDetailProps {
 pub fn AclDetails(_props: &AclDetailProps) -> Html {
     let loc = use_location().unwrap();
     let nav = use_navigator().unwrap();
-    let (store,_) = use_store::<Store>();
+    let (store, dispatch) = use_store::<Store>();
 
     let acl = use_state(|| AclList::new());
     let domain = store.selected_domain_id;
     {
         let acl = acl.clone();
         let loc = loc.clone();
-        use_effect_with((), move |_|{
+        use_effect_with((), move |_| {
             let acl = acl.clone();
             let loc = loc.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let path = loc.path();
-                let fetched = Service::get(&path, domain)
-                    .await
-                    .unwrap();
+                let fetched = Service::get(&path, domain).await.unwrap();
 
                 acl.set(fetched);
             });
@@ -202,8 +208,10 @@ pub fn AclDetails(_props: &AclDetailProps) -> Html {
 
     let form_onsubmit = {
         let acl = acl.clone();
+        let dispatch = dispatch.clone();
         Callback::from(move |e: SubmitEvent| {
             e.prevent_default();
+            let dispatch = dispatch.clone();
             let target: Option<EventTarget> = e.target();
             let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();
             let form_data = FormData::new_with_form(&form).unwrap();
@@ -223,28 +231,36 @@ pub fn AclDetails(_props: &AclDetailProps) -> Html {
             let nav = nav.clone();
 
             wasm_bindgen_futures::spawn_local(async move {
+                let dispatch = dispatch.clone();
                 match Service::post(loc.path(), store.selected_domain_id, acl_dto).await {
                     Ok(_) => {
-                        nav.push(&AclRoute::Index);
+                        alert_info("Save ACL successfully".to_string(), dispatch.clone());
                     }
                     Err(_) => {
-                        web_sys::console::error_1(&"Failed to save ACL".into());
+                        alert_error("Failed to save ACL".to_string(), dispatch.clone());
                     }
                 }
+                nav.push(&AclRoute::Index);
             });
         })
     };
 
-    let nodes_html: Html = acl.nodes.iter().map(|n|{
-        html!{
+    let nodes_html: Html = acl.nodes
+        .iter()
+        .map(|n| {
+            html! {
             <Node
                 cidr={n.cidr.clone()}
-                node_type={n.node_type.clone()}>
+                node_type={n.node_type.clone()}
+                acl_id={acl.id}
+                node_id={n.id}
+            >
             </Node>
         }
-    }).collect();
+        })
+        .collect();
 
-    html!{
+    html! {
         <div class="grow mr-2">
             <Header title={format!("ACL -> {}", acl.acl_name.clone())}></Header>
             <div class="divider my-1"></div>
@@ -254,32 +270,32 @@ pub fn AclDetails(_props: &AclDetailProps) -> Html {
                     <input id="acl_name" name="acl_name" class="pbx-input" type="text" value={acl.acl_name.clone()} />
                     <label class="pbx-label">{"Default"}</label>
                     <input id="acl_default" name="acl_default" class="pbx-input" type="text" value={acl.acl_default.clone()} />
-            <label class="pbx-label">{"Nodes"}</label>
-            <div class="col-span-2">
-            <div class="grid grid-cols-3 w-full gap-1">
-                <div clsss="col-span-1">
-                    {"CIDR"}
+                    if acl.id != 0 {
+                        <label class="pbx-label">{"Nodes"}</label>
+                        <div class="col-span-2">
+                            <div class="grid grid-cols-3 w-full gap-1">
+                                <div clsss="col-span-1">
+                                {"CIDR"}
+                                </div>
+                                <div class="col-span-1">
+                                    {"TYPE"}
+                                </div>
+                            </div>
+                            <div class="col-span-1"></div>                        
+                            {nodes_html}
+                            <NewNode></NewNode>
+                        </div>
+                    }
                 </div>
-                <div class="col-span-1">
-                    {"TYPE"}
-                </div>
-                <div class="col-span-1">
-                </div>
-            </div>
-        {nodes_html}
-        <NewNode></NewNode>
-        </div>
-            </div>
                 <ActionButtons {oncancel} />
             </form>
-
         </div>
     }
 }
 
 pub fn acl_switch(route: AclRoute) -> Html {
     match route {
-        AclRoute::Index => html!{<AclListPage/>},
-        AclRoute::Get { id } => html !{<AclDetails id={id}/>}
+        AclRoute::Index => html! { <AclListPage/> },
+        AclRoute::Get { id } => html! { <AclDetails id={id}/> },
     }
 }

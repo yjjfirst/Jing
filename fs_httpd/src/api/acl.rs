@@ -1,3 +1,4 @@
+use std::ops::Deref;
 use actix_web::{web, Responder};
 use serde::{Serialize, Deserialize};
 
@@ -36,6 +37,9 @@ pub fn acl_config(cfg: &mut web::ServiceConfig) {
         .service(
             web::resource("")
                 .route(web::get().to(index)))
+        .service(
+            web::resource("/node/{id}")
+                .route(web::post().to(node_post)))
         .service(
             web::resource("/{id}")
                 .route(web::get().to(get))
@@ -88,10 +92,20 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
     }
 }
 
-async fn post(_p: web::Json<AclList>) -> impl Responder {
+async fn post(a: web::Json<AclList>) -> impl Responder {
+    let acl = a.deref();
+    if acl.id == 0 {
+        acl_list::add(&acl.acl_name, &acl.acl_default).unwrap();
+    } else {
+        acl_list::edit(acl.id, &acl.acl_name, &acl.acl_default).unwrap();
+    }
     web::Json(super::Status { status: "Ok".to_string() })
 }
 
 async fn delete(_path: web::Path<(i32, i32)>) -> impl Responder {
+    web::Json(super::Status { status: "Ok".to_string() })
+}
+
+async fn node_post() -> impl Responder {
     web::Json(super::Status { status: "Ok".to_string() })
 }
