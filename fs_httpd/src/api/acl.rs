@@ -103,6 +103,8 @@ async fn post(a: web::Json<AclList>) -> impl Responder {
 }
 
 async fn delete(_path: web::Path<(i32, i32)>) -> impl Responder {
+    let (_domain, id) = _path.into_inner();
+    acl_list::del(id).unwrap();
     web::Json(super::Status { status: "Ok".to_string() })
 }
 
