@@ -184,10 +184,13 @@ pub fn AclDetails(_props: &AclDetailProps) -> Html {
 
     let acl = use_state(|| AclList::new());
     let domain = store.selected_domain_id;
+    let node_changed = use_state(|| false);
+
     {
         let acl = acl.clone();
         let loc = loc.clone();
-        use_effect_with((), move |_| {
+        let node_changed = node_changed.clone();
+        use_effect_with(node_changed, move |_| {
             let acl = acl.clone();
             let loc = loc.clone();
             wasm_bindgen_futures::spawn_local(async move {
@@ -245,6 +248,11 @@ pub fn AclDetails(_props: &AclDetailProps) -> Html {
         })
     };
 
+    let handle_changed: Callback<()> = Callback::from(move |_| {
+        let node_changed = node_changed.clone();
+        node_changed.set(!*node_changed);
+    });
+
     let nodes_html: Html = acl.nodes
         .iter()
         .map(|n| {
@@ -254,6 +262,7 @@ pub fn AclDetails(_props: &AclDetailProps) -> Html {
                 node_type={n.node_type.clone()}
                 acl_id={acl.id}
                 node_id={n.id}
+                on_changed={handle_changed.clone()}
             >
             </Node>
         }
@@ -283,7 +292,7 @@ pub fn AclDetails(_props: &AclDetailProps) -> Html {
                             </div>
                             <div class="col-span-1"></div>                        
                             {nodes_html}
-                            <NewNode></NewNode>
+                            <NewNode acl_id={acl.id} on_changed={handle_changed}></NewNode>
                         </div>
                     }
                 </div>

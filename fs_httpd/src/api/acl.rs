@@ -16,7 +16,7 @@ pub struct AclList {
 #[derive(Serialize, Deserialize)]
 pub struct AclNode {
     pub id: i32,
-    pub list_id: i32,
+    pub acl_id: i32,
     pub node_type: String,
     pub cidr: String,
 }
@@ -38,8 +38,9 @@ pub fn acl_config(cfg: &mut web::ServiceConfig) {
             web::resource("")
                 .route(web::get().to(index)))
         .service(
-            web::resource("/node/{id}")
-                .route(web::post().to(node_post)))
+            web::resource("/{acl_id}/node/{id}")
+                .route(web::post().to(node_post))
+                .route(web::delete().to(node_delete)))
         .service(
             web::resource("/{id}")
                 .route(web::get().to(get))
@@ -73,7 +74,7 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
             let node_dtos: Vec<AclNode> = nodes.into_iter().map(|n| {
                 AclNode {
                     id: n.id,
-                    list_id: n.list_id,
+                    acl_id: n.list_id,
                     node_type: n.node_type,
                     cidr: n.cidr,
                 }
@@ -108,6 +109,15 @@ async fn delete(_path: web::Path<(i32, i32)>) -> impl Responder {
     web::Json(super::Status { status: "Ok".to_string() })
 }
 
-async fn node_post() -> impl Responder {
+async fn node_post(path: web::Path<(i32, i32, i32)>, n: web::Json<AclNode>) -> impl Responder {
+    let (_, acl_id, _) = path.into_inner();
+    let node = n.deref();
+    acl_node::add(acl_id, &node.node_type, &node.cidr).unwrap();
+    web::Json(super::Status { status: "Ok".to_string() })
+}
+
+async fn node_delete(path: web::Path<(i32, i32, i32)>) -> impl Responder {
+    let (_, _, node_id) = path.into_inner();
+    acl_node::del(node_id).unwrap();
     web::Json(super::Status { status: "Ok".to_string() })
 }
