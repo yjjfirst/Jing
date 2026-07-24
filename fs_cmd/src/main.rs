@@ -109,9 +109,9 @@ enum Cli {
 #[derive(Debug)]
 enum ProfileCli {
     Ls,
-    List {
+    Params {
         #[structopt(short, long)]
-        profile: String,
+        profile_name: String,
     }
 }
 
@@ -283,8 +283,9 @@ fn exec_profile_cmd(profile: ProfileCli) {
             }
         },
 
-        ProfileCli::List {profile} => {
-            match profile::profile_params(profile) {
+        ProfileCli::Params {profile_name} => {
+            let profile = profile::get_profile_by_name(&profile_name).unwrap();
+            match profile::profile_params(profile.id) {
                 Ok(params)  => print_profile_params(params),
                 Err(err) => println!("{}", err),
             }

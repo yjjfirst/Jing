@@ -2,7 +2,7 @@ use serde::{Serialize, Deserialize};
 use crate::schema::{profiles};
 
 #[derive(Queryable, Serialize, Deserialize)]
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct ProfileParam {
     pub id: i32,
     pub profile_id: i32,

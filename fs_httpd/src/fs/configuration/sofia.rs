@@ -67,7 +67,8 @@ fn gateway<W: Write>(w: &mut EventWriter<W>, g: &Gateway) {
 
 fn settings<W: Write>(w: &mut EventWriter<W>, profile_name: &str) {
     start_element(w, "settings", None);
-    let params = profile::profile_params(profile_name.to_string()).unwrap();
+    let profile = profile::get_profile_by_name(profile_name).unwrap();
+    let params = profile::profile_params(profile.id).unwrap();
     for p in params {
         param(w, p.name.as_str(), p.value.as_str());
     }

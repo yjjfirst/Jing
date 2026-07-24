@@ -3,7 +3,7 @@ pub mod models;
 use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
-use crate::error::{Error, Result};
+use crate::error::{Result};
 use super::gateway::models::Gateway;
 
 pub fn list() -> Result<Vec<Profile>> {
@@ -16,29 +16,36 @@ pub fn list() -> Result<Vec<Profile>> {
     Ok(profs)
 }
 
-pub fn get_profile_id_by(profile_name: &str) -> Result<i32> {
+pub fn get_profile(profile_id: i32) -> Result<Profile> {
+    use crate::schema::profiles::dsl::*;
+    let mut conn = db_connect();
+
+    let profile = profiles
+        .find(profile_id)
+        .get_result::<Profile>(&mut conn)?;
+
+    Ok(profile)
+}
+
+pub fn get_profile_by_name(profile_name: &str) -> Result<Profile> {
     use crate::schema::profiles::dsl::*;
 
     let mut conn = db_connect();
-    let ids = profiles
+    let profile = profiles
         .filter(name.eq(profile_name))
-        .limit(1)
-        .load::<Profile>(&mut conn)?;
-    if ids.len() == 0 {
-       return Err(Error::Fslib("Profile doesn't exist".to_string()));
-    }
+        .first::<Profile>(&mut conn)?;
 
-    Ok(ids[0].id)
+    Ok(profile)
 }
 
-pub fn profile_params(n: String) -> Result<Vec<ProfileParam>> {
+pub fn profile_params(prof_id: i32) -> Result<Vec<ProfileParam>> {
     use crate::schema::profile_params::dsl::*;
 
     let mut conn = db_connect();
-    let prof_id = get_profile_id_by(&n)?;
+    let profile = get_profile(prof_id)?;
 
     let results = profile_params
-        .filter(profile_id.eq(prof_id))
+        .filter(profile_id.eq(profile.id))
         .load::<ProfileParam>(&mut conn)?;
 
     Ok(results)

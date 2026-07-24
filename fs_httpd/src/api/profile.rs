@@ -15,7 +15,11 @@ pub struct Profile {
 pub fn profile_config(cfg: &mut web::ServiceConfig) {
     cfg.service(
         web::resource("")
-            .route(web::get().to(index)));
+            .route(web::get().to(index)))
+        .service(
+            web::resource("/{id}")
+                .route(web::get().to(get))
+        );
 }
 
 async fn index(_path: web::Path<i32>) -> impl Responder {
@@ -28,4 +32,21 @@ async fn index(_path: web::Path<i32>) -> impl Responder {
             params: HashMap::new()
         }
     }).collect::<Vec<Profile>>())
+}
+
+async fn get(path: web::Path<(i32,i32)>) -> impl Responder {
+    let (_, id) = path.into_inner();
+    let profile = profile::get_profile(id).unwrap();
+    let params = profile::profile_params(profile.id).unwrap();
+
+    web::Json(Profile {
+        id: profile.id,
+        name: profile.name.clone(),
+        params: params
+            .into_iter()
+            .map(|p| {
+                (p.name.clone(), p.clone())
+            })
+            .collect::<HashMap<String, ProfileParam>>()
+    })
 }
