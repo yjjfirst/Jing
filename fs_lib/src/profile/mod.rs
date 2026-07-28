@@ -38,7 +38,7 @@ pub fn get_profile_by_name(profile_name: &str) -> Result<Profile> {
     Ok(profile)
 }
 
-pub fn profile_params(prof_id: i32) -> Result<Vec<ProfileParam>> {
+pub fn get_profile_params(prof_id: i32) -> Result<Vec<ProfileParam>> {
     use crate::schema::profile_params::dsl::*;
 
     let mut conn = db_connect();
@@ -49,6 +49,19 @@ pub fn profile_params(prof_id: i32) -> Result<Vec<ProfileParam>> {
         .load::<ProfileParam>(&mut conn)?;
 
     Ok(results)
+}
+
+pub fn set_profile_param(param_id: i32, _: &str, param_value: &str) -> Result<()> {
+    use crate::schema::profile_params;
+    use crate::schema::profile_params::dsl::*;
+    let mut conn = db_connect();
+
+    diesel::update(profile_params::table)
+        .filter(id.eq(param_id))
+        .set(value.eq(param_value))
+        .execute(&mut conn)?;
+
+    Ok(())
 }
 
 pub fn gateways(profile_id: i32) -> Result<Vec<Gateway>> {

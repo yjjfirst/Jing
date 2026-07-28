@@ -285,7 +285,7 @@ fn exec_profile_cmd(profile: ProfileCli) {
 
         ProfileCli::Params {profile_name} => {
             let profile = profile::get_profile_by_name(&profile_name).unwrap();
-            match profile::profile_params(profile.id) {
+            match profile::get_profile_params(profile.id) {
                 Ok(params)  => print_profile_params(params),
                 Err(err) => println!("{}", err),
             }

@@ -19,6 +19,7 @@ pub fn profile_config(cfg: &mut web::ServiceConfig) {
         .service(
             web::resource("/{id}")
                 .route(web::get().to(get))
+                .route(web::post().to(post))
         );
 }
 
@@ -37,7 +38,7 @@ async fn index(_path: web::Path<i32>) -> impl Responder {
 async fn get(path: web::Path<(i32,i32)>) -> impl Responder {
     let (_, id) = path.into_inner();
     let profile = profile::get_profile(id).unwrap();
-    let params = profile::profile_params(profile.id).unwrap();
+    let params = profile::get_profile_params(profile.id).unwrap();
 
     web::Json(Profile {
         id: profile.id,
@@ -49,4 +50,16 @@ async fn get(path: web::Path<(i32,i32)>) -> impl Responder {
             })
             .collect::<HashMap<String, ProfileParam>>()
     })
+}
+
+async fn post(path: web::Path<(i32,i32)>, prof: web::Json<Profile>) -> impl Responder {
+    let (_, id) = path.into_inner();
+    let params = prof.into_inner().params;
+    let profile = profile::get_profile(id).unwrap();
+
+    for (name, param) in params {
+        profile::set_profile_param(param.id, &name, &param.value).unwrap();
+    }
+
+    web::Json(profile)
 }
