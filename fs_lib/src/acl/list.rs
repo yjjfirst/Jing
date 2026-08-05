@@ -3,6 +3,7 @@ use diesel::prelude::*;
 
 use crate::db_connect;
 use crate::error::{Error, Result};
+use crate::rt;
 
 #[derive(Debug, Queryable, Serialize, Deserialize)]
 pub struct AclList {
@@ -30,6 +31,7 @@ pub fn add(name: &str, default: &str) -> Result<i32> {
         .load(&mut conn)?;
 
     if let Some(first) = inserted.first() {
+        rt::reload_acl();
         Ok(first.id)
     } else {
         Err(Error::Fslib("Failed to insert acl_list".to_string()))
@@ -44,6 +46,8 @@ pub fn del(list_id_arg: i32) -> Result<()> {
     diesel::delete(acl_lists.filter(id.eq(list_id_arg)))
         .execute(&mut conn)?;
 
+    rt::reload_acl();    
+
     Ok(())
 }
 
@@ -55,6 +59,8 @@ pub fn edit(list_id_arg: i32, new_name: &str, new_default: &str) -> Result<()> {
     diesel::update(acl_lists.filter(id.eq(list_id_arg)))
         .set((acl_name.eq(new_name), acl_default.eq(new_default)))
         .execute(&mut conn)?;
+
+    rt::reload_acl();    
 
     Ok(())
 }

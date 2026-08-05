@@ -1,12 +1,20 @@
 use std::process::Command;
 use regex::Regex;
 
+pub fn reload_acl() {
+    Command::new("fs_cli")
+        .arg("-x")
+        .arg("reloadacl")
+        .spawn()
+        .expect("Failed to reload ACL");
+}
+
 pub fn eval(name: &str) -> String {
     let output = Command::new("fs_cli")
         .arg("-x")
         .arg(format!("eval {}", name))
         .output()
-        .expect("Failed to execute");
+        .expect("Failed to evaluate variable");
 
     let result = String::from_utf8(output.stdout).expect("Cannot connect to freeswitch");
 

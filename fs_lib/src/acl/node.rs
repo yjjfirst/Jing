@@ -4,6 +4,7 @@ use diesel::prelude::*;
 use crate::schema::acl_nodes;
 use crate::db_connect;
 use crate::error::{Error, Result};
+use crate::rt;
 
 #[derive(Debug, Queryable, Serialize, Deserialize, Clone)]
 #[diesel(table_name = acl_nodes)]
@@ -50,6 +51,7 @@ pub fn add(list_id_arg: i32, node_type_s: &str, cidr_s: &str) -> Result<i32> {
         .load(&mut conn)?;
 
     if let Some(first) = inserted.first() {
+        rt::reload_acl();
         Ok(first.id)
     } else {
         Err(Error::Fslib("Failed to insert acl_node".to_string()))
@@ -61,5 +63,8 @@ pub fn del(node_id_arg: i32) -> Result<()> {
 
     let mut conn = db_connect();
     diesel::delete(acl_nodes.filter(id.eq(node_id_arg))).execute(&mut conn)?;
+    
+    rt::reload_acl();
+
     Ok(())
 }
