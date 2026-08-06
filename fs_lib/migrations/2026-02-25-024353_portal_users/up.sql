@@ -5,3 +5,5 @@ CREATE TABLE portal_users (
        password VARCHAR(128) not null,
        PRIMARY KEY(id)
 );
+
+INSERT INTO portal_users (username, password) VALUES ('martin', 'ymzh_2008');
