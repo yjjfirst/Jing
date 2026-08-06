@@ -1,6 +1,14 @@
 use std::process::Command;
 use regex::Regex;
 
+pub fn reload_mod(name: &str) {
+    Command::new("fs_cli")
+        .arg("-x")
+        .arg(format!("reload {}", name))
+        .spawn()
+        .expect("Failed to reload module");
+}
+
 pub fn reload_acl() {
     Command::new("fs_cli")
         .arg("-x")
