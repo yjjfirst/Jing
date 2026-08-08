@@ -204,25 +204,36 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
             let dispatch = dispatch.clone();
             let loc = loc.clone();
             let nav = nav.clone();
-            let params = gateway.params
+
+            e.prevent_default();
+
+            let params = gateway.param_helps
                 .clone()
                 .into_iter()
-                .map(|p|{
-                    let key = p.0;
-                    let mut param = p.1;
-                    param.value = form_data.get(&key).as_string().unwrap();
-                    (key, param)
+                .map(|h|{
+                    let key = h.name.clone();
+                    match gateway.params.get(&key)
+                    {
+                        Some(p) => {
+                            let mut param = p.clone();
+                            param.value = form_data.get(&key).as_string().unwrap();
+                            (key, param)
+                        }
+                        None => {
+                            let mut param = Param::_new();
+                            param.name = key.clone();
+                            param.value = form_data.get(&key).as_string().unwrap();
+                            (key, param)
+                        }
+                    }
                 })
                 .collect::<HashMap<String, Param>>();
             let gateway = Gateway {
                 id,
                 gateway_name: form_data.get("name").as_string().unwrap(),
-                profile_id: form_data.get("profile_id")
-                    .as_string()
-                    .unwrap()
-                    .parse::<usize>()
-                    .unwrap(),
-                params
+                profile_id: 2,
+                params,
+                param_helps: vec![]
             };
 
             wasm_bindgen_futures::spawn_local(async move {
@@ -239,8 +250,6 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
                 }
                 nav.push(&GatewayRoute::Index);
             });
-
-            e.prevent_default();
         })
     };
 
@@ -255,32 +264,19 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
                     value={gateway.gateway_name.clone()}
                     id="name"
                 />
-                <Label>{"proxy"}</Label>
-                <Input
-                    value={Param::get("proxy", &gateway.params)}
-                    id="proxy"
-                />
-
-                <Label>{"register"}</Label>
-                <Input
-                    value={Param::get("register", &gateway.params)}
-                    id="register"
-                />
-                <Label>{"Username"}</Label>
-                <Input
-                    value={Param::get("username", &gateway.params)}
-                    id="username"
-                />
-                <Label>{"Password"}</Label>
-                <Input
-                    value={Param::get("password", &gateway.params)}
-                    id="password"
-                />
-                <Label>{"Profile ID"}</Label>
-                <Input
-                    value={gateway.profile_id.to_string()}
-                    id="profile_id"
-                />
+                { 
+                for gateway.param_helps.iter().map(|p|{
+                    html!{
+                        <>
+                            <Label>{p.name.clone()}</Label>
+                            <Input
+                                value={Param::get(&p.name, &gateway.params)}
+                                id={p.name.clone()}
+                            />
+                        </>
+                    }
+                })
+                }
             </div>
             <ActionButtons oncancel={form_oncancel}/>
             </form>

@@ -1,5 +1,6 @@
 pub mod models;
 pub mod gateway_param;
+pub mod gateway_param_help;
 
 use std::collections::HashMap;
 use models::*;
@@ -8,6 +9,7 @@ use crate::db_connect;
 use crate::schema::gateways;
 use gateway_param::{GatewayParam};
 use crate::error::{Result, Error};
+use crate::rt;
 
 
 pub fn add(profile_id: i32, gateway_name: String, params: HashMap<String,String>) -> Result<i32> {
@@ -25,6 +27,7 @@ pub fn add(profile_id: i32, gateway_name: String, params: HashMap<String,String>
         GatewayParam::add(inserted.first().unwrap().id, key, value).unwrap();
     }
 
+    rt::reload_mod("mod_sofia");
     Ok(inserted[0].id)
 }
 
@@ -37,6 +40,7 @@ pub fn del(gateway_id: i32) -> Result<()>{
         .filter(id.eq(gateway_id))
         .execute(&mut conn)?;
 
+    rt::reload_mod("mod_sofia");    
     Ok(())
 }
 
@@ -45,6 +49,7 @@ pub fn list() -> Result<Vec<Gateway>> {
     let mut conn = db_connect();
 
     let results = gateways
+        .order_by(id.asc())
         .load::<Gateway>(&mut conn)?;
 
     Ok(results)
@@ -75,6 +80,7 @@ pub fn update(g: &Gateway) -> Result<()> {
         .set(g)
         .execute(&mut conn)?;
 
+    rt::reload_mod("mod_sofia");
     Ok(())
 }
 

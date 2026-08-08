@@ -153,6 +153,18 @@ diesel::table! {
 }
 
 diesel::table! {
+    gateway_param_helps (id) {
+        id -> Int4,
+        #[max_length = 128]
+        name -> Varchar,
+        #[max_length = 1024]
+        range_text -> Varchar,
+        #[max_length = 1024]
+        help_text -> Varchar,
+    }
+}
+
+diesel::table! {
     gateway_params (id) {
         id -> Int4,
         gateway_id -> Int4,
@@ -434,6 +446,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     extension_types,
     extensions,
     feature_codes,
+    gateway_param_helps,
     gateway_params,
     gateways,
     inbound_routes,

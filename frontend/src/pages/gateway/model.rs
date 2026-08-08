@@ -4,11 +4,20 @@ use util_macro::HashMapHelper;
 use web_sys::FormData;
 
 #[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
+pub struct GatewayParamHelp {
+    pub id: usize,
+    pub name: String,
+    pub range_text: String,
+    pub help_text: String
+}
+
+#[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
 pub struct Gateway {
     pub id: usize,
     pub gateway_name: String,
     pub profile_id: usize,
-    pub params: HashMap<String, Param>
+    pub params: HashMap<String, Param>,
+    pub param_helps: Vec<GatewayParamHelp>
 }
 
 impl Gateway {
@@ -17,8 +26,9 @@ impl Gateway {
             id: 0,
             profile_id: 0,
             gateway_name: "".to_string(),
-            params: HashMap::new()
-       }
+            params: HashMap::new(),
+            param_helps: Vec::new()
+        }
     }
     pub fn get_gateway_by_id(id: usize, gateways: &Vec<Gateway>) -> Option<&Gateway> {
         let pos = gateways

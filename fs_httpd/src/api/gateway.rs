@@ -8,13 +8,15 @@ use fs_lib::gateway;
 use fs_lib::gateway::models;
 use fs_lib::gateway::gateway_param;
 use fs_lib::gateway::gateway_param::GatewayParam;
+use fs_lib::gateway::gateway_param_help::{GatewayParamHelp, list as param_helps_list}; 
 
 #[derive(Serialize, Deserialize)]
 pub struct Gateway {
     id: i32,
     gateway_name: String,
     profile_id: i32,
-    params: HashMap<String, GatewayParam>
+    params: HashMap<String, GatewayParam>,
+    param_helps: Vec<GatewayParamHelp>
 }
 
 pub fn gateway_config(cfg: &mut web::ServiceConfig) {
@@ -37,7 +39,8 @@ async fn index(_path: web::Path<i32>) -> impl Responder {
             id: g.id,
             gateway_name: g.gateway_name.clone(),
             profile_id: g.profile_id,
-            params: HashMap::new()
+            params: HashMap::new(),
+            param_helps: vec![]
         }
     }).collect::<Vec<Gateway>>())
 }
@@ -53,7 +56,8 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
             profile_id: g.profile_id,
             params: params.iter().map(|p| {
                 (p.name.clone(), p.clone())
-            }).collect::<HashMap<String, GatewayParam>>()
+            }).collect::<HashMap<String, GatewayParam>>(),
+            param_helps: param_helps_list().unwrap()
         };
         web::Json(gateway)
     } else {
@@ -71,7 +75,8 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
             id: 0,
             profile_id: 2,
             gateway_name: "".to_string(),
-            params: params_hash
+            params: params_hash,
+            param_helps: param_helps_list().unwrap()
         };
         web::Json(gateway)
     }
