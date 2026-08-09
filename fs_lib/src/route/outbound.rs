@@ -16,13 +16,15 @@ pub fn list() -> Result<Vec<OutboundRoute>>{
     Ok(result)
 }
 
-pub fn add(gateway_id: i32, priority: i32, condition: &str) -> Result<()>{
+pub fn add(gateway_id: i32, priority: i32, condition: &str, prepend: &str, prefix: i32) -> Result<()>{
     let mut conn = db_connect();
 
     let new_route = NewOutboundRoute {
         gateway_id,
         priority,
-        condition
+        condition,
+        prepend,
+        prefix
     };
 
     diesel::insert_into(outbound_routes::table)

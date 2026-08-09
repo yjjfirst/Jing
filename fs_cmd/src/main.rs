@@ -156,6 +156,10 @@ enum OutRouteCli {
         priority: i32,
         #[structopt(short, long, help="Regular expression to match the dialed number.")]
         condition: String,
+        #[structopt(long, help="String to prepend to the dialed number.")]
+        prepend: String,
+        #[structopt(long, help="Prefix for the dialed number.")]
+        prefix: i32,
     },
     Del {
         #[structopt(short, long, help="The gateway to delete.")]
@@ -340,8 +344,8 @@ fn print_outbounds(routes: Vec<route::outbound_models::OutboundRoute>) {
 
 fn exec_outbound_cmd(outbound: OutRouteCli) {
     match outbound {
-        OutRouteCli::Add {gateway_id, priority, condition} => {
-            route::outbound::add(gateway_id, priority, &condition)
+        OutRouteCli::Add {gateway_id, priority, condition, prepend, prefix} => {
+            route::outbound::add(gateway_id, priority, &condition, &prepend, prefix)
                 .unwrap_or_else(|err| println!("{}",err));
         },
 

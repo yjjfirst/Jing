@@ -30,9 +30,15 @@ async fn index(_path: web::Path<i32>) -> impl Responder {
 
 async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
     let (_, id) = path.into_inner();
-    let out = outbound::get(id).unwrap_or( OutboundRoute {
-        id: 0, gateway_id: 0, condition: "".to_string(), priority: 100
-    });
+    let out = outbound::get(id).unwrap_or( OutboundRoute 
+        {
+            id: 0, 
+            gateway_id: 0, 
+            condition: "".to_string(), 
+            priority: 100, 
+            prepend: "".to_string(), 
+            prefix: 0
+        });
 
     web::Json(out)
 }
@@ -42,7 +48,13 @@ async fn post(r: web::Json<OutboundRoute>) -> impl Responder {
     if route.id != 0 {
         outbound::update(route).unwrap();
     } else {
-        outbound::add(r.gateway_id, r.priority, &r.condition).unwrap();
+        outbound::add(
+            r.gateway_id, 
+            r.priority, 
+            &r.condition,
+            &r.prepend,
+            r.prefix
+        ).unwrap();
     }
 
     web::Json(Status {status: "Ok".to_string()})

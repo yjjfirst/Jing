@@ -118,7 +118,9 @@ fn outbound<W: Write>(w: &mut EventWriter<W>, route: OutboundRoute) {
     ]));
 
     if let Ok(g) = gateway::get(route.gateway_id) {
-        action(w,"bridge", format!("sofia/gateway/{}/$1",g.gateway_name).as_str());
+        let dial_string = format!("sofia/gateway/{}/{}${{destination_number:{}}}", g.gateway_name, route.prepend, route.prefix);
+        println!("dial_string: {}", dial_string);
+        action(w,"bridge", dial_string.as_str());
     }
     end_element(w);
     end_element(w);

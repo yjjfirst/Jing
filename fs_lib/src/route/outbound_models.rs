@@ -7,7 +7,9 @@ pub struct OutboundRoute {
     pub id: i32,
     pub gateway_id: i32,
     pub priority: i32,
-    pub condition: String
+    pub condition: String,
+    pub prepend: String,
+    pub prefix: i32
 }
 
 #[derive(Insertable)]
@@ -15,5 +17,7 @@ pub struct OutboundRoute {
 pub struct NewOutboundRoute<'a>{
     pub gateway_id: i32,
     pub priority: i32,
-    pub condition: &'a str
+    pub condition: &'a str,
+    pub prepend: &'a str,
+    pub prefix: i32
 }

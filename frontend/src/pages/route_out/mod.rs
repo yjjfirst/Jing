@@ -178,9 +178,7 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
     let store_1 = store.clone();
     let store_2 = store.clone();
 
-    let out: UseStateHandle<Outbound> = use_state(||Outbound {
-        id: 0, condition: "".to_string(), gateway_id:0, priority:100
-    });
+    let out: UseStateHandle<Outbound> = use_state(||Outbound::new());
     let out_1 = out.clone();
     let out_2 = out.clone();
 
@@ -234,7 +232,9 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
                 id: form_data.get("id").as_string().unwrap().parse::<usize>().unwrap(),
                 condition: form_data.get("condition").as_string().unwrap(),
                 priority: form_data.get("priority").as_string().unwrap().parse::<usize>().unwrap(),
-                gateway_id: gateway.id
+                gateway_id: gateway.id,
+                prepend: form_data.get("prepend").as_string().unwrap(),
+                prefix: form_data.get("prefix").as_string().unwrap().parse::<usize>().unwrap()
             };
 
             wasm_bindgen_futures::spawn_local(async move {
@@ -267,6 +267,10 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
                 <Input value={out.priority.to_string()} id="priority"/>
                 <Label>{"Condition"}</Label>
                 <Input value={out.condition.clone()} id="condition" />
+                <Label>{"Prepend"}</Label>    
+                <Input value={out.prepend.clone()} id="prepend" />
+                <Label>{"Prefix"}</Label>
+                <Input value={out.prefix.to_string()} id="prefix" />
                 <Label>{"Gateway"}</Label>
                 if out.gateway_id != 0 && gateways.len() != 0 {
                     <Select 

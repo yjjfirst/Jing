@@ -236,6 +236,9 @@ diesel::table! {
         priority -> Int4,
         #[max_length = 512]
         condition -> Varchar,
+        #[max_length = 16]
+        prepend -> Varchar,
+        prefix -> Int4,
     }
 }
 
