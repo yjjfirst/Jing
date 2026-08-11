@@ -21,33 +21,33 @@ pub fn ExtenionSelect(props: &Props) -> Html {
 
     let(store,_) = use_store::<Store>();
     let ext_map: UseStateHandle<BTreeMap<String, Vec<String>>> = use_state(||BTreeMap::new());
-    let ext_map_1 = ext_map.clone();
-
-    use_effect_with((), move |_|{
+    {
         let ext_map = ext_map.clone();
-        wasm_bindgen_futures::spawn_local(async move {
+        use_effect_with((), move |_|{
             let ext_map = ext_map.clone();
-            let mut fetched_map: BTreeMap<String, Vec<String>> = BTreeMap::new();
-            let url = format!("/extension");
-            let extensions: Vec<Extension> = Service::index(&url, store.selected_domain_id).await.unwrap();
-            for e in extensions {
-                if !fetched_map.contains_key(&e.exten_type) {
-                    fetched_map.insert(e.exten_type.clone(), vec![e.exten.clone()]);
-                } else {
-                    let exist_exten = fetched_map.get_mut(&e.exten_type).unwrap();
-                    exist_exten.push(e.exten.clone());
+            wasm_bindgen_futures::spawn_local(async move {
+                let ext_map = ext_map.clone();
+                let mut fetched_map: BTreeMap<String, Vec<String>> = BTreeMap::new();
+                let url = format!("/extension");
+                let extensions: Vec<Extension> = Service::index(&url, store.selected_domain_id).await.unwrap();
+                for e in extensions {
+                    if !fetched_map.contains_key(&e.exten_type) {
+                        fetched_map.insert(e.exten_type.clone(), vec![e.exten.clone()]);
+                    } else {
+                        let exist_exten = fetched_map.get_mut(&e.exten_type).unwrap();
+                        exist_exten.push(e.exten.clone());
+                    }
                 }
-            }
-            ext_map.set(fetched_map);
-        })
-    });
+                ext_map.set(fetched_map);
+            })
+        });
+    }
 
-    let value_2 = value.clone();
-    let options_list: Vec<Html> = ext_map_1.iter().map(|(k,v)|{
+    let options_list: Vec<Html> = ext_map.iter().map(|(k,v)|{
         let e_list: Vec<Html> =
             v.into_iter().map(|e|{
                 html! {
-                    if e.eq(&value) {
+                    if e.eq(&props.value) {
                         <option value={e.clone()} selected=true>{e.clone()}</option>
                     } else {
                         <option value={e.clone()}>{e.clone()}</option>
@@ -64,8 +64,8 @@ pub fn ExtenionSelect(props: &Props) -> Html {
 
     let classes = classes!("select", "select-bordered", "w-full", props.classes.clone());
     html! {
-        <select class={classes} name={name} value={value} id={id}>
-            if value_2 == "" {
+        <select class={classes} name={name} value={value.clone()} id={id}>
+            if value == "" {
                 <option value="" disabled={true} selected={true} hidden={true}>{"Select a extension"}</option>
             }
             {options_list}
