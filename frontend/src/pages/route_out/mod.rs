@@ -19,7 +19,7 @@ use crate::pages::gateway::model::Gateway;
 use model::Outbound;
 use crate::models::Service;
 
-use yew_icons::{Icon, IconId};
+use yew_icons::{Icon, IconData};
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum OutboundRoute {
@@ -81,12 +81,12 @@ pub fn OutboundListItem(props: &OutboundProps) -> Html {
             <th class="flex justify-end">
                 <div class="mr-1">
                     <div onclick={onedit} class="btn btn-square btn-outline btn-sm">
-                        <Icon icon_id={IconId::LucideEdit}/>   
+                        <Icon data={IconData::LUCIDE_EDIT}/>   
                     </div>
                 </div>
                 <div>
                     <div onclick={ondel} class="btn btn-square btn-outline btn-sm">
-                        <Icon icon_id={IconId::LucideTrash}/>   
+                        <Icon data={IconData::LUCIDE_TRASH}/>   
                     </div>
                 </div>
             </th> 
@@ -161,7 +161,7 @@ pub fn OutboundList() -> Html {
             </table>
             <div class="flex flex-row-reverse pr-4">
                 <div onclick={onadd} class="btn btn-square btn-outline btn-sm" >
-                    <Icon icon_id={IconId::LucidePlus}/>   
+                    <Icon data={IconData::LUCIDE_PLUS}/>   
                 </div>
             </div>             
         </div>        

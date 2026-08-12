@@ -1,7 +1,7 @@
 use std::ops::Deref;
 
 use yew::prelude::*;
-use yew_icons::{Icon, IconId};
+use yew_icons::{Icon, IconData};
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
@@ -65,7 +65,7 @@ pub fn MultiSelect(props: &Props) -> Html {
 
             <div>
                 <div class="btn btn-link btn-sm mr-4" onclick={onclick}>
-                    <Icon icon_id={IconId::LucidePlus}/>
+                    <Icon data={IconData::LUCIDE_PLUS}/>
                     {"Add"}
                 </div>
             </div>

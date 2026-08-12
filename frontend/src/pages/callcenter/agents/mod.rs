@@ -5,7 +5,7 @@ use yew::prelude::*;
 use wasm_bindgen::JsCast;
 use web_sys::{FormData, SubmitEvent, HtmlDialogElement};
 use yew_router::prelude::*;
-use yew_icons::{Icon, IconId};
+use yew_icons::{Icon, IconData};
 use yewdux::prelude::*;
 
 use crate::store::{alert_info, alert_error, Store};
@@ -88,12 +88,12 @@ pub fn AgentListItem(props: &AgentListItemProps) -> Html {
                             })
                         } 
                         class="btn btn-square btn-outline btn-sm mr-1">
-                        <Icon icon_id={IconId::LucideEdit}/>   
+                        <Icon data={IconData::LUCIDE_EDIT}/>   
                     </div>
                     <div
                         onclick={handle_del}
                         class="btn btn-square btn-outline btn-sm">
-                        <Icon icon_id={IconId::LucideTrash}/>   
+                        <Icon data={IconData::LUCIDE_TRASH}/>   
                     </div>
                 </div>
 
@@ -175,7 +175,7 @@ pub fn AgentList() -> Html {
             </table>
             <div class="flex flex-row-reverse pr-4">
                 <div onclick={handle_add} class="btn btn-square btn-outline btn-sm" >
-                    <Icon icon_id={IconId::LucidePlus}/>   
+                    <Icon data={IconData::LUCIDE_PLUS}/>   
                 </div>
             </div>         
         </div> 

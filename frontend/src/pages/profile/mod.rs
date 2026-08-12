@@ -8,7 +8,7 @@ use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
 use yewdux::prelude::*;
-use yew_icons::{Icon, IconId};
+use yew_icons::{Icon, IconData};
 
 use crate::components::header::Header;
 use crate::components::action_buttons::ActionButtons;
@@ -53,7 +53,7 @@ pub fn ProfileList() -> Html {
                 <th class="flex justify-end">
                     <div class="mr-1">
                         <Link<ProfileRoute> to={ProfileRoute::Get { id: p.id }} classes="btn btn-square btn-outline btn-sm">
-                            <Icon icon_id={IconId::LucideEdit}/>
+                            <Icon data={IconData::LUCIDE_EDIT}/>
                         </Link<ProfileRoute>>
                     </div>
                 </th>

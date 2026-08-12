@@ -2,13 +2,13 @@ use yew::prelude::*;
 use yewdux::prelude::*;
 use gloo_net::http::Request;
 use crate::store::{Store, set_username, set_is_authenticated, set_selected_domain_id, set_selected_domain_name};
-use yew_icons::{Icon, IconId};
+use yew_icons::{Icon, IconData};
 use crate::app::Route;
 use yew_router::prelude::*;
 
 use crate::models::API_BASE;
 
-#[function_component]
+#[component]
 pub fn Navbar() -> Html {
     let (store, dispatch) = use_store::<Store>();
     let handle_logout = {
@@ -33,7 +33,7 @@ pub fn Navbar() -> Html {
             <div class="flex items-center">
                 <p>{store.username.clone()}</p>
                 <div class="btn btn-ghost btn-sm" onclick={handle_logout}>
-                    <Icon icon_id={IconId::LucideLogOut}/>
+                    <Icon data={IconData::LUCIDE_LOG_OUT}/>
                 </div>
             </div>
         </div>

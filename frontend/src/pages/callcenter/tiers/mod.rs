@@ -5,7 +5,7 @@ use wasm_bindgen::JsCast;
 use yew::prelude::*;
 use yew_router::prelude::*;
 use yewdux::prelude::*;
-use yew_icons::{Icon, IconId};
+use yew_icons::{Icon, IconData};
 
 use crate::models::Service;
 use model::Tier;
@@ -191,18 +191,18 @@ pub fn TierComponent(props: &TierComponentProps) -> Html {
                    </div>
                    if tier_id == 0 {
                        <button class="btn btn-square btn-outline btn-sm text-end">
-                           <Icon icon_id={IconId::LucideCheck}/>   
+                           <Icon data={IconData::LUCIDE_CHECK}/>   
                        </button>
                    } else {
                        <div>
                            <button 
                                 class="btn btn-square btn-outline btn-sm text-end" >
-                                <Icon icon_id={IconId::LucideCheck}/>   
+                                <Icon data={IconData::LUCIDE_CHECK}/>   
                            </button>
                            <div
                                onclick={handle_del}
                                class="btn btn-square btn-outline btn-sm text-end ml-1" >
-                               <Icon icon_id={IconId::LucideTrash}/>   
+                               <Icon data={IconData::LUCIDE_TRASH}/>   
                            </div>
                        </div>
                    }

@@ -1,5 +1,5 @@
 use yew::prelude::*;
-use yew_icons::{Icon, IconId};
+use yew_icons::{Icon, IconData};
 
 #[derive(Clone, PartialEq, Properties)] 
 pub struct ActionButtonsProps {
@@ -16,14 +16,14 @@ pub fn ActionButtons (props: &ActionButtonsProps) -> Html {
         <div class="flex justify-end mt-4">
             <div>
                 <button class="btn btn-success btn-sm mr-4">
-                    <Icon icon_id={IconId::LucideCheck}/>
+                    <Icon data={IconData::LUCIDE_CHECK}/>
                     {"Apply"}
                 </button>
             </div>
             if props.has_cancel {
                 <div>
                     <button class="btn btn-warning btn-sm"  onclick={form_oncancel}>
-                        <Icon icon_id={IconId::LucideX}/>
+                        <Icon data={IconData::LUCIDE_X}/>
                         {"Cancel"}
                     </button>
                 </div>

@@ -6,7 +6,7 @@ use wasm_bindgen::JsCast;
 use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
-use yew_icons::{ Icon, IconId };
+use yew_icons::{ Icon, IconData };
 use yewdux::prelude::*;
 
 use node::{ Node, NewNode };
@@ -81,12 +81,12 @@ pub fn AclListItem(props: &AclProps) -> Html {
             <th class="flex justify-end">
                 <div class="mr-1">
                     <div onclick={onedit} class="btn btn-square btn-outline btn-sm">
-                        <Icon icon_id={IconId::LucideEdit}/>
+                        <Icon data={IconData::LUCIDE_EDIT}/>
                     </div>
                 </div>
                 <div>
                     <div onclick={ondel_click} class="btn btn-square btn-outline btn-sm">
-                        <Icon icon_id={IconId::LucideTrash}/>
+                        <Icon data={IconData::LUCIDE_TRASH}/>
                     </div>
                 </div>
             </th>
@@ -164,7 +164,7 @@ pub fn AclListPage() -> Html {
             </table>
             <div class="flex flex-row-reverse pr-4">
                 <div onclick={onadd} class="btn btn-square btn-outline btn-sm" >
-                    <Icon icon_id={IconId::LucidePlus}/>
+                    <Icon data={IconData::LUCIDE_PLUS}/>
                 </div>
             </div>
         </div>

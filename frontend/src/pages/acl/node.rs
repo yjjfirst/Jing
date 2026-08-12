@@ -2,7 +2,7 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 use yew::html::TargetCast;
 use web_sys::HtmlInputElement;
-use yew_icons::{Icon, IconId};
+use yew_icons::{Icon, IconData};
 use yewdux::prelude::*;
 
 use crate::models::Service;
@@ -59,7 +59,7 @@ pub fn Node(props: &NodeProps) -> Html {
                 {props.node_type.clone()}
             </div>
             <div onclick={handle_delete} class="btn btn-square btn-outline btn-sm">
-                <Icon icon_id={IconId::LucideTrash}/>
+                <Icon data={IconData::LUCIDE_TRASH}/>
             </div>
         </div>
     }
@@ -131,7 +131,7 @@ pub fn NewNode(props: &NewNodeProps) -> Html {
             <input onchange={handle_cidr_change} class="pbx-input"/>
             <input onchange={handle_type_change} class="pbx-input"/>
             <div onclick={handle_add} class="btn btn-square btn-outline btn-sm">
-                <Icon icon_id={IconId::LucidePlus}/>
+                <Icon data={IconData::LUCIDE_PLUS}/>
             </div>
         </div>
     }

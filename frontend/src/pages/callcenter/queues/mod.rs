@@ -7,7 +7,7 @@ use yew::prelude::*;
 use yew::Properties;
 use yew_router::prelude::*;
 use yewdux::prelude::*;
-use yew_icons::{Icon, IconId};
+use yew_icons::{Icon, IconData};
 
 use model::{Queue, QueueParam};
 use crate::store::{alert_info, alert_error, Store};
@@ -87,12 +87,12 @@ pub fn QueueListItem(props: &QueueListItemProps) -> Html {
                             })
                         } 
                         class="btn btn-square btn-outline btn-sm mr-1">
-                        <Icon icon_id={IconId::LucideEdit}/>   
+                        <Icon data={IconData::LUCIDE_EDIT}/>   
                     </div>
                     <div
                         onclick={handle_del}
                         class="btn btn-square btn-outline btn-sm">
-                        <Icon icon_id={IconId::LucideTrash}/>   
+                        <Icon data={IconData::LUCIDE_TRASH}/>   
                     </div>
                 </div>
             </td>
@@ -172,7 +172,7 @@ pub fn QueueList() -> Html {
         </table>
         <div class="flex flex-row-reverse pr-4">
             <div onclick={handle_add} class="btn btn-square btn-outline btn-sm" >
-                <Icon icon_id={IconId::LucidePlus}/>   
+                <Icon data={IconData::LUCIDE_PLUS}/>   
             </div>
         </div>         
     </div>      
