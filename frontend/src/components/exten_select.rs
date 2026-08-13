@@ -18,15 +18,19 @@ pub fn ExtenionSelect(props: &Props) -> Html {
     let id = props.id.clone();
     let name= id.clone();
     let value = props.value.clone();
+    let need_change = use_state(||false);
+    let loading = use_state(||true);
 
     let(store,_) = use_store::<Store>();
     let ext_map: UseStateHandle<BTreeMap<String, Vec<String>>> = use_state(||BTreeMap::new());
     {
         let ext_map = ext_map.clone();
+        let loading = loading.clone();
         use_effect_with((), move |_|{
             let ext_map = ext_map.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 let ext_map = ext_map.clone();
+                let loading = loading.clone();
                 let mut fetched_map: BTreeMap<String, Vec<String>> = BTreeMap::new();
                 let url = format!("/extension");
                 let extensions: Vec<Extension> = Service::index(&url, store.selected_domain_id).await.unwrap();
@@ -39,6 +43,7 @@ pub fn ExtenionSelect(props: &Props) -> Html {
                     }
                 }
                 ext_map.set(fetched_map);
+                loading.set(false);
             })
         });
     }
@@ -62,13 +67,32 @@ pub fn ExtenionSelect(props: &Props) -> Html {
         }
     }).collect();
 
+    let handle_focus = {
+        let need_change = need_change.clone();
+        Callback::from(move |_| {
+            let need_change = need_change.clone();
+            need_change.set(true);
+        })
+    };
+
     let classes = classes!("select", "select-bordered", "w-full", props.classes.clone());
     html! {
-        <select class={classes} name={name} value={value.clone()} id={id}>
-            if value == "" {
-                <option value="" disabled={true} selected={true} hidden={true}>{"Select a extension"}</option>
-            }
-            {options_list}
-        </select>
+        if *need_change && !*loading {
+            <select class={classes} name={name} value={value.clone()} id={id}>
+                if value == "" {
+                    <option value="" 
+                        disabled={true} 
+                        selected={true} 
+                        hidden={true}>{"Select a extension"}
+                    </option>
+                }
+                {options_list}     
+            </select>
+        } else {
+            <input class="pbx-input" 
+                name={name.clone()} 
+                value={value.clone()} 
+                onfocus={handle_focus} />
+        }
     }
 }
