@@ -1,6 +1,6 @@
 use diesel::prelude::*;
 use serde::{Serialize,Deserialize};
-use crate::error::{Result, Error};
+use crate::error::{Result};
 use crate::schema::gateway_param_helps;
 use crate::db_connect;
 

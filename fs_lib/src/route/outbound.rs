@@ -11,6 +11,7 @@ pub fn list() -> Result<Vec<OutboundRoute>>{
     let mut conn = db_connect();
 
     let result = outbound_routes
+        .order_by(id)
         .load::<OutboundRoute>(&mut conn)?;
 
     Ok(result)
