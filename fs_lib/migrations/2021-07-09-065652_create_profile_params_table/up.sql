@@ -37,3 +37,4 @@ INSERT INTO profile_params (name, value, profile_id) VALUES ('sip-ip', '$${local
 INSERT INTO profile_params (name, value, profile_id) VALUES ('ext-rtp-ip', 'auto-nat', 2);
 INSERT INTO profile_params (name, value, profile_id) VALUES ('ext-sip-ip', 'auto-nat', 2);
 INSERT INTO profile_params (name, value, profile_id) VALUES ('sip-port', '$${external_sip_port}', 2);
+INSERT INTO profile_params (name, value, profile_id) VALUES ('apply-inbound-acl', 'providers', 2);

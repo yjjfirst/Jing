@@ -4,3 +4,6 @@ CREATE TABLE acl_lists (
   acl_default VARCHAR(128) NOT NULL,
   PRIMARY KEY(id)
 );
+
+INSERT INTO acl_lists (acl_name, acl_default) VALUES
+  ('providers', 'allow');
