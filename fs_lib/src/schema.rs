@@ -44,6 +44,17 @@ diesel::table! {
 }
 
 diesel::table! {
+    blocked_ips (id) {
+        id -> Int4,
+        #[max_length = 45]
+        ip_address -> Varchar,
+        #[max_length = 64]
+        reason -> Varchar,
+        created_at -> Nullable<Timestamp>,
+    }
+}
+
+diesel::table! {
     cdr (id) {
         id -> Int4,
         caller_id_name -> Nullable<Varchar>,
@@ -351,6 +362,18 @@ diesel::table! {
 }
 
 diesel::table! {
+    system_settings (id) {
+        id -> Int4,
+        #[max_length = 255]
+        setting_section -> Varchar,
+        #[max_length = 255]
+        setting_key -> Varchar,
+        #[max_length = 255]
+        setting_value -> Varchar,
+    }
+}
+
+diesel::table! {
     tiers (id) {
         id -> Int4,
         agent_id -> Int4,
@@ -439,6 +462,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     acl_nodes,
     agent_params,
     agents,
+    blocked_ips,
     cdr,
     conference_control_details,
     conference_controls,
@@ -467,6 +491,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     ringing_groups,
     sound_files,
     sounds,
+    system_settings,
     tiers,
     user_params,
     user_variables,

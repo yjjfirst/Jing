@@ -8,6 +8,7 @@ use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
 
 use fs_lib::cdr;
+use fs_lib::system_setting;
 
 #[derive(Debug, Deserialize)]
 pub struct CdrXml {
@@ -76,6 +77,11 @@ pub async fn cdr_post(req: web::Form<CdrXml>) -> impl Responder {
 }
 
 pub fn send_email(from: &str, to: &str) {
+    let smtp_username = system_setting::get("smtp", "smtp_username").unwrap();
+    let smtp_password = system_setting::get("smtp", "smtp_password").unwrap();
+    let smtp_host = system_setting::get("smtp", "smtp_host").unwrap();
+    let admin_email = system_setting::get("admin", "admin_email").unwrap();
+
     let subject = format!("Call from {} to {}.",
                           from,
                           to);
@@ -85,17 +91,17 @@ pub fn send_email(from: &str, to: &str) {
                        to);
 
     let email = Message::builder()
-        .from("NoReply <yjjfirst@gmail.com>".parse().unwrap())
-        .to("Martin Yang <yjjfirst@hotmail.com>".parse().unwrap())
+        .from(format!("NoReply <{}>", smtp_username).parse().unwrap())
+        .to(format!("Martin Yang <{}>", admin_email).parse().unwrap())
         .subject(subject)
         .header(ContentType::TEXT_PLAIN)
         .body(String::from(body))
         .unwrap();
 
-    let creds = Credentials::new("yjjfirst@gmail.com".to_owned(), "quissatpxjnlnlak ".to_owned());
+    let creds = Credentials::new(smtp_username, smtp_password);
 
     // Open a remote connection to gmail
-    let mailer = SmtpTransport::relay("smtp.gmail.com")
+    let mailer = SmtpTransport::relay(&smtp_host)
         .unwrap()
         .credentials(creds)
         .build();

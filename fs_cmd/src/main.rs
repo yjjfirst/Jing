@@ -14,6 +14,7 @@ mod feature_code;
 mod cdr;
 mod gateway;
 mod acl;
+mod system_setting;
 
 #[macro_use]
 extern crate prettytable;
@@ -102,6 +103,10 @@ enum Cli {
     Feature {
         #[structopt(subcommand)]
         feature: feature_code::FeatureCodeCli
+    },
+    System {
+        #[structopt(subcommand)]
+        system: system_setting::SystemSettingCli
     }
 }
 
@@ -248,6 +253,9 @@ fn main() {
         },
         Cli::Feature {feature} => {
             feature_code::exec_feature_cmd(feature);
+        },
+        Cli::System {system} => {
+            system_setting::exec_system_setting_cmd(system);
         }
     }
 }

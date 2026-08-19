@@ -20,6 +20,7 @@ pub mod feature_code;
 pub mod printable;
 pub mod portal_user;
 pub mod portal_token;
+pub mod system_setting;
 
 #[macro_use]
 extern crate diesel;
