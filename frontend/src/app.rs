@@ -21,6 +21,7 @@ use crate::pages::callcenter::{CallcenterRootRoute, callcenter_root_switch};
 use crate::pages::login::Login;
 use crate::pages::acl::{AclRoute, acl_switch};
 use crate::pages::profile::{ProfileRoute, profile_switch};
+use crate::pages::system_settings::{SystemSettingsRoute, system_settings_switch};
 use crate::components::alert::{AlertType, AlertComponent, Props as AlertProps};
 use crate::components::navbar::Navbar;
 use crate::models::domain::Domain;
@@ -84,7 +85,8 @@ pub enum Route {
     ProfileRoot,
     #[at("/profile/*")]
     Profile,
-
+    #[at("/system-settings")]
+    SystemSettings,
 }
 
 #[function_component(App)]
@@ -253,6 +255,9 @@ fn switch(routes: Route) -> Html {
         },
         Route::Profile => html! {
             <Switch<ProfileRoute> render={profile_switch} />
+        },
+        Route::SystemSettings => html! {
+            <Switch<SystemSettingsRoute> render={system_settings_switch} />
         },
     }
 }

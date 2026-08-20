@@ -115,6 +115,12 @@ pub fn SidebarMenu() -> Html {
             route: Route::SoundFileRoot,
             onclick: onclick.clone(),
             selected: false,
+        },
+        SidebarMenuItemPros {
+            caption: "System Settings".to_string(),
+            route: Route::SystemSettings,
+            onclick: onclick.clone(),
+            selected: false,
         }
     ];
     html! {
