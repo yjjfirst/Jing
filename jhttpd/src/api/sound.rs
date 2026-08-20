@@ -3,10 +3,10 @@ use actix_web::{web, Responder};
 use super::Status;
 use serde::Serialize;
 
-use fs_lib::sound;
-use fs_lib::sound_file;
-use fs_lib::sound_file::models::{SoundFile};
-use fs_lib::sound::models::Sound;
+use jlib::sound;
+use jlib::sound_file;
+use jlib::sound_file::models::{SoundFile};
+use jlib::sound::models::Sound;
 
 #[derive(Serialize)]
 struct ApiSound {

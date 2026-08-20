@@ -2,8 +2,8 @@ use xml::writer::{EventWriter};
 use std::io::Write;
 use crate::fs::xml_utils::{start_element, end_element, Attr};
 
-use fs_lib::acl::list::{AclList, list};
-use fs_lib::acl::node::{list_by};
+use jlib::acl::list::{AclList, list};
+use jlib::acl::node::{list_by};
 
 pub fn serve<W: Write>(w: &mut EventWriter<W>) {
     let lists = list().unwrap();

@@ -1,8 +1,8 @@
 use structopt::StructOpt;
-use fs_lib::user::*;
+use jlib::user::*;
 use crate::customtable::{Ctable};
 use crate::print_table;
-use fs_lib::printable::{Printable};
+use jlib::printable::{Printable};
 
 #[derive(StructOpt)]
 #[derive(Debug)]

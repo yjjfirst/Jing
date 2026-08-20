@@ -1,5 +1,5 @@
 [package]
-name = "fs_lib"
+name = "jlib"
 version = "0.1.0"
 authors = ["Martin Yang <yjjfirst@hotmail.com>"]
 edition = "2018"

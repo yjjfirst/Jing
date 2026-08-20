@@ -4,11 +4,11 @@ use actix_web::{web, Responder};
 use serde::{Serialize, Deserialize};
 use super::Status;
 
-use fs_lib::gateway;
-use fs_lib::gateway::models;
-use fs_lib::gateway::gateway_param;
-use fs_lib::gateway::gateway_param::GatewayParam;
-use fs_lib::gateway::gateway_param_help::{GatewayParamHelp, list as param_helps_list}; 
+use jlib::gateway;
+use jlib::gateway::models;
+use jlib::gateway::gateway_param;
+use jlib::gateway::gateway_param::GatewayParam;
+use jlib::gateway::gateway_param_help::{GatewayParamHelp, list as param_helps_list}; 
 
 #[derive(Serialize, Deserialize)]
 pub struct Gateway {

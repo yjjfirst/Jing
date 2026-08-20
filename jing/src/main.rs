@@ -18,11 +18,11 @@ mod system_setting;
 
 #[macro_use]
 extern crate prettytable;
-extern crate fs_lib;
+extern crate jlib;
 
 use self::customtable::{Ctable};
 use structopt::StructOpt;
-use self::fs_lib::*;
+use self::jlib::*;
 
 #[derive(StructOpt)]
 #[derive(Debug)]

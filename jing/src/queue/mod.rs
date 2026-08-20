@@ -1,8 +1,8 @@
  use super::customtable::{Ctable};
 use structopt::StructOpt;
 use super::domain;
-use super::fs_lib::callcenter::queue::{Queue};
-use super::fs_lib::callcenter::queue;
+use super::jlib::callcenter::queue::{Queue};
+use super::jlib::callcenter::queue;
 
 #[derive(StructOpt)]
 #[derive(Debug)]

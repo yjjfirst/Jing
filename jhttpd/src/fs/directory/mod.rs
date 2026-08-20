@@ -1,14 +1,14 @@
-extern crate fs_lib;
+extern crate jlib;
 
 use std::io::Write;
 use std::io::BufWriter;
 use xml::writer::{EmitterConfig, EventWriter};
 use super::xml_utils::{start_element, end_element, param, variable, Attr};
 
-use fs_lib::domain;
-use fs_lib::domain::models::Domain;
-use fs_lib::user::{all_users, get_user_params, get_user_vars};
-use fs_lib::user::models::{User};
+use jlib::domain;
+use jlib::domain::models::Domain;
+use jlib::user::{all_users, get_user_params, get_user_vars};
+use jlib::user::models::{User};
 use actix_web::Result;
 
 pub fn serve () -> Result<String> {

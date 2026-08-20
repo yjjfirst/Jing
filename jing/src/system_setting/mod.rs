@@ -1,6 +1,6 @@
 use structopt::StructOpt;
 use crate::customtable::{Ctable};
-use crate::fs_lib::system_setting;
+use crate::jlib::system_setting;
 
 #[derive(StructOpt, Debug)]
 pub enum SystemSettingCli {
@@ -27,7 +27,7 @@ pub fn exec_system_setting_cmd(system: SystemSettingCli) {
     }
 }
 
-pub fn print_system_settings(settings: Vec<super::fs_lib::system_setting::SystemSetting>) {
+pub fn print_system_settings(settings: Vec<super::jlib::system_setting::SystemSetting>) {
     let mut table = Ctable::new();
     table.set_titles(row!["section", "key", "value"]);
 

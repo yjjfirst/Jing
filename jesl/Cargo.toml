@@ -1,5 +1,5 @@
 [package]
-name = "fs_esl"
+name = "jesl"
 version = "0.1.0"
 edition = "2018"
 
@@ -7,4 +7,4 @@ edition = "2018"
 
 [dependencies]
 urlencoding = "2.1.0"
-fs_lib = { path = "../fs_lib"}
+jlib = { path = "../jlib"}

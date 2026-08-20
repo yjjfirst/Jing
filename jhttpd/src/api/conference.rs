@@ -2,8 +2,8 @@ use std::ops::Deref;
 use actix_web::{web, Responder};
 use super::Status;
 
-use fs_lib::conference::{Conference};
-use fs_lib::conference;
+use jlib::conference::{Conference};
+use jlib::conference;
 
 pub fn conf_config(cfg: &mut web::ServiceConfig) {
     cfg

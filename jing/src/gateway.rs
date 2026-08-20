@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use structopt::StructOpt;
-use crate::fs_lib::gateway;
+use crate::jlib::gateway;
 use crate::customtable::{Ctable};
 
 #[derive(StructOpt)]

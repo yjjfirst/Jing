@@ -1,10 +1,10 @@
 [workspace]
 
 members = [
-    "fs_lib",
-    "fs_esl",
-    "fs_httpd",
-    "fs_cmd",
+    "jlib",
+    "jesl",
+    "jhttpd",
+    "jing",
     "util_macro",
 ]
 resolver = "2"

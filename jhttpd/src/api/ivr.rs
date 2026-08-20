@@ -4,8 +4,8 @@ use super::Status;
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
-use fs_lib::ivr;
-use fs_lib::ivr::ivr_attrs::{IvrAttr};
+use jlib::ivr;
+use jlib::ivr::ivr_attrs::{IvrAttr};
 
 #[derive(Serialize, Deserialize)]
 struct Ivr {

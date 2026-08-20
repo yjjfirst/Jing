@@ -1,8 +1,8 @@
 use std::ops::Deref;
 use actix_web::{web, Responder};
 use super::Status;
-use fs_lib::route::outbound;
-use fs_lib::route::outbound_models::OutboundRoute;
+use jlib::route::outbound;
+use jlib::route::outbound_models::OutboundRoute;
 
 pub fn outbound_config(cfg: &mut web::ServiceConfig) {
     cfg

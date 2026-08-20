@@ -2,8 +2,8 @@ use std::ops::Deref;
 use actix_web::{web, Responder};
 use actix_multipart::form::{text::Text, tempfile::TempFile, MultipartForm};
 
-use fs_lib::sound_file;
-use fs_lib::sound_file::models::{SoundFile};
+use jlib::sound_file;
+use jlib::sound_file::models::{SoundFile};
 use super::Status;
 
 #[derive(Debug, MultipartForm)]

@@ -1,7 +1,7 @@
 use structopt::StructOpt;
 use crate::customtable::Ctable;
-use crate::fs_lib::acl::list as acl_list;
-use crate::fs_lib::acl::node;
+use crate::jlib::acl::list as acl_list;
+use crate::jlib::acl::node;
 
 #[derive(StructOpt)]
 #[derive(Debug)]

@@ -1,10 +1,10 @@
 use std::collections::HashMap;
 use actix_web::{web, Responder};
-use fs_lib::{user};
-use fs_lib::user::{ByField};
-use fs_lib::user::models;
-use fs_lib::user::user_param::UserParam;
-use fs_lib::user::user_variable::UserVariable;
+use jlib::{user};
+use jlib::user::{ByField};
+use jlib::user::models;
+use jlib::user::user_param::UserParam;
+use jlib::user::user_variable::UserVariable;
 use serde::{Serialize, Deserialize};
 
 use super::Status;

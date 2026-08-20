@@ -2,8 +2,8 @@ use std::ops::Deref;
 use actix_web::{web, Responder};
 use serde::{Serialize, Deserialize};
 
-use fs_lib::acl::list as acl_list;
-use fs_lib::acl::node as acl_node;
+use jlib::acl::list as acl_list;
+use jlib::acl::node as acl_node;
 
 #[derive(Serialize, Deserialize)]
 pub struct AclList {

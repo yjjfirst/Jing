@@ -1131,70 +1131,10 @@ dependencies = [
 ]
 
 [[package]]
-name = "fs_cmd"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "dotenv",
- "fs_lib",
- "prettytable-rs",
- "structopt",
- "thiserror",
- "util_macro",
-]
-
-[[package]]
-name = "fs_esl"
-version = "0.1.0"
-dependencies = [
- "fs_lib",
- "urlencoding",
-]
-
-[[package]]
 name = "fs_extra"
 version = "1.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "42703706b716c37f96a77aea830392ad231f44c9e9a67872fa5548707e11b11c"
-
-[[package]]
-name = "fs_httpd"
-version = "0.1.0"
-dependencies = [
- "actix-cors",
- "actix-files",
- "actix-multipart",
- "actix-web",
- "async-std",
- "chrono",
- "fs_lib",
- "into-response",
- "lettre",
- "rustls",
- "rustls-pemfile",
- "serde",
- "serde-xml-rs",
- "serde_json",
- "xml-rs",
-]
-
-[[package]]
-name = "fs_lib"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "diesel",
- "dotenv",
- "prettytable-rs",
- "rand 0.8.5",
- "regex",
- "serde",
- "serde_json",
- "structopt",
- "thiserror",
- "util_macro",
- "uuid",
-]
 
 [[package]]
 name = "futures-channel"
@@ -1607,6 +1547,66 @@ name = "itoa"
 version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49f1f14873335454500d59611f1cf4a4b0f786f9ac11f4312a78e4cf2566695b"
+
+[[package]]
+name = "jesl"
+version = "0.1.0"
+dependencies = [
+ "jlib",
+ "urlencoding",
+]
+
+[[package]]
+name = "jhttpd"
+version = "0.1.0"
+dependencies = [
+ "actix-cors",
+ "actix-files",
+ "actix-multipart",
+ "actix-web",
+ "async-std",
+ "chrono",
+ "into-response",
+ "jlib",
+ "lettre",
+ "rustls",
+ "rustls-pemfile",
+ "serde",
+ "serde-xml-rs",
+ "serde_json",
+ "xml-rs",
+]
+
+[[package]]
+name = "jing"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "dotenv",
+ "jlib",
+ "prettytable-rs",
+ "structopt",
+ "thiserror",
+ "util_macro",
+]
+
+[[package]]
+name = "jlib"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "diesel",
+ "dotenv",
+ "prettytable-rs",
+ "rand 0.8.5",
+ "regex",
+ "serde",
+ "serde_json",
+ "structopt",
+ "thiserror",
+ "util_macro",
+ "uuid",
+]
 
 [[package]]
 name = "jobserver"

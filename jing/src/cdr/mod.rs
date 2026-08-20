@@ -1,6 +1,6 @@
 use super::customtable::{Ctable};
 use structopt::StructOpt;
-use fs_lib::cdr;
+use jlib::cdr;
 
 #[derive(StructOpt)]
 #[derive(Debug)]

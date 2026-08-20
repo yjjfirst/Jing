@@ -1,7 +1,7 @@
 use std::io::Write;
 use xml::writer::{EventWriter};
 use crate::fs::xml_utils::action;
-use fs_lib::feature_code::FeatureCode;
+use jlib::feature_code::FeatureCode;
 
 pub struct Feature {
     pub name: String,

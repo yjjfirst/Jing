@@ -1,8 +1,8 @@
 use std::ops::Deref;
 use actix_web::{web, Responder};
 use super::Status;
-use fs_lib::route::inbound;
-use fs_lib::route::inbound_models::InboundRoute;
+use jlib::route::inbound;
+use jlib::route::inbound_models::InboundRoute;
 
 pub fn inbound_config(cfg: &mut web::ServiceConfig) {
     cfg

@@ -3,8 +3,8 @@ use actix_web::{web, Responder, cookie::Cookie, HttpResponse, HttpRequest};
 use serde::Deserialize;
 
 use super::Status;
-use fs_lib::portal_user::{authorize, get as get_portal_user};
-use fs_lib::portal_token::{get};
+use jlib::portal_user::{authorize, get as get_portal_user};
+use jlib::portal_token::{get};
 
 #[derive(Deserialize)]
 pub struct Credential {

@@ -1,5 +1,5 @@
 [package]
-name = "fs_cmd"
+name = "jing"
 version = "0.1.0"
 edition = "2021"
 
@@ -12,4 +12,4 @@ prettytable-rs = "^0.10"
 thiserror = "1.0.26"
 chrono = "0.4.19"
 util_macro = {version = "0.1.0", path = "../util_macro"}
-fs_lib = {version="0.1.0", path="../fs_lib"}
+jlib = {version="0.1.0", path="../jlib"}

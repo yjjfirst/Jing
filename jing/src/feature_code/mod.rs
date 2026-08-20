@@ -1,8 +1,8 @@
 use super::customtable::{Ctable};
 use structopt::StructOpt;
-use super::fs_lib::feature_code::{FeatureCode};
+use super::jlib::feature_code::{FeatureCode};
 use super::domain;
-use fs_lib::printable::Printable;
+use jlib::printable::Printable;
 use crate::print_table;
 
 #[derive(StructOpt)]

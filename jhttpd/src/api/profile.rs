@@ -2,9 +2,9 @@ use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
 use actix_web::{web, Responder};
 
-use fs_lib::profile;
-use fs_lib::profile::models::ProfileParam;
-use fs_lib::rt;
+use jlib::profile;
+use jlib::profile::models::ProfileParam;
+use jlib::rt;
 
 #[derive(Serialize, Deserialize)]
 pub struct Profile {

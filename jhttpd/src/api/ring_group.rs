@@ -2,8 +2,8 @@ use std::ops::Deref;
 use actix_web::{web, Responder};
 use serde::{Serialize, Deserialize};
 
-use fs_lib::ringgroup;
-use fs_lib::user;
+use jlib::ringgroup;
+use jlib::user;
 use super::Status;
 
 #[derive(Serialize, Deserialize)]
