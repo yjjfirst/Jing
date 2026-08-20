@@ -15,6 +15,7 @@ pub mod profile;
 pub mod acl;
 pub mod login;
 pub mod logout;
+pub mod system_setting;
 
 use actix_web::{web};
 use ring_group::ring_group_config;
@@ -33,6 +34,7 @@ use callcenter::cc_config;
 use profile::profile_config;
 use login::login_config;
 use logout::logout_config;
+use system_setting::system_setting_config;
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -56,6 +58,7 @@ pub fn api_config(cfg: &mut web::ServiceConfig) {
         .service(web::scope("/{domain}/callcenter").configure(cc_config))
         .service(web::scope("/{domain}/profile").configure(profile_config))
         .service(web::scope("/{domain}/acl").configure(acl::acl_config))
+        .service(web::scope("/system-setting").configure(system_setting_config))
         .service(web::scope("/domain").configure(domain_config))
         .service(web::scope("/login").configure(login_config))
         .service(web::scope("/logout").configure(logout_config));
