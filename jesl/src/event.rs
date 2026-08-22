@@ -4,24 +4,24 @@ use std::sync::mpsc;
 use std::collections::HashMap;
 use urlencoding::decode_binary;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Event {
     Request(Request, HashMap::<String, String>),
     Reply(Reply, HashMap::<String, String>),
     EventPlain(EventPlain,HashMap::<String, String>),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Request {
     Auth,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum Reply {
     Command {status: String, text: String},
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum EventPlain {
     Text
 }

@@ -2,17 +2,16 @@ use std::io::prelude::*;
 use std::thread;
 use std::net::{TcpStream};
 use std::sync::mpsc;
-use std::collections::HashMap;
 
 use super::event::*;
 use super::cmd::*;
 
 pub struct Esl {
-    password: String,
-    ipaddr: String,
-    port: String,
-    tcp_send_stream: Option<TcpStream>,
-    last_cmd: Option<Cmd>,
+    pub password: String,
+    pub ipaddr: String,
+    pub port: String,
+    pub tcp_send_stream: Option<TcpStream>,
+    pub last_cmd: Option<Cmd>,
 }
 
 impl Esl {
@@ -63,17 +62,16 @@ impl Esl {
         match self.last_cmd {
             Some(_) => println!("Command executing, please try a little later."),
             None => {
-                let msg = cmd.to_cmd_string();
+                let msg = cmd.to_string();
                 self.send_line(msg.as_bytes());
                 self.send_ending();
 
                 self.last_cmd = Some(cmd);
             }
         }
-
     }
 
-    pub fn start(&mut self) -> Result<mpsc::Receiver<Event>, std::io::Error> {
+    pub fn start(&mut self, handler: fn(&mut Esl, Event)) -> Result<mpsc::Receiver<Event>, std::io::Error> {
         let (mpsc_sender, mpsc_receiver) = mpsc::channel::<Event>();
         let url = self.ipaddr.to_string() + ":" + &self.port;
 
@@ -86,61 +84,30 @@ impl Esl {
                 });
 
                 self.tcp_send_stream = Some(stream_clone.unwrap());
+                while let Ok(event) = mpsc_receiver.recv() {
+                    match event {
+                        Event::Request(request,_) => {
+                            match request {
+                                Request::Auth => {
+                                    println!("Sending Auth...");
+                                    self.send_auth();
+                                }
+                            }
+                        },
+                        Event::Reply(_,_) => {
+                            self.last_cmd = None;
+                            handler(self, event);
+                        },
+                        Event::EventPlain(_,_) => {
+                            handler(self, event);
+                        }
+                    }
+                }
                 Ok(mpsc_receiver)
             },
+
             Err(e) => {
                 return Err(e);
-            }
-        }
-    }
-
-    fn handle_request(&mut self, request: Request) {
-        match request {
-            Request::Auth => {
-                println!("Sending Auth...");
-                self.send_auth();
-            }
-        }
-
-    }
-
-    fn handle_reply(&mut self, reply: Reply) {
-        match reply {
-            Reply::Command { status, text} => {
-                if status == "+OK" {
-                    if let Some(Cmd::Auth{..}) = self.last_cmd {
-                        println!("Auth: {} {}", status, text);
-                        self.last_cmd = None;
-                        self.enable_event();
-                    } else if let Some(Cmd::Event{..}) = self.last_cmd {
-                        println!("Event {} {}", status, text);
-                        self.last_cmd = None;
-                        self.enable_cdr();
-                    } else if let Some(Cmd::Filter{..}) = self.last_cmd {
-                        println!("Filter {} {}", status, text);
-                        self.last_cmd = None;
-                    }
-
-                } else {
-                    println!("{} {}", status, text);
-                }
-            }
-        }
-    }
-
-    pub fn handle_plain(&mut self, _content: HashMap<String, String>) {
-    }
-
-    pub fn handle_event(&mut self, event: Event) {
-        match event {
-            Event::Request (request, _content) => {
-                self.handle_request(request);
-            }
-            Event::Reply (reply, _content) => {
-                self.handle_reply(reply);
-            }
-            Event::EventPlain(_plain, content) => {
-                self.handle_plain(content);
             }
         }
     }

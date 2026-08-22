@@ -5,7 +5,7 @@ pub enum Cmd {
 }
 
 impl Cmd {
-    pub fn to_cmd_string(&self) -> String {
+    pub fn to_string(&self) -> String {
         match self {
             Cmd::Auth { passwd } => {
                 let r = String::new();
