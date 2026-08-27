@@ -1,6 +1,5 @@
 use std::net::{TcpStream};
 use std::io::{BufReader, BufRead, Read};
-use std::sync::mpsc;
 use std::collections::HashMap;
 use urlencoding::decode_binary;
 
@@ -35,7 +34,7 @@ const REQUEST: &str = "request";
 const REPLY: &str = "reply";
 const EVENT_PLAIN: &str = "event-plain";
 
-pub fn recv(stream: TcpStream, sender: mpsc::Sender<Event>) {    
+pub fn recv(stream: TcpStream, sender: crossbeam_channel::Sender<Event>) {    
     let mut reader = BufReader::new(stream);
     let mut lines: Vec<String> =Vec::new();
 

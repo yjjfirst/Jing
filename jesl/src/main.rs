@@ -2,9 +2,13 @@ mod esl;
 mod event;
 mod cmd;
 
+use std::thread;
 use std::collections::HashMap;
+use std::io;
+use crossbeam_channel::{bounded};
 
-use esl::{ Esl };
+use esl::{ Esl, enable_event, enable_cdr };
+use cmd::{ Cmd };
 use event::{ Event,Request,Reply };
 
 pub fn handle_request(_esl: &mut Esl, _req: Request) {
@@ -37,11 +41,31 @@ pub fn handle_event(esl: &mut Esl, event: Event) {
 }
 
 fn main() {
+    let (cmd_s, cmd_r) = bounded::<Cmd>(1);
+
     let mut esl = Esl::new("127.0.0.1".to_string(),
         "8021".to_string(),
-        "ClueCon".to_string());
+        "ClueCon".to_string(), cmd_r);
 
-    esl
-        .start(handle_event)
-        .expect("Error connect to FreeSwitch");
+
+    thread::spawn(move || {
+        esl
+            .start(handle_event)
+            .expect("Error connect to FreeSwitch");
+
+    });
+
+    loop {
+        let mut input = String::new();        
+
+        io::stdin()
+            .read_line(&mut input)
+            .expect("Failed to read input");
+
+        if input.trim() == "enable event" {
+            enable_event(&cmd_s);
+        } else if input.trim() == "enable cdr" {
+            enable_cdr(&cmd_s);
+        }
+    }
 }

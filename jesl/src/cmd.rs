@@ -1,3 +1,4 @@
+#[derive(Debug)]
 pub enum Cmd {
     Auth {passwd: String},
     Event {format: String, event_type: String},
