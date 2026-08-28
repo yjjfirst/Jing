@@ -1,8 +1,16 @@
 #[derive(Debug)]
 pub enum Cmd {
-    Auth {passwd: String},
-    Event {format: String, event_type: String},
-    Filter {event_name: String},
+    Auth {
+        passwd: String
+    },
+    Event {
+        format: String, 
+        name: String,
+        subclass: Option<String>
+    },
+    Filter {
+        event_name: String
+    },
 }
 
 impl Cmd {
@@ -15,11 +23,15 @@ impl Cmd {
                 result
             }
 
-            Cmd::Event { format, event_type } => {
+            Cmd::Event { format, name, subclass } => {
                 let r = String::new();
-                let result = r + "event " + format + " " + event_type;
+                let mut cmd_string = r + "event " + format + " " + name;
 
-                result
+                if let Some(sub) = subclass {
+                    cmd_string = cmd_string + " " + sub;
+                }
+
+                cmd_string
             }
 
             Cmd::Filter { event_name } => {

@@ -13,27 +13,34 @@ pub struct Esl {
     pub port: String,
     pub tcp_send_stream: Option<TcpStream>,
     pub cmd_r: Receiver<Cmd>,
+    pub event_s: Sender<Event>,
     pub waiting_reply: bool,
 }
 
-pub fn enable_event(cmd_s: &Sender<Cmd>) {
-    let cmd = Cmd::Event { format: String::from("plain"), event_type: String::from("ALL")};
+pub fn enable_event (cmd_s: &Sender<Cmd>, name: &str, subclass: Option<&str>) {
+    let cmd = Cmd::Event { 
+        format: String::from("plain"), 
+        name: name.to_string(), 
+        subclass: subclass.map(String::from)
+    };
+
     cmd_s.send(cmd).unwrap();
 }
 
-pub fn enable_cdr(cmd_s: &Sender<Cmd>) {
+pub fn _enable_cdr(cmd_s: &Sender<Cmd>) {
     let cmd = Cmd::Filter {event_name: String::from("CHANNEL_HANGUP_COMPLETE")};
     cmd_s.send(cmd).unwrap();
 }
 
 impl Esl {
-    pub fn new(ipaddr: String, port:String, password: String, cmd_r: Receiver<Cmd>) -> Esl {
+    pub fn new(ipaddr: String, port:String, password: String, cmd_r: Receiver<Cmd>, event_s: Sender<Event>) -> Esl {
         Esl {
             password,
             ipaddr,
             port,
             tcp_send_stream: None,
             cmd_r,
+            event_s,
             waiting_reply: false,
         }
     }
@@ -63,11 +70,12 @@ impl Esl {
 
     pub fn send(&mut self, cmd: Cmd) {
         let msg = cmd.to_string();
+        self.waiting_reply = true;
         self.send_line(msg.as_bytes());
         self.send_ending();
     }
 
-    pub fn start(&mut self, handler: fn(&mut Esl, Event)) -> Result<crossbeam_channel::Receiver<Event>, std::io::Error> {
+    pub fn start(&mut self) -> Result<crossbeam_channel::Receiver<Event>, std::io::Error> {
         let (event_sender, event_receiver) = crossbeam_channel::bounded(1);
         let url = self.ipaddr.to_string() + ":" + &self.port;
 
@@ -99,20 +107,22 @@ impl Esl {
                                 },
                                 Event::Reply(_,_) => {
                                     self.waiting_reply = false;
-                                    handler(self, event);
+                                    self.event_s.send(event).unwrap();
                                 },
                                 Event::EventPlain(_,_) => {
-                                    handler(self, event);
+                                    self.event_s.send(event).unwrap();
                                 }
                             }
                         }
-                    } else if ready_id == cmd_id {
+                    }
+                    
+                    if ready_id == cmd_id {
                         if self.waiting_reply == false {
                             if let Ok(cmd) = self.cmd_r.try_recv() {
-                                self.waiting_reply = true;
                                 self.send(cmd);                        
                             }
                         } else {
+                            println!("waiting");
                             thread::sleep(Duration::from_micros(100));
                         }
                     }

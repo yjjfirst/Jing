@@ -46,8 +46,6 @@ pub fn recv(stream: TcpStream, sender: crossbeam_channel::Sender<Event>) {
                 lines.push(buff.trim().to_string());
                 if line_len == 1 {
                     let headers = parse_headers(&lines);
-                    println!("{:?}", headers);
-                    
                     let content_len = headers
                         .get("Content-Length");
                     
@@ -128,7 +126,6 @@ fn parse_event(headers: HashMap<String, String>, content: String) -> Result<Even
     let mut content_map: HashMap<String, String> = HashMap::new();
 
     if content.len() > 0 {
-        println!("{}", content);
         let c = content.lines().map(String::from).collect();
         content_map = parse_headers(&c);        
     }
