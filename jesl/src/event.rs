@@ -103,11 +103,11 @@ fn parse_content_type(content: &str) -> (&str, &str){
 fn parse_headers(lines: &Vec<String>) -> HashMap<String, String> {
     let mut headers: HashMap<String, String>  = HashMap::new(); 
     
-    for l in lines {        
-        let h = parse_header(l);
-        if h.len() >= 2 {
-            headers.insert(String::from(h[0].trim()),
-                           String::from(h[1].trim()));
+    for line in lines {        
+        let header = parse_header(line);
+        if header.len() >= 2 {
+            headers.insert(String::from(header[0].trim()),
+                           String::from(header[1].trim()));
         }
     }
 
@@ -115,9 +115,14 @@ fn parse_headers(lines: &Vec<String>) -> HashMap<String, String> {
 }
 
 fn parse_header(line: &str) -> Vec<&str> {
-    let header: Vec<&str> = line.split(COLON).collect();
-
-    header
+    match line.split_once(COLON) {
+        Some((name, value)) => {
+            vec![name, value]
+        },
+        None => {
+            vec![]
+        }
+    }
 }
 
 

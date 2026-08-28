@@ -64,9 +64,8 @@ fn main() {
         esl
             .start()
             .expect("Error connect to FreeSwitch");
-        });
+    });
     
-
     let std_r = spawn_stdin_channel();
     
     loop {
