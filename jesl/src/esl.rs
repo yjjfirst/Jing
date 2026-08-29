@@ -17,7 +17,7 @@ pub struct Esl {
     pub waiting_reply: bool,
 }
 
-pub fn enable_event (cmd_s: &Sender<Cmd>, name: &str, subclass: Option<&str>) {
+pub fn event (cmd_s: &Sender<Cmd>, name: &str, subclass: Option<&str>) {
     let cmd = Cmd::Event { 
         format: String::from("plain"), 
         name: name.to_string(), 
@@ -27,8 +27,8 @@ pub fn enable_event (cmd_s: &Sender<Cmd>, name: &str, subclass: Option<&str>) {
     cmd_s.send(cmd).unwrap();
 }
 
-pub fn _enable_cdr(cmd_s: &Sender<Cmd>) {
-    let cmd = Cmd::Filter {event_name: String::from("CHANNEL_HANGUP_COMPLETE")};
+pub fn filter(cmd_s: &Sender<Cmd>, event_name: &str) {
+    let cmd = Cmd::Filter {event_name: event_name.to_string()};
     cmd_s.send(cmd).unwrap();
 }
 
@@ -123,7 +123,7 @@ impl Esl {
                             }
                         } else {
                             println!("waiting");
-                            thread::sleep(Duration::from_micros(100));
+                            thread::sleep(Duration::from_millis(100));
                         }
                     }
                 }

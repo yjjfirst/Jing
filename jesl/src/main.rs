@@ -9,7 +9,7 @@ use std::io;
 use std::io::{BufRead};
 use crossbeam_channel::{bounded, unbounded, Sender, Receiver, select, tick};
 
-use esl::{ Esl, enable_event};
+use esl::{ Esl, event, filter};
 use cmd::{ Cmd };
 use event::{ Event,Request,Reply };
 
@@ -22,9 +22,10 @@ fn handle_reply(cmd_s: &Sender<Cmd>, reply: Reply) {
         Reply::Command { text, status } => {
             if text == "accepted" {
                 println!("Login ESL successfully");
-                enable_event(cmd_s, 
+                event(cmd_s, 
                     "CUSTOM", 
                     Some("sofia::register_failure"));
+                filter(cmd_s, "CUSTOM");
             } else {
                 println!("{} {}", status, text);
             }
@@ -77,7 +78,6 @@ fn main() {
                 handle_event(&cmd_s, event);
             },
             recv(ticker) -> _ => {
-                println!("tick");
             }
         }
     }
