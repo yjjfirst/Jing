@@ -1,6 +1,7 @@
 mod esl;
 mod event;
 mod cmd;
+mod statis;
 
 use std::thread;
 use std::time::Duration;
@@ -33,8 +34,23 @@ fn handle_reply(cmd_s: &Sender<Cmd>, reply: Reply) {
     }
 }
 
-pub fn handle_plain(content: HashMap<String, String>) {
-    println!("{:?}", content);
+pub fn handle_plain(event_map: HashMap<String, String>) {
+    let event_name = match event_map.get("Event-Name") {
+        Some(name) => name,
+        None => ""
+    };
+
+    let subclass = match event_map.get("Event-Subclass") {
+        Some(subclass) => subclass,
+        None => ""
+    };
+
+    if event_name == "CUSTOM" && subclass == "sofia::register_failure" {
+        let from_ip = event_map.get("network-ip").unwrap();
+        statis::insert(from_ip);
+    }
+
+    println!("{:?}", event_map);
 }
 
 pub fn handle_event(cmd_s: &Sender<Cmd>, event: Event) {
@@ -78,6 +94,8 @@ fn main() {
                 handle_event(&cmd_s, event);
             },
             recv(ticker) -> _ => {
+                statis::remove_before(10);
+                statis::dump();
             }
         }
     }
