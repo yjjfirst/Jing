@@ -2,6 +2,7 @@
 
 members = [
     "jlib",
+    "jeslib",
     "jesl",
     "jhttpd",
     "jing",

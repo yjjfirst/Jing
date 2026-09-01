@@ -1,6 +1,3 @@
-mod esl;
-mod event;
-mod cmd;
 mod statis;
 
 use std::thread;
@@ -10,9 +7,9 @@ use std::io;
 use std::io::{BufRead};
 use crossbeam_channel::{bounded, unbounded, Sender, Receiver, select, tick};
 
-use esl::{ Esl, event, filter};
-use cmd::{ Cmd };
-use event::{ Event,Request,Reply };
+use jeslib::esl::{ Esl, event, filter};
+use jeslib::cmd::{ Cmd };
+use jeslib::event::{ Event,Request,Reply };
 
 pub fn handle_request(req: Request) {
     println!("{:?}", req)

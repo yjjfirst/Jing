@@ -1556,7 +1556,15 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "crossbeam-channel",
- "jlib",
+ "jeslib",
+]
+
+[[package]]
+name = "jeslib"
+version = "0.1.0"
+dependencies = [
+ "chrono",
+ "crossbeam-channel",
  "urlencoding",
 ]
 

@@ -1,0 +1,12 @@
+[package]
+name = "jeslib"
+version = "0.1.0"
+authors = ["Martin Yang <yjjfirst@hotmail.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+urlencoding = "2.1.0"
+crossbeam-channel = "0.5.16"
+chrono = "0.4.45"
