@@ -1,5 +1,11 @@
 // @generated automatically by Diesel CLI.
 
+pub mod sql_types {
+    #[derive(diesel::sql_types::SqlType)]
+    #[diesel(postgres_type(name = "firewall_action"))]
+    pub struct FirewallAction;
+}
+
 diesel::table! {
     acl_lists (id) {
         id -> Int4,
@@ -40,17 +46,6 @@ diesel::table! {
         #[max_length = 128]
         name -> Varchar,
         leg_timeout -> Int4,
-    }
-}
-
-diesel::table! {
-    blocked_ips (id) {
-        id -> Int4,
-        #[max_length = 45]
-        ip_address -> Varchar,
-        #[max_length = 64]
-        reason -> Varchar,
-        created_at -> Nullable<Timestamp>,
     }
 }
 
@@ -160,6 +155,19 @@ diesel::table! {
         digits -> Varchar,
         #[max_length = 128]
         action -> Varchar,
+    }
+}
+
+diesel::table! {
+    use diesel::sql_types::*;
+    use super::sql_types::FirewallAction;
+
+    firewall (id) {
+        id -> Int4,
+        #[max_length = 45]
+        ip_address -> Varchar,
+        action -> FirewallAction,
+        created_at -> Nullable<Timestamp>,
     }
 }
 
@@ -462,7 +470,6 @@ diesel::allow_tables_to_appear_in_same_query!(
     acl_nodes,
     agent_params,
     agents,
-    blocked_ips,
     cdr,
     conference_control_details,
     conference_controls,
@@ -473,6 +480,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     extension_types,
     extensions,
     feature_codes,
+    firewall,
     gateway_param_helps,
     gateway_params,
     gateways,

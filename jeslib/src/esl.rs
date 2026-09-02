@@ -122,7 +122,6 @@ impl Esl {
                                 self.send(cmd);                        
                             }
                         } else {
-                            println!("waiting");
                             thread::sleep(Duration::from_millis(100));
                         }
                     }

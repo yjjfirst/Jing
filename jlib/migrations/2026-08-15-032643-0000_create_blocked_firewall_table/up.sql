@@ -1,7 +1,9 @@
 -- Your SQL goes here
-CREATE TABLE blocked_ips (
+CREATE TYPE firewall_action AS ENUM ('allow', 'deny');
+
+CREATE TABLE firewall (
     id SERIAL PRIMARY KEY,
     ip_address VARCHAR(45) NOT NULL,
-    reason VARCHAR(64) NOT NULL,
+    action firewall_action NOT NULL DEFAULT 'deny',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

@@ -91,7 +91,9 @@ fn main() {
                 handle_event(&cmd_s, event);
             },
             recv(ticker) -> _ => {
-                statis::remove_before(10);
+                statis::remove_older_than(10);
+                let ips = statis::get_attacker_ips();
+                block_ips(ips);
                 statis::dump();
             }
         }
@@ -118,4 +120,17 @@ fn spawn_stdin_channel() -> Receiver<String> {
     });
     
     r
+}
+
+pub fn block_ips(ips: Vec<String>) {
+    for ip in ips {
+        std::process::Command::new("ufw")
+            .arg("insert")
+            .arg("1")
+            .arg("deny")
+            .arg("from")
+            .arg(ip)
+            .output()
+            .expect("Failed to execute command");
+    }
 }

@@ -16,7 +16,7 @@ pub fn insert(ip_addr: &str) {
     })
 }
 
-pub fn remove_before(minutes: i64) {
+pub fn remove_older_than(minutes: i64) {
     GLOBAL_MAP.with(|map|{
         let mut keys_to_remove: Vec<String> = Vec::new();
         let mut borrowed = map.borrow_mut();
@@ -33,6 +33,22 @@ pub fn remove_before(minutes: i64) {
             borrowed.remove(&key);
         }
     })
+}
+
+pub fn get_attacker_ips() -> Vec<String> {
+    let mut attackers: Vec<String> = vec![];
+    GLOBAL_MAP.with(|map|{
+        let mut borrowed = map.borrow_mut();
+        for (ip, date_vec) in borrowed.iter_mut() {
+            if date_vec.len() > 5 {
+                date_vec.clear();
+            }
+
+            attackers.push(ip.to_string());
+        }
+    });
+    
+    attackers
 }
 
 pub fn dump() {
