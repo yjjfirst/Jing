@@ -35,7 +35,7 @@ pub fn remove_older_than(minutes: i64) {
     })
 }
 
-pub fn get_attacker_ips() -> Vec<String> {
+pub fn identify_attacker_ips() -> Vec<String> {
     let mut attackers: Vec<String> = vec![];
     GLOBAL_MAP.with(|map|{
         let mut borrowed = map.borrow_mut();

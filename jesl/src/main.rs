@@ -10,6 +10,7 @@ use crossbeam_channel::{bounded, unbounded, Sender, Receiver, select, tick};
 use jeslib::esl::{ Esl, event, filter};
 use jeslib::cmd::{ Cmd };
 use jeslib::event::{ Event,Request,Reply };
+use jlib::firewall;
 
 pub fn handle_request(req: Request) {
     println!("{:?}", req)
@@ -92,7 +93,7 @@ fn main() {
             },
             recv(ticker) -> _ => {
                 statis::remove_older_than(10);
-                let ips = statis::get_attacker_ips();
+                let ips = statis::identify_attacker_ips();
                 block_ips(ips);
                 statis::dump();
             }
@@ -124,6 +125,14 @@ fn spawn_stdin_channel() -> Receiver<String> {
 
 pub fn block_ips(ips: Vec<String>) {
     for ip in ips {
+        if let Ok(true) = firewall::exists(&ip) {
+            continue;
+        }
+        
+        if let Ok(_) =firewall::deny(&ip) {
+            println!("Blocked IP: {}", ip);
+        }
+
         std::process::Command::new("ufw")
             .arg("insert")
             .arg("1")

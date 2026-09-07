@@ -3,7 +3,7 @@ use chrono::{DateTime, Local};
 use diesel::prelude::*;
 
 use crate::db_connect;
-use crate::error::{Error, Result};
+use crate::error::{Result};
 
 #[derive(Debug, Queryable, Serialize, Deserialize, Clone)]
 #[diesel(table_name = firewall_rules)]
@@ -24,17 +24,48 @@ pub fn list() -> Result<Vec<FirewallRule>> {
     Ok(rows)
 }
 
-pub fn add(ip: &str, a: &str) -> Result<i32> {
+pub fn allow(ip: &str) -> Result<()> {
+    set(ip, "allow")
+}
+
+pub fn deny(ip: &str) -> Result<()> {
+    set(ip, "deny")
+}
+
+pub fn exists(ip: &str) -> Result<bool> {
     use crate::schema::firewall_rules::dsl::*;
 
     let mut conn = db_connect();
-    let inserted: Vec<FirewallRule> = diesel::insert_into(firewall_rules)
-        .values((ip_address.eq(ip), action.eq(a), created_at.eq(Local::now())))
-        .load(&mut conn)?;
+    let exists = firewall_rules
+        .filter(ip_address.eq(ip))
+        .first::<FirewallRule>(&mut conn)
+        .optional()?;
 
-    if let Some(first) = inserted.first() {
-        Ok(first.id)
-    } else {
-        Err(Error::Fslib("Failed to insert firewall entry".to_string()))
-    }
+    Ok(exists.is_some())
+}
+
+pub fn set(ip: &str, a: &str) -> Result<()> {
+    use crate::schema::firewall_rules::dsl::*;
+
+    let mut conn = db_connect();
+
+    let exists = firewall_rules
+        .filter(ip_address.eq(ip))
+        .first::<FirewallRule>(&mut conn)
+        .optional()?;
+    
+    match exists {
+        Some(_) => {
+            diesel::update(firewall_rules.filter(ip_address.eq(ip)))
+                .set((action.eq(a), created_at.eq(Local::now())))
+                .execute(&mut conn)?;
+        },
+        None => {
+            diesel::insert_into(firewall_rules)
+                .values((ip_address.eq(ip), action.eq(a), created_at.eq(Local::now())))
+                .load::<FirewallRule>(&mut conn)?;        
+        }
+    };
+
+    Ok(())
 }
