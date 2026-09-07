@@ -8,3 +8,4 @@ crossbeam-channel = "0.5.16"
 jeslib = {version="0.1.0", path="../jeslib"}
 jlib = {version="0.1.0", path="../jlib"}
 chrono = "0.4.45"
+ctrlc = "3.5.2"

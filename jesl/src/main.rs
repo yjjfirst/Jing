@@ -5,6 +5,8 @@ use std::time::Duration;
 use std::collections::HashMap;
 use std::io;
 use std::io::{BufRead};
+use std::sync::atomic::{AtomicBool, Ordering};
+use std::sync::Arc;
 use crossbeam_channel::{bounded, unbounded, Sender, Receiver, select, tick};
 
 use jeslib::esl::{ Esl, event, filter};
@@ -66,6 +68,8 @@ pub fn handle_event(cmd_s: &Sender<Cmd>, event: Event) {
 }
 
 fn main() {
+    let running = Arc::new(AtomicBool::new(true));
+    let r = running.clone();
     let (cmd_s, cmd_r) = bounded::<Cmd>(1);
     let (event_s, event_r) = bounded::<Event>(1);
     let ticker = tick(Duration::from_secs(1));
@@ -74,7 +78,11 @@ fn main() {
         "8021".to_string(),
         "ClueCon".to_string(), cmd_r, event_s);
 
-    
+    ctrlc::set_handler(move || {
+        println!("\nCtrl+C detected! Gracefully shutting down...");
+        r.store(false, Ordering::SeqCst);
+    }).expect("Error setting Ctrl-C handler");
+        
     thread::spawn(move || {
         esl
             .start()
@@ -83,7 +91,7 @@ fn main() {
     
     let std_r = spawn_stdin_channel();
     
-    loop {
+    while running.load(Ordering::SeqCst) {
         select! {
             recv(std_r) -> _line => {
             },
@@ -99,6 +107,9 @@ fn main() {
             }
         }
     }
+
+    println!("Shutting down...");
+
 }
 
 fn spawn_stdin_channel() -> Receiver<String> {
@@ -128,7 +139,7 @@ pub fn block_ips(ips: Vec<String>) {
         if let Ok(true) = firewall::exists(&ip) {
             continue;
         }
-        
+
         if let Ok(_) =firewall::deny(&ip) {
             println!("Blocked IP: {}", ip);
         }
