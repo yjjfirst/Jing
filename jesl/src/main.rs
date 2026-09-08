@@ -79,7 +79,6 @@ fn main() {
         "ClueCon".to_string(), cmd_r, event_s);
 
     ctrlc::set_handler(move || {
-        println!("\nCtrl+C detected! Gracefully shutting down...");
         r.store(false, Ordering::SeqCst);
     }).expect("Error setting Ctrl-C handler");
         
@@ -91,6 +90,7 @@ fn main() {
     
     let std_r = spawn_stdin_channel();
     
+    init_firewall();
     while running.load(Ordering::SeqCst) {
         select! {
             recv(std_r) -> _line => {
@@ -109,6 +109,8 @@ fn main() {
     }
 
     println!("Shutting down...");
+    clear_firewall();
+    println!("Shutdown complete.");
 
 }
 
@@ -153,4 +155,37 @@ pub fn block_ips(ips: Vec<String>) {
             .output()
             .expect("Failed to execute command");
     }
+}
+
+pub fn clear_firewall() {
+    let rules = firewall::list().unwrap();
+    for rule in rules {
+        if rule.action == "allow" {
+            continue;
+        }
+        std::process::Command::new("ufw")
+            .arg("delete")
+            .arg("deny")
+            .arg("from")
+            .arg(rule.ip_address)
+            .output()
+            .expect("Failed to execute command");
+    }
+}
+
+pub fn init_firewall() {
+    let rules = firewall::list().unwrap();
+    for rule in rules {
+        if rule.action == "allow" {
+            continue;
+        }
+        std::process::Command::new("ufw")
+            .arg("insert")
+            .arg("1")
+            .arg("deny")
+            .arg("from")
+            .arg(rule.ip_address)
+            .output()
+            .expect("Failed to execute command");  
+    }      
 }

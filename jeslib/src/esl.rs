@@ -110,7 +110,7 @@ impl Esl {
                                     self.event_s.send(event).unwrap();
                                 },
                                 Event::EventPlain(_,_) => {
-                                    self.event_s.send(event).unwrap();
+                                   let _ =self.event_s.send(event);
                                 }
                             }
                         }
