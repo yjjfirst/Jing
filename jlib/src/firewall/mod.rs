@@ -19,6 +19,7 @@ pub fn list() -> Result<Vec<FirewallRule>> {
 
     let mut conn = db_connect();
     let rows = firewall_rules
+        .order_by(id)
         .load::<FirewallRule>(&mut conn)?;
 
     Ok(rows)

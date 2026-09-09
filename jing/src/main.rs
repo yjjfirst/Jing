@@ -15,6 +15,7 @@ mod cdr;
 mod gateway;
 mod acl;
 mod system_setting;
+mod firewall;
 
 #[macro_use]
 extern crate prettytable;
@@ -107,6 +108,10 @@ enum Cli {
     System {
         #[structopt(subcommand)]
         system: system_setting::SystemSettingCli
+    },
+    Firewall {
+        #[structopt(subcommand)]
+        firewall: firewall::FirewallCli
     }
 }
 
@@ -256,6 +261,9 @@ fn main() {
         },
         Cli::System {system} => {
             system_setting::exec_system_setting_cmd(system);
+        }
+        Cli::Firewall {firewall} => {
+            firewall::exec_firewall_cmd(firewall);
         }
     }
 }
