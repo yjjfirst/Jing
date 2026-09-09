@@ -121,7 +121,13 @@ pub fn SidebarMenu() -> Html {
             route: Route::SystemSettings,
             onclick: onclick.clone(),
             selected: false,
-        }
+        },
+        SidebarMenuItemPros {
+            caption: "Firewall".to_string(),
+            route: Route::Firewall,
+            onclick: onclick.clone(),
+            selected: false,
+        },
     ];
     html! {
           <div class="flex flex-col">

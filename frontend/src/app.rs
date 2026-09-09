@@ -22,6 +22,7 @@ use crate::pages::login::Login;
 use crate::pages::acl::{AclRoute, acl_switch};
 use crate::pages::profile::{ProfileRoute, profile_switch};
 use crate::pages::system_settings::{SystemSettingsRoute, system_settings_switch};
+use crate::pages::firewall::{FirewallRoute, firewall_switch};
 use crate::components::alert::{AlertType, AlertComponent, Props as AlertProps};
 use crate::components::navbar::Navbar;
 use crate::models::domain::Domain;
@@ -87,6 +88,8 @@ pub enum Route {
     Profile,
     #[at("/system-settings")]
     SystemSettings,
+    #[at("/firewall")]
+    Firewall,
 }
 
 #[function_component(App)]
@@ -258,6 +261,9 @@ fn switch(routes: Route) -> Html {
         },
         Route::SystemSettings => html! {
             <Switch<SystemSettingsRoute> render={system_settings_switch} />
+        },
+        Route::Firewall => html! {
+            <Switch<FirewallRoute> render={firewall_switch} />
         },
     }
 }
