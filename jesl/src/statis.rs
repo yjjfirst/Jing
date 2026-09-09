@@ -41,10 +41,9 @@ pub fn identify_attacker_ips() -> Vec<String> {
         let mut borrowed = map.borrow_mut();
         for (ip, date_vec) in borrowed.iter_mut() {
             if date_vec.len() > 5 {
+                attackers.push(ip.to_string());
                 date_vec.clear();
             }
-
-            attackers.push(ip.to_string());
         }
     });
     

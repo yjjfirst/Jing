@@ -139,43 +139,24 @@ fn spawn_stdin_channel() -> Receiver<String> {
 
 pub fn block_ips(ips: Vec<String>) {
     for ip in ips {
-        if let Ok(true) = firewall::exists(&ip) {
-            continue;
-        }
-
-        if let Ok(_) =firewall::deny(&ip) {
-            println!("Blocked IP: {}", ip);
-        }
-
-        std::process::Command::new("ufw")
-            .arg("insert")
-            .arg("1")
-            .arg("deny")
-            .arg("from")
-            .arg(ip)
-            .output()
-            .expect("Failed to execute command");
+        let _ = firewall::deny(&ip);
+        println!("Blocking IP: {}", ip);
+        block_ip(&ip);
     }
 }
 
 pub fn clear_firewall() {
-    let rules = firewall::list().unwrap();
-
     println!("Clearing firewall...");
-    
-    for rule in rules {
-        if rule.action == "allow" {
-            continue;
-        }
-        std::process::Command::new("ufw")
-            .arg("delete")
-            .arg("deny")
-            .arg("from")
-            .arg(rule.ip_address)
-            .output()
-            .expect("Failed to execute command");
-    }
+
+    std::process::Command::new("iptables")
+        .arg("-t")
+        .arg("raw")
+        .arg("-F")
+        .arg("PREROUTING")
+        .output()
+        .expect("Failed to execute command");
 }
+
 
 pub fn init_firewall() {
     let rules = firewall::list().unwrap();
@@ -185,13 +166,20 @@ pub fn init_firewall() {
         if rule.action == "allow" {
             continue;
         }
-        std::process::Command::new("ufw")
-            .arg("insert")
-            .arg("1")
-            .arg("deny")
-            .arg("from")
-            .arg(rule.ip_address)
-            .output()
-            .expect("Failed to execute command");  
+        block_ip(&rule.ip_address);
     }      
+}
+
+pub fn block_ip(ip: &str) {
+    std::process::Command::new("iptables")
+        .arg("-t")
+        .arg("raw")
+        .arg("-A")
+        .arg("PREROUTING")
+        .arg("-s")
+        .arg(ip)
+        .arg("-j")
+        .arg("DROP")
+        .output()
+        .expect("Failed to execute command");
 }
