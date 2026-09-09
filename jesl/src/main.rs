@@ -81,7 +81,9 @@ fn main() {
     ctrlc::set_handler(move || {
         r.store(false, Ordering::SeqCst);
     }).expect("Error setting Ctrl-C handler");
-        
+
+    init_firewall();
+
     thread::spawn(move || {
         esl
             .start()
@@ -90,7 +92,6 @@ fn main() {
     
     let std_r = spawn_stdin_channel();
     
-    init_firewall();
     while running.load(Ordering::SeqCst) {
         select! {
             recv(std_r) -> _line => {
@@ -159,6 +160,9 @@ pub fn block_ips(ips: Vec<String>) {
 
 pub fn clear_firewall() {
     let rules = firewall::list().unwrap();
+
+    println!("Clearing firewall...");
+    
     for rule in rules {
         if rule.action == "allow" {
             continue;
@@ -175,6 +179,8 @@ pub fn clear_firewall() {
 
 pub fn init_firewall() {
     let rules = firewall::list().unwrap();
+
+    println!("Initializing firewall...");
     for rule in rules {
         if rule.action == "allow" {
             continue;
