@@ -1,4 +1,5 @@
-default: install
+default: 
+	trunk build
 
 install:
 	trunk build
