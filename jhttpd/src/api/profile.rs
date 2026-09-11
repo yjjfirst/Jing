@@ -4,7 +4,7 @@ use actix_web::{web, Responder};
 
 use jlib::profile;
 use jlib::profile::models::ProfileParam;
-use jlib::rt;
+use jlib::fs;
 
 #[derive(Serialize, Deserialize)]
 pub struct Profile {
@@ -62,6 +62,6 @@ async fn post(path: web::Path<(i32,i32)>, prof: web::Json<Profile>) -> impl Resp
         profile::set_profile_param(param.id, &name, &param.value).unwrap();
     }
 
-    rt::reload_mod("mod_sofia");
+    fs::reload_mod("mod_sofia");
     web::Json(profile)
 }

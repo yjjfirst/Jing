@@ -5,7 +5,7 @@ use diesel::prelude::*;
 use crate::db_connect;
 use crate::schema::domains;
 use crate::error::{Result, Error};
-use crate::rt::{is_var, eval};
+use crate::fs::{is_var, eval};
 
 pub fn add_domain(domain_name: &str) -> Result<()>{
     let mut conn = db_connect();

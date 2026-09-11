@@ -9,13 +9,13 @@ use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
 use crate::schema::sound_files;
-use crate::rt;
+use crate::fs;
 use crate::error::{Result, Error};
 
 pub fn import(domain_id: i32, path: String) -> Result<()> {
     let mut conn = db_connect();
     let parts: Vec<&str> = path.split('/').collect();
-    let sound_dir = rt::eval("$${sounds_dir}");
+    let sound_dir = fs::eval("$${sounds_dir}");
     let full_path = format!("{}/en/us/callie/{}/8000/{}", sound_dir, parts[0], parts[1]);
 
     if !Path::new(&full_path).exists() {
@@ -118,7 +118,7 @@ fn make_tmp_name() -> String {
 
 fn install_file(path: &str, name: &str) -> Result<()> {
     let tmp_file = make_tmp_name();
-    let sound_dir = rt::eval("$${sounds_dir}");
+    let sound_dir = fs::eval("$${sounds_dir}");
     let target_path = format!("{}/en/us/callie/{}", sound_dir, name);
 
     let mut status = Command::new("mpg123")
