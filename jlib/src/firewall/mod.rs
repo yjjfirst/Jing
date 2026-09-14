@@ -1,3 +1,5 @@
+pub mod iptables;
+
 use serde::{Serialize, Deserialize};
 use chrono::{DateTime, Local};
 use diesel::prelude::*;
@@ -33,35 +35,55 @@ pub fn deny(ip: &str) -> Result<()> {
     set(ip, "deny")
 }
 
-pub fn exists(ip: &str) -> Result<bool> {
+pub fn toggle(rule_id: i32) -> Result<()> {
+    use crate::schema::firewall_rules::dsl::*;
+
+    let mut conn = db_connect();
+    let rule = firewall_rules
+        .filter(id.eq(rule_id))
+        .first::<FirewallRule>(&mut conn)?;
+
+    let new_action = if rule.action == "allow" {
+        "deny"
+    } else {
+        "allow"
+    };
+
+    if new_action == "allow" {
+        iptables::allow_ip(&rule.ip_address);
+    } else {
+        iptables::deny_ip(&rule.ip_address);
+    }
+
+    diesel::update(firewall_rules.filter(id.eq(rule_id)))
+        .set(action.eq(new_action))
+        .execute(&mut conn)?;
+
+    Ok(())
+}
+
+pub fn get_by_ip(ip: &str) -> Result<FirewallRule> {
     use crate::schema::firewall_rules::dsl::*;
 
     let mut conn = db_connect();
     let exists = firewall_rules
         .filter(ip_address.eq(ip))
-        .first::<FirewallRule>(&mut conn)
-        .optional()?;
+        .first::<FirewallRule>(&mut conn)?;
 
-    Ok(exists.is_some())
+    Ok(exists)
 }
 
 pub fn set(ip: &str, a: &str) -> Result<()> {
     use crate::schema::firewall_rules::dsl::*;
 
-    let mut conn = db_connect();
-
-    let exists = firewall_rules
-        .filter(ip_address.eq(ip))
-        .first::<FirewallRule>(&mut conn)
-        .optional()?;
-    
-    match exists {
-        Some(_) => {
+    let mut conn = db_connect();    
+    match get_by_ip(ip) {
+        Ok(_) => {
             diesel::update(firewall_rules.filter(ip_address.eq(ip)))
                 .set((action.eq(a), created_at.eq(Local::now())))
                 .execute(&mut conn)?;
         },
-        None => {
+        Err(_) => {
             diesel::insert_into(firewall_rules)
                 .values((ip_address.eq(ip), action.eq(a), created_at.eq(Local::now())))
                 .load::<FirewallRule>(&mut conn)?;        

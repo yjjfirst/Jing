@@ -60,8 +60,8 @@ pub fn api_config(cfg: &mut web::ServiceConfig) {
         .service(web::scope("/{domain}/callcenter").configure(cc_config))
         .service(web::scope("/{domain}/profile").configure(profile_config))
         .service(web::scope("/{domain}/acl").configure(acl::acl_config))
+        .service(web::scope("/{domain}/firewall").configure(firewall_config))
         .service(web::scope("/system-setting").configure(system_setting_config))
-        .service(web::scope("/firewall").configure(firewall_config))
         .service(web::scope("/domain").configure(domain_config))
         .service(web::scope("/login").configure(login_config))
         .service(web::scope("/logout").configure(logout_config));

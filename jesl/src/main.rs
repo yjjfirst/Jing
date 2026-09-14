@@ -12,7 +12,7 @@ use crossbeam_channel::{bounded, unbounded, Sender, Receiver, select, tick};
 use jeslib::esl::{ Esl, event, filter};
 use jeslib::cmd::{ Cmd };
 use jeslib::event::{ Event,Request,Reply };
-use jlib::firewall;
+use jlib::firewall::{iptables, self};
 
 pub fn handle_request(req: Request) {
     println!("{:?}", req)
@@ -82,7 +82,7 @@ fn main() {
         r.store(false, Ordering::SeqCst);
     }).expect("Error setting Ctrl-C handler");
 
-    init_firewall();
+    iptables::init();
 
     thread::spawn(move || {
         esl
@@ -110,7 +110,7 @@ fn main() {
     }
 
     println!("Shutting down...");
-    clear_firewall();
+    iptables::clear();
     println!("Shutdown complete.");
 
 }
@@ -141,45 +141,7 @@ pub fn block_ips(ips: Vec<String>) {
     for ip in ips {
         let _ = firewall::deny(&ip);
         println!("Blocking IP: {}", ip);
-        block_ip(&ip);
+        iptables::deny_ip(&ip);
     }
 }
 
-pub fn clear_firewall() {
-    println!("Clearing firewall...");
-
-    std::process::Command::new("iptables")
-        .arg("-t")
-        .arg("raw")
-        .arg("-F")
-        .arg("PREROUTING")
-        .output()
-        .expect("Failed to execute command");
-}
-
-
-pub fn init_firewall() {
-    let rules = firewall::list().unwrap();
-
-    println!("Initializing firewall...");
-    for rule in rules {
-        if rule.action == "allow" {
-            continue;
-        }
-        block_ip(&rule.ip_address);
-    }      
-}
-
-pub fn block_ip(ip: &str) {
-    std::process::Command::new("iptables")
-        .arg("-t")
-        .arg("raw")
-        .arg("-A")
-        .arg("PREROUTING")
-        .arg("-s")
-        .arg(ip)
-        .arg("-j")
-        .arg("DROP")
-        .output()
-        .expect("Failed to execute command");
-}
