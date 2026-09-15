@@ -55,9 +55,7 @@ pub fn toggle(rule_id: i32) -> Result<()> {
         iptables::deny_ip(&rule.ip_address);
     }
 
-    diesel::update(firewall_rules.filter(id.eq(rule_id)))
-        .set(action.eq(new_action))
-        .execute(&mut conn)?;
+    set(&rule.ip_address, new_action)?;
 
     Ok(())
 }

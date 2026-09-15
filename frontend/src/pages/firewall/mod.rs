@@ -1,13 +1,11 @@
 pub mod model;
 
-use gloo_net::http::Request;
 use yew::prelude::*;
 use yew_router::prelude::*;
 use yewdux::prelude::*;
 
 use crate::components::header::Header;
 use crate::components::toggle::Toggle;
-use crate::models::API_BASE;
 use model::FirewallRule;
 use crate::models::Service;
 use crate::store::Store;
@@ -22,20 +20,18 @@ pub enum FirewallRoute {
 #[function_component]
 pub fn FirewallList() -> Html {
     let rules = use_state(Vec::<FirewallRule>::new);
-    let error = use_state(|| None::<String>);
     let (store, dispatch) = use_store::<Store>();
-    let rules_for_effect = rules.clone();
-    let error_for_effect = error.clone();
     let loc = use_location().unwrap();
 
     {
+        let rules = rules.clone();
         let store = store.clone();
         use_effect_with((), move |_| {
             let store = store.clone();
             wasm_bindgen_futures::spawn_local(async move {
                 match Service::index(loc.path(), store.selected_domain_id).await {
-                    Ok(fetched_rules) => rules_for_effect.set(fetched_rules),
-                    Err(err) => {}
+                    Ok(fetched_rules) => rules.set(fetched_rules),
+                    Err(_) => {}
                 }
             });
         });
