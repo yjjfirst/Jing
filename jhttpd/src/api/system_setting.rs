@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use actix_web::{web, Responder};
 use jlib::system_setting;
 use serde::{Serialize, Deserialize};
@@ -5,6 +6,7 @@ use super::Status;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct SystemSetting {
+    pub setting_id: i32,
     pub setting_section: String,
     pub setting_key: String,
     pub setting_value: String,
@@ -19,10 +21,14 @@ pub fn system_setting_config(cfg: &mut web::ServiceConfig) {
 }
 
 async fn index() -> impl Responder {
-    match system_setting::list() {
-        Ok(settings) => web::Json(settings),
-        Err(_) => web::Json(vec![]),
-    }
+    let sections = system_setting::list_sections().unwrap(); 
+    let mut settings_map = HashMap::new();
+    for section in sections {
+        let s = system_setting::get_settings_by_section(&section).unwrap();
+        settings_map.insert(section, s);
+    };
+
+     web::Json(settings_map)
 }
 
 async fn post(body: web::Json<SystemSetting>) -> impl Responder {

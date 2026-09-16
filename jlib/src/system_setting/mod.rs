@@ -50,3 +50,28 @@ pub fn get(section: &str, key: &str) -> Result<String> {
 
     Ok(result.setting_value.clone())
 }
+
+pub fn list_sections() -> Result<Vec<String>> {
+    use crate::schema::system_settings::dsl::*;
+    let mut conn = db_connect();
+
+    let results = system_settings
+        .select(setting_section)
+        .distinct()
+        .order_by(setting_section.asc())
+        .load::<String>(&mut conn)?;
+
+    Ok(results)
+}
+
+pub fn get_settings_by_section(section: &str) -> Result<Vec<SystemSetting>> {
+    use crate::schema::system_settings::dsl::*;
+    let mut conn = db_connect();
+
+    let results = system_settings
+        .filter(setting_section.eq(section))
+        .order_by(id.asc())
+        .load::<SystemSetting>(&mut conn)?;
+
+    Ok(results)
+}
