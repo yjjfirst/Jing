@@ -43,7 +43,7 @@ pub fn SystemSettings() -> Html {
         pub struct Setting {
             pub setting_key: String,
             pub setting_value: String,
-        };
+        }
 
         let store = store.clone();
         Callback::from(move |e: SubmitEvent| {

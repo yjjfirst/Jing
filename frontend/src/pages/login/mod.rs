@@ -58,7 +58,7 @@ pub fn Login() -> Html {
 
     html! {
         <div class="relative flex flex-col justify-center h-screen overflow-hidden">
-            <div class="w-full p-6 m-auto rounded-md shadow-md ring-2 ring-gray-800/50 lg:max-w-lg">
+            <div class="w-full p-6 m-auto rounded-md shadow-md ring-2 ring-gray-800/50 sm:max-w-lg">
                 <h1 class="text-4xl font-semibold text-center text-gray-700">{"PBX"}</h1>
                 <form class="space-y-4" onsubmit={handle_submit}>
                     <div>

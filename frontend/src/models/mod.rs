@@ -5,6 +5,10 @@ use gloo_net::http::Request;
 use gloo_net::Error;
 use serde::{Serialize, de::DeserializeOwned, Deserialize};
 use web_sys::FormData;
+use yewdux::prelude::*;
+
+use crate::store::{Store};
+
 #[derive(Serialize, Deserialize)]
 pub struct EmptyJson{
 
@@ -34,10 +38,17 @@ impl Service {
     }
 
     pub async fn index<T: Serialize + DeserializeOwned>(path: &str,domain: usize) -> Result<Vec<T>, Error> {
+        let dispatch = Dispatch::<Store>::global();
         let endpoint = Self::endpoint(path, domain);
         let response = Request::get(&endpoint)
             .send()
             .await?;
+        
+        if response.status() == 401 {
+            dispatch.reduce_mut(|store| {
+                store.is_authenticated = false;                    
+            });
+        }
 
         response
             .json()
@@ -45,18 +56,28 @@ impl Service {
     }
 
     pub async fn get<T: Serialize + DeserializeOwned>(path: &str, domain: usize) -> Result<T, Error> {
+        let dispatch = Dispatch::<Store>::global();
         let endpoint = Self::endpoint(path, domain);
         let response = Request::get(&endpoint)
             .send()
             .await?;
 
-        response
+        if response.status() == 401 {
+            dispatch.reduce_mut(|store| {
+                store.is_authenticated = false;                    
+            });
+        }
+
+        let res = response
             .json()
-            .await
+            .await;
+
+        res
     }
 
     pub async fn post<T: Serialize + DeserializeOwned>(path: &str, domain: usize, data: T)
-    -> Result<EmptyJson, Error>{
+    -> Result<EmptyJson, Error> {
+        let dispatch = Dispatch::<Store>::global();
         let endpoint = Self::endpoint(path, domain);
         let request = Request::post(&endpoint)
             .json(&data)?;
@@ -64,6 +85,12 @@ impl Service {
         let response = request
             .send()
             .await?;
+
+        if response.status() == 401 {
+            dispatch.reduce_mut(|store| {
+                store.is_authenticated = false;                    
+            });
+        }            
 
         response
             .json()
@@ -72,12 +99,19 @@ impl Service {
 
     pub async fn patch<T: Serialize + DeserializeOwned>(path: &str, domain: usize, data: T)
     -> Result<EmptyJson, Error>{
+        let dispatch = Dispatch::<Store>::global();
         let endpoint = Self::endpoint(path, domain);
         let request = Request::patch(&endpoint)
             .json(&data)?;
         let response = request
             .send()
             .await?;
+
+        if response.status() == 401 {
+            dispatch.reduce_mut(|store| {
+                store.is_authenticated = false;                    
+            });
+        }             
 
         response
             .json()
@@ -86,6 +120,7 @@ impl Service {
 
     pub async fn post_form(path: &str, domain: usize, form_data: FormData)
     -> Result<EmptyJson, Error>{
+        let dispatch = Dispatch::<Store>::global();
         let endpoint = Self::endpoint(path, domain);
         let request = Request::post(&endpoint)
             .body(form_data)?;
@@ -94,15 +129,28 @@ impl Service {
             .send()
             .await?;
 
+        if response.status() == 401 {
+            dispatch.reduce_mut(|store| {
+                store.is_authenticated = false;                    
+            });
+        } 
+
         response
             .json()
             .await
     }
     pub async fn delete(path: &str, domain: usize) -> Result<EmptyJson, Error> {
+        let dispatch = Dispatch::<Store>::global();
         let endpoint = Self::endpoint(path, domain);
         let response = Request::delete(&endpoint)
             .send()
             .await?;
+
+        if response.status() == 401 {
+            dispatch.reduce_mut(|store| {
+                store.is_authenticated = false;                    
+            });
+        } 
 
         response
             .json()
