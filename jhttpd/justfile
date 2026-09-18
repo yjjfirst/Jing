@@ -1,0 +1,2 @@
+install:
+	cp -f ./img/logo.png /var/www/pbx/

@@ -29,6 +29,9 @@ pub fn Navbar() -> Html {
 
     html! {
         <div class="flex justify-end grow items-center ml-4 mr-4">
+            <div class="flex justify-start w-60 ml-4">
+                <img src="/logo.png" alt="PBX" class="h-8 w-12"/>
+            </div>
             <DomainComponent/>
             <div class="flex items-center">
                 <p>{store.username.clone()}</p>

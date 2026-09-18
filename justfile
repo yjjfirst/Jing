@@ -4,3 +4,4 @@ default:
 
 install:
 	just frontend/install
+	just jhttpd/install
