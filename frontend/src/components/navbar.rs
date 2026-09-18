@@ -49,7 +49,7 @@ pub fn DomainComponent() -> Html {
     let nav = use_navigator().unwrap();
 
     html!{
-        <div class="navbar bg-base-100 shadow-sm">
+        <div class="navbar bg-base-100">
             <div class="flex-1">
               	<a class="btn btn-ghost text-xl"></a>
             </div>

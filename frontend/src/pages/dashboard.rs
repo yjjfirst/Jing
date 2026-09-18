@@ -34,7 +34,7 @@ pub fn MemmoryCard() -> Html {
     });
 
     html! {
-        <div id="memory_chart"></div>
+        <div id="memory_chart"  class="m-1"></div>
     }
 }
 
@@ -70,7 +70,7 @@ pub fn CpuCard() -> Html {
     });
 
     html! {
-        <div id="cpu_chart"></div>
+        <div id="cpu_chart" class="m-1"></div>
     }
 }
 #[function_component]
@@ -105,7 +105,7 @@ pub fn DiskCard() -> Html {
     });
 
     html! {
-        <div id="disk_chart"></div>
+        <div id="disk_chart" class="m-1"></div>
     }
 }
 
@@ -143,28 +143,14 @@ pub fn CallStat() -> Html {
 pub fn Dashboard() -> Html {
     html! {
         <div>
-        <div class="flex flex-wrap">
-            <div class="w-1/3 bg-base-100 shadow-xl">
-                <div class="card-body">
-                    <MemmoryCard />
-                </div>
-            </div>
-            <div class="w-1/3 bg-base-100 shadow-xl">
-                <div class="card-body">
-                    <CpuCard />
-                </div>
-            </div>
-            <div class="w-1/3 bg-base-100 shadow-xl">
-                <div class="card-body">
-                    <DiskCard />
-                </div>
-            </div>
-        </div>
-        <div class="w-3/3 bg-base-100 shadow-xl">
-            <div class="card-body">
+            <div class="flex flex-wrap pbx-card justify-center m-2">
+                <MemmoryCard />
+                <CpuCard />
+                <DiskCard />
+            </div>        
+            <div class="flex flex-wrap pbx-card justify-center m-2">
                 <CallStat />
             </div>
-        </div>
         </div>
     }
 }

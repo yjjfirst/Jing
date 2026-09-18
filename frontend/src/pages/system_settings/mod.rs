@@ -80,7 +80,7 @@ pub fn SystemSettings() -> Html {
             <div class="divider my-1"></div>
             <form onsubmit={handle_submit.clone()}>
                 for (section, settings) in system_settings.iter() {
-                    <fieldset class="fieldset bg-base-200 border-base-300 rounded-box border p-4 text-base">
+                    <fieldset class="fieldset pbx-card">
                         <legend class="fieldset-legend">{section.clone()}</legend>
                         <div class="grid grid-cols-3 gap-1">
                             for setting in settings {
