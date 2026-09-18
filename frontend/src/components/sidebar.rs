@@ -3,6 +3,8 @@ use wasm_bindgen::JsCast;
 use web_sys::HtmlAnchorElement;
 use yew::prelude::*;
 use yew_router::prelude::*;
+use yew_icons::{Icon, IconData};
+
 
 #[derive(Clone, Properties, PartialEq)]
 pub struct SidebarMenuItemPros {
@@ -10,6 +12,7 @@ pub struct SidebarMenuItemPros {
     pub route: Route,
     pub onclick: Callback<String>,
     pub selected: bool,
+    pub icon: Option<IconData>,
 }
 
 #[function_component]
@@ -37,36 +40,42 @@ pub fn SidebarMenu() -> Html {
             route: Route::ExtensionRoot,
             onclick: onclick.clone(),
             selected: false,
+            icon: None,
         },
         SidebarMenuItemPros {
             caption: "Ring Group".to_string(),
             route: Route::RingGroupsRoot,
             onclick: onclick.clone(),
             selected: false,
+            icon: None,
         },
         SidebarMenuItemPros {
             caption: "Sound".to_string(),
             route: Route::SoundRoot,
             onclick: onclick.clone(),
             selected: false,
+            icon: None,
         },
         SidebarMenuItemPros {
             caption: "Conference".to_string(),
             route: Route::ConferenceRoot,
             onclick: onclick.clone(),
             selected: false,
+            icon: None,
         },
         SidebarMenuItemPros {
             caption: "IVR".to_string(),
             route: Route::IvrRoot,
             onclick: onclick.clone(),
             selected: false,
+            icon: None,
         },
         SidebarMenuItemPros {
             caption: "Call Center".to_string(),
             route: Route::CallcenterRoot,
             onclick: onclick.clone(),
             selected: false,
+            icon: None,
         },
     ];
 
@@ -76,18 +85,21 @@ pub fn SidebarMenu() -> Html {
             route: Route::GatewayRoot,
             onclick: onclick.clone(),
             selected: false,
+            icon: None,
         },
         SidebarMenuItemPros {
             caption: "Outbound Route".to_string(),
             route: Route::OutboundRoot,
             onclick: onclick.clone(),
             selected: false,
+            icon: None,
         },
         SidebarMenuItemPros {
             caption: "Inbound Route".to_string(),
             route: Route::InboundRoot,
             onclick: onclick.clone(),
             selected: false,
+            icon: None,
         },
     ];
 
@@ -96,6 +108,7 @@ pub fn SidebarMenu() -> Html {
         route: Route::Cdr,
         onclick: onclick.clone(),
         selected: false,
+        icon: None,
     }];
     let sys_items = vec![
         SidebarMenuItemPros {
@@ -103,30 +116,35 @@ pub fn SidebarMenu() -> Html {
             route: Route::AclRoot,
             onclick: onclick.clone(),
             selected: false,
+            icon: None,
         },
         SidebarMenuItemPros {
             caption: "SIP Profile".to_string(),
             route: Route::ProfileRoot,
             onclick: onclick.clone(),
             selected: false,
+            icon: None,
         },
         SidebarMenuItemPros {
             caption: "Sound File".to_string(),
             route: Route::SoundFileRoot,
             onclick: onclick.clone(),
             selected: false,
+            icon: None,
         },
         SidebarMenuItemPros {
             caption: "System Settings".to_string(),
             route: Route::SystemSettings,
             onclick: onclick.clone(),
             selected: false,
+            icon: None,
         },
         SidebarMenuItemPros {
             caption: "Firewall".to_string(),
             route: Route::Firewall,
             onclick: onclick.clone(),
             selected: false,
+            icon: None,
         },
     ];
     html! {
@@ -136,11 +154,12 @@ pub fn SidebarMenu() -> Html {
                 route={Route::Dashboard}
                 caption={"Dashboard"}
                 onclick={onclick.clone()}
-                selected = {*selected == "Dashboard"}>
+                selected = {*selected == "Dashboard"}
+                icon={Some(IconData::LUCIDE_PIE_CHART)}>
             </SidebarMenuItem>
             <li>
             <details>
-              <summary>{"Applications"}</summary>
+              <summary><Icon data={IconData::LUCIDE_PHONE}/>{"Applications"}</summary>
               <ul>
               {app_items.iter().map(|i|{
                   html! {
@@ -148,7 +167,9 @@ pub fn SidebarMenu() -> Html {
                           route={i.route.clone()}
                           caption={i.caption.clone()}
                           onclick={i.onclick.clone()}
-                          selected = {*selected == i.caption.clone()}>
+                          selected = {*selected == i.caption.clone()}
+                          icon ={i.icon.clone()}
+                          >
                       </SidebarMenuItem>
                   }
               }).collect::<Vec<Html>>()}
@@ -157,7 +178,7 @@ pub fn SidebarMenu() -> Html {
           </li>
           <li>
           <details>
-            <summary>{"Connection"}</summary>
+            <summary><Icon data={IconData::LUCIDE_ARROW_UP_DOWN}/>{"Connection"}</summary>
             <ul>
             {conn_items.iter().map(|i|{
               html! {
@@ -165,7 +186,8 @@ pub fn SidebarMenu() -> Html {
                       route={i.route.clone()}
                       caption={i.caption.clone()}
                       onclick={i.onclick.clone()}
-                      selected = {*selected == i.caption.clone()}>
+                      selected = {*selected == i.caption.clone()}
+                      icon = {i.icon.clone()}>
                   </SidebarMenuItem>
               }
           }).collect::<Vec<Html>>()}
@@ -175,7 +197,7 @@ pub fn SidebarMenu() -> Html {
         </li>
       <li>
       <details>
-        <summary>{"System"}</summary>
+        <summary><Icon data={IconData::LUCIDE_SETTINGS}/>{"System"}</summary>
         <ul>
         {sys_items.iter().map(|i|{
             html! {
@@ -183,7 +205,8 @@ pub fn SidebarMenu() -> Html {
                     route={i.route.clone()}
                     caption={i.caption.clone()}
                     onclick={i.onclick.clone()}
-                    selected = {*selected == i.caption.clone()}>
+                    selected = {*selected == i.caption.clone()}
+                    icon ={i.icon.clone()}>
                 </SidebarMenuItem>
             }
         }).collect::<Vec<Html>>()}
@@ -192,7 +215,7 @@ pub fn SidebarMenu() -> Html {
       </li>
         <li>
         <details>
-          <summary>{"Reports"}</summary>
+          <summary><Icon data={IconData::LUCIDE_FILE_TEXT}/>{"Reports"}</summary>
           <ul>
           {report_items.iter().map(|i|{
               html! {
@@ -200,7 +223,8 @@ pub fn SidebarMenu() -> Html {
                       route={i.route.clone()}
                       caption={i.caption.clone()}
                       onclick={i.onclick.clone()}
-                      selected = {*selected == i.caption.clone()}>
+                      selected = {*selected == i.caption.clone()}
+                      icon ={i.icon.clone()}>
                   </SidebarMenuItem>
               }
           }).collect::<Vec<Html>>()}
@@ -232,6 +256,9 @@ pub fn SidebarMenuItem(props: &SidebarMenuItemPros) -> Html {
     html! {
         <li>
             <a {onclick} class={classes!(classes)} rel={props.caption.clone()}>
+                if let Some(icon_data) = &props.icon {
+                    <Icon data={icon_data.clone()}/>
+                }
                 { props.caption.clone() }
             </a>
         </li>
