@@ -1,6 +1,4 @@
 use crate::app::Route;
-use wasm_bindgen::JsCast;
-use web_sys::HtmlAnchorElement;
 use yew::prelude::*;
 use yew_router::prelude::*;
 use yew_icons::{Icon, IconData};
@@ -242,20 +240,14 @@ pub fn SidebarMenuItem(props: &SidebarMenuItemPros) -> Html {
     let props_onclick = props.onclick.clone();
     let p = props.clone();
 
-    let onclick = Callback::from(move |e: MouseEvent| {
-        let a: HtmlAnchorElement = e.target().unwrap().dyn_into::<HtmlAnchorElement>().unwrap();
-        props_onclick.emit(a.rel().to_string());
+    let onclick = Callback::from(move |_: MouseEvent| {
+        props_onclick.emit(p.caption.clone());
         nav.push(&p.route);
     });
 
-    let mut classes = vec![""];
-    if props.selected {
-        classes.push("active");
-    }
-
     html! {
         <li>
-            <a {onclick} class={classes!(classes)} rel={props.caption.clone()}>
+            <a {onclick} class={ if props.selected {"menu-active"} else {""}}>
                 if let Some(icon_data) = &props.icon {
                     <Icon data={icon_data.clone()}/>
                 }
