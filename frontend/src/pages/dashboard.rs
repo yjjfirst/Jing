@@ -1,4 +1,5 @@
 use yew::prelude::*;
+use yew_hooks::use_interval;
 use serde::{Deserialize, Serialize};
 use wasm_bindgen_futures::spawn_local;
 use crate::models::Service;
@@ -115,19 +116,49 @@ pub fn DiskCard() -> Html {
             Ok(())
         }
     });
-    
-    use_effect_with((), move |_| {
-        spawn_local( async move {
-            let disk_info: DiskInfo = Service::get("/system-info/disk", store.selected_domain_id)
-                .await
-                .unwrap();
+    {
+        let used = used.clone();
+        let free = free.clone();
+        let f = f.clone();
+        let store = store.clone();
+        use_effect_with((), move |_| {
+            let used = used.clone();
+            let free = free.clone();
+            let f = f.clone();
+            let store = store.clone();
+            spawn_local( async move {
+                let disk_info: DiskInfo = Service::get("/system-info/disk", store.selected_domain_id)
+                    .await
+                    .unwrap();
 
-            used.set(disk_info.used);
-            free.set(disk_info.free);
-            f.run();
+                used.set(disk_info.used);
+                free.set(disk_info.free);
+                f.run();
+            });
         });
-    });
+    }
+    
+    {
+        let used = used.clone();
+        let free = free.clone();
+        let f = f.clone();
+        let store = store.clone();
+        use_interval(move || {
+            let used = used.clone();
+            let free = free.clone();
+            let f = f.clone();
+            let store = store.clone();
+            spawn_local( async move {
+                let disk_info: DiskInfo = Service::get("/system-info/disk", store.selected_domain_id)
+                    .await
+                    .unwrap();
 
+                used.set(disk_info.used);
+                free.set(disk_info.free);
+                f.run();
+            });        
+        }, 120*1000);
+    }
     html! {
         <div id="disk_chart" class="m-1"></div>
     }
