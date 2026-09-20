@@ -22,24 +22,21 @@ async fn get_disk_info() -> impl Responder {
     let used = ( disk_info.total - disk_info.free ) / 1000000;
     let free_space = disk_info.free / 1000000;
 
-    println!("Disk info: {:?}", disk_info);
     web::Json(json!({"used": used, "free": free_space}))
 }
 
 async fn get_loading_info() -> impl Responder {
     let loading = loadavg().unwrap();
-    
-    println!("Loading: {:?}", loading);
+
     web::Json(json!({"one": loading.one}))
 }
 
 async fn get_memory_info() -> impl Responder {
     let mem = mem_info().unwrap();
 
-    println!("Memory: {:?}", mem);
     web::Json(json!({
-        "free": mem.free, 
-        "buffers": mem.buffers,
-        "cached": mem.cached,
+        "free": mem.free,
+        "used": mem.total - mem.free,
+        "avail": mem.avail,
     }))
 }

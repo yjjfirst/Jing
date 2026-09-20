@@ -13,11 +13,11 @@ pub fn MemmoryCard() -> Html {
     #[derive(Serialize, Deserialize, Clone)]
     pub struct MemInfo {
         pub free: f64,
-        pub buffers: f64,
-        pub cached: f64
+        pub used: f64,
+        pub avail: f64,
     }
     let mem_info = use_state(||MemInfo{
-        free: 0.0, buffers: 0.0, cached: 0.0
+        free: 0.0, used: 0.0, avail: 0.0
     });
     let (store,_) = use_store::<Store>();
     let f = yew_hooks::use_async::<_, _, ()>({
@@ -34,9 +34,9 @@ pub fn MemmoryCard() -> Html {
                 .radius(vec![30, 80])
                 .item_style(ItemStyle::new().border_radius(8))
                 .data(df![
-                    (((*mem_info).buffers/1000.0).trunc(), "Buffers"),
+                    (((*mem_info).used/1000.0).trunc(), "Used"),
                     (((*mem_info).free/1000.0).trunc(), "Free"),
-                    (((*mem_info).cached/1000.0).trunc(), "Cached"),
+                    (((*mem_info).avail/1000.0).trunc(), "Avail"),
                 ]),
         );
 
