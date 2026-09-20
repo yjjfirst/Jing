@@ -1,4 +1,4 @@
-use sys_info::{disk_info};
+use sys_info::{disk_info, loadavg, mem_info};
 use actix_web::{web, Responder};
 use serde_json::json;
 
@@ -6,7 +6,13 @@ pub fn system_info_config(cfg: &mut web::ServiceConfig) {
     cfg
         .service(
             web::resource("disk")
-                .route(web::get().to(get_disk_info))
+                .route(web::get().to(get_disk_info)))
+        .service(
+            web::resource("loading")
+                .route(web::get().to(get_loading_info)))
+        .service(
+            web::resource("memory")
+                .route(web::get().to(get_memory_info))
         );
 }
 
@@ -18,4 +24,22 @@ async fn get_disk_info() -> impl Responder {
 
     println!("Disk info: {:?}", disk_info);
     web::Json(json!({"used": used, "free": free_space}))
+}
+
+async fn get_loading_info() -> impl Responder {
+    let loading = loadavg().unwrap();
+    
+    println!("Loading: {:?}", loading);
+    web::Json(json!({"one": loading.one}))
+}
+
+async fn get_memory_info() -> impl Responder {
+    let mem = mem_info().unwrap();
+
+    println!("Memory: {:?}", mem);
+    web::Json(json!({
+        "free": mem.free, 
+        "buffers": mem.buffers,
+        "cached": mem.cached,
+    }))
 }

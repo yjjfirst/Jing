@@ -6,16 +6,15 @@ use crate::models::Service;
 use yewdux::prelude::*;
 use crate::store::{Store};
 
-use charming::{component::{Legend, Title}, df, element::{ItemStyle, Label, Tooltip},series::Pie, Chart, WasmRenderer};
+use charming::{component::{Title}, df, element::{ItemStyle, Label, Tooltip},series::Pie, Chart, WasmRenderer};
 use charming::{component::Axis, element::AxisType, series::Bar};
 #[function_component]
 pub fn MemmoryCard() -> Html {
     let f = yew_hooks::use_async::<_, _, ()>({
         let chart = Chart::new()
         .title(Title::new().text("Memory"))
-        .legend(Legend::new().top("bottom"))
         .series(
-            Pie::new()                
+            Pie::new()
                 .name("Memory Chart")
                 .label(Label::new().show(false))
                 .radius(vec![30, 80])
@@ -27,13 +26,13 @@ pub fn MemmoryCard() -> Html {
         );
 
         let renderer = WasmRenderer::new(250, 250);
-        
+
         async move {
             renderer.render("memory_chart", &chart).unwrap();
             Ok(())
         }
     });
-    
+
     use_effect_with((), move |_| {
         f.run();
         || ()
@@ -45,39 +44,76 @@ pub fn MemmoryCard() -> Html {
 }
 
 #[function_component]
-pub fn CpuCard() -> Html {
+pub fn LoadingCard() -> Html {
+    #[derive(Deserialize, Serialize)]
+    pub struct Loading {
+        pub one: f64,
+    }
+
+    let loading = use_state(||0.0);
+    let (store, _) = use_store::<Store>();
     let f = yew_hooks::use_async::<_, _, ()>({
         let chart = Chart::new()
-        .title(Title::new().text("CPU"))
-        .legend(Legend::new().top("bottom"))
+        .title(Title::new().text("Loading"))
         .tooltip(Tooltip::new())
         .series(
-            Pie::new()                
-                .name("CPU Chart")
+            Pie::new()
+                .name("Loading")
                 .radius(vec![30, 80])
                 .label(Label::new().show(false))
                 .item_style(ItemStyle::new().border_radius(8))
                 .data(df![
-                    (30.0, "Used"),
-                    (70.0, "Free"),
+                    (*loading, "Used"),
+                    (((1.0 - *loading) * 100f64).floor() / 100.0, "Free"),
                 ]),
         );
 
         let renderer = WasmRenderer::new(250, 250);
-        
+
         async move {
-            renderer.render("cpu_chart", &chart).unwrap();
+            renderer.render("loading_chart", &chart).unwrap();
             Ok(())
         }
     });
-    
-    use_effect_with((), move |_| {
-        f.run();
-        || ()
-    });
 
+    {
+        let loading = loading.clone();
+        let f = f.clone();
+        let store = store.clone();
+        use_effect_with((), move |_| {
+            let loading = loading.clone();
+            let f = f.clone();
+            let store = store.clone();
+            spawn_local( async move {
+                let loading_fetched: Loading = Service::get("/system-info/loading", store.selected_domain_id)
+                    .await
+                    .unwrap();
+                loading.set(loading_fetched.one);
+                f.run();
+            });
+        });
+    }
+
+    {
+        let loading = loading.clone();
+        let f = f.clone();
+        let store = store.clone();
+
+        use_interval(move || {
+            let loading = loading.clone();
+            let f = f.clone();
+            let store = store.clone();
+            spawn_local( async move {
+                let loading_fetched: Loading = Service::get("/system-info/loading", store.selected_domain_id)
+                    .await
+                    .unwrap();
+                loading.set(loading_fetched.one);
+                f.run();
+            });
+        }, 10 * 1000);
+    }
     html! {
-        <div id="cpu_chart" class="m-1"></div>
+        <div id="loading_chart" class="m-1"></div>
     }
 }
 #[function_component]
@@ -98,7 +134,7 @@ pub fn DiskCard() -> Html {
         .title(Title::new().text("Disk"))
         .tooltip(Tooltip::new())
         .series(
-            Pie::new()                
+            Pie::new()
                 .name("Disk")
                 .radius(vec![30, 80])
                 .label(Label::new().show(false))
@@ -110,7 +146,7 @@ pub fn DiskCard() -> Html {
         );
 
         let renderer = WasmRenderer::new(250, 250);
-        
+
         async move {
             renderer.render("disk_chart", &chart).unwrap();
             Ok(())
@@ -137,7 +173,7 @@ pub fn DiskCard() -> Html {
             });
         });
     }
-    
+
     {
         let used = used.clone();
         let free = free.clone();
@@ -156,7 +192,7 @@ pub fn DiskCard() -> Html {
                 used.set(disk_info.used);
                 free.set(disk_info.free);
                 f.run();
-            });        
+            });
         }, 120*1000);
     }
     html! {
@@ -176,20 +212,20 @@ pub fn CallStat() -> Html {
             )
             .y_axis(Axis::new().type_(AxisType::Value))
             .series(Bar::new().data(vec![150, 230, 224, 218, 135, 147, 260]));
-    
+
             let renderer = WasmRenderer::new(900, 400);
-            
+
             async move {
                 renderer.render("call_chart", &chart).unwrap();
                 Ok(())
             }
         });
-        
+
         use_effect_with((), move |_| {
             f.run();
             || ()
         });
-    
+
         html! {
             <div id="call_chart"></div>
         }
@@ -200,9 +236,9 @@ pub fn Dashboard() -> Html {
         <div>
             <div class="flex flex-wrap pbx-card justify-center m-2">
                 <MemmoryCard />
-                <CpuCard />
+                <LoadingCard />
                 <DiskCard />
-            </div>        
+            </div>
             <div class="flex flex-wrap pbx-card justify-center m-2">
                 <CallStat />
             </div>
