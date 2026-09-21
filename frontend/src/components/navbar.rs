@@ -19,10 +19,11 @@ pub fn Navbar() -> Html {
                 let req = Request::post(&url).body("").unwrap();
                 let dispatch = dispatch.clone();
                 let res = req.send().await.unwrap();
-                if res.ok() {
+                if res.ok()|| res.status() == 401 {
                     set_is_authenticated(false, dispatch.clone());
                     set_username("".to_string(), dispatch);
                 }
+
             });
         })
     };
