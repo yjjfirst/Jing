@@ -5,7 +5,10 @@ use jlib::user::{ByField};
 use jlib::user::models;
 use jlib::user::user_param::UserParam;
 use jlib::user::user_variable::UserVariable;
+use jlib::domain::{get_domain};
+use jlib::fs::sofia::{reg};
 use serde::{Serialize, Deserialize};
+
 
 use super::Status;
 #[derive(Serialize, Deserialize)]
@@ -13,8 +16,9 @@ pub struct User {
     pub id: i32,
     pub domain_id: i32,
     pub user_id: String,
-    vars: HashMap<String, UserVariable>,
-    params: HashMap<String, UserParam>,
+    pub status: HashMap<String, String>,
+    pub vars: HashMap<String, UserVariable>,
+    pub params: HashMap<String, UserParam>,
 }
 
 pub fn user_config(cfg: &mut web::ServiceConfig) {
@@ -88,20 +92,39 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
         id: user.id,
         domain_id: user.domain_id,
         user_id: user.user_id,
+        status: HashMap::new(),
         params,
         vars
     })
 }
 
 async fn index(path: web::Path<i32>) -> impl Responder {
-    let domain = path.into_inner();
-    let users = user::users_within(domain).unwrap();
+    let domain_id = path.into_inner();
+    let users = user::users_within(domain_id).unwrap();
+    let domain  = get_domain(domain_id).unwrap();
+    let users_status = reg(domain.domain_name);
 
     web::Json(users.into_iter().map(|u|{
+        let user_status = users_status.get(&u.user_id);
+        let status_map: HashMap<String, String > = match user_status {
+            Some(s) => {
+                HashMap::from([
+                    ("ip_addr".to_string(), s.ip_addr.clone()),
+                    ("agent".to_string(), s.agent.clone()),
+                    ("ping".to_string(), s.ping.clone())
+                    ])
+            },
+            None => {
+                HashMap::new()
+            }
+
+        };
+
         User {
             id: u.id,
             user_id: u.user_id,
             domain_id: u.domain_id,
+            status: status_map,
             params: HashMap::new(),
             vars: HashMap::new(),
         }

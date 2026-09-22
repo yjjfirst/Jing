@@ -1,5 +1,6 @@
 pub mod model;
 
+use std::collections::HashMap;
 use web_sys::{EventTarget, FormData, SubmitEvent, HtmlFormElement, HtmlDialogElement};
 use wasm_bindgen::JsCast;
 
@@ -32,6 +33,8 @@ pub struct UserProps {
     pub id: usize,
     pub domain_id: i32,
     pub user_id: String,
+    #[prop_or_default]
+    pub registered: bool,
     pub ondel: Callback<usize>
 }
 
@@ -75,7 +78,22 @@ pub fn UserListItem(props: &UserProps) -> Html {
 
     html!{
     <tr>
-        <th>{user_props.user_id.clone()}</th>
+        <th>
+            <div class="flex items-center">
+                if user_props.registered {
+                    <Icon class="mr-1"
+                        data={IconData::LUCIDE_CHECK_CIRCLE_2}
+                        style={"color: green;"}
+                    />
+                } else {
+                    <Icon class="mr-1"
+                        data={IconData::LUCIDE_X_CIRCLE}
+                        style={"color: gray;"}
+                    />
+                }
+                {user_props.user_id.clone()}
+            </div>
+        </th>
         <th class="flex justify-end">
            <div onclick={onedit} class="mr-1">
                 <div class="btn btn-square btn-outline btn-sm">
@@ -138,8 +156,12 @@ pub fn UserList() -> Html {
         html! {
             <UserListItem
                 ondel={ondel.clone()}
+                registered={
+                    let ping = e.status.get("ping").map_or("Unreachable", |v| v).to_string();
+                    ping == "Reachable"
+                }
                 id={e.id} domain_id={e.domain_id}  user_id={e.user_id.clone()}>
-                </UserListItem>
+            </UserListItem>
         }
     }).collect();
 
@@ -230,6 +252,7 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
                 id: user.id,
                 domain_id: user.domain_id,
                 user_id:  form_data.get("user_id").as_string().unwrap_or(user.id.to_string()),
+                status: HashMap::new(),
                 vars: new_vars,
                 params: new_params
             };

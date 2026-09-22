@@ -12,6 +12,7 @@ pub struct User {
     pub id: usize,
     pub domain_id: i32,
     pub user_id: String,
+    pub status: HashMap<String, String>,
     pub vars: HashMap<String, Var>,
     pub params: HashMap<String, Param>
 }
@@ -49,6 +50,7 @@ impl User {
             id: 0,
             domain_id: 0,
             user_id: "".to_string(),
+            status: HashMap::new(),
             params: HashMap::new(),
             vars: HashMap::new(),
         }
