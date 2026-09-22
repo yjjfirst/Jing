@@ -26,7 +26,6 @@ pub fn Dashboard() -> Html {
             </div>
             <div class="flex flex-wrap pbx-card justify-center m-2">
                 <ExtenCard />
-                <TrunkCard />
             </div>
             <div class="flex flex-wrap pbx-card justify-center m-2">
                 <CallLogCard />
