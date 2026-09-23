@@ -8,13 +8,15 @@ use jlib::gateway;
 use jlib::gateway::models;
 use jlib::gateway::gateway_param;
 use jlib::gateway::gateway_param::GatewayParam;
-use jlib::gateway::gateway_param_help::{GatewayParamHelp, list as param_helps_list}; 
+use jlib::fs::sofia::{GatewayStatus, gateway};
+use jlib::gateway::gateway_param_help::{GatewayParamHelp, list as param_helps_list};
 
 #[derive(Serialize, Deserialize)]
 pub struct Gateway {
     id: i32,
     gateway_name: String,
     profile_id: i32,
+    status: GatewayStatus,
     params: HashMap<String, GatewayParam>,
     param_helps: Vec<GatewayParamHelp>
 }
@@ -39,6 +41,7 @@ async fn index(_path: web::Path<i32>) -> impl Responder {
             id: g.id,
             gateway_name: g.gateway_name.clone(),
             profile_id: g.profile_id,
+            status: gateway(&g.gateway_name),
             params: HashMap::new(),
             param_helps: vec![]
         }
@@ -54,6 +57,7 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
             id: g.id,
             gateway_name: g.gateway_name.clone(),
             profile_id: g.profile_id,
+            status: gateway(&g.gateway_name),
             params: params.iter().map(|p| {
                 (p.name.clone(), p.clone())
             }).collect::<HashMap<String, GatewayParam>>(),
@@ -75,6 +79,7 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
             id: 0,
             profile_id: 2,
             gateway_name: "".to_string(),
+            status: GatewayStatus::new(),
             params: params_hash,
             param_helps: param_helps_list().unwrap()
         };

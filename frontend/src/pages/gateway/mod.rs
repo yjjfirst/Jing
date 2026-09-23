@@ -19,7 +19,7 @@ use crate::components::dialog::Dialog;
 
 use crate::models::Service;
 use model::Param;
-use model::Gateway;
+use model::{Gateway, GatewayStatus};
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum GatewayRoute {
@@ -232,6 +232,7 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
                 id,
                 gateway_name: form_data.get("name").as_string().unwrap(),
                 profile_id: 2,
+                status: GatewayStatus::new(),
                 params,
                 param_helps: vec![]
             };
@@ -264,7 +265,7 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
                     value={gateway.gateway_name.clone()}
                     id="name"
                 />
-                { 
+                {
                 for gateway.param_helps.iter().map(|p|{
                     html!{
                         <>

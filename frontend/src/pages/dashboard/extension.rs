@@ -15,8 +15,10 @@ pub fn ExtenCard() -> Html {
     let (store, _) = use_store::<Store>();
     {
         let users = users.clone();
-        use_effect_with((), move |_| {
+        let store = store.clone();
+        use_effect_with(store.selected_domain_id, move |_| {
             let users = users.clone();
+            let store = store.clone();
             spawn_local(async move{
                 let users_fetched: Vec<User> = Service::index("/user", store.selected_domain_id)
                     .await
@@ -26,8 +28,23 @@ pub fn ExtenCard() -> Html {
         });
     }
 
+    {
+        let users = users.clone();
+        let store = store.clone();
+        use_interval(move ||{
+            let users = users.clone();
+            let store = store.clone();
+            spawn_local(async move{
+                let users_fetched: Vec<User> = Service::index("/user", store.selected_domain_id)
+                    .await
+                    .unwrap();
+                users.set(users_fetched);
+            });
+        }, 10 * 1000);
+    }
+
     html!{
-        <div class="grow overflow-x-auto">
+        <div class="overflow-x-auto">
             <table class="table table-sm">
                 <thead>
                     <tr>

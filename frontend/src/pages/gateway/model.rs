@@ -4,6 +4,16 @@ use util_macro::HashMapHelper;
 use web_sys::FormData;
 
 #[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
+pub struct GatewayStatus {
+    pub status: String,
+    pub up_seconds: i32,
+    pub in_total: i32,
+    pub in_failed: i32,
+    pub out_total: i32,
+    pub out_failed: i32,
+}
+
+#[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
 pub struct GatewayParamHelp {
     pub id: usize,
     pub name: String,
@@ -16,8 +26,22 @@ pub struct Gateway {
     pub id: usize,
     pub gateway_name: String,
     pub profile_id: usize,
+    pub status: GatewayStatus,
     pub params: HashMap<String, Param>,
     pub param_helps: Vec<GatewayParamHelp>
+}
+
+impl GatewayStatus {
+    pub fn new() -> Self {
+        GatewayStatus {
+            status:"".to_string(),
+            up_seconds: 0,
+            in_total:0,
+            in_failed:0,
+            out_total:0,
+            out_failed:0,
+        }
+    }
 }
 
 impl Gateway {
@@ -26,6 +50,7 @@ impl Gateway {
             id: 0,
             profile_id: 0,
             gateway_name: "".to_string(),
+            status: GatewayStatus::new(),
             params: HashMap::new(),
             param_helps: Vec::new()
         }
