@@ -18,6 +18,7 @@ pub mod logout;
 pub mod system_setting;
 pub mod system_info;
 pub mod firewall;
+pub mod channel;
 
 use actix_web::{web};
 use ring_group::ring_group_config;
@@ -39,6 +40,7 @@ use logout::logout_config;
 use system_setting::system_setting_config;
 use firewall::firewall_config;
 use system_info::system_info_config;
+use channel::channel_config;
 use serde::Serialize;
 
 #[derive(Serialize)]
@@ -65,6 +67,7 @@ pub fn api_config(cfg: &mut web::ServiceConfig) {
         .service(web::scope("/{domain}/firewall").configure(firewall_config))
         .service(web::scope("/{domain}/system-settings").configure(system_setting_config))
         .service(web::scope("/{domain}/system-info").configure(system_info_config))
+        .service(web::scope("/{domain}/channel").configure(channel_config))
         .service(web::scope("/domain").configure(domain_config))
         .service(web::scope("/login").configure(login_config))
         .service(web::scope("/logout").configure(logout_config));

@@ -4,7 +4,7 @@ pub mod disk;
 pub mod call_log;
 pub mod extension;
 pub mod trunk;
-pub mod os;
+pub mod active_call;
 
 use yew::prelude::*;
 
@@ -14,6 +14,7 @@ use disk::{DiskCard};
 use call_log::{CallLogCard};
 use extension::{ExtenCard};
 use trunk::{TrunkCard};
+use active_call::{ActiveCallCard};
 
 #[function_component]
 pub fn Dashboard() -> Html {
@@ -31,6 +32,7 @@ pub fn Dashboard() -> Html {
                 <TrunkCard />
             </div>
             <div class="flex flex-wrap pbx-card justify-center m-2">
+                <ActiveCallCard />
                 <CallLogCard />
             </div>
         </div>
