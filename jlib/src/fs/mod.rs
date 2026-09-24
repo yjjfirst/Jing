@@ -15,7 +15,7 @@ pub struct Channel {
 pub fn reload_mod(name: &str) {
     Command::new("fs_cli")
         .arg("-x")
-        .arg(format!("reload {}", name))
+        .arg(format!("reload -f {}", name))
         .spawn()
         .expect(&format!("Failed to reload module: {}", name));
 }
