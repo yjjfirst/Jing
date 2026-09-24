@@ -64,17 +64,17 @@ pub fn get_by_ip(ip: &str) -> Result<FirewallRule> {
     use crate::schema::firewall_rules::dsl::*;
 
     let mut conn = db_connect();
-    let exists = firewall_rules
+    let rule = firewall_rules
         .filter(ip_address.eq(ip))
         .first::<FirewallRule>(&mut conn)?;
 
-    Ok(exists)
+    Ok(rule)
 }
 
 pub fn set(ip: &str, a: &str) -> Result<()> {
     use crate::schema::firewall_rules::dsl::*;
 
-    let mut conn = db_connect();    
+    let mut conn = db_connect();
     match get_by_ip(ip) {
         Ok(_) => {
             diesel::update(firewall_rules.filter(ip_address.eq(ip)))
@@ -84,7 +84,7 @@ pub fn set(ip: &str, a: &str) -> Result<()> {
         Err(_) => {
             diesel::insert_into(firewall_rules)
                 .values((ip_address.eq(ip), action.eq(a), created_at.eq(Local::now())))
-                .load::<FirewallRule>(&mut conn)?;        
+                .load::<FirewallRule>(&mut conn)?;
         }
     };
 

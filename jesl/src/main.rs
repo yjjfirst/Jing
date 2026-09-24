@@ -23,14 +23,14 @@ fn handle_reply(cmd_s: &Sender<Cmd>, reply: Reply) {
         Reply::Command { text, status } => {
             if text == "accepted" {
                 println!("Login ESL successfully");
-                event(cmd_s, 
-                    "CUSTOM", 
+                event(cmd_s,
+                    "CUSTOM",
                     Some("sofia::register_failure"));
                 filter(cmd_s, "CUSTOM");
             } else {
                 println!("{} {}", status, text);
             }
-        } 
+        }
     }
 }
 
@@ -89,9 +89,9 @@ fn main() {
             .start()
             .expect("Error connect to FreeSwitch");
     });
-    
+
     let std_r = spawn_stdin_channel();
-    
+
     while running.load(Ordering::SeqCst) {
         select! {
             recv(std_r) -> _line => {
@@ -117,28 +117,32 @@ fn main() {
 
 fn spawn_stdin_channel() -> Receiver<String> {
     let (s, r) = unbounded();
-    
+
     std::thread::spawn(move || {
         let stdin = io::stdin();
-        let handle = stdin.lock(); 
-        
+        let handle = stdin.lock();
+
         for line in handle.lines() {
             match line {
                 Ok(content) => {
                     if s.send(content).is_err() {
-                        break; 
+                        break;
                     }
                 }
                 Err(_) => break,
             }
         }
     });
-    
+
     r
 }
 
 pub fn block_ips(ips: Vec<String>) {
     for ip in ips {
+        if let Ok(_) = firewall::get_by_ip(&ip) {
+            continue;
+        };
+
         let _ = firewall::deny(&ip);
         println!("Blocking IP: {}", ip);
         iptables::deny_ip(&ip);
