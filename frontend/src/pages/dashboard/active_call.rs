@@ -55,7 +55,7 @@ pub fn ActiveCallCard() -> Html {
             <table class="table table-sm">
                 <thead>
                     <tr>
-                        <th>{"Direction"}</th>
+                        <th></th>
                         <th>{"CID name"}</th>
                         <th>{"CID number"}</th>
                         <th>{"Callee Number"}</th>

@@ -47,8 +47,8 @@ pub fn CallLogCard() -> Html {
             <table class="table table-sm">
                 <thead>
                     <tr>
-                        <th>{"CID Number"}</th>
                         <th>{"CID name"}</th>
+                        <th>{"CID Number"}</th>
                         <th>{"Callee Number"}</th>
                         <th>{"Duration"}</th>
                     </tr>
@@ -58,8 +58,8 @@ pub fn CallLogCard() -> Html {
                         cdrs.iter().map(|c|{
                             html!{
                                 <tr>
-                                    <td>{c.caller_id_number.clone()}</td>
                                     <td>{c.caller_id_name.clone()}</td>
+                                    <td>{c.caller_id_number.clone()}</td>
                                     <td>{c.destination_number.clone()}</td>
                                     <td>{c.duration}</td>
                                 </tr>

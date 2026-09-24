@@ -16,7 +16,7 @@ pub struct SidebarMenuItemPros {
 #[function_component]
 pub fn SideBar() -> Html {
     html! {
-        <div class="w-60 flex-row rounded-box">
+        <div class="w-60 flex-row">
             <SidebarMenu/>
         </div>
     }
@@ -147,7 +147,7 @@ pub fn SidebarMenu() -> Html {
     ];
     html! {
           <div class="flex flex-col">
-          <ul class="menu bg-base-200 w-60">
+          <ul class="menu bg-base-200 w-60 rounded-box">
             <SidebarMenuItem
                 route={Route::Dashboard}
                 caption={"Dashboard"}
