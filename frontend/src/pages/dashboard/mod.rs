@@ -20,18 +20,14 @@ use active_call::{ActiveCallCard};
 pub fn Dashboard() -> Html {
     html! {
         <div>
-            <div class="flex flex-wrap pbx-card justify-center m-2">
+            <div class="flex flex-wrap pbx-card justify-center mb-2">
                 <MemoryCard />
                 <LoadingCard />
                 <DiskCard />
             </div>
-            <div class="flex flex-wrap pbx-card justify-center m-2">
+            <div class="grid grid-cols-2 gap-2">
                 <ExtenCard />
-            </div>
-            <div class="flex flex-wrap pbx-card justify-center m-2">
                 <TrunkCard />
-            </div>
-            <div class="flex flex-wrap pbx-card justify-center m-2">
                 <ActiveCallCard />
                 <CallLogCard />
             </div>

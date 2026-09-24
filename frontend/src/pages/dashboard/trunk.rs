@@ -44,7 +44,7 @@ pub fn TrunkCard() -> Html {
     }
 
     html!{
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto pbx-card">
             <table class="table table-sm">
                 <thead>
                     <tr>

@@ -16,7 +16,7 @@ pub struct SidebarMenuItemPros {
 #[function_component]
 pub fn SideBar() -> Html {
     html! {
-        <div class="w-60 flex-row">
+        <div class="w-60 flex-row rounded-box">
             <SidebarMenu/>
         </div>
     }

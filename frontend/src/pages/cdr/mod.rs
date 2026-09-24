@@ -1,4 +1,4 @@
-mod model;
+pub mod model;
 
 use yew::prelude::*;
 use yew_router::prelude::*;
@@ -26,13 +26,13 @@ pub fn CdrList() -> Html {
         let store = store.clone();
         let cdrs = cdrs_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_routes: Vec<Cdr> = 
+            let fetched_routes: Vec<Cdr> =
                 Service::index(loc.path(), store.selected_domain_id.clone())
                     .await
                     .unwrap();
             cdrs.set(fetched_routes);
         });
-    });    
+    });
     html!{
         <div class="grow mr-2">
             <Header title="Report -> CDR"></Header>
@@ -49,9 +49,9 @@ pub fn CdrList() -> Html {
                         <th>{"Billsec"}</th>
                         <th>{"Hangup Cause"}</th>
                     </tr>
-                </thead>            
+                </thead>
                 <tbody>
-                {   
+                {
                     cdrs.iter().map(|c|{
                        html! {
                            <tr>
@@ -62,16 +62,16 @@ pub fn CdrList() -> Html {
                                <td>{c.end_stamp.clone().format("%Y-%m-%d %H:%M:%S").to_string()}</td>
                                <td>{c.duration}</td>
                                <td>{c.billsec}</td>
-                               <td>{c.hangup_cause.clone()}</td>                                
+                               <td>{c.hangup_cause.clone()}</td>
                                </tr>
                            }
-                   }).collect::<Html>() 
+                   }).collect::<Html>()
                 }
 
                 </tbody>
             </table>
-        </div>        
-    }    
+        </div>
+    }
 }
 
 pub fn cdr_switch(route: CdrRoute) -> Html {
