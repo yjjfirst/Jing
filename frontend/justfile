@@ -5,3 +5,4 @@ install:
 	trunk build
 	rm -f /var/www/pbx/*
 	cp dist/* /var/www/pbx
+	cp img/* /var/www/pbx
