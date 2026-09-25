@@ -14,6 +14,7 @@ use crate::store::{alert_info, alert_error, Store};
 use crate::components::header::Header;
 use crate::components::action_buttons::ActionButtons;
 use crate::components::input::Input;
+use crate::components::param_input::ParamInput;
 use crate::components::label::Label;
 use crate::components::dialog::Dialog;
 
@@ -270,9 +271,11 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
                     html!{
                         <>
                             <Label>{p.name.clone()}</Label>
-                            <Input
+                            <ParamInput
                                 value={Param::get(&p.name, &gateway.params)}
-                                id={p.name.clone()}
+                                name={p.name.clone()}
+                                range_text={p.range_text.clone()}
+                                help_text={p.help_text.clone()}
                             />
                         </>
                     }

@@ -14,3 +14,4 @@ pub mod sound_file_select;
 pub mod user_select;
 pub mod select_id;
 pub mod toggle;
+pub mod param_input;
