@@ -7,6 +7,7 @@ use jlib::user::user_param::UserParam;
 use jlib::user::user_variable::UserVariable;
 use jlib::domain::{get_domain};
 use jlib::fs::sofia::{reg};
+use jlib::user::user_variable_help::{UserVariableHelp, list as user_variable_help_list};
 use serde::{Serialize, Deserialize};
 
 
@@ -19,6 +20,7 @@ pub struct User {
     pub status: HashMap<String, String>,
     pub vars: HashMap<String, UserVariable>,
     pub params: HashMap<String, UserParam>,
+    pub var_helps: Vec<UserVariableHelp>,
 }
 
 pub fn user_config(cfg: &mut web::ServiceConfig) {
@@ -88,13 +90,15 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
         (v.name.clone(), v.clone())
     }).collect::<HashMap<String, UserVariable>>();
 
+    let var_helps = user_variable_help_list().unwrap();
     web::Json(User {
         id: user.id,
         domain_id: user.domain_id,
         user_id: user.user_id,
         status: HashMap::new(),
         params,
-        vars
+        vars,
+        var_helps
     })
 }
 
@@ -127,6 +131,7 @@ async fn index(path: web::Path<i32>) -> impl Responder {
             status: status_map,
             params: HashMap::new(),
             vars: HashMap::new(),
+            var_helps: vec![]
         }
     }).collect::<Vec<User>>())
 }

@@ -15,6 +15,7 @@ use crate::components::header::Header;
 use crate::components::input::Input;
 use crate::components::label::Label;
 use crate::components::action_buttons::ActionButtons;
+use crate::components::param_input::{ParamInput};
 use model::User;
 use crate::models::Service;
 use model::*;
@@ -254,7 +255,8 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
                 user_id:  form_data.get("user_id").as_string().unwrap_or(user.id.to_string()),
                 status: HashMap::new(),
                 vars: new_vars,
-                params: new_params
+                params: new_params,
+                var_helps: vec![],
             };
 
             wasm_bindgen_futures::spawn_local(async move {
@@ -293,27 +295,21 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
                     value={Param::get("vm-password", &user.params)}
                     id="vm-password"
                 />
-
-                    <Label>{"Effective Caller Id Name"}</Label>
-                    <Input
-                        value={Var::get("effective_caller_id_name", &user.vars)}
-                        id="effective_caller_id_name"
-                    />
-                    <Label>{"Effective Caller Id Number"}</Label>
-                    <Input
-                            value={Var::get("effective_caller_id_number", &user.vars)}
-                            id="effective_caller_id_number"
-                        />
-                    <Label>{"Outbound Caller Id Name"}</Label>
-                    <Input
-                        value={Var::get("outbound_caller_id_name", &user.vars)}
-                        id="outbound_caller_id_name"
-                    />
-                    <Label>{"Outoubnd Caller Id Number"}</Label>
-                    <Input
-                        value={Var::get("outbound_caller_id_number", &user.vars)}
-                        id="outbound_caller_id_number"
-                    />
+                {
+                    for user.var_helps.iter().map(|p|{
+                        html!{
+                            <>
+                                <Label>{p.name.clone()}</Label>
+                                <ParamInput
+                                    value={Var::get(&p.name, &user.vars)}
+                                    name={p.name.clone()}
+                                    range_text={p.range_text.clone()}
+                                    help_text={p.help_text.clone()}
+                                />
+                            </>
+                        }
+                    })
+                }
                 </div>
                 <ActionButtons oncancel={form_oncancel} />
             </form>

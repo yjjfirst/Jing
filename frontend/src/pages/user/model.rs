@@ -3,8 +3,6 @@ use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
 use web_sys::FormData;
 use util_macro::HashMapHelper;
-
-
 use crate::models::API_BASE;
 
 #[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
@@ -14,7 +12,16 @@ pub struct User {
     pub user_id: String,
     pub status: HashMap<String, String>,
     pub vars: HashMap<String, Var>,
-    pub params: HashMap<String, Param>
+    pub params: HashMap<String, Param>,
+    pub var_helps: Vec<UserVariableHelp>,
+}
+
+#[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
+pub struct UserVariableHelp {
+    pub id: usize,
+    pub name: String,
+    pub range_text: String,
+    pub help_text: String
 }
 
 #[derive(Clone, PartialEq, Deserialize, Serialize, Debug, HashMapHelper)]
@@ -53,6 +60,7 @@ impl User {
             status: HashMap::new(),
             params: HashMap::new(),
             vars: HashMap::new(),
+            var_helps: vec![],
         }
     }
 
