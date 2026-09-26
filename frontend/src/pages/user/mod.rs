@@ -257,6 +257,7 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
                 vars: new_vars,
                 params: new_params,
                 var_helps: vec![],
+                param_helps: vec![]
             };
 
             wasm_bindgen_futures::spawn_local(async move {
@@ -285,16 +286,21 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
                     value={user.clone().user_id.clone()}
                     name="user_id"
                 />
-                <Label>{"Password"}</Label>
-                <Input disabled={user.id == 0}
-                    value={Param::get("password", &user.params)}
-                    id="password"
-                />
-                    <Label>{"Voicemail Password"}</Label>
-                <Input disabled={user.id == 0}
-                    value={Param::get("vm-password", &user.params)}
-                    id="vm-password"
-                />
+                {
+                    for user.param_helps.iter().map(|p|{
+                        html!{
+                            <>
+                                <Label>{p.name.clone()}</Label>
+                                <ParamInput
+                                    value={Param::get(&p.name, &user.params)}
+                                    name={p.name.clone()}
+                                    range_text={p.range_text.clone()}
+                                    help_text={p.help_text.clone()}
+                                />
+                            </>
+                        }
+                    })
+                }
                 {
                     for user.var_helps.iter().map(|p|{
                         html!{

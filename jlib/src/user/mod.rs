@@ -2,6 +2,7 @@ pub mod models;
 pub mod user_variable;
 pub mod user_param;
 pub mod user_variable_help;
+pub mod user_param_help;
 
 use models::*;
 use diesel::prelude::*;

@@ -14,10 +14,19 @@ pub struct User {
     pub vars: HashMap<String, Var>,
     pub params: HashMap<String, Param>,
     pub var_helps: Vec<UserVariableHelp>,
+    pub param_helps: Vec<UserParamHelp>
 }
 
 #[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
 pub struct UserVariableHelp {
+    pub id: usize,
+    pub name: String,
+    pub range_text: String,
+    pub help_text: String
+}
+
+#[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
+pub struct UserParamHelp {
     pub id: usize,
     pub name: String,
     pub range_text: String,
@@ -61,6 +70,7 @@ impl User {
             params: HashMap::new(),
             vars: HashMap::new(),
             var_helps: vec![],
+            param_helps: vec![]
         }
     }
 

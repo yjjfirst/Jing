@@ -384,6 +384,18 @@ diesel::table! {
 }
 
 diesel::table! {
+    user_param_helps (id) {
+        id -> Int4,
+        #[max_length = 128]
+        name -> Varchar,
+        #[max_length = 1024]
+        range_text -> Varchar,
+        #[max_length = 1024]
+        help_text -> Varchar,
+    }
+}
+
+diesel::table! {
     user_params (id) {
         id -> Int4,
         user_id -> Int4,
@@ -505,6 +517,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     sounds,
     system_settings,
     tiers,
+    user_param_helps,
     user_params,
     user_variable_helps,
     user_variables,
