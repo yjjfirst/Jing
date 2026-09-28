@@ -22,6 +22,7 @@ pub mod portal_user;
 pub mod portal_token;
 pub mod system_setting;
 pub mod firewall;
+pub mod esl;
 
 #[macro_use]
 extern crate diesel;

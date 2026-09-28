@@ -9,9 +9,9 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use crossbeam_channel::{bounded, unbounded, Sender, Receiver, select, tick};
 
-use jeslib::esl::{ Esl, event, filter};
-use jeslib::cmd::{ Cmd };
-use jeslib::event::{ Event,Request,Reply };
+use jlib::esl::esl::{ Esl, event, filter};
+use jlib::esl::cmd::{ Cmd };
+use jlib::esl::event::{ Event,Request,Reply };
 use jlib::firewall::{iptables, self};
 
 pub fn handle_request(req: Request) {
