@@ -1,14 +1,14 @@
 use std::collections::HashMap;
 use actix_web::{web, Responder};
-use jlib::{user};
-use jlib::user::{ByField};
-use jlib::user::models;
-use jlib::user::user_param::UserParam;
-use jlib::user::user_variable::UserVariable;
-use jlib::domain::{get_domain};
-use jlib::fs::sofia::{reg};
-use jlib::user::user_variable_help::{UserVariableHelp, list as user_variable_help_list};
-use jlib::user::user_param_help::{UserParamHelp, list as user_param_help_list};
+use jing_lib::{user};
+use jing_lib::user::{ByField};
+use jing_lib::user::models;
+use jing_lib::user::user_param::UserParam;
+use jing_lib::user::user_variable::UserVariable;
+use jing_lib::domain::{get_domain};
+use jing_lib::fs::sofia::{reg};
+use jing_lib::user::user_variable_help::{UserVariableHelp, list as user_variable_help_list};
+use jing_lib::user::user_param_help::{UserParamHelp, list as user_param_help_list};
 use serde::{Serialize, Deserialize};
 
 

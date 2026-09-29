@@ -1,5 +1,5 @@
 use actix_web::{web,Responder};
-use jlib::extension;
+use jing_lib::extension;
 
 pub fn extension_config(cfg: &mut web::ServiceConfig) {
     cfg

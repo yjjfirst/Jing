@@ -1,6 +1,6 @@
 use actix_web::{web, Responder};
 
-use jlib::cdr;
+use jing_lib::cdr;
 pub fn cdr_config(cfg: &mut web::ServiceConfig) {
     cfg.
         service(

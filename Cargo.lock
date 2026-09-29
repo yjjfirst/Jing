@@ -1636,7 +1636,7 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "dotenv",
- "jlib",
+ "jing_lib",
  "prettytable-rs",
  "structopt",
  "thiserror",
@@ -1644,31 +1644,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "jing_server"
-version = "0.1.0"
-dependencies = [
- "actix-cors",
- "actix-files",
- "actix-multipart",
- "actix-web",
- "async-std",
- "chrono",
- "crossbeam-channel",
- "ctrlc",
- "into-response",
- "jlib",
- "lettre",
- "rustls",
- "rustls-pemfile",
- "serde",
- "serde-xml-rs",
- "serde_json",
- "sys-info",
- "xml-rs",
-]
-
-[[package]]
-name = "jlib"
+name = "jing_lib"
 version = "0.1.0"
 dependencies = [
  "chrono",
@@ -1685,6 +1661,30 @@ dependencies = [
  "urlencoding",
  "util_macro",
  "uuid",
+]
+
+[[package]]
+name = "jing_server"
+version = "0.1.0"
+dependencies = [
+ "actix-cors",
+ "actix-files",
+ "actix-multipart",
+ "actix-web",
+ "async-std",
+ "chrono",
+ "crossbeam-channel",
+ "ctrlc",
+ "into-response",
+ "jing_lib",
+ "lettre",
+ "rustls",
+ "rustls-pemfile",
+ "serde",
+ "serde-xml-rs",
+ "serde_json",
+ "sys-info",
+ "xml-rs",
 ]
 
 [[package]]

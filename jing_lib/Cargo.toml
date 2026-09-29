@@ -1,5 +1,5 @@
 [package]
-name = "jlib"
+name = "jing_lib"
 version = "0.1.0"
 authors = ["Martin Yang <yjjfirst@hotmail.com>"]
 edition = "2018"

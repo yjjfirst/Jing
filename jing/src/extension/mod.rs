@@ -1,6 +1,6 @@
 use super::customtable::{Ctable};
 use structopt::StructOpt;
-use jlib::*;
+use jing_lib::*;
 use super::domain;
 
 #[derive(StructOpt)]

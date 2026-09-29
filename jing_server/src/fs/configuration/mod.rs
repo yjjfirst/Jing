@@ -4,8 +4,6 @@ mod callcenter;
 mod ivr;
 mod acl;
 
-extern crate jlib;
-
 use std::io::BufWriter;
 use xml::writer::{EmitterConfig};
 use super::xml_utils::*;

@@ -1,7 +1,7 @@
 use std::collections::HashMap;
 
 use structopt::StructOpt;
-use crate::jlib::gateway;
+use jing_lib::gateway;
 use crate::customtable::{Ctable};
 
 #[derive(StructOpt)]

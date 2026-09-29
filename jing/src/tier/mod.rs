@@ -1,6 +1,6 @@
 use super::customtable::{Ctable};
 use structopt::StructOpt;
-use jlib::callcenter::tier;
+use jing_lib::callcenter::tier;
 
 #[derive(StructOpt)]
 #[derive(Debug)]

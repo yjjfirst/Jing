@@ -1,8 +1,8 @@
 use super::customtable::{Ctable};
 use structopt::StructOpt;
 use super::domain;
-use super::jlib::callcenter::agent;
-use super::jlib::callcenter::agent::{Agent};
+use jing_lib::callcenter::agent;
+use jing_lib::callcenter::agent::{Agent};
 
 #[derive(StructOpt)]
 #[derive(Debug)]

@@ -1,10 +1,8 @@
-extern crate jlib;
-
 use xml::writer::{EventWriter};
 use std::io::Write;
 use crate::fs::xml_utils::{start_element, end_element, attrs, control, param};
 
-use jlib::conference::{conference_control, conference_profile};
+use jing_lib::conference::{conference_control, conference_profile};
 
 pub fn serve<W: Write>(w: &mut EventWriter<W>) {
     start_element(w,

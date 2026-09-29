@@ -17,8 +17,8 @@ use std::fs::File;
 use std::io::BufReader;
 
 use api::{api_config};
-use jlib::portal_token::is_expired;
-use jlib::firewall::iptables;
+use jing_lib::portal_token::is_expired;
+use jing_lib::firewall::iptables;
 use esl::start_esl;
 
 

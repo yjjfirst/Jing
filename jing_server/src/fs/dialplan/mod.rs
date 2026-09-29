@@ -1,22 +1,21 @@
 mod feature_code;
-extern crate jlib;
 
 use std::io::Write;
 use std::io::BufWriter;
 use xml::writer::{EmitterConfig, EventWriter};
 use super::xml_utils::{start_element, end_element, action, Attr};
-use jlib::extension::{get_extension, Extension};
-use jlib::route::{outbound, inbound};
-use jlib::route::outbound_models::{OutboundRoute};
-use jlib::route::inbound_models::{InboundRoute};
-use jlib::gateway;
-use jlib::ringgroup;
-use jlib::domain;
-use jlib::sound;
-use jlib::sound_file;
-use jlib::conference;
-use jlib::callcenter::queue;
-use jlib::ivr;
+use jing_lib::extension::{get_extension, Extension};
+use jing_lib::route::{outbound, inbound};
+use jing_lib::route::outbound_models::{OutboundRoute};
+use jing_lib::route::inbound_models::{InboundRoute};
+use jing_lib::gateway;
+use jing_lib::ringgroup;
+use jing_lib::domain;
+use jing_lib::sound;
+use jing_lib::sound_file;
+use jing_lib::conference;
+use jing_lib::callcenter::queue;
+use jing_lib::ivr;
 
 use super::FsRequest;
 use actix_web::Result;

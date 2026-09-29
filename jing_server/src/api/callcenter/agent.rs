@@ -3,10 +3,10 @@ use std::collections::HashMap;
 use serde::{Serialize, Deserialize};
 use actix_web::{web, Responder};
 
-use jlib::callcenter::agent;
-use jlib::callcenter::agent_param;
-use jlib::callcenter::agent_param::AgentParam;
-use jlib::user::{get_user, ByField};
+use jing_lib::callcenter::agent;
+use jing_lib::callcenter::agent_param;
+use jing_lib::callcenter::agent_param::AgentParam;
+use jing_lib::user::{get_user, ByField};
 
 use super::Status;
 

@@ -1,6 +1,6 @@
 use actix_web::{web, Responder, HttpResponse, HttpRequest};
 
-use jlib::portal_token::{revoke};
+use jing_lib::portal_token::{revoke};
 
 pub fn logout_config(cfg: &mut web::ServiceConfig) {
     cfg

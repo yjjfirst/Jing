@@ -1,5 +1,5 @@
 use actix_web::{web,Responder};
-use jlib::domain;
+use jing_lib::domain;
 
 pub fn domain_config(cfg: &mut web::ServiceConfig) {
     cfg

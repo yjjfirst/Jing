@@ -19,11 +19,10 @@ mod firewall;
 
 #[macro_use]
 extern crate prettytable;
-extern crate jlib;
 
 use self::customtable::{Ctable};
 use structopt::StructOpt;
-use self::jlib::*;
+use jing_lib::*;
 
 #[derive(StructOpt)]
 #[derive(Debug)]

@@ -1,8 +1,8 @@
 use structopt::StructOpt;
-use jlib::user::*;
+use jing_lib::user::*;
 use crate::customtable::{Ctable};
 use crate::print_table;
-use jlib::printable::{Printable};
+use jing_lib::printable::{Printable};
 
 #[derive(StructOpt)]
 #[derive(Debug)]

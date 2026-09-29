@@ -2,7 +2,7 @@ use std::env;
 
 use super::customtable::{Ctable};
 use structopt::StructOpt;
-use super::jlib::*;
+use jing_lib::*;
 
 #[derive(StructOpt)]
 #[derive(Debug)]

@@ -7,8 +7,8 @@ use lettre::message::header::ContentType;
 use lettre::transport::smtp::authentication::Credentials;
 use lettre::{Message, SmtpTransport, Transport};
 
-use jlib::cdr;
-use jlib::system_setting;
+use jing_lib::cdr;
+use jing_lib::system_setting;
 
 #[derive(Debug, Deserialize)]
 pub struct CdrXml {

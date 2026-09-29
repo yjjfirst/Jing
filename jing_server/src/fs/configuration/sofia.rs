@@ -1,9 +1,9 @@
 use xml::writer::{EventWriter};
 use std::io::Write;
-use jlib::gateway::models::{Gateway};
-use jlib::gateway::{get_params};
-use jlib::profile::models::{Profile};
-use jlib::profile;
+use jing_lib::gateway::models::{Gateway};
+use jing_lib::gateway::{get_params};
+use jing_lib::profile::models::{Profile};
+use jing_lib::profile;
 
 use crate::fs::xml_utils::{start_element, end_element, param, Attr};
 

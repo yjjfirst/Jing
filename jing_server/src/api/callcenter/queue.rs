@@ -4,9 +4,9 @@ use super::Status;
 use serde::{Serialize, Deserialize};
 use std::collections::HashMap;
 
-use jlib::callcenter::queue;
-use jlib::callcenter::queue_param;
-use jlib::callcenter::queue_param::QueueParam;
+use jing_lib::callcenter::queue;
+use jing_lib::callcenter::queue_param;
+use jing_lib::callcenter::queue_param::QueueParam;
 
 #[derive(Serialize, Deserialize)]
 pub struct Queue {

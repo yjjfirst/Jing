@@ -2,12 +2,12 @@ use xml::writer::{EventWriter};
 use std::io::Write;
 use crate::fs::xml_utils::{start_element, end_element, attrs, param};
 
-use jlib::callcenter::queue;
-use jlib::callcenter::agent;
-use jlib::callcenter::tier;
-use jlib::user;
-use jlib::user::ByField;
-use jlib::domain;
+use jing_lib::callcenter::queue;
+use jing_lib::callcenter::agent;
+use jing_lib::callcenter::tier;
+use jing_lib::user;
+use jing_lib::user::ByField;
+use jing_lib::domain;
 
 pub fn serve<W: Write>(w: &mut EventWriter<W>) {
     start_element(w,

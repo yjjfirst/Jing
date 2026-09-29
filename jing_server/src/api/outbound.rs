@@ -1,8 +1,8 @@
 use std::ops::Deref;
 use actix_web::{web, Responder};
 use super::Status;
-use jlib::route::outbound;
-use jlib::route::outbound_models::OutboundRoute;
+use jing_lib::route::outbound;
+use jing_lib::route::outbound_models::OutboundRoute;
 
 pub fn outbound_config(cfg: &mut web::ServiceConfig) {
     cfg
@@ -30,13 +30,13 @@ async fn index(_path: web::Path<i32>) -> impl Responder {
 
 async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
     let (_, id) = path.into_inner();
-    let out = outbound::get(id).unwrap_or( OutboundRoute 
+    let out = outbound::get(id).unwrap_or( OutboundRoute
         {
-            id: 0, 
-            gateway_id: 0, 
-            condition: "".to_string(), 
-            priority: 100, 
-            prepend: "".to_string(), 
+            id: 0,
+            gateway_id: 0,
+            condition: "".to_string(),
+            priority: 100,
+            prepend: "".to_string(),
             prefix: 0
         });
 
@@ -49,8 +49,8 @@ async fn post(r: web::Json<OutboundRoute>) -> impl Responder {
         outbound::update(route).unwrap();
     } else {
         outbound::add(
-            r.gateway_id, 
-            r.priority, 
+            r.gateway_id,
+            r.priority,
             &r.condition,
             &r.prepend,
             r.prefix

@@ -7,10 +7,10 @@ use std::io;
 use std::io::{BufRead};
 use crossbeam_channel::{bounded, unbounded, Sender, Receiver, select, tick};
 
-use jlib::esl::esl::{ Esl, event, filter};
-use jlib::esl::cmd::{ Cmd };
-use jlib::esl::event::{ Event,Request,Reply };
-use jlib::firewall::{iptables, self};
+use jing_lib::esl::esl::{ Esl, event, filter};
+use jing_lib::esl::cmd::{ Cmd };
+use jing_lib::esl::event::{ Event,Request,Reply };
+use jing_lib::firewall::{iptables, self};
 
 pub fn handle_request(req: Request) {
     println!("{:?}", req)

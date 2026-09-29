@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use actix_web::{web, Responder};
-use jlib::system_setting;
+use jing_lib::system_setting;
 use serde::{Serialize, Deserialize};
 use super::Status;
 
@@ -19,7 +19,7 @@ pub fn system_setting_config(cfg: &mut web::ServiceConfig) {
 }
 
 async fn index() -> impl Responder {
-    let sections = system_setting::list_sections().unwrap(); 
+    let sections = system_setting::list_sections().unwrap();
     let mut settings_map = HashMap::new();
     for section in sections {
         let s = system_setting::get_settings_by_section(&section).unwrap();

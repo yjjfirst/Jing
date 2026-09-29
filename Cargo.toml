@@ -1,7 +1,7 @@
 [workspace]
 
 members = [
-    "jlib",
+    "jing_lib",
     "jing_server",
     "jing",
     "util_macro",

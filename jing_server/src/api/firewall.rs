@@ -1,6 +1,6 @@
 use super::Status;
 
-use jlib::firewall;
+use jing_lib::firewall;
 use actix_web::{error::ErrorInternalServerError, web, Error, Responder};
 
 pub fn firewall_config(cfg: &mut web::ServiceConfig) {

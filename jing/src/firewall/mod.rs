@@ -1,5 +1,5 @@
 use crate::customtable::Ctable;
-use jlib::firewall;
+use jing_lib::firewall;
 use structopt::StructOpt;
 
 #[derive(StructOpt, Debug)]
@@ -16,9 +16,9 @@ pub fn exec_firewall_cmd(command: FirewallCli) {
 
                 for rule in rules {
                     table.add_row(row![
-                        rule.id, 
-                        rule.ip_address, 
-                        rule.action, 
+                        rule.id,
+                        rule.ip_address,
+                        rule.action,
                         rule.created_at.format("%Y-%m-%d %H:%M:%S")
                     ]);
                 }

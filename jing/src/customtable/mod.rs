@@ -1,5 +1,5 @@
 use prettytable::{Table, format, Row, Cell};
-use jlib::printable::{Printable};
+use jing_lib::printable::{Printable};
 
 pub struct Ctable {
     table: Table,

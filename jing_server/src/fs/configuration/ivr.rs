@@ -1,9 +1,7 @@
-extern crate jlib;
-
 use xml::writer::{EventWriter};
 use std::io::Write;
-use jlib::ivr;
-use jlib::sound_file;
+use jing_lib::ivr;
+use jing_lib::sound_file;
 use crate::fs::xml_utils::{start_element, end_element, attrs, entry};
 
 pub fn serve<W: Write>(w: &mut EventWriter<W>) {
