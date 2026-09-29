@@ -1,6 +1,7 @@
 mod fs;
 mod api;
 mod cdr;
+mod esl;
 
 use actix_web::{web, App, HttpServer};
 use rustls::{ServerConfig};
@@ -17,6 +18,9 @@ use std::io::BufReader;
 
 use api::{api_config};
 use jlib::portal_token::is_expired;
+use jlib::firewall::iptables;
+use esl::start_esl;
+
 
 async fn cookie_middleware(
     req: ServiceRequest,
@@ -53,9 +57,12 @@ async fn cookie_middleware(
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let config = load_rustls_config();
+    std::thread::spawn(move || {
+        start_esl();
+    });
 
-    HttpServer::new(||{
+    let config = load_rustls_config();
+    let server = HttpServer::new(||{
         let cors = Cors::permissive();
         App::new()
             .app_data(web::FormConfig::default().limit(327_680))
@@ -76,10 +83,26 @@ async fn main() -> std::io::Result<()> {
                      })
             )
     })
-        .bind_rustls_0_23("0.0.0.0:9090", config)?
-        .bind("127.0.0.1:9091")?
-        .run()
-        .await
+    .bind_rustls_0_23("0.0.0.0:9090", config)?
+    .bind("127.0.0.1:9091")?
+    .run();
+
+    let server_handle = server.handle();
+    actix_web::rt::spawn(async move {
+        match actix_web::rt::signal::ctrl_c().await {
+            Ok(()) => {
+                println!("\nReceived Ctrl-C, shutting down gracefully...");
+                iptables::clear();
+                server_handle.stop(true).await;
+            }
+            Err(err) => {
+                eprintln!("Error listening to Ctrl-C signal: {}", err);
+            }
+        }
+    });
+
+    server.await
+
 }
 
 fn load_rustls_config() -> ServerConfig {

@@ -5,8 +5,6 @@ use std::time::Duration;
 use std::collections::HashMap;
 use std::io;
 use std::io::{BufRead};
-use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::Arc;
 use crossbeam_channel::{bounded, unbounded, Sender, Receiver, select, tick};
 
 use jlib::esl::esl::{ Esl, event, filter};
@@ -67,9 +65,7 @@ pub fn handle_event(cmd_s: &Sender<Cmd>, event: Event) {
     }
 }
 
-fn main() {
-    let running = Arc::new(AtomicBool::new(true));
-    let r = running.clone();
+pub fn start_esl() {
     let (cmd_s, cmd_r) = bounded::<Cmd>(1);
     let (event_s, event_r) = bounded::<Event>(1);
     let ticker = tick(Duration::from_secs(1));
@@ -77,10 +73,6 @@ fn main() {
     let mut esl = Esl::new("127.0.0.1".to_string(),
         "8021".to_string(),
         "ClueCon".to_string(), cmd_r, event_s);
-
-    ctrlc::set_handler(move || {
-        r.store(false, Ordering::SeqCst);
-    }).expect("Error setting Ctrl-C handler");
 
     iptables::init();
 
@@ -92,7 +84,7 @@ fn main() {
 
     let std_r = spawn_stdin_channel();
 
-    while running.load(Ordering::SeqCst) {
+    loop {
         select! {
             recv(std_r) -> _line => {
             },
@@ -108,11 +100,6 @@ fn main() {
             }
         }
     }
-
-    println!("Shutting down...");
-    iptables::clear();
-    println!("Shutdown complete.");
-
 }
 
 fn spawn_stdin_channel() -> Receiver<String> {

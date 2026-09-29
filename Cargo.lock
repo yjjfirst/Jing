@@ -1641,15 +1641,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "jeslib"
-version = "0.1.0"
-dependencies = [
- "chrono",
- "crossbeam-channel",
- "urlencoding",
-]
-
-[[package]]
 name = "jhttpd"
 version = "0.1.0"
 dependencies = [
@@ -1659,6 +1650,8 @@ dependencies = [
  "actix-web",
  "async-std",
  "chrono",
+ "crossbeam-channel",
+ "ctrlc",
  "into-response",
  "jlib",
  "lettre",

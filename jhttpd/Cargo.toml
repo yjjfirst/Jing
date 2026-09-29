@@ -22,3 +22,6 @@ jlib = {version="0.1.0", path="../jlib"}
 rustls = "0.23.39"
 rustls-pemfile = "2.2.0"
 sys-info = "0.9.1"
+crossbeam-channel = "0.5.17"
+ctrlc = "3.5.2"
+
