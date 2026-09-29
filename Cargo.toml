@@ -2,8 +2,7 @@
 
 members = [
     "jlib",
-    "jesl",
-    "jhttpd",
+    "jing_server",
     "jing",
     "util_macro",
 ]
