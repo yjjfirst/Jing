@@ -19,7 +19,7 @@ pub fn LoadingCard() -> Html {
     let (store, _) = use_store::<Store>();
     let f = yew_hooks::use_async::<_, _, ()>({
         let chart = Chart::new()
-        .title(Title::new().text("Loading"))
+        .title(Title::new().text("CPU"))
         .tooltip(Tooltip::new())
         .series(
             Pie::new()
