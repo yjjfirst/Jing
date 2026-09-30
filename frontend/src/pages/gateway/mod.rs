@@ -106,30 +106,33 @@ pub fn GatewayList() -> Html {
 
     let (store,_) = use_store::<Store>();
     let gateways: UseStateHandle<Vec<Gateway>> = use_state(||vec![]);
-    let gateways_1 = gateways.clone();
-    let gateways_2 = gateways.clone();
 
-    use_effect_with((), move|_|{
-        let gateways = gateways_1.clone();
-        wasm_bindgen_futures::spawn_local(async move {
-            let fetched_gateways: Vec<Gateway> =
-                Service::index(loc.path(), store.selected_domain_id.clone())
-                    .await
-                    .unwrap();
-            gateways.set(fetched_gateways);
+    {
+        let gateways = gateways.clone();
+        use_effect_with((), move|_|{
+            let gateways = gateways.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                let fetched_gateways: Vec<Gateway> =
+                    Service::index(loc.path(), store.selected_domain_id.clone())
+                        .await
+                        .unwrap();
+                gateways.set(fetched_gateways);
+            });
         });
-    });
+    }
+    let ondel: Callback<usize> =  {
+        let gateways = gateways.clone();
+        Callback::from(move|id: usize|{
+           let gateways = gateways.clone();
+           let filtered: Vec<Gateway> = gateways
+               .iter()
+               .filter(|g| {g.id !=id})
+               .map(|g|{g.clone()})
+               .collect();
 
-    let ondel: Callback<usize> = Callback::from(move|id: usize|{
-        let gateways = gateways_2.clone();
-        let filtered: Vec<Gateway> = gateways
-            .iter()
-            .filter(|g| {g.id !=id})
-            .map(|g|{g.clone()})
-            .collect();
-
-        gateways.set(filtered);
-    });
+           gateways.set(filtered);
+        })
+    };
 
     let onadd: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent|{
         nav.push(&GatewayRoute::Get {id: 0});
@@ -137,7 +140,10 @@ pub fn GatewayList() -> Html {
 
     let gateways_list: Vec<Html> = gateways.iter().map(|g|{
         html! {
-            <GatewayListItem gateway={Gateway {..g.clone()}} ondel={ondel.clone()}></GatewayListItem>
+            <GatewayListItem
+                gateway={Gateway {..g.clone()}}
+                ondel={ondel.clone()}>
+            </GatewayListItem>
         }
     }).collect();
 
@@ -168,24 +174,26 @@ pub fn GatewayList() -> Html {
 pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
     let nav = use_navigator().unwrap();
     let loc = use_location().unwrap();
-    let loc_1 = loc.clone();
-
     let id = props.id;
     let gateway = use_state(||Gateway::new());
-    let g = gateway.clone();
     let(store, dispatch) = use_store::<Store>();
-    let store_cloned = store.clone();
-    use_effect_with((), move |_|{
-        let gateway = g.clone();
-        let loc = loc_1.clone();
-        wasm_bindgen_futures::spawn_local(async move {
-            let fetched_gateway =
-                Service::get(loc.path(), store.selected_domain_id)
-                    .await
-                    .unwrap();
-            gateway.set(fetched_gateway);
+    {
+        let loc = loc.clone();
+        let gateway = gateway.clone();
+        let store = store.clone();
+        use_effect_with((), move |_|{
+            let gateway = gateway.clone();
+            let loc = loc.clone();
+            let store = store.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                let fetched_gateway =
+                    Service::get(loc.path(), store.selected_domain_id)
+                        .await
+                        .unwrap();
+                gateway.set(fetched_gateway);
+            });
         });
-    });
+    }
 
     let form_oncancel = {
         let nav = nav.clone();
@@ -197,8 +205,9 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
     let form_onsubmit = {
         let gateway = gateway.clone();
         let dispatch = dispatch.clone();
+        let store = store.clone();
         Callback::from(move|e: SubmitEvent| {
-            let store = store_cloned.clone();
+            let store = store.clone();
             let target: Option<EventTarget> = e.target();
             let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();
             let form_data = FormData::new_with_form(&form).unwrap();
