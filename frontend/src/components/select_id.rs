@@ -22,7 +22,7 @@ pub fn SelectId(props: &Props) -> Html {
     let selected = props.selected;
 
     if props.selected == 0 {
-        options.push("Select Agent".to_string());
+        options.push("".to_string());
         options_id.push(0);
     }
 
