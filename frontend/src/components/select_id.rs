@@ -14,27 +14,18 @@ pub struct Props {
 }
 
 #[function_component]
-pub fn IdSelect(props: &Props) -> Html {
+pub fn SelectId(props: &Props) -> Html {
     let id = props.id.clone();
     let mut options = props.options.clone();
     let mut options_id = props.options_id.clone();
     let input_ref = use_node_ref();
-    let length = options.len();
-    
-    options.push("".to_string());
-    options_id.push(0);
+    let selected = props.selected;
 
+    if props.selected == 0 {
+        options.push("Select Agent".to_string());
+        options_id.push(0);
+    }
 
-
-    let selected = if props.selected != 0 {
-        props.selected
-    } else {
-        match options_id.clone().last() {
-            Some(s) => *s,
-            None => 0
-        }
-    };
-    
     let handle_change = {
         let input_ref = input_ref.clone();
         Callback::from(move |e: Event| {
@@ -48,7 +39,7 @@ pub fn IdSelect(props: &Props) -> Html {
             input.set_value(&selected.id());
         })
     };
-    
+
     html!{
         <div>
             <select onchange={handle_change}
@@ -57,19 +48,23 @@ pub fn IdSelect(props: &Props) -> Html {
             {
                 options.into_iter().enumerate().map(|(i, o)| {
                     html!{
-                        if selected == options_id[i] {
+                        if options_id[i] == 0 {
+                            <option value=""
+                                disabled={true}
+                                selected={true}
+                                hidden={true}>{o}
+                            </option>
+                        } else if options_id[i] == selected {
                             <option selected=true id={options_id[i].to_string()}>{o}</option>
-                        } else if i < length {
-                            <option id={options_id[i].to_string()}>{o}</option>
                         } else {
-                            <option class="hidden"></option>
+                            <option id={options_id[i].to_string()}>{o}</option>
                         }
-                    }                                       
+                    }
                 }).collect::<Html>()
             }
             </select>
             <input
-                ref = {input_ref} 
+                ref = {input_ref}
                 name={id.clone()}
                 class={"hidden"}
                 value={selected.to_string()}/>

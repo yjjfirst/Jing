@@ -15,7 +15,7 @@ use crate::pages::callcenter::queues::model::Queue;
 
 use crate::components::input::Input;
 use crate::components::label::Label;
-use crate::components::select_id::IdSelect;
+use crate::components::select_id::SelectId;
 use crate::components::dialog::Dialog;
 
 #[derive(Clone, Routable, PartialEq)]
@@ -51,19 +51,9 @@ pub fn TierComponent(props: &TierComponentProps) -> Html {
     let loc = use_location().unwrap();
     let dialog_ref: NodeRef = use_node_ref();
     let onupdate = props.on_update.clone();
-
     let(store, dispatch) = use_store::<Store>();
     let agents: UseStateHandle<Vec<Agent>> = use_state(||vec![]);
 
-    let options = agents
-        .iter()
-        .map(|a|a.name.clone())
-        .collect::<Vec<String>>();
-
-    let options_id = agents
-        .iter()
-        .map(|a|a.id)
-        .collect::<Vec<usize>>();
     {
         let store = store.clone();
         let agents = agents.clone();
@@ -89,7 +79,7 @@ pub fn TierComponent(props: &TierComponentProps) -> Html {
             event.prevent_default();
 
             let target = event.target().unwrap();
-            let form = target.dyn_into().unwrap();            
+            let form = target.dyn_into().unwrap();
             let form_data = FormData::new_with_form(&form).unwrap();
 
             let agent_id = form_data.get("tier_agent")
@@ -124,7 +114,7 @@ pub fn TierComponent(props: &TierComponentProps) -> Html {
                 let onupdate = onupdate.clone();
                 let url = format!("{}/{}", loc.path(), tier.id);
                 match Service::post(&url, store.selected_domain_id, tier).await {
-                    Ok(_) => {                        
+                    Ok(_) => {
                         alert_info("Tier updated successfully.".to_string(), dispatch);
                         onupdate.emit(0);
                     },
@@ -164,18 +154,28 @@ pub fn TierComponent(props: &TierComponentProps) -> Html {
                <div class="grid grid-cols-4 gap-2 pr-4 items-center mb-1">
                    <div class="hidden">
                        <input
-                           name="tier_id" 
+                           name="tier_id"
                            value={tier_id.to_string()}
                        />
                    </div>
                    <div class="col-span-1">
-                       <IdSelect
-                           id="tier_agent"
-                           options = {options}
-                           options_id = {options_id}
-                           selected = {agent_id}
+                       <SelectId
+                            id="tier_agent"
+                            options = {
+                                agents
+                                    .iter()
+                                    .map(|a|a.name.clone())
+                                    .collect::<Vec<String>>()
+                            }
+                            options_id = {
+                                agents
+                                    .iter()
+                                    .map(|a|a.id)
+                                    .collect::<Vec<usize>>()
+                            }
+                            selected = {agent_id}
                        >
-                       </IdSelect>
+                       </SelectId>
                    </div>
                    <div class="col-span-1">
                        <Input
@@ -191,30 +191,30 @@ pub fn TierComponent(props: &TierComponentProps) -> Html {
                    </div>
                    if tier_id == 0 {
                        <button class="btn btn-square btn-outline btn-sm text-end">
-                           <Icon data={IconData::LUCIDE_CHECK}/>   
+                           <Icon data={IconData::LUCIDE_CHECK}/>
                        </button>
                    } else {
                        <div>
-                           <button 
+                           <button
                                 class="btn btn-square btn-outline btn-sm text-end" >
-                                <Icon data={IconData::LUCIDE_CHECK}/>   
+                                <Icon data={IconData::LUCIDE_CHECK}/>
                            </button>
                            <div
                                onclick={handle_del}
                                class="btn btn-square btn-outline btn-sm text-end ml-1" >
-                               <Icon data={IconData::LUCIDE_TRASH}/>   
+                               <Icon data={IconData::LUCIDE_TRASH}/>
                            </div>
                        </div>
                    }
-               </div>             
+               </div>
            </form>
            <Dialog
                d_ref = {dialog_ref}
-               title={"Warning!"} 
+               title={"Warning!"}
                contents={format!("Are you sure to delete the tier?")}
                onconfirm={handle_confirm}
                >
-           </Dialog>          
+           </Dialog>
         </div>
     }
 }
@@ -223,7 +223,7 @@ pub fn TierComponent(props: &TierComponentProps) -> Html {
 pub fn Queues() -> Html {
     let (store,_) = use_store::<Store>();
     let queues: UseStateHandle<Vec<Queue>> = use_state(||vec![]);
-        
+
     {
         let store = store.clone();
         let queues = queues.clone();
@@ -249,7 +249,7 @@ pub fn Queues() -> Html {
                     }
                 }).collect::<Vec<Html>>()
             }
-        </div>      
+        </div>
     }
 }
 
@@ -285,7 +285,7 @@ pub fn Tiers(props: &TiersProps) -> Html {
             let hidden_ref = hidden_ref.clone();
             let e = hidden_ref.cast::<HtmlInputElement>().unwrap();
             e.focus().unwrap();
-            
+
             let c = *count + 1;
             count.set(c);
         })
@@ -294,7 +294,7 @@ pub fn Tiers(props: &TiersProps) -> Html {
     html!{
         <div>
             <div class="divider my-1"></div>
-            <input class="sr-only" ref={hidden_ref}/>      
+            <input class="sr-only" ref={hidden_ref}/>
             <div class="w-full grid grid-cols-3 gap-1">
                 <Label>{props.queue_name.clone()}</Label>
                 <div class="col-span-2">
@@ -310,14 +310,14 @@ pub fn Tiers(props: &TiersProps) -> Html {
                             html!{
                                 <TierComponent
                                     on_update={handle_update.clone()}
-                                    tier_id={tier.id} 
+                                    tier_id={tier.id}
                                     agent_id={tier.agent.id}
                                     queue_id={queue_id}
-                                    agent_name={tier.agent.name.clone()} 
-                                    level={tier.level} 
+                                    agent_name={tier.agent.name.clone()}
+                                    level={tier.level}
                                     position={tier.position} />
                             }
-                        })                            
+                        })
                     }
                     </div>
                     <div class="dropdown">
@@ -331,19 +331,19 @@ pub fn Tiers(props: &TiersProps) -> Html {
                                 <label class="mb-1">{"Position"}</label>
                                 <div>{""}</div>
                             </div>
-                            <TierComponent 
+                            <TierComponent
                                 on_update={handle_update}
-                                tier_id={0} 
+                                tier_id={0}
                                 agent_id={0}
                                 queue_id={queue_id}
-                                agent_name={"".to_string()} 
-                                level={1} 
+                                agent_name={"".to_string()}
+                                level={1}
                                 position={1} />
                         </div>
                     </div>
-                </div>               
+                </div>
             </div>
-        </div>        
+        </div>
     }
 }
 
