@@ -7,7 +7,7 @@ use std::collections::BTreeMap;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
-    pub id: String,
+    pub name: String,
     pub value: String,
     #[prop_or(classes!("col-span-2"))]
     pub classes: Classes
@@ -15,8 +15,7 @@ pub struct Props {
 
 #[function_component]
 pub fn ExtenionSelect(props: &Props) -> Html {
-    let id = props.id.clone();
-    let name= id.clone();
+    let name= props.name.clone();
     let value = props.value.clone();
     let need_change = use_state(||false);
     let loading = use_state(||true);
@@ -78,20 +77,20 @@ pub fn ExtenionSelect(props: &Props) -> Html {
     let classes = classes!("select", "select-bordered", "w-full", props.classes.clone());
     html! {
         if *need_change && !*loading {
-            <select class={classes} name={name} value={value.clone()} id={id}>
+            <select class={classes} name={name} value={value.clone()}>
                 if value == "" {
-                    <option value="" 
-                        disabled={true} 
-                        selected={true} 
+                    <option value=""
+                        disabled={true}
+                        selected={true}
                         hidden={true}>{"Select a extension"}
                     </option>
                 }
-                {options_list}     
+                {options_list}
             </select>
         } else {
-            <input class="pbx-input" 
-                name={name.clone()} 
-                value={value.clone()} 
+            <input class="pbx-input"
+                name={name.clone()}
+                value={value.clone()}
                 onfocus={handle_focus} />
         }
     }

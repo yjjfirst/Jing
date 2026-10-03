@@ -26,12 +26,12 @@ pub enum InboundRoute {
     #[at("/inbound/:id")]
     Get {id: usize},
 }
-#[derive(Clone, PartialEq, Properties)] 
+#[derive(Clone, PartialEq, Properties)]
 pub struct InboundProps {
     pub inbound: Inbound,
-    pub ondel: Callback<usize>    
+    pub ondel: Callback<usize>
 }
-#[derive(Clone, PartialEq, Properties)] 
+#[derive(Clone, PartialEq, Properties)]
 pub struct InboundDetailsProps {
     id: usize,
 }
@@ -43,10 +43,10 @@ pub fn InboundListItem(props: &InboundProps) -> Html {
     let (store,_) = use_store::<Store>();
     let id = props.inbound.id;
     let ondel = props.ondel.clone();
-    
+
     let inbound = props.inbound.clone();
     let dialog_ref: NodeRef = use_node_ref();
-    let dd_ref = dialog_ref.clone(); 
+    let dd_ref = dialog_ref.clone();
 
     let onedit: Callback<MouseEvent> = Callback::from(move|_e|{
         nav.push(&InboundRoute::Get {id: inbound.id});
@@ -55,7 +55,7 @@ pub fn InboundListItem(props: &InboundProps) -> Html {
     let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
         let loc = loc.clone();
         let store = store.clone();
-        let ondel = ondel.clone();        
+        let ondel = ondel.clone();
 
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), id);
@@ -64,11 +64,11 @@ pub fn InboundListItem(props: &InboundProps) -> Html {
                 .unwrap();
             ondel.emit(id);
         })
-    });  
+    });
 
     let ondel = Callback::from(move|_e: MouseEvent|{
         let d = dd_ref.cast::<HtmlDialogElement>().unwrap();
-        d.show_modal().unwrap();  
+        d.show_modal().unwrap();
     });
 
     html!{
@@ -81,27 +81,27 @@ pub fn InboundListItem(props: &InboundProps) -> Html {
             <th class="flex justify-end">
                 <div class="mr-1">
                     <div onclick={onedit} class="btn btn-square btn-outline btn-sm">
-                        <Icon data={IconData::LUCIDE_EDIT}/>   
+                        <Icon data={IconData::LUCIDE_EDIT}/>
                     </div>
                 </div>
                 <div>
                     <div onclick={ondel} class="btn btn-square btn-outline btn-sm">
-                        <Icon data={IconData::LUCIDE_TRASH}/>   
+                        <Icon data={IconData::LUCIDE_TRASH}/>
                     </div>
                 </div>
-            </th> 
+            </th>
             <Dialog
                 d_ref = {dialog_ref}
-                title={"Warning!"} 
+                title={"Warning!"}
                 contents={format!("Are you sure to delete the user: {}?", inbound.id)}
                 {onconfirm}
                 >
-            </Dialog>                
+            </Dialog>
         </tr>
     }
 }
 
-#[function_component] 
+#[function_component]
 pub fn InboundList() -> Html {
     let nav = use_navigator().unwrap();
     let loc = use_location().unwrap().clone();
@@ -115,7 +115,7 @@ pub fn InboundList() -> Html {
         let store = store.clone();
         let in_routes = in_routes_1.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_routes: Vec<Inbound> = 
+            let fetched_routes: Vec<Inbound> =
                 Service::index(loc.path(), store.selected_domain_id.clone())
                     .await
                     .unwrap();
@@ -163,11 +163,11 @@ pub fn InboundList() -> Html {
 
             <div class="flex flex-row-reverse pr-4">
                 <div onclick={onadd} class="btn btn-square btn-outline btn-sm" >
-                    <Icon data={IconData::LUCIDE_PLUS}/>   
+                    <Icon data={IconData::LUCIDE_PLUS}/>
                 </div>
-            </div>             
-        </div>        
-    }    
+            </div>
+        </div>
+    }
 
 }
 
@@ -181,9 +181,9 @@ pub fn InboundDetails(_props: &InboundDetailsProps) -> Html {
     let store_1 = store.clone();
 
     let inbound: UseStateHandle<Inbound> = use_state(|| Inbound {
-        id: 0, 
-        condition: "".to_string(), 
-        context: "".to_string(), 
+        id: 0,
+        condition: "".to_string(),
+        context: "".to_string(),
         dest_extension: "".to_string()
     });
     let inbound_1 = inbound.clone();
@@ -192,14 +192,14 @@ pub fn InboundDetails(_props: &InboundDetailsProps) -> Html {
         let inbound = inbound_1.clone();
         let loc = loc.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_out = 
+            let fetched_out =
                 Service::get(loc.path(), store.selected_domain_id)
                     .await
                     .unwrap();
             inbound.set(fetched_out);
         });
     });
-    
+
     let form_oncancel = {
         let nav = nav.clone();
         Callback::from(move|_| {
@@ -207,11 +207,11 @@ pub fn InboundDetails(_props: &InboundDetailsProps) -> Html {
         })
     };
 
-    let form_onsubmit = {        
+    let form_onsubmit = {
         Callback::from(move|event: SubmitEvent| {
             let target: Option<EventTarget> = event.target();
-            let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();            
-            let form_data = FormData::new_with_form(&form).unwrap();  
+            let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();
+            let form_data = FormData::new_with_form(&form).unwrap();
             let dispatch = dispatch.clone();
             let loc = loc_1.clone();
             let nav = nav.clone();
@@ -236,17 +236,17 @@ pub fn InboundDetails(_props: &InboundDetailsProps) -> Html {
                         alert_error("Update inbound route failed.".to_string(), dispatch);
                     }
                 }
-                nav.push(&InboundRoute::Index);            
+                nav.push(&InboundRoute::Index);
             });
 
-            event.prevent_default(); 
+            event.prevent_default();
         })
     };
 
     html!{
         <div class="grow mr-2">
             <Header title= {format!("Inbound: {}", inbound.id)}></Header>
-            <div class="divider my-1"></div> 
+            <div class="divider my-1"></div>
             <form class="w-full" onsubmit={form_onsubmit}>
             <div class="grid grid-cols-3 gap-1">
                 <Input value={inbound.id.to_string()} id="id" hidden=true></Input>
@@ -255,8 +255,8 @@ pub fn InboundDetails(_props: &InboundDetailsProps) -> Html {
                 <Label>{"Context"}</Label>
                 <Input value={inbound.context.clone()} id="context"></Input>
                 <Label>{"Destination"}</Label>
-                <ExtenionSelect id="destination" value={inbound.dest_extension.clone()}/>
-                </div>        
+                <ExtenionSelect name="destination" value={inbound.dest_extension.clone()}/>
+                </div>
                 <ActionButtons oncancel={form_oncancel} />
             </form>
         </div>

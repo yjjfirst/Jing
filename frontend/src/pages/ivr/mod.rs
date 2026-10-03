@@ -193,7 +193,7 @@ pub fn IvrEntryComponent(props: &IvrEntryProps) -> Html {
     html!{
         <div class="flex">
             <Input id="entry" value={props.digits.clone()}></Input>
-            <ExtenionSelect id="destination" value={props.exten.clone()}/>
+            <ExtenionSelect name="destination" value={props.exten.clone()}/>
         </div>
     }
 }
