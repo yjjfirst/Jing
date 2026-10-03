@@ -12,7 +12,7 @@ use yew_icons::{Icon, IconData};
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
 use crate::components::input::Input;
-use crate::components::sound_file_select::SoundFileSelect;
+use crate::components::select_sound_file::SelectSoundFile;
 use crate::components::exten_select::ExtenionSelect;
 use crate::components::label::Label;
 
@@ -244,10 +244,12 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
 
     let sound_file_select = |id: &str, sound_file_id: usize| {
         html!{
-            <SoundFileSelect
-                id={id.to_string()}
-                sound_file_id={sound_file_id}>
-            </SoundFileSelect>
+            <div class="col-span-2">
+                <SelectSoundFile
+                    id={id.to_string()}
+                    sound_file_id={sound_file_id}>
+                </SelectSoundFile>
+            </div>
         }
     };
 

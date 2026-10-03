@@ -12,7 +12,7 @@ use crate::components::header::Header;
 use crate::components::dialog::Dialog;
 use crate::components::input::Input;
 use crate::components::label::Label;
-use crate::components::sound_file_select::SoundFileSelect;
+use crate::components::select_sound_file::SelectSoundFile;
 use crate::components::action_buttons::ActionButtons;
 
 use crate::store::{alert_info, alert_error, Store};
@@ -27,12 +27,12 @@ pub enum SoundRoute {
     Get {id: usize},
 }
 
-#[derive(Clone, PartialEq, Properties)] 
+#[derive(Clone, PartialEq, Properties)]
 pub struct SoundDetailProps {
     id: usize,
 }
 
-#[derive(Clone, PartialEq, Properties)] 
+#[derive(Clone, PartialEq, Properties)]
 pub struct SoundListItemProps {
     pub sound_id: usize,
     pub name: String,
@@ -45,7 +45,7 @@ pub struct SoundListItemProps {
 pub fn SoundListItem(props: &SoundListItemProps) -> Html {
     let nav = use_navigator().unwrap();
     let dialog_ref: NodeRef = use_node_ref();
-    let dd_ref = dialog_ref.clone(); 
+    let dd_ref = dialog_ref.clone();
     let loc: Location = use_location().unwrap().clone();
     let (store,_) = use_store::<Store>();
     let ondel = props.ondel.clone();
@@ -65,7 +65,7 @@ pub fn SoundListItem(props: &SoundListItemProps) -> Html {
                 .await
                 .unwrap();
             ondel.emit(sound_id);
-        });        
+        });
     });
 
     let ondel: Callback<MouseEvent> = Callback::from(move |_e| {
@@ -81,22 +81,22 @@ pub fn SoundListItem(props: &SoundListItemProps) -> Html {
             <th class="flex justify-end">
                 <div class="mr-1">
                     <div onclick={onedit} class="btn btn-square btn-outline btn-sm">
-                        <Icon data={IconData::LUCIDE_EDIT}/>   
+                        <Icon data={IconData::LUCIDE_EDIT}/>
                     </div>
                 </div>
                 <div>
                     <div onclick={ondel} class="btn btn-square btn-outline btn-sm">
-                        <Icon data={IconData::LUCIDE_TRASH}/>   
+                        <Icon data={IconData::LUCIDE_TRASH}/>
                     </div>
                 </div>
-            </th>  
+            </th>
             <Dialog
                 d_ref = {dialog_ref}
-                title={"Warning!"} 
+                title={"Warning!"}
                 contents={format!("Are you sure to delete sound: {}?", props.name.clone())}
                 {onconfirm}
                 >
-            </Dialog>                     
+            </Dialog>
 
         </tr>
     }
@@ -113,7 +113,7 @@ pub fn SoundList() -> Html {
         use_effect_with((), move|_|{
             let sounds = sounds.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_sounds: Vec<ApiSound> = 
+                let fetched_sounds: Vec<ApiSound> =
                     Service::index(loc.path(), store.selected_domain_id.clone())
                         .await
                         .unwrap();
@@ -130,7 +130,7 @@ pub fn SoundList() -> Html {
                 .filter(|s|s.sound.id != id)
                 .map(|s|s.clone())
                 .collect();
-            sounds.set(filtered);            
+            sounds.set(filtered);
         })
     };
 
@@ -138,7 +138,7 @@ pub fn SoundList() -> Html {
         .iter()
         .map(|s| {
             html! {
-                <SoundListItem 
+                <SoundListItem
                     name={s.sound.name.clone()}
                     exten={s.sound.exten.clone()}
                     sound_file={s.sound_file.name.clone()}
@@ -148,9 +148,9 @@ pub fn SoundList() -> Html {
             }
         })
         .collect();
-    
+
     let onadd: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent|{
-        nav.push(&SoundRoute::Get {id: 0});        
+        nav.push(&SoundRoute::Get {id: 0});
     });
 
     html! {
@@ -165,17 +165,17 @@ pub fn SoundList() -> Html {
                         <th>{"Sound File"}</th>
                     </tr>
                     {sounds_html}
-                </thead>    
+                </thead>
                 <tbody>
 
                 </tbody>
             </table>
             <div class="flex flex-row-reverse pr-4">
                 <div onclick={onadd} class="btn btn-square btn-outline btn-sm" >
-                    <Icon data={IconData::LUCIDE_PLUS}/>   
+                    <Icon data={IconData::LUCIDE_PLUS}/>
                 </div>
-            </div>             
-        </div>        
+            </div>
+        </div>
 
     }
 }
@@ -196,7 +196,7 @@ pub fn SoundDetails(props: &SoundDetailProps) -> Html {
             let s = sound.clone();
             let loc = loc.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_sound = 
+                let fetched_sound =
                     Service::get(loc.path(), store.selected_domain_id)
                         .await
                         .unwrap();
@@ -217,20 +217,20 @@ pub fn SoundDetails(props: &SoundDetailProps) -> Html {
         let dispatch = dispatch.clone();
         let sound = sound.clone();
         let nav = nav.clone();
-    
+
         Callback::from(move|e: SubmitEvent| {
             let dispatch = dispatch.clone();
             let loc = loc.clone();
             let store = store.clone();
             let nav = nav.clone();
-            
+
             let form_data = FormData::new_with_form(
                 &e
                     .target()
                     .unwrap()
                     .dyn_into::<HtmlFormElement>()
                     .unwrap()).unwrap();
-                
+
             let s = Sound {
                 id: sound.id,
                 name: form_data.get("name").as_string().unwrap(),
@@ -259,17 +259,17 @@ pub fn SoundDetails(props: &SoundDetailProps) -> Html {
                         alert_error("Update sound failed.".to_string(), dispatch);
                     }
                 }
-                nav.push(&SoundRoute::Index);            
+                nav.push(&SoundRoute::Index);
             });
 
-            e.prevent_default();    
+            e.prevent_default();
         })
     };
 
     html!{
         <div class="grow mr-2">
             <Header title= {format!("Sound: {}", sound.exten.clone())}></Header>
-            <div class="divider my-1"></div> 
+            <div class="divider my-1"></div>
             <form class="w-full" onsubmit={form_onsubmit}>
             <div class="grid grid-cols-3 gap-1">
                 <Label hidden = {id != 0}>{"Extension"}</Label>
@@ -284,7 +284,9 @@ pub fn SoundDetails(props: &SoundDetailProps) -> Html {
                     id="name"
                 />
                 <Label>{"Sound File"}</Label>
-                <SoundFileSelect id="sound_file" sound_file_id={sound.sound_file_id}/>
+                <div class="col-span-2">
+                    <SelectSoundFile id="sound_file" sound_file_id={sound.sound_file_id}/>
+                </div>
             </div>
             <ActionButtons oncancel={form_oncancel}/>
             </form>

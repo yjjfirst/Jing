@@ -12,7 +12,6 @@ use yew_icons::{Icon, IconData};
 use crate::store::{alert_info, alert_error, Store};
 
 use crate::components::header::Header;
-use crate::components::input::Input;
 use crate::components::label::Label;
 use crate::components::action_buttons::ActionButtons;
 use crate::components::param_input::{ParamInput};
