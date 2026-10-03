@@ -10,7 +10,6 @@ use yew_icons::{Icon, IconData};
 
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
-use crate::components::label::Label;
 use crate::components::action_buttons::ActionButtons;
 
 use crate::store::{alert_info, alert_error, Store};
@@ -277,23 +276,23 @@ pub fn ConfDetails(props: &ConfDetailProps) -> Html{
             <div class="divider my-1"></div>
             <form class="w-full" onsubmit={form_onsubmit}>
             <div class="grid grid-cols-3 gap-1">
-                <Label hidden = {conf_id != 0}>{"Extension"}</Label>
+                <label class="pbx-label" hidden = {conf_id != 0}>{"Extension"}</label>
                 <input class="pbx-input"
                     value={conf.exten.clone()}
                     name="extension"
                     hidden = {conf_id != 0}
                 />
-                <Label>{"Name"}</Label>
+                <label class="pbx-label">{"Name"}</label>
                 <input class="pbx-input"
                     value={conf.name.clone()}
                     name="name"
                 />
-                <Label>{"Description"}</Label>
+                <label class="pbx-label">{"Description"}</label>
                 <input class="pbx-input"
                     value={conf.description.clone()}
                     name="description"
                 />
-                <Label>{"Conference Profile Id"}</Label>
+                <label class="pbx-label">{"Conference Profile Id"}</label>
                 <input class="pbx-input"
                     value={conf.conference_profile_id.to_string()}
                     name="conference_profile_id"

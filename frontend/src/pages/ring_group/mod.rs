@@ -12,7 +12,6 @@ use crate::components::header::Header;
 use model::{RingGroup};
 use crate::models::Service;
 use crate::store::{alert_info, alert_error, Store};
-use crate::components::label::Label;
 use crate::components::select::Select;
 use crate::components::select_multi::MultiSelect;
 use crate::components::action_buttons::ActionButtons;
@@ -272,39 +271,39 @@ pub fn RingGroupDetailComponent(props: &RingGroupDetailsProps) -> Html {
             <div class="divider my-1"></div>
             <form class="w-full" onsubmit={form_onsubmit}>
             <div class="grid grid-cols-3 gap-1">
-                <Label hidden={group.group_id.clone() != ""}>{"Extension"}</Label>
+                <label class="pbx-label" hidden={group.group_id.clone() != ""}>{"Extension"}</label>
                 <input
                     class="pbx-input"
                     value={group.group_id.clone()}
                     name="extension"
                     hidden={group.group_id.clone() != ""}
                 />
-                <Label>{"Name"}</Label>
+                <label class="pbx-label">{"Name"}</label>
                 <input
                     class="pbx-input"
                     value={group.name.clone()}
                     name="name"
                     />
-                <Label>{"Description"}</Label>
+                <label class="pbx-label">{"Description"}</label>
                 <input
                     class="pbx-input"
                     value={group.description.clone()}
                     name="description"
                     />
-                <Label>{"Ringing Time"}</Label>
+                <label class="pbx-label">{"Ringing Time"}</label>
                 <input
                     class="pbx-input"
                     value={group.ring_time.to_string()}
                     type="number"
                     name="ring-time"
                     />
-                <Label>{"Ring Stragegy"}</Label>
+                <label class="pbx-label">{"Ring Strategy"}</label>
                 <Select
                     {options}
                     selected = {group.ring_strategy.to_string()}
                     id="ring-strategy">
                 </Select>
-                <Label>{"Members"}</Label>
+                <label class="pbx-label">{"Members"}</label>
                 <MultiSelect
                     exists = {group.members.clone()}
                     all = {users.iter().map(|u|u.to_string()).collect::<Vec<String>>()}

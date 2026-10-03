@@ -5,7 +5,6 @@ pub mod file_input;
 pub mod navbar;
 pub mod select;
 pub mod select_multi;
-pub mod label;
 pub mod dialog;
 pub mod action_buttons;
 pub mod exten_select;

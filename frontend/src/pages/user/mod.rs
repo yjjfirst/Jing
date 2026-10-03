@@ -12,7 +12,6 @@ use yew_icons::{Icon, IconData};
 use crate::store::{alert_info, alert_error, Store};
 
 use crate::components::header::Header;
-use crate::components::label::Label;
 use crate::components::action_buttons::ActionButtons;
 use crate::components::param_input::{ParamInput};
 use model::User;
@@ -280,7 +279,7 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
         <div class="divider my-1"></div>
             <form class="w-full" onsubmit={form_onsubmit}>
             <div class="grid grid-cols-3 gap-1">
-                <Label>{"User Id"}</Label>
+                <label class="pbx-label">{"User Id"}</label>
                 <input class="pbx-input" disabled={user.id != 0}
                     value={user.clone().user_id.clone()}
                     name="user_id"
@@ -289,7 +288,7 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
                     for user.param_helps.iter().map(|p|{
                         html!{
                             <>
-                                <Label>{p.name.clone()}</Label>
+                                <label class="pbx-label">{p.name.clone()}</label>
                                 <ParamInput
                                     value={Param::get(&p.name, &user.params)}
                                     name={p.name.clone()}
@@ -304,7 +303,7 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
                     for user.var_helps.iter().map(|p|{
                         html!{
                             <>
-                                <Label>{p.name.clone()}</Label>
+                                <label class="pbx-label">{p.name.clone()}</label>
                                 <ParamInput
                                     value={Var::get(&p.name, &user.vars)}
                                     name={p.name.clone()}

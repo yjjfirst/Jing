@@ -9,7 +9,6 @@ use yew_router::prelude::*;
 use yewdux::prelude::*;
 use yew_icons::{Icon, IconData};
 
-use crate::components::label::Label;
 use crate::components::file_input::FileInput;
 use crate::components::action_buttons::ActionButtons;
 use crate::components::header::Header;
@@ -261,7 +260,7 @@ pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
             <div class="grid grid-cols-3 gap-1">
                 <input value={sound.id.to_string()} id="id" hidden=true />
                 <input value={store_2.selected_domain_id.to_string()} id="domain_id" hidden=true />
-                <Label>{"File Name"}</Label>
+                <label class="pbx-label">{"File Name"}</label>
                 if id == 0 {
                     <FileInput
                     id="file_name"
@@ -270,7 +269,7 @@ pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
                 } else {
                     <input class="pbx-input" value={sound.name.clone()} id="name" disabled=true />
                 }
-                <Label>{"Description"}</Label>
+                <label class="pbx-label">{"Description"}</label>
                 <input class="pbx-input" value={sound.description.clone()} id="description" />
                 </div>
                 <ActionButtons oncancel={form_oncancel}/>

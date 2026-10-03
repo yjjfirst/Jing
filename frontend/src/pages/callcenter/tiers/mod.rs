@@ -13,7 +13,6 @@ use crate::store::{alert_info, alert_error,Store};
 use crate::pages::callcenter::agents::model::Agent;
 use crate::pages::callcenter::queues::model::Queue;
 
-use crate::components::label::Label;
 use crate::components::select_id::SelectId;
 use crate::components::dialog::Dialog;
 
@@ -295,7 +294,7 @@ pub fn Tiers(props: &TiersProps) -> Html {
             <div class="divider my-1"></div>
             <input class="sr-only" ref={hidden_ref}/>
             <div class="w-full grid grid-cols-3 gap-1">
-                <Label>{props.queue_name.clone()}</Label>
+                <label class="pbx-label">{"Queue Name"}</label>
                 <div class="col-span-2">
                     <div class="grid grid-cols-4 gap-2 pr-4 text-xs font-bold mb-2">
                         <label class="mb-1">{"Agent"}</label>

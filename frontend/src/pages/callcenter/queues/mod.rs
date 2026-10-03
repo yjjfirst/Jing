@@ -14,7 +14,6 @@ use crate::store::{alert_info, alert_error, Store};
 use crate::models::Service;
 
 use crate::components::header::Header;
-use crate::components::label::Label;
 use crate::components::dialog::Dialog;
 use crate::components::select::Select;
 use crate::components::action_buttons::ActionButtons;
@@ -278,18 +277,18 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
             <div class="divider my-1"></div>
             <form class="w-full" onsubmit={handle_submit}>
                 <div class="grid grid-cols-3 gap-1">
-                    <Label hidden = {props.id != 0}>{"Extension"}</Label>
+                    <label class="pbx-label" hidden = {props.id != 0}>{"Extension"}</label>
                     <input class="pbx-input"
                         hidden = {props.id != 0}
                         value={queue.exten.clone()}
                         name="extension"
                     />
-                    <Label>{"Name"}</Label>
+                    <label class="pbx-label">{"Name"}</label>
                     <input class="pbx-input"
                         value={queue.name.clone()}
                         name="name"
                     />
-                    <Label>{"strategy"}</Label>
+                    <label class="pbx-label">{"strategy"}</label>
                     <Select
                         options={
                             vec![
@@ -307,61 +306,61 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
                         selected = {QueueParam::get("strategy", &queue.params)}
                         id="strategy"
                     />
-                    <Label>{"moh"}</Label>
+                    <label class="pbx-label">{"moh"}</label>
                     <input class="pbx-input"
                         value = {QueueParam::get("moh-sound", &queue.params)}
                         name="moh-sound"
                     />
-                    <Label>{"Time base score"}</Label>
+                    <label class="pbx-label">{"Time base score"}</label>
                     <Select
                         options={vec!["system".to_string(), "queue".to_string()]}
                         selected = {QueueParam::get("time-base-score", &queue.params)}
                         id="time-base-score"
                     />
-                    <Label>{"Max wait time"}</Label>
+                    <label class="pbx-label">{"Max wait time"}</label>
                     <input class="pbx-input"
                         value = {QueueParam::get("max-wait-time", &queue.params)}
                         name="max-wait-time"
                     />
-                    <Label>{"Max wait time with no agent"}</Label>
+                    <label class="pbx-label">{"Max wait time with no agent"}</label>
                     <input class="pbx-input"
                         value = {QueueParam::get("max-wait-time-with-no-agent", &queue.params)}
                         name="max-wait-time-with-no-agent"
                     />
-                    <Label>{"Max wait time with no agent time reached"}</Label>
+                    <label class="pbx-label">{"Max wait time with no agent time reached"}</label>
                     <input class="pbx-input"
                         value = {QueueParam::get("max-wait-time-with-no-agent-time-reached", &queue.params)}
                         name="max-wait-time-with-no-agent-time-reached"
                     />
-                    <Label>{"Tier rules apply"}</Label>
+                    <label class="pbx-label">{"Tier rules apply"}</label>
                     <Select
                         options={vec!["true".to_string(), "false".to_string()]}
                         selected = {QueueParam::get("tier-rules-apply", &queue.params)}
                         id="tier-rules-apply"
                     />
-                    <Label>{"Tier rule wait second"}</Label>
+                    <label class="pbx-label">{"Tier rule wait second"}</label>
                     <input class="pbx-input"
                         value = {QueueParam::get("tier-rule-wait-second", &queue.params)}
                         name="tier-rule-wait-second"
                     />
-                    <Label>{"Tier rule wait multiply level"}</Label>
+                    <label class="pbx-label">{"Tier rule wait multiply level"}</label>
                     <Select
                         options={vec!["true".to_string(), "false".to_string()]}
                         selected = {QueueParam::get("tier-rule-wait-multiply-level", &queue.params)}
                         id="tier-rule-wait-multiply-level"
                     />
-                    <Label>{"Tier rule no agent no wait"}</Label>
+                    <label class="pbx-label">{"Tier rule no agent no wait"}</label>
                     <Select
                         options={vec!["true".to_string(), "false".to_string()]}
                         selected = {QueueParam::get("tier-rule-no-agent-no-wait", &queue.params)}
                         id="tier-rule-no-agent-no-wait"
                     />
-                    <Label>{"Discard abandoned after"}</Label>
+                    <label class="pbx-label">{"Discard abandoned after"}</label>
                     <input class="pbx-input"
                         value = {QueueParam::get("discard-abandoned-after", &queue.params)}
                         name="discard-abandoned-after"
                     />
-                    <Label>{"Abandoned resume allowed"}</Label>
+                    <label class="pbx-label">{"Abandoned resume allowed"}</label>
                     <Select
                         options={vec!["true".to_string(), "false".to_string()]}
                         selected = {QueueParam::get("abandoned-resume-allowed", &queue.params)}

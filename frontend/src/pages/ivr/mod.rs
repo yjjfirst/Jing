@@ -13,8 +13,6 @@ use crate::components::header::Header;
 use crate::components::dialog::Dialog;
 use crate::components::select_sound_file::SelectSoundFile;
 use crate::components::exten_select::ExtenionSelect;
-use crate::components::label::Label;
-
 use crate::components::action_buttons::ActionButtons;
 
 use model::{IvrEntry, IvrAttr, Ivr};
@@ -231,7 +229,7 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
 
     let label = |id:&str| {
         html!{
-            <Label>{id}</Label>
+            <label class="pbx-label">{id}</label>
         }
     };
 
@@ -376,18 +374,18 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
             <div class="divider my-1"></div>
             <form class="w-full" onsubmit={form_onsubmit}>
                 <div class="grid grid-cols-3 gap-1">
-                    <Label hidden = {props.id != 0}>{"Extension"}</Label>
+                    <label class="pbx-label" hidden = {props.id != 0}>{"Extension"}</label>
                     <input class="pbx-input"
                         value={ivr.exten.clone()}
                         name="extension"
                         hidden = {props.id != 0}
                     />
-                    <Label>{"Name"}</Label>
+                    <label class="pbx-label">{"Name"}</label>
                     <input class="pbx-input"
                         name="name"
                         value={ivr.name.clone()} />
                     {attr_htmls}
-                    <Label>{"Entries"}</Label>
+                    <label class="pbx-label">{"Entries"}</label>
                     <div>
                         {entries_html}
                         <div>

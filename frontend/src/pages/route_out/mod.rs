@@ -11,7 +11,6 @@ use crate::store::{alert_info, alert_error, Store};
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
 use crate::components::action_buttons::ActionButtons;
-use crate::components::label::Label;
 use crate::components::select::Select;
 
 use crate::pages::gateway::model::Gateway;
@@ -262,15 +261,15 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
             <form class="w-full" onsubmit={form_onsubmit}>
                 <div class="grid grid-cols-3 gap-1">
                 <input value={out.id.to_string()} name="id" hidden=true/>
-                <Label>{"Priority"}</Label>
+                <label class="pbx-label">{"Priority"}</label>
                 <input value={out.priority.to_string()} name="priority" class="pbx-input"/>
-                <Label>{"Condition"}</Label>
+                <label class="pbx-label">{"Condition"}</label>
                 <input value={out.condition.clone()} name="condition" class="pbx-input"/>
-                <Label>{"Prepend"}</Label>
+                <label class="pbx-label">{"Prepend"}</label>
                 <input value={out.prepend.clone()} name="prepend" class="pbx-input"/>
-                <Label>{"Prefix"}</Label>
+                <label class="pbx-label">{"Prefix"}</label>
                 <input value={out.prefix.to_string()} name="prefix" class="pbx-input"/>
-                <Label>{"Gateway"}</Label>
+                <label class="pbx-label">{"Gateway"}</label>
                 if out.gateway_id != 0 && gateways.len() != 0 {
                     <Select
                         selected={Gateway::get_gateway_by_id(out.gateway_id, &gateways).unwrap().gateway_name.clone()}
