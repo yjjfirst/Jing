@@ -48,7 +48,7 @@ pub fn SidebarMenu() -> Html {
             icon: None,
         },
         SidebarMenuItemPros {
-            caption: "Sound".to_string(),
+            caption: "Announcement".to_string(),
             route: Route::SoundRoot,
             onclick: onclick.clone(),
             selected: false,

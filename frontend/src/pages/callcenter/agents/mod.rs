@@ -13,7 +13,6 @@ use crate::models::Service;
 
 use crate::components::header::Header;
 use crate::components::label::Label;
-use crate::components::input::Input;
 use crate::components::action_buttons::ActionButtons;
 use crate::components::user_select::UserSelect;
 use crate::components::select::Select;
@@ -47,13 +46,13 @@ pub struct AgentListItemProps {
 pub fn AgentListItem(props: &AgentListItemProps) -> Html {
     let loc: Location = use_location().unwrap();
     let nav = use_navigator().unwrap();
-    let dialog_ref: NodeRef = use_node_ref(); 
+    let dialog_ref: NodeRef = use_node_ref();
     let (store,_) = use_store::<Store>();
     let ondel = props.ondel.clone();
-    
+
     let id = props.id;
 
-    let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{  
+    let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
         let loc = loc.clone();
         let store = store.clone();
         let ondel = ondel.clone();
@@ -63,7 +62,7 @@ pub fn AgentListItem(props: &AgentListItemProps) -> Html {
                 .await
                 .unwrap();
             ondel.emit(id);
-        });    
+        });
     });
 
     let handle_del: Callback<MouseEvent> = {
@@ -80,31 +79,31 @@ pub fn AgentListItem(props: &AgentListItemProps) -> Html {
             <td>{props.contact.clone()}</td>
             <td>
                 <div class="flex justify-end">
-                    <div 
+                    <div
                         onclick={
                             let nav = nav.clone();
                             Callback::from(move |_e: MouseEvent|{
                                 nav.push(&AgentRoute::Get {id: id})
                             })
-                        } 
+                        }
                         class="btn btn-square btn-outline btn-sm mr-1">
-                        <Icon data={IconData::LUCIDE_EDIT}/>   
+                        <Icon data={IconData::LUCIDE_EDIT}/>
                     </div>
                     <div
                         onclick={handle_del}
                         class="btn btn-square btn-outline btn-sm">
-                        <Icon data={IconData::LUCIDE_TRASH}/>   
+                        <Icon data={IconData::LUCIDE_TRASH}/>
                     </div>
                 </div>
 
             </td>
             <Dialog
                 d_ref = {dialog_ref}
-                title={"Warning!"} 
+                title={"Warning!"}
                 contents={format!("Are you sure to delete the Queue: {}?", props.name.clone())}
                 {onconfirm}
                 >
-            </Dialog>              
+            </Dialog>
         </tr>
     }
 }
@@ -135,7 +134,7 @@ pub fn AgentList() -> Html {
     let handle_add: Callback<MouseEvent> = {
         let nav = nav.clone();
         Callback::from(move|_e: MouseEvent|{
-            nav.push(&AgentRoute::Get {id: 0});        
+            nav.push(&AgentRoute::Get {id: 0});
         })
     };
 
@@ -144,10 +143,10 @@ pub fn AgentList() -> Html {
         Callback::from(move | id: usize| {
             let mut new_agents = (*agents).clone();
             new_agents.retain(|a| a.id != id);
-            agents.set(new_agents);    
+            agents.set(new_agents);
         })
     };
-    
+
     html!{
         <div class="grow mr-2">
             <table class="table table-zebra">
@@ -175,10 +174,10 @@ pub fn AgentList() -> Html {
             </table>
             <div class="flex flex-row-reverse pr-4">
                 <div onclick={handle_add} class="btn btn-square btn-outline btn-sm" >
-                    <Icon data={IconData::LUCIDE_PLUS}/>   
+                    <Icon data={IconData::LUCIDE_PLUS}/>
                 </div>
-            </div>         
-        </div> 
+            </div>
+        </div>
     }
 }
 
@@ -200,7 +199,7 @@ pub fn AgentDetails(_props: &AgentDetailsProps) -> Html {
             let store = store.clone();
 
             wasm_bindgen_futures::spawn_local( async move {
-                let fetched = 
+                let fetched =
                     Service::get(loc.path(), store.selected_domain_id)
                         .await
                         .unwrap();
@@ -227,7 +226,7 @@ pub fn AgentDetails(_props: &AgentDetailsProps) -> Html {
         Callback::from(move |event: SubmitEvent| {
             let loc = loc.clone();
             let target = event.target().unwrap();
-            let form = target.dyn_into().unwrap();            
+            let form = target.dyn_into().unwrap();
             let form_data = FormData::new_with_form(&form).unwrap();
             let dispatch = dispatch.clone();
             let nav = nav.clone();
@@ -245,7 +244,7 @@ pub fn AgentDetails(_props: &AgentDetailsProps) -> Html {
                     (key, param)
                 })
                 .collect::<HashMap<String, AgentParam>>();
-            
+
             let data = Agent {
                 id: agent.id,
                 user_id: agent.user_id,
@@ -282,46 +281,46 @@ pub fn AgentDetails(_props: &AgentDetailsProps) -> Html {
     html! {
         <div class="grow mt-1">
             <Header title= {format!("Agent")}></Header>
-            <div class="divider my-1"></div>         
+            <div class="divider my-1"></div>
             <form class="w-full" onsubmit={handle_submit}>
                 <div class="grid grid-cols-3 gap-1">
                     <Label>{"Name"}</Label>
-                    <Input
+                    <input class="pbx-input"
                         value={agent.name.clone()}
-                        id="name"
+                        name="name"
                     />
                     <Label>{"Contact"}</Label>
-                    <UserSelect id="user" value={agent.contact.clone()}> 
+                    <UserSelect id="user" value={agent.contact.clone()}>
                     </UserSelect>
                     <Label>{"Leg Timeout"}</Label>
-                    <Input 
+                    <input class="pbx-input"
                         value={agent.leg_timeout.to_string()}
-                        id="leg-timeout"/>
-                    <Label>{"Wrap Up Time"}</Label>       
-                    <Input
+                        name="leg-timeout"/>
+                    <Label>{"Wrap Up Time"}</Label>
+                    <input class="pbx-input"
                         value={AgentParam::get("wrap-up-time", &agent.params)}
-                        id="wrap-up-time" />
+                        name="wrap-up-time" />
                     <Label>{"Max no answer"}</Label>
-                    <Input
+                    <input class="pbx-input"
                         value={AgentParam::get("max-no-answer", &agent.params)}
-                        id="max-no-answer" />
+                        name="max-no-answer" />
                     <Label>{"Reject delay time"}</Label>
-                    <Input
+                    <input class="pbx-input"
                         value={AgentParam::get("reject-delay-time", &agent.params)}
-                        id="reject-delay-time" />
+                        name="reject-delay-time" />
                     <Label>{"Busy delay time"}</Label>
-                    <Input
+                    <input class="pbx-input"
                         value={AgentParam::get("busy-delay-time", &agent.params)}
-                        id="busy-delay-time" />
+                        name="busy-delay-time" />
                     <Label>{"Type"}</Label>
-                    <Input
+                    <input class="pbx-input"
                         value={AgentParam::get("type", &agent.params)}
-                        id="type" />
+                        name="type" />
                     <Label>{"Status"}</Label>
                     <Select
                         id="status"
                         selected={AgentParam::get("status", &agent.params)}
-                        options={vec![ 
+                        options={vec![
                             "Logged Out".to_string(),
                             "Available".to_string(),
                             "Available (On Demand)".to_string(),

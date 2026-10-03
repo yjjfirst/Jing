@@ -11,7 +11,6 @@ use crate::store::{alert_info, alert_error, Store};
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
 use crate::components::action_buttons::ActionButtons;
-use crate::components::input::Input;
 use crate::components::label::Label;
 use crate::components::select::Select;
 
@@ -28,12 +27,12 @@ pub enum OutboundRoute {
     #[at("/outbound/:id")]
     Get {id: usize},
 }
-#[derive(Clone, PartialEq, Properties)] 
+#[derive(Clone, PartialEq, Properties)]
 pub struct OutboundProps {
     pub out: Outbound,
-    pub ondel: Callback<usize>    
+    pub ondel: Callback<usize>
 }
-#[derive(Clone, PartialEq, Properties)] 
+#[derive(Clone, PartialEq, Properties)]
 pub struct OutboundDetailsProps {
     id: usize,
 }
@@ -43,7 +42,7 @@ pub fn OutboundListItem(props: &OutboundProps) -> Html {
     let nav = use_navigator().unwrap();
     let out = props.out.clone();
     let dialog_ref: NodeRef = use_node_ref();
-    let dd_ref = dialog_ref.clone();    
+    let dd_ref = dialog_ref.clone();
     let loc: Location = use_location().unwrap().clone();
     let (store,_) = use_store::<Store>();
     let id = props.out.id;
@@ -52,11 +51,11 @@ pub fn OutboundListItem(props: &OutboundProps) -> Html {
     let onedit: Callback<MouseEvent> = Callback::from(move|_e|{
         nav.push(&OutboundRoute::Get {id: out.id});
     });
-    
+
     let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
         let loc = loc.clone();
         let store = store.clone();
-        let ondel = ondel.clone();        
+        let ondel = ondel.clone();
 
         wasm_bindgen_futures::spawn_local(async move {
             let path = format!("{}/{}", loc.path(), id);
@@ -66,11 +65,11 @@ pub fn OutboundListItem(props: &OutboundProps) -> Html {
             ondel.emit(id);
         })
 
-    });    
+    });
 
     let ondel = Callback::from(move|_e: MouseEvent|{
         let d = dd_ref.cast::<HtmlDialogElement>().unwrap();
-        d.show_modal().unwrap();  
+        d.show_modal().unwrap();
     });
 
     html! {
@@ -81,27 +80,27 @@ pub fn OutboundListItem(props: &OutboundProps) -> Html {
             <th class="flex justify-end">
                 <div class="mr-1">
                     <div onclick={onedit} class="btn btn-square btn-outline btn-sm">
-                        <Icon data={IconData::LUCIDE_EDIT}/>   
+                        <Icon data={IconData::LUCIDE_EDIT}/>
                     </div>
                 </div>
                 <div>
                     <div onclick={ondel} class="btn btn-square btn-outline btn-sm">
-                        <Icon data={IconData::LUCIDE_TRASH}/>   
+                        <Icon data={IconData::LUCIDE_TRASH}/>
                     </div>
                 </div>
-            </th> 
+            </th>
             <Dialog
                 d_ref = {dialog_ref}
-                title={"Warning!"} 
+                title={"Warning!"}
                 contents={format!("Are you sure to delete the user: {}?", out.id)}
                 {onconfirm}
                 >
-            </Dialog>                
+            </Dialog>
         </tr>
     }
 }
 
-#[function_component] 
+#[function_component]
 pub fn OutboundList() -> Html {
     let loc = use_location().unwrap().clone();
     let (store,_) = use_store::<Store>();
@@ -114,7 +113,7 @@ pub fn OutboundList() -> Html {
         let store = store.clone();
         let out_routes = out_routes.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_routes: Vec<Outbound> = 
+            let fetched_routes: Vec<Outbound> =
                 Service::index(loc.path(), store.selected_domain_id)
                     .await
                     .unwrap();
@@ -136,7 +135,7 @@ pub fn OutboundList() -> Html {
 
         routes.set(filtered);
     });
-    
+
     let out_list: Vec<Html> = out.iter().map(|o|{
         html! {
             <OutboundListItem out={Outbound {..o.clone()}} ondel={ondel.clone()} ></OutboundListItem>
@@ -161,11 +160,11 @@ pub fn OutboundList() -> Html {
             </table>
             <div class="flex flex-row-reverse pr-4">
                 <div onclick={onadd} class="btn btn-square btn-outline btn-sm" >
-                    <Icon data={IconData::LUCIDE_PLUS}/>   
+                    <Icon data={IconData::LUCIDE_PLUS}/>
                 </div>
-            </div>             
-        </div>        
-    }    
+            </div>
+        </div>
+    }
 
 }
 
@@ -190,7 +189,7 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
         let out = out_1.clone();
         let loc = loc.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let fetched_out = 
+            let fetched_out =
                 Service::get(loc.path(), store.selected_domain_id)
                 .await
                 .unwrap();
@@ -201,7 +200,7 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
     use_effect_with(out_2.clone(), move |_| {
         let gateways = gateways_1.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_gateway: Vec<Gateway> = 
+                let fetched_gateway: Vec<Gateway> =
                     Service::index("/gateway", store_1.selected_domain_id)
                         .await
                         .unwrap();
@@ -216,15 +215,15 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
         })
     };
 
-    let form_onsubmit = {        
+    let form_onsubmit = {
         Callback::from(move|event: SubmitEvent| {
             let dispatch = dispatch.clone();
             let loc = loc_1.clone();
             let store = store_2.clone();
             let nav = nav.clone();
             let target: Option<EventTarget> = event.target();
-            let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();            
-            let form_data = FormData::new_with_form(&form).unwrap();  
+            let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();
+            let form_data = FormData::new_with_form(&form).unwrap();
 
             let gateway_name = form_data.get("gateway").as_string().unwrap();
             let gateway = Gateway::get_gateway_by_name(gateway_name.clone(), &gateways_2).unwrap();
@@ -249,31 +248,31 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
                         alert_error("Update outbound route failed.".to_string(), dispatch);
                     }
                 }
-                nav.push(&OutboundRoute::Index);            
+                nav.push(&OutboundRoute::Index);
             });
 
-            event.prevent_default(); 
+            event.prevent_default();
         })
     };
 
     html!{
         <div class="grow mr-2">
             <Header title= {format!("Outbound: {}", out.id)}></Header>
-            <div class="divider my-1"></div> 
+            <div class="divider my-1"></div>
             <form class="w-full" onsubmit={form_onsubmit}>
                 <div class="grid grid-cols-3 gap-1">
-                <Input value={out.id.to_string()} id="id" hidden=true/>
+                <input value={out.id.to_string()} name="id" hidden=true/>
                 <Label>{"Priority"}</Label>
-                <Input value={out.priority.to_string()} id="priority"/>
+                <input value={out.priority.to_string()} name="priority" class="pbx-input"/>
                 <Label>{"Condition"}</Label>
-                <Input value={out.condition.clone()} id="condition" />
-                <Label>{"Prepend"}</Label>    
-                <Input value={out.prepend.clone()} id="prepend" />
+                <input value={out.condition.clone()} name="condition" class="pbx-input"/>
+                <Label>{"Prepend"}</Label>
+                <input value={out.prepend.clone()} name="prepend" class="pbx-input"/>
                 <Label>{"Prefix"}</Label>
-                <Input value={out.prefix.to_string()} id="prefix" />
+                <input value={out.prefix.to_string()} name="prefix" class="pbx-input"/>
                 <Label>{"Gateway"}</Label>
                 if out.gateway_id != 0 && gateways.len() != 0 {
-                    <Select 
+                    <Select
                         selected={Gateway::get_gateway_by_id(out.gateway_id, &gateways).unwrap().gateway_name.clone()}
                         options={gateways
                                     .iter()
@@ -281,13 +280,13 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
                                     .collect::<Vec<String>>()}
                         id="gateway"/>
                 } else {
-                    <Select 
+                    <Select
                         selected={""}
                             options={gateways
                                     .iter()
                                     .map(|g|{g.gateway_name.clone()})
                                     .collect::<Vec<String>>()}
-                        id="gateway"/>                    
+                        id="gateway"/>
                 }
                 </div>
                 <ActionButtons oncancel={form_oncancel} />

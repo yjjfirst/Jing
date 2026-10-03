@@ -10,7 +10,6 @@ use yew_icons::{Icon, IconData};
 
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
-use crate::components::input::Input;
 use crate::components::label::Label;
 use crate::components::action_buttons::ActionButtons;
 
@@ -26,13 +25,13 @@ pub enum ConfRoute {
     Get {id: usize},
 }
 
-#[derive(Clone, PartialEq, Properties)] 
+#[derive(Clone, PartialEq, Properties)]
 pub struct ConfDetailProps {
     id: usize,
 }
 
 
-#[derive(Clone, PartialEq, Properties)] 
+#[derive(Clone, PartialEq, Properties)]
 pub struct ConfListItemProps {
     id: usize,
     exten: String,
@@ -49,7 +48,7 @@ pub fn ConfListItem(props: &ConfListItemProps) -> Html {
     let (store,_) = use_store::<Store>();
     let ondel = props.ondel.clone();
     let conf_id = props.id;
-    
+
     let onedit: Callback<MouseEvent> = {
         let props = props.clone();
         Callback::from(move |_e|{
@@ -58,7 +57,7 @@ pub fn ConfListItem(props: &ConfListItemProps) -> Html {
         })
     };
 
-    let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{  
+    let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
         let loc = loc.clone();
         let store = store.clone();
         let ondel = ondel.clone();
@@ -68,7 +67,7 @@ pub fn ConfListItem(props: &ConfListItemProps) -> Html {
                 .await
                 .unwrap();
             ondel.emit(conf_id);
-        });    
+        });
     });
 
     let ondel: Callback<MouseEvent> = {
@@ -87,32 +86,32 @@ pub fn ConfListItem(props: &ConfListItemProps) -> Html {
             <th class="flex justify-end">
                 <div class="mr-1">
                     <div onclick={onedit} class="btn btn-square btn-outline btn-sm">
-                        <Icon data={IconData::LUCIDE_EDIT}/>   
+                        <Icon data={IconData::LUCIDE_EDIT}/>
                     </div>
                 </div>
                 <div>
                     <div onclick={ondel} class="btn btn-square btn-outline btn-sm">
-                        <Icon data={IconData::LUCIDE_TRASH}/>   
+                        <Icon data={IconData::LUCIDE_TRASH}/>
                     </div>
                 </div>
-            </th> 
+            </th>
             <Dialog
                 d_ref = {dialog_ref}
-                title={"Warning!"} 
+                title={"Warning!"}
                 contents={format!("Are you sure to delete Conference: {}?", props.exten.clone())}
                 {onconfirm}
                 >
-            </Dialog>                          
+            </Dialog>
         </tr>
-        
+
     }
-    
+
 }
 
 #[function_component]
 pub fn ConfList() -> Html {
     let loc = use_location().unwrap().clone();
-    let nav = use_navigator().unwrap();    
+    let nav = use_navigator().unwrap();
     let (store,_) = use_store::<Store>();
 
     let confs = use_state(||vec![]);
@@ -121,7 +120,7 @@ pub fn ConfList() -> Html {
         use_effect_with((), move|_|{
             let confs = confs.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_confs: Vec<Conf> = 
+                let fetched_confs: Vec<Conf> =
                     Service::index(loc.path(), store.selected_domain_id.clone())
                         .await
                         .unwrap();
@@ -137,22 +136,22 @@ pub fn ConfList() -> Html {
                 .filter(|c|c.id != id)
                 .map(|s|s.clone())
                 .collect();
-            confs.set(filtered);            
+            confs.set(filtered);
         })
-    };    
+    };
     let item_list: Vec<Html> = confs.clone().iter().map(|c|{
         html! {
-            <ConfListItem 
-                id={c.id} 
+            <ConfListItem
+                id={c.id}
                 exten={c.exten.clone()}
-                name={c.name.clone()}                 
+                name={c.name.clone()}
                 desc={c.description.clone()}
                 ondel={ondel.clone()}/>
         }
     }).collect();
 
     let onadd: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent|{
-        nav.push(&ConfRoute::Get {id: 0});        
+        nav.push(&ConfRoute::Get {id: 0});
     });
 
     html! {
@@ -173,10 +172,10 @@ pub fn ConfList() -> Html {
             </table>
             <div class="flex flex-row-reverse pr-4">
                 <div onclick={onadd} class="btn btn-square btn-outline btn-sm" >
-                    <Icon data={IconData::LUCIDE_PLUS}/>   
+                    <Icon data={IconData::LUCIDE_PLUS}/>
                 </div>
-            </div>             
-        </div>        
+            </div>
+        </div>
     }
 }
 
@@ -196,13 +195,13 @@ pub fn ConfDetails(props: &ConfDetailProps) -> Html{
             let conf = conf.clone();
             let loc = loc.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_conf = 
+                let fetched_conf =
                     Service::get(loc.path(), store.selected_domain_id)
                         .await
                         .unwrap();
                 conf.set(fetched_conf);
             });
-        });        
+        });
     }
 
     let form_oncancel = {
@@ -235,7 +234,7 @@ pub fn ConfDetails(props: &ConfDetailProps) -> Html{
                         .get("name")
                         .as_string()
                         .unwrap(),
-                exten: form_data  
+                exten: form_data
                         .get("exten")
                         .as_string()
                         .unwrap(),
@@ -265,7 +264,7 @@ pub fn ConfDetails(props: &ConfDetailProps) -> Html{
                         alert_error("Update conference failed.".to_string(), dispatch);
                     }
                 }
-                nav.push(&ConfRoute::Index);            
+                nav.push(&ConfRoute::Index);
             });
 
             e.prevent_default();
@@ -275,34 +274,34 @@ pub fn ConfDetails(props: &ConfDetailProps) -> Html{
     html!{
         <div class="grow mr-2">
             <Header title= {format!("Conference: {}", conf.exten.clone())}></Header>
-            <div class="divider my-1"></div> 
-            <form class="w-full" onsubmit={form_onsubmit}> 
+            <div class="divider my-1"></div>
+            <form class="w-full" onsubmit={form_onsubmit}>
             <div class="grid grid-cols-3 gap-1">
                 <Label hidden = {conf_id != 0}>{"Extension"}</Label>
-                <Input
+                <input class="pbx-input"
                     value={conf.exten.clone()}
-                    id="exten"
+                    name="extension"
                     hidden = {conf_id != 0}
                 />
                 <Label>{"Name"}</Label>
-                <Input
+                <input class="pbx-input"
                     value={conf.name.clone()}
-                    id="name"
+                    name="name"
                 />
                 <Label>{"Description"}</Label>
-                <Input
+                <input class="pbx-input"
                     value={conf.description.clone()}
-                    id="description"
+                    name="description"
                 />
                 <Label>{"Conference Profile Id"}</Label>
-                <Input
+                <input class="pbx-input"
                     value={conf.conference_profile_id.to_string()}
-                    id="conference_profile_id"
+                    name="conference_profile_id"
                 />
                 </div>
                 <ActionButtons oncancel={form_oncancel}/>
             </form>
-        </div>        
+        </div>
     }
 }
 

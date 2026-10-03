@@ -13,7 +13,6 @@ use crate::store::{alert_info, alert_error,Store};
 use crate::pages::callcenter::agents::model::Agent;
 use crate::pages::callcenter::queues::model::Queue;
 
-use crate::components::input::Input;
 use crate::components::label::Label;
 use crate::components::select_id::SelectId;
 use crate::components::dialog::Dialog;
@@ -178,15 +177,15 @@ pub fn TierComponent(props: &TierComponentProps) -> Html {
                        </SelectId>
                    </div>
                    <div class="col-span-1">
-                       <Input
+                       <input
                            value={level.to_string()}
-                           id="tier_level"
+                           name="tier_level"
                        />
                    </div>
                    <div class="col-span-1">
-                       <Input
+                       <input
                            value={pos.to_string()}
-                           id="tier_position"
+                           name="tier_position"
                        />
                    </div>
                    if tier_id == 0 {

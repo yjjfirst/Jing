@@ -12,7 +12,6 @@ use crate::components::header::Header;
 use model::{RingGroup};
 use crate::models::Service;
 use crate::store::{alert_info, alert_error, Store};
-use crate::components::input::Input;
 use crate::components::label::Label;
 use crate::components::select::Select;
 use crate::components::select_multi::MultiSelect;
@@ -274,26 +273,30 @@ pub fn RingGroupDetailComponent(props: &RingGroupDetailsProps) -> Html {
             <form class="w-full" onsubmit={form_onsubmit}>
             <div class="grid grid-cols-3 gap-1">
                 <Label hidden={group.group_id.clone() != ""}>{"Extension"}</Label>
-                <Input
+                <input
+                    class="pbx-input"
                     value={group.group_id.clone()}
-                    id="extension"
+                    name="extension"
                     hidden={group.group_id.clone() != ""}
                 />
                 <Label>{"Name"}</Label>
-                <Input
+                <input
+                    class="pbx-input"
                     value={group.name.clone()}
-                    id="name"
+                    name="name"
                     />
                 <Label>{"Description"}</Label>
-                <Input
+                <input
+                    class="pbx-input"
                     value={group.description.clone()}
-                    id="description"
+                    name="description"
                     />
                 <Label>{"Ringing Time"}</Label>
-                <Input
+                <input
+                    class="pbx-input"
                     value={group.ring_time.to_string()}
-                    input_type="number"
-                    id="ring-time"
+                    type="number"
+                    name="ring-time"
                     />
                 <Label>{"Ring Stragegy"}</Label>
                 <Select

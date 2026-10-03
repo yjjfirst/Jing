@@ -11,7 +11,6 @@ use crate::store::{alert_info, alert_error, Store};
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
 use crate::components::action_buttons::ActionButtons;
-use crate::components::input::Input;
 use crate::components::label::Label;
 use crate::components::exten_select::ExtenionSelect;
 use model::Inbound;
@@ -249,11 +248,11 @@ pub fn InboundDetails(_props: &InboundDetailsProps) -> Html {
             <div class="divider my-1"></div>
             <form class="w-full" onsubmit={form_onsubmit}>
             <div class="grid grid-cols-3 gap-1">
-                <Input value={inbound.id.to_string()} id="id" hidden=true></Input>
+                <input value={inbound.id.to_string()} name="id" hidden=true />
                 <Label>{"Condition"}</Label>
-                <Input value={inbound.condition.clone()} id="condition"></Input>
+                <input value={inbound.condition.clone()} name="condition" class="pbx-input"/>
                 <Label>{"Context"}</Label>
-                <Input value={inbound.context.clone()} id="context"></Input>
+                <input value={inbound.context.clone()} name="context" class="pbx-input"/>
                 <Label>{"Destination"}</Label>
                 <ExtenionSelect name="destination" value={inbound.dest_extension.clone()}/>
                 </div>

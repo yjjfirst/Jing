@@ -1,7 +1,6 @@
 pub mod header;
 pub mod sidebar;
 pub mod alert;
-pub mod input;
 pub mod file_input;
 pub mod navbar;
 pub mod select;

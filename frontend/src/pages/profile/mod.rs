@@ -12,7 +12,6 @@ use yew_icons::{Icon, IconData};
 
 use crate::components::header::Header;
 use crate::components::action_buttons::ActionButtons;
-use crate::components::input::Input;
 use crate::components::label::Label;
 
 use crate::models::Service;
@@ -159,12 +158,12 @@ pub fn ProfileDetails(props: &ProfileDetailProps) -> Html {
             <form class="w-full" onsubmit={form_onsubmit}>
                 <div class="grid grid-cols-3 gap-1">
                     <Label>{"name"}</Label>
-                    <Input value={profile.name.clone()} id="name" />
+                    <input class="pbx-input" value={profile.name.clone()} name="name" />
                     { for profile.params.iter().map(|p| {
                         html!{
                             <>
                                 <Label>{p.0.clone()}</Label>
-                                <Input value={p.1.value.clone()} id={p.0.clone()} />
+                                <input class="pbx-input" value={p.1.value.clone()} name={p.0.clone()} />
                             </>
                         }
                     }) }

@@ -10,7 +10,6 @@ use yew_icons::{Icon, IconData};
 
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
-use crate::components::input::Input;
 use crate::components::label::Label;
 use crate::components::select_sound_file::SelectSoundFile;
 use crate::components::action_buttons::ActionButtons;
@@ -273,15 +272,15 @@ pub fn SoundDetails(props: &SoundDetailProps) -> Html {
             <form class="w-full" onsubmit={form_onsubmit}>
             <div class="grid grid-cols-3 gap-1">
                 <Label hidden = {id != 0}>{"Extension"}</Label>
-                <Input
+                <input class="pbx-input"
                     value={sound.exten.clone()}
-                    id="exten"
+                    name="exten"
                     hidden = {id != 0}
                 />
                 <Label>{"Name"}</Label>
-                <Input
+                <input class="pbx-input"
                     value={sound.name.clone()}
-                    id="name"
+                    name="name"
                 />
                 <Label>{"Sound File"}</Label>
                 <div class="col-span-2">

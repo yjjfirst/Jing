@@ -13,7 +13,6 @@ use crate::store::{alert_info, alert_error, Store};
 
 use crate::components::header::Header;
 use crate::components::action_buttons::ActionButtons;
-use crate::components::input::Input;
 use crate::components::param_input::ParamInput;
 use crate::components::label::Label;
 use crate::components::dialog::Dialog;
@@ -271,9 +270,10 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
             <form class="w-full" onsubmit={form_onsubmit}>
             <div class="grid grid-cols-3 gap-1">
                 <Label>{"name"}</Label>
-                <Input
+                <input
+                    class="pbx-input"
                     value={gateway.gateway_name.clone()}
-                    id="name"
+                    name="name"
                 />
                 {
                 for gateway.param_helps.iter().map(|p|{

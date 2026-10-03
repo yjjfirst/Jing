@@ -16,7 +16,6 @@ use crate::models::Service;
 use crate::components::header::Header;
 use crate::components::label::Label;
 use crate::components::dialog::Dialog;
-use crate::components::input::Input;
 use crate::components::select::Select;
 use crate::components::action_buttons::ActionButtons;
 
@@ -28,7 +27,7 @@ pub enum QueueRoute {
     Get {id: i32}
 }
 
-#[derive(Clone, PartialEq, Properties)] 
+#[derive(Clone, PartialEq, Properties)]
 pub struct QueueDetailsProps {
     #[prop_or(0)]
     pub id: i32,
@@ -45,14 +44,14 @@ pub struct QueueListItemProps {
 #[function_component]
 pub fn QueueListItem(props: &QueueListItemProps) -> Html {
     let nav = use_navigator().unwrap();
-    let dialog_ref: NodeRef = use_node_ref(); 
+    let dialog_ref: NodeRef = use_node_ref();
     let loc: Location = use_location().unwrap();
     let (store,_) = use_store::<Store>();
     let ondel = props.ondel.clone();
 
     let id = props.id;
 
-    let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{  
+    let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
         let loc = loc.clone();
         let store = store.clone();
         let ondel = ondel.clone();
@@ -62,7 +61,7 @@ pub fn QueueListItem(props: &QueueListItemProps) -> Html {
                 .await
                 .unwrap();
             ondel.emit(id);
-        });    
+        });
     });
 
     let handle_del: Callback<MouseEvent> = {
@@ -79,30 +78,30 @@ pub fn QueueListItem(props: &QueueListItemProps) -> Html {
             <td>{props.name.clone()}</td>
             <td>
                 <div class="flex justify-end">
-                    <div 
+                    <div
                         onclick={
                             let nav = nav.clone();
                             Callback::from(move |_e: MouseEvent|{
                                 nav.push(&QueueRoute::Get {id: id});
                             })
-                        } 
+                        }
                         class="btn btn-square btn-outline btn-sm mr-1">
-                        <Icon data={IconData::LUCIDE_EDIT}/>   
+                        <Icon data={IconData::LUCIDE_EDIT}/>
                     </div>
                     <div
                         onclick={handle_del}
                         class="btn btn-square btn-outline btn-sm">
-                        <Icon data={IconData::LUCIDE_TRASH}/>   
+                        <Icon data={IconData::LUCIDE_TRASH}/>
                     </div>
                 </div>
             </td>
             <Dialog
                 d_ref = {dialog_ref}
-                title={"Warning!"} 
+                title={"Warning!"}
                 contents={format!("Are you sure to delete the Queue: {}?", props.exten.clone())}
                 {onconfirm}
                 >
-            </Dialog>              
+            </Dialog>
         </tr>
     }
 }
@@ -112,7 +111,7 @@ pub fn QueueList() -> Html {
     let nav = use_navigator().unwrap();
     let (store,_) = use_store::<Store>();
     let queues: UseStateHandle<Vec<Queue>> = use_state(||vec![]);
-        
+
     {
         let store = store.clone();
         let queues = queues.clone();
@@ -129,7 +128,7 @@ pub fn QueueList() -> Html {
     let handle_add: Callback<MouseEvent> = {
         let nav = nav.clone();
         Callback::from(move|_e: MouseEvent|{
-            nav.push(&QueueRoute::Get {id: 0});        
+            nav.push(&QueueRoute::Get {id: 0});
         })
     };
 
@@ -172,10 +171,10 @@ pub fn QueueList() -> Html {
         </table>
         <div class="flex flex-row-reverse pr-4">
             <div onclick={handle_add} class="btn btn-square btn-outline btn-sm" >
-                <Icon data={IconData::LUCIDE_PLUS}/>   
+                <Icon data={IconData::LUCIDE_PLUS}/>
             </div>
-        </div>         
-    </div>      
+        </div>
+    </div>
     }
 }
 
@@ -196,7 +195,7 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
             let loc = loc.clone();
             let store = store.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_queue = 
+                let fetched_queue =
                     Service::get(loc.path(), store.selected_domain_id)
                         .await
                         .unwrap();
@@ -221,7 +220,7 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
 
         Callback::from(move|event: SubmitEvent| {
             let target = event.target().unwrap();
-            let form = target.dyn_into().unwrap();            
+            let form = target.dyn_into().unwrap();
             let form_data = FormData::new_with_form(&form).unwrap();
             let dispatch = dispatch.clone();
             let loc = loc.clone();
@@ -239,7 +238,7 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
                     (key, param)
                 })
                 .collect::<HashMap<String, QueueParam>>();
-            
+
             let data = Queue {
                 id: queue.id,
                 domain_id: queue.domain_id,
@@ -266,7 +265,7 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
                         }
                     }
                 }
-                nav.push(&QueueRoute::Index);            
+                nav.push(&QueueRoute::Index);
             });
 
             event.prevent_default();
@@ -276,19 +275,19 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
     html!{
         <div class="grow mt-1">
             <Header title= {format!("Queue: {}", queue.exten.clone())}></Header>
-            <div class="divider my-1"></div>         
+            <div class="divider my-1"></div>
             <form class="w-full" onsubmit={handle_submit}>
                 <div class="grid grid-cols-3 gap-1">
                     <Label hidden = {props.id != 0}>{"Extension"}</Label>
-                    <Input
-                        hidden = {props.id != 0}                    
+                    <input class="pbx-input"
+                        hidden = {props.id != 0}
                         value={queue.exten.clone()}
-                        id="extension"
-                    /> 
+                        name="extension"
+                    />
                     <Label>{"Name"}</Label>
-                    <Input
+                    <input class="pbx-input"
                         value={queue.name.clone()}
-                        id="name"
+                        name="name"
                     />
                     <Label>{"strategy"}</Label>
                     <Select
@@ -309,9 +308,9 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
                         id="strategy"
                     />
                     <Label>{"moh"}</Label>
-                    <Input
+                    <input class="pbx-input"
                         value = {QueueParam::get("moh-sound", &queue.params)}
-                        id="moh-sound"
+                        name="moh-sound"
                     />
                     <Label>{"Time base score"}</Label>
                     <Select
@@ -320,19 +319,19 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
                         id="time-base-score"
                     />
                     <Label>{"Max wait time"}</Label>
-                    <Input
+                    <input class="pbx-input"
                         value = {QueueParam::get("max-wait-time", &queue.params)}
-                        id="max-wait-time"
+                        name="max-wait-time"
                     />
                     <Label>{"Max wait time with no agent"}</Label>
-                    <Input
+                    <input class="pbx-input"
                         value = {QueueParam::get("max-wait-time-with-no-agent", &queue.params)}
-                        id="max-wait-time-with-no-agent"
+                        name="max-wait-time-with-no-agent"
                     />
                     <Label>{"Max wait time with no agent time reached"}</Label>
-                    <Input
+                    <input class="pbx-input"
                         value = {QueueParam::get("max-wait-time-with-no-agent-time-reached", &queue.params)}
-                        id="max-wait-time-with-no-agent-time-reached"
+                        name="max-wait-time-with-no-agent-time-reached"
                     />
                     <Label>{"Tier rules apply"}</Label>
                     <Select
@@ -341,30 +340,30 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
                         id="tier-rules-apply"
                     />
                     <Label>{"Tier rule wait second"}</Label>
-                    <Input
+                    <input class="pbx-input"
                         value = {QueueParam::get("tier-rule-wait-second", &queue.params)}
-                        id="tier-rule-wait-second"
-                    /> 
+                        name="tier-rule-wait-second"
+                    />
                     <Label>{"Tier rule wait multiply level"}</Label>
                     <Select
-                        options={vec!["true".to_string(), "false".to_string()]}                    
+                        options={vec!["true".to_string(), "false".to_string()]}
                         selected = {QueueParam::get("tier-rule-wait-multiply-level", &queue.params)}
                         id="tier-rule-wait-multiply-level"
                     />
                     <Label>{"Tier rule no agent no wait"}</Label>
                     <Select
-                        options={vec!["true".to_string(), "false".to_string()]}                                            
+                        options={vec!["true".to_string(), "false".to_string()]}
                         selected = {QueueParam::get("tier-rule-no-agent-no-wait", &queue.params)}
                         id="tier-rule-no-agent-no-wait"
                     />
                     <Label>{"Discard abandoned after"}</Label>
-                    <Input
+                    <input class="pbx-input"
                         value = {QueueParam::get("discard-abandoned-after", &queue.params)}
-                        id="discard-abandoned-after"
-                    /> 
+                        name="discard-abandoned-after"
+                    />
                     <Label>{"Abandoned resume allowed"}</Label>
                     <Select
-                        options={vec!["true".to_string(), "false".to_string()]}                                            
+                        options={vec!["true".to_string(), "false".to_string()]}
                         selected = {QueueParam::get("abandoned-resume-allowed", &queue.params)}
                         id="abandoned-resume-allowed"
                     />
