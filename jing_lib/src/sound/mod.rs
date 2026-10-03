@@ -69,6 +69,7 @@ pub fn list() -> Result<Vec<Sound>> {
     use crate::schema::sounds::dsl::*;
     let mut conn = db_connect();
     let result = sounds
+        .order(id.asc())
         .load::<Sound>(&mut conn)?;
 
     Ok(result)
