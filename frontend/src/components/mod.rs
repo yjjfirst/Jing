@@ -7,7 +7,7 @@ pub mod select;
 pub mod select_multi;
 pub mod dialog;
 pub mod action_buttons;
-pub mod exten_select;
+pub mod select_exten;
 pub mod select_user;
 pub mod select_id;
 pub mod toggle;

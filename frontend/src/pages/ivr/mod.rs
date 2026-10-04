@@ -12,7 +12,7 @@ use yew_icons::{Icon, IconData};
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
 use crate::components::select_sound_file::SelectSoundFile;
-use crate::components::exten_select::ExtenionSelect;
+use crate::components::select_exten::SelectExten;
 use crate::components::action_buttons::ActionButtons;
 
 use model::{IvrEntry, IvrAttr, Ivr};
@@ -190,7 +190,7 @@ pub fn IvrEntryComponent(props: &IvrEntryProps) -> Html {
     html!{
         <div class="flex">
             <input name="entry" class="input" value={props.digits.clone()} />
-            <ExtenionSelect name="destination" value={props.exten.clone()}/>
+            <SelectExten name="destination" value={props.exten.clone()}/>
         </div>
     }
 }

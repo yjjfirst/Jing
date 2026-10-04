@@ -11,7 +11,7 @@ use crate::store::{alert_info, alert_error, Store};
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
 use crate::components::action_buttons::ActionButtons;
-use crate::components::exten_select::ExtenionSelect;
+use crate::components::select_exten::SelectExten;
 use model::Inbound;
 use crate::models::Service;
 
@@ -253,7 +253,7 @@ pub fn InboundDetails(_props: &InboundDetailsProps) -> Html {
                 <label class="pbx-label">{"Context"}</label>
                 <input value={inbound.context.clone()} name="context" class="pbx-input"/>
                 <label class="pbx-label">{"Destination"}</label>
-                <ExtenionSelect name="destination" value={inbound.dest_extension.clone()}/>
+                <SelectExten name="destination" value={inbound.dest_extension.clone()}/>
                 </div>
                 <ActionButtons oncancel={form_oncancel} />
             </form>

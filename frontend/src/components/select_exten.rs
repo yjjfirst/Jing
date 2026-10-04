@@ -14,7 +14,7 @@ pub struct Props {
 }
 
 #[function_component]
-pub fn ExtenionSelect(props: &Props) -> Html {
+pub fn SelectExten(props: &Props) -> Html {
     let name= props.name.clone();
     let value = props.value.clone();
     let need_change = use_state(||false);
