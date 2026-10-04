@@ -13,7 +13,7 @@ use crate::models::Service;
 
 use crate::components::header::Header;
 use crate::components::action_buttons::ActionButtons;
-use crate::components::user_select::UserSelect;
+use crate::components::select_user::SelectUser;
 use crate::components::select::Select;
 use crate::components::dialog::Dialog;
 
@@ -289,8 +289,8 @@ pub fn AgentDetails(_props: &AgentDetailsProps) -> Html {
                         name="name"
                     />
                     <label class="pbx-label">{"Contact"}</label>
-                    <UserSelect id="user" value={agent.contact.clone()}>
-                    </UserSelect>
+                    <SelectUser id="user" value={agent.contact.clone()}>
+                    </SelectUser>
                     <label class="pbx-label">{"Leg Timeout"}</label>
                     <input class="pbx-input"
                         value={agent.leg_timeout.to_string()}

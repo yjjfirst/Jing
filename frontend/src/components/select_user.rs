@@ -12,7 +12,7 @@ pub struct Props {
 }
 
 #[function_component]
-pub fn UserSelect(props: &Props) -> Html {
+pub fn SelectUser(props: &Props) -> Html {
     let(store, _) = use_store::<Store>();
 
     let users: UseStateHandle<Vec<String>> = use_state(||vec![]);
@@ -26,7 +26,7 @@ pub fn UserSelect(props: &Props) -> Html {
             });
         });
     }
-    
+
     html! {
         <Select
             id={props.id.clone()}
