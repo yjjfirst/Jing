@@ -5,7 +5,7 @@ use std::time::Duration;
 use std::collections::HashMap;
 use std::io;
 use std::io::{BufRead};
-use crossbeam_channel::{bounded, unbounded, Sender, Receiver, select, tick};
+use crossbeam_channel::{unbounded, Sender, Receiver, select, tick};
 
 use jing_lib::esl::esl::{ Esl, event, filter};
 use jing_lib::esl::cmd::{ Cmd };
@@ -24,7 +24,9 @@ fn handle_reply(cmd_s: &Sender<Cmd>, reply: Reply) {
                 event(cmd_s,
                     "CUSTOM",
                     Some("sofia::register_failure"));
+                event(cmd_s, "CHANNEL_HANGUP_COMPLETE", None);
                 filter(cmd_s, "CUSTOM");
+                filter(cmd_s, "CHANNEL_HANGUP_COMPLETE");
             } else {
                 println!("{} {}", status, text);
             }
@@ -66,8 +68,8 @@ pub fn handle_event(cmd_s: &Sender<Cmd>, event: Event) {
 }
 
 pub fn start_esl() {
-    let (cmd_s, cmd_r) = bounded::<Cmd>(1);
-    let (event_s, event_r) = bounded::<Event>(1);
+    let (cmd_s, cmd_r) = unbounded::<Cmd>();
+    let (event_s, event_r) = unbounded::<Event>();
     let ticker = tick(Duration::from_secs(1));
 
     let mut esl = Esl::new("127.0.0.1".to_string(),

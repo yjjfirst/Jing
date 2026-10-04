@@ -2,7 +2,7 @@ use std::io::prelude::*;
 use std::thread;
 use std::time::Duration;
 use std::net::{TcpStream};
-use crossbeam_channel::{Select, Receiver, Sender};
+use crossbeam_channel::{unbounded, Select, Receiver, Sender};
 
 use super::event::*;
 use super::cmd::*;
@@ -18,9 +18,9 @@ pub struct Esl {
 }
 
 pub fn event (cmd_s: &Sender<Cmd>, name: &str, subclass: Option<&str>) {
-    let cmd = Cmd::Event { 
-        format: String::from("plain"), 
-        name: name.to_string(), 
+    let cmd = Cmd::Event {
+        format: String::from("plain"),
+        name: name.to_string(),
         subclass: subclass.map(String::from)
     };
 
@@ -75,8 +75,8 @@ impl Esl {
         self.send_ending();
     }
 
-    pub fn start(&mut self) -> Result<crossbeam_channel::Receiver<Event>, std::io::Error> {
-        let (event_sender, event_receiver) = crossbeam_channel::bounded(1);
+    pub fn start(&mut self) -> Result<Receiver<Event>, std::io::Error> {
+        let (event_sender, event_receiver) = unbounded();
         let url = self.ipaddr.to_string() + ":" + &self.port;
 
         match TcpStream::connect(url) {
@@ -115,11 +115,11 @@ impl Esl {
                             }
                         }
                     }
-                    
+
                     if ready_id == cmd_id {
                         if self.waiting_reply == false {
                             if let Ok(cmd) = self.cmd_r.try_recv() {
-                                self.send(cmd);                        
+                                self.send(cmd);
                             }
                         } else {
                             thread::sleep(Duration::from_millis(100));
