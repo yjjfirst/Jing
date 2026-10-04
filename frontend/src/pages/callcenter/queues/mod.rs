@@ -304,7 +304,7 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
                             ]
                         }
                         selected = {QueueParam::get("strategy", &queue.params)}
-                        id="strategy"
+                        name="strategy"
                     />
                     <label class="pbx-label">{"moh"}</label>
                     <input class="pbx-input"
@@ -315,7 +315,7 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
                     <Select
                         options={vec!["system".to_string(), "queue".to_string()]}
                         selected = {QueueParam::get("time-base-score", &queue.params)}
-                        id="time-base-score"
+                        name="time-base-score"
                     />
                     <label class="pbx-label">{"Max wait time"}</label>
                     <input class="pbx-input"
@@ -336,7 +336,7 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
                     <Select
                         options={vec!["true".to_string(), "false".to_string()]}
                         selected = {QueueParam::get("tier-rules-apply", &queue.params)}
-                        id="tier-rules-apply"
+                        name="tier-rules-apply"
                     />
                     <label class="pbx-label">{"Tier rule wait second"}</label>
                     <input class="pbx-input"
@@ -347,13 +347,13 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
                     <Select
                         options={vec!["true".to_string(), "false".to_string()]}
                         selected = {QueueParam::get("tier-rule-wait-multiply-level", &queue.params)}
-                        id="tier-rule-wait-multiply-level"
+                        name="tier-rule-wait-multiply-level"
                     />
                     <label class="pbx-label">{"Tier rule no agent no wait"}</label>
                     <Select
                         options={vec!["true".to_string(), "false".to_string()]}
                         selected = {QueueParam::get("tier-rule-no-agent-no-wait", &queue.params)}
-                        id="tier-rule-no-agent-no-wait"
+                        name="tier-rule-no-agent-no-wait"
                     />
                     <label class="pbx-label">{"Discard abandoned after"}</label>
                     <input class="pbx-input"
@@ -364,7 +364,7 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
                     <Select
                         options={vec!["true".to_string(), "false".to_string()]}
                         selected = {QueueParam::get("abandoned-resume-allowed", &queue.params)}
-                        id="abandoned-resume-allowed"
+                        name="abandoned-resume-allowed"
                     />
                 </div>
                 <ActionButtons oncancel={handle_cancel}/>

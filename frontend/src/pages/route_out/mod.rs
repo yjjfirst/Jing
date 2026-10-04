@@ -277,7 +277,7 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
                                     .iter()
                                     .map(|g|{g.gateway_name.clone()})
                                     .collect::<Vec<String>>()}
-                        id="gateway"/>
+                        name="gateway"/>
                 } else {
                     <Select
                         selected={""}
@@ -285,7 +285,7 @@ pub fn OutboundDetails(_props: &OutboundDetailsProps) -> Html {
                                     .iter()
                                     .map(|g|{g.gateway_name.clone()})
                                     .collect::<Vec<String>>()}
-                        id="gateway"/>
+                        name="gateway"/>
                 }
                 </div>
                 <ActionButtons oncancel={form_oncancel} />

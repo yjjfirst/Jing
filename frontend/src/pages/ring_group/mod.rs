@@ -301,7 +301,7 @@ pub fn RingGroupDetailComponent(props: &RingGroupDetailsProps) -> Html {
                 <Select
                     {options}
                     selected = {group.ring_strategy.to_string()}
-                    id="ring-strategy">
+                    name="ring-strategy">
                 </Select>
                 <label class="pbx-label">{"Members"}</label>
                 <MultiSelect

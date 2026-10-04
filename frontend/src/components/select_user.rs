@@ -29,7 +29,7 @@ pub fn SelectUser(props: &Props) -> Html {
 
     html! {
         <Select
-            id={props.id.clone()}
+            name={props.id.clone()}
             options = {users.iter().map(|e|e.to_string()).collect::<Vec<String>>()}
             selected = {props.value.clone()}
         >

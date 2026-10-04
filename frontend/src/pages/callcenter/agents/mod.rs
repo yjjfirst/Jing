@@ -317,7 +317,7 @@ pub fn AgentDetails(_props: &AgentDetailsProps) -> Html {
                         name="type" />
                     <label class="pbx-label">{"Status"}</label>
                     <Select
-                        id="status"
+                        name="status"
                         selected={AgentParam::get("status", &agent.params)}
                         options={vec![
                             "Logged Out".to_string(),

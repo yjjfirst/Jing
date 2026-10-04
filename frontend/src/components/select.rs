@@ -3,7 +3,7 @@ use yew::prelude::*;
 #[derive(Properties, PartialEq)]
 pub struct Props {
     #[prop_or("".to_string())]
-    pub id: String,
+    pub name: String,
     #[prop_or(classes!("w-80"))]
     pub label_width: Classes,
     pub options: Vec<String>,
@@ -13,13 +13,11 @@ pub struct Props {
 
 #[function_component]
 pub fn Select(props: &Props) -> Html {
-    let id = props.id.clone();
+    let name = props.name.clone();
     let options = props.options.clone();
-    let name = id.clone();
 
     html!{
         <select
-            id={id.clone()}
             name={name}
             class="select select-bordered block w-full col-span-2"
         >
@@ -31,7 +29,7 @@ pub fn Select(props: &Props) -> Html {
                     } else{
                         <option>{o}</option>
                     }
-                }                                       
+                }
             }).collect::<Html>()
         }
         </select>
