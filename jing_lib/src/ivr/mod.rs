@@ -1,5 +1,6 @@
 pub mod ivr_attrs;
 pub mod ivr_entry;
+pub mod ivr_attr_help;
 
 use diesel::prelude::*;
 use diesel::dsl::*;

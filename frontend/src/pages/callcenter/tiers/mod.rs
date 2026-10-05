@@ -158,7 +158,7 @@ pub fn TierComponent(props: &TierComponentProps) -> Html {
                    </div>
                    <div class="col-span-1">
                        <SelectId
-                            id="tier_agent"
+                            name="tier_agent"
                             options = {
                                 agents
                                     .iter()

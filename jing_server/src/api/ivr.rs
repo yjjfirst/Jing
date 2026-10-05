@@ -6,6 +6,7 @@ use std::collections::HashMap;
 
 use jing_lib::ivr;
 use jing_lib::ivr::ivr_attrs::{IvrAttr};
+use jing_lib::ivr::ivr_attr_help::{self, IvrAttrHelp};
 
 #[derive(Serialize, Deserialize)]
 struct Ivr {
@@ -14,6 +15,7 @@ struct Ivr {
     pub name: String,
     pub domain_id: i32,
     pub attrs: HashMap<String, IvrAttr>,
+    pub attr_helps: Vec<IvrAttrHelp>,
     pub entries: Vec<ivr::ivr_entry::IvrEntry>
 }
 
@@ -41,6 +43,7 @@ async fn index(_path: web::Path<i32>) -> impl Responder {
             name: i.name.clone(),
             exten: i.exten.clone(),
             attrs: HashMap::new(),
+            attr_helps: vec![],
             entries: vec![]
         }
     }).collect::<Vec<Ivr>>())
@@ -64,6 +67,7 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
             exten: ivr.exten,
             domain_id: ivr.domain_id,
             attrs: attr_hash,
+            attr_helps: ivr_attr_help::list().unwrap(),
             entries: entries
         });
     } else {
@@ -83,6 +87,7 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
             exten: "".to_string(),
             domain_id: domain_id,
             attrs: attr_hash,
+            attr_helps: ivr_attr_help::list().unwrap(),
             entries: vec![]
         });
 

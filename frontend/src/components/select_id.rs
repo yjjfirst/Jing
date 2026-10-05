@@ -4,7 +4,7 @@ use yew::prelude::*;
 #[derive(Properties, PartialEq)]
 pub struct Props {
     #[prop_or("".to_string())]
-    pub id: String,
+    pub name: String,
     #[prop_or(classes!("w-80"))]
     pub label_width: Classes,
     pub options: Vec<String>,
@@ -15,7 +15,7 @@ pub struct Props {
 
 #[function_component]
 pub fn SelectId(props: &Props) -> Html {
-    let id = props.id.clone();
+    let name = props.name.clone();
     let mut options = props.options.clone();
     let mut options_id = props.options_id.clone();
     let input_ref = use_node_ref();
@@ -65,7 +65,7 @@ pub fn SelectId(props: &Props) -> Html {
             </select>
             <input
                 ref = {input_ref}
-                name={id.clone()}
+                name={name.clone()}
                 class={"hidden"}
                 value={selected.to_string()}/>
         </div>

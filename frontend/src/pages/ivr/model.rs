@@ -10,7 +10,16 @@ pub struct Ivr {
     pub name: String,
     pub domain_id: usize,
     pub attrs: HashMap<String, IvrAttr>,
+    pub attr_helps: Vec<IvrAttrHelp>,
     pub entries: Vec<IvrEntry>
+}
+
+#[derive(Clone, Debug, PartialEq, Deserialize, Serialize)]
+pub struct IvrAttrHelp {
+    pub id: i32,
+    pub name: String,
+    pub range_text: String,
+    pub help_text: String
 }
 
 impl Ivr {
@@ -21,6 +30,7 @@ impl Ivr {
             name: "".to_string(),
             domain_id: 0,
             attrs: HashMap::new(),
+            attr_helps: vec![],
             entries: vec![]
         }
     }
@@ -42,7 +52,7 @@ impl IvrEntry {
             digits: "".to_string(),
             dest_exten: "".to_string()
         }
-    } 
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, HashMapHelper)]
@@ -61,5 +71,5 @@ impl IvrAttr {
             name: "".to_string(),
             value: "".to_string()
         }
-    }    
+    }
 }

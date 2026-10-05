@@ -1,5 +1,6 @@
 use yew::prelude::*;
 use web_sys::HtmlInputElement;
+use crate::components::select_sound_file::SelectSoundFile;
 
 #[derive(Properties, PartialEq)]
 pub struct ParamInputProps {
@@ -31,12 +32,12 @@ pub fn ParamInput(props: &ParamInputProps) -> Html {
     };
 
     html! {
-        if range_text == "string" || range_text == "domain" {
+        if range_text == "string" || range_text == "domain" || range_text == "digits" {
             <div class="pbx-input-container tooltip tooltip-info" data-tip={help_text}>
-            <input class="pbx-input"
-                value={value}
-                name={name}
-            />
+                <input class="pbx-input"
+                    value={value}
+                    name={name}
+                />
             </div>
         } else if range_text == "bool" {
             <div class="pbx-input-container tooltip tooltip-info" data-tip={help_text}>
@@ -68,6 +69,12 @@ pub fn ParamInput(props: &ParamInputProps) -> Html {
                         <path d="m6 6 12 12" />
                     </svg>
                 </label>
+            </div>
+        } else if range_text == "sound" {
+            <div class="pbx-input-container tooltip tooltip-info" data-tip={help_text}>
+                <SelectSoundFile
+                    name={name}
+                    sound_file_id={value.clone().parse::<usize>().unwrap_or(0)} />
             </div>
         }
     }

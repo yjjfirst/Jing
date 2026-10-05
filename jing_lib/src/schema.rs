@@ -208,6 +208,18 @@ diesel::table! {
 }
 
 diesel::table! {
+    ivr_attr_helps (id) {
+        id -> Int4,
+        #[max_length = 128]
+        name -> Varchar,
+        #[max_length = 1024]
+        range_text -> Varchar,
+        #[max_length = 1024]
+        help_text -> Varchar,
+    }
+}
+
+diesel::table! {
     ivr_attrs (id) {
         id -> Int4,
         ivr_id -> Int4,
@@ -501,6 +513,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     gateway_params,
     gateways,
     inbound_routes,
+    ivr_attr_helps,
     ivr_attrs,
     ivr_entries,
     ivrs,

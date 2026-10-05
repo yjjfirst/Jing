@@ -11,7 +11,7 @@ use yew_icons::{Icon, IconData};
 
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
-use crate::components::select_sound_file::SelectSoundFile;
+use crate::components::param_input::ParamInput;
 use crate::components::select_exten::SelectExten;
 use crate::components::action_buttons::ActionButtons;
 
@@ -227,61 +227,13 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
         });
     }
 
-    let label = |id:&str| {
-        html!{
-            <label class="pbx-label">{id}</label>
-        }
-    };
-
-    let input =  |id :&str, value: &str| {
-        html!{
-            <input class="pbx-input" name={id.to_string()} value={value.to_string()} />
-        }
-    };
-
-    let sound_file_select = |id: &str, sound_file_id: usize| {
-        html!{
-            <div class="col-span-2">
-                <SelectSoundFile
-                    id={id.to_string()}
-                    sound_file_id={sound_file_id}>
-                </SelectSoundFile>
-            </div>
-        }
-    };
-
-    let attr_htmls: Vec<Html> =
-        vec![
-            label("Greet Long"),
-            sound_file_select("greet-long", IvrAttr::get("greet-long", &ivr.attrs).parse::<usize>().unwrap_or(0)),
-            label("Greet Short"),
-            sound_file_select("greet-short", IvrAttr::get("greet-short", &ivr.attrs).parse::<usize>().unwrap_or(0)),
-            label("Invalid Sound"),
-            sound_file_select("invalid-sound", IvrAttr::get("invalid-sound", &ivr.attrs).parse::<usize>().unwrap_or(0)),
-            label("Exit Sound"),
-            sound_file_select("exit-sound", IvrAttr::get("exit-sound", &ivr.attrs).parse::<usize>().unwrap_or(0)),
-            label("Timeout"),
-            input("timeout", &IvrAttr::get("timeout", &ivr.attrs)),
-            label("Inter Digit Timeout"),
-            input("inter-digit-timeout", &IvrAttr::get("inter-digit-timeout", &ivr.attrs)),
-            label("Max Failures"),
-            input("max-failures", &IvrAttr::get("max-failures", &ivr.attrs)),
-            label("Max Timeouts"),
-            input("max-timeouts", &IvrAttr::get("max-timeouts", &ivr.attrs)),
-            label("Digit Len"),
-            input("digit-len", &IvrAttr::get("digit-len", &ivr.attrs)),
-            label("Confirm attempts"),
-            input("confirm-attempts", &IvrAttr::get("confirm-attempts", &ivr.attrs)),
-        ];
-
-
     let entries_html: Vec<Html> = ivr.entries.iter().map(|e|{
         html!{
             <IvrEntryComponent digits={e.digits.clone()} exten={e.dest_exten.clone()} />
         }
     }).collect();
 
-    let add_entry = {
+    let handle_add_entry = {
         let ivr = ivr.clone();
         Callback::from(move |_e: MouseEvent|{
             let ivr = ivr.clone();
@@ -293,6 +245,7 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
                     name: ivr.name.clone(),
                     exten: ivr.exten.clone(),
                     attrs: ivr.attrs.clone(),
+                    attr_helps: ivr.attr_helps.clone(),
                     entries})
         })
     };
@@ -317,17 +270,22 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
             let form = target.dyn_into().unwrap();
             let form_data = FormData::new_with_form(&form).unwrap();
 
-            let new_attrs = ivr
-                .attrs
-                .clone()
-                .into_iter()
-                .map(|a|{
-                    let key = a.0;
-                    let mut attr = a.1;
-                    attr.value = form_data.get(&key).as_string().unwrap();
-                    (key, attr)
-                })
-                .collect::<HashMap<String, IvrAttr>>();
+            let new_attrs = ivr.attr_helps.iter().map(|h|{
+                let key = h.name.clone();
+                match ivr.attrs.get(&key) {
+                    Some(a) => {
+                        let mut attr = a.clone();
+                        attr.value = form_data.get(&key).as_string().unwrap();
+                        (key, attr)
+                    }
+                    None => {
+                        let mut attr = IvrAttr::_new();
+                        attr.name = key.clone();
+                        attr.value = form_data.get(&key).as_string().unwrap();
+                        (key, attr)
+                    }
+                }
+            }).collect::<HashMap<String, IvrAttr>>();
 
             let new_entries: Vec<IvrEntry> = ivr
                 .entries
@@ -351,6 +309,7 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
                 name: form_data.get("name").as_string().unwrap(),
                 exten: form_data.get("extension").as_string().unwrap(),
                 attrs: new_attrs,
+                attr_helps: vec![],
                 entries: new_entries
             };
 
@@ -384,12 +343,26 @@ pub fn IvrDetails(props: &IvrDetailProps) -> Html {
                     <input class="pbx-input"
                         name="name"
                         value={ivr.name.clone()} />
-                    {attr_htmls}
+                    {
+                    for ivr.attr_helps.iter().map(|a|{
+                        html!{
+                            <>
+                                <label class="pbx-label">{a.name.clone()}</label>
+                                <ParamInput
+                                    name={a.name.clone()}
+                                    value={IvrAttr::get(&a.name, &ivr.attrs)}
+                                    range_text={a.range_text.clone()}
+                                    help_text={a.help_text.clone()}
+                                />
+                            </>
+                        }
+                    })
+                    }
                     <label class="pbx-label">{"Entries"}</label>
                     <div>
                         {entries_html}
                         <div>
-                            <div class="btn btn-link btn-sm mr-4" onclick={add_entry}>
+                            <div class="btn btn-link btn-sm mr-4" onclick={handle_add_entry}>
                                 <Icon data={IconData::LUCIDE_PLUS}/>
                                 {"Add"}
                             </div>

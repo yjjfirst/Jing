@@ -7,14 +7,14 @@ use crate::components::select_id::SelectId;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
-    pub id: String,
+    pub name: String,
     #[prop_or(classes!("w-80"))]
     pub label_width: Classes,
     pub sound_file_id: usize
 }
 #[function_component]
 pub fn SelectSoundFile(props: &Props) -> Html {
-    let id = props.id.clone();
+    let name = props.name.clone();
     let sound_file_id = props.sound_file_id;
     let(store,_) = use_store::<Store>();
     let sound_files: UseStateHandle<Vec<SoundFile>> = use_state(||vec![]);
@@ -34,7 +34,7 @@ pub fn SelectSoundFile(props: &Props) -> Html {
     }
     html! {
         <SelectId
-            id={id.clone()}
+            name={name.clone()}
             options={
                 sound_files
                     .iter()

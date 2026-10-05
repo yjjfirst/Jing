@@ -283,7 +283,7 @@ pub fn SoundDetails(props: &SoundDetailProps) -> Html {
                 />
                 <label class="pbx-label">{"Sound File"}</label>
                 <div class="col-span-2">
-                    <SelectSoundFile id="sound_file" sound_file_id={sound.sound_file_id}/>
+                    <SelectSoundFile name="sound_file" sound_file_id={sound.sound_file_id}/>
                 </div>
             </div>
             <ActionButtons oncancel={form_oncancel}/>
