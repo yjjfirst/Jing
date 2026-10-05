@@ -14,7 +14,11 @@ pub struct Props {
 #[function_component]
 pub fn Select(props: &Props) -> Html {
     let name = props.name.clone();
-    let options = props.options.clone();
+    let mut options = props.options.clone();
+
+    if props.selected == "" {
+        options.push("".to_string());
+    }
 
     html!{
         <select
@@ -24,9 +28,11 @@ pub fn Select(props: &Props) -> Html {
         {
             options.into_iter().map(|o| {
                 html!{
-                    if props.selected == o {
+                    if o == "" {
+                        <option value={""} selected={true} hidden={true} disabled={true}>{"Please Select"}</option>
+                    } else if props.selected == o {
                         <option selected=true>{o}</option>
-                    } else{
+                    } else {
                         <option>{o}</option>
                     }
                 }

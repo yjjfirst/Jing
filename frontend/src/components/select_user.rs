@@ -7,14 +7,13 @@ use crate::components::select::Select;
 
 #[derive(Properties, PartialEq)]
 pub struct Props {
-    pub id: String,
+    pub name: String,
     pub value: String
 }
 
 #[function_component]
 pub fn SelectUser(props: &Props) -> Html {
     let(store, _) = use_store::<Store>();
-
     let users: UseStateHandle<Vec<String>> = use_state(||vec![]);
 
     {
@@ -29,11 +28,10 @@ pub fn SelectUser(props: &Props) -> Html {
 
     html! {
         <Select
-            name={props.id.clone()}
+            name={props.name.clone()}
             options = {users.iter().map(|e|e.to_string()).collect::<Vec<String>>()}
             selected = {props.value.clone()}
         >
         </Select>
-
     }
 }

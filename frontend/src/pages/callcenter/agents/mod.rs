@@ -289,7 +289,7 @@ pub fn AgentDetails(_props: &AgentDetailsProps) -> Html {
                         name="name"
                     />
                     <label class="pbx-label">{"Contact"}</label>
-                    <SelectUser id="user" value={agent.contact.clone()}>
+                    <SelectUser name="user" value={agent.contact.clone()}>
                     </SelectUser>
                     <label class="pbx-label">{"Leg Timeout"}</label>
                     <input class="pbx-input"
