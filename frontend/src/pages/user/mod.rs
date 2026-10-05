@@ -234,18 +234,39 @@ pub fn UserDetail(_props: &UserDetailProps) -> Html {
             let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();
             let form_data = FormData::new_with_form(&form).unwrap();
 
-            let mut new_vars = user.vars.clone();
-            let mut new_params = user.params.clone();
+            let new_vars = user.var_helps.iter().map(|h|{
+                let key = h.name.clone();
+                match user.vars.get(&key) {
+                    Some(v) => {
+                        let mut var = v.clone();
+                        var.value = form_data.get(&key).as_string().unwrap();
+                        (key, var)
+                    }
+                    None => {
+                        let mut var = Var::_new();
+                        var.name = key.clone();
+                        var.value = form_data.get(&key).as_string().unwrap();
+                        (key, var)
+                    }
+                }
+            }).collect::<HashMap<String, Var>>();
 
-            if user.id != 0 {
-                Param::update("password", &mut new_params, &form_data);
-                Param::update("vm-password", &mut new_params, &form_data);
-            }
-
-            Var::update("effective_caller_id_name", &mut new_vars, &form_data);
-            Var::update("effective_caller_id_number", &mut new_vars, &form_data);
-            Var::update("outbound_caller_id_name", &mut new_vars, &form_data);
-            Var::update("outbound_caller_id_number", &mut new_vars, &form_data);
+            let new_params = user.param_helps.iter().map(|h|{
+                let key = h.name.clone();
+                match user.params.get(&key) {
+                    Some(p) => {
+                        let mut param = p.clone();
+                        param.value = form_data.get(&key).as_string().unwrap();
+                        (key, param)
+                    }
+                    None => {
+                        let mut param = Param::_new();
+                        param.name = key.clone();
+                        param.value = form_data.get(&key).as_string().unwrap();
+                        (key, param)
+                    }
+                }
+            }).collect::<HashMap<String, Param>>();
 
             let c = User {
                 id: user.id,
