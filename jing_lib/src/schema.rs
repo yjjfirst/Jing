@@ -44,6 +44,18 @@ diesel::table! {
 }
 
 diesel::table! {
+    announcements (id) {
+        id -> Int4,
+        #[max_length = 32]
+        exten -> Varchar,
+        #[max_length = 32]
+        name -> Varchar,
+        domain_id -> Int4,
+        sound_file_id -> Int4,
+    }
+}
+
+diesel::table! {
     cdr (id) {
         id -> Int4,
         caller_id_name -> Nullable<Varchar>,
@@ -362,18 +374,6 @@ diesel::table! {
 }
 
 diesel::table! {
-    sounds (id) {
-        id -> Int4,
-        #[max_length = 32]
-        exten -> Varchar,
-        #[max_length = 32]
-        name -> Varchar,
-        domain_id -> Int4,
-        sound_file_id -> Int4,
-    }
-}
-
-diesel::table! {
     system_settings (id) {
         id -> Int4,
         #[max_length = 255]
@@ -465,6 +465,8 @@ diesel::joinable!(acl_nodes -> acl_lists (list_id));
 diesel::joinable!(agent_params -> agents (agent_id));
 diesel::joinable!(agents -> domains (domain_id));
 diesel::joinable!(agents -> users (user_id));
+diesel::joinable!(announcements -> domains (domain_id));
+diesel::joinable!(announcements -> sound_files (sound_file_id));
 diesel::joinable!(conference_control_details -> conference_controls (conference_control_id));
 diesel::joinable!(conference_profile_params -> conference_profiles (conference_profile_id));
 diesel::joinable!(conferences -> conference_profiles (conference_profile_id));
@@ -484,8 +486,6 @@ diesel::joinable!(ringing_group_members -> ringing_groups (ringing_group_id));
 diesel::joinable!(ringing_group_members -> users (user_id));
 diesel::joinable!(ringing_groups -> domains (domain_id));
 diesel::joinable!(sound_files -> domains (domain_id));
-diesel::joinable!(sounds -> domains (domain_id));
-diesel::joinable!(sounds -> sound_files (sound_file_id));
 diesel::joinable!(tiers -> agents (agent_id));
 diesel::joinable!(tiers -> queues (queue_id));
 diesel::joinable!(user_params -> users (user_id));
@@ -498,6 +498,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     acl_nodes,
     agent_params,
     agents,
+    announcements,
     cdr,
     conference_control_details,
     conference_controls,
@@ -527,7 +528,6 @@ diesel::allow_tables_to_appear_in_same_query!(
     ringing_group_members,
     ringing_groups,
     sound_files,
-    sounds,
     system_settings,
     tiers,
     user_param_helps,

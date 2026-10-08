@@ -2,28 +2,22 @@ use serde::{Serialize, Deserialize};
 use crate::pages::sound_file::model::SoundFile;
 
 #[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
-pub struct Sound {
+pub struct Announcement {
     pub id: usize,
     pub name: String,
     pub exten: String,
     pub domain_id: usize,
-    pub sound_file_id: usize
-}
-
-#[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
-pub struct ApiSound {
-    pub sound: Sound,
     pub sound_file: SoundFile
 }
 
-impl Sound {
-    pub fn new() -> Sound {
-        Sound {
+impl Announcement {
+    pub fn new() -> Announcement {
+        Announcement {
             id: 0,
             name: "".to_string(),
             exten: "".to_string(),
             domain_id: 0,
-            sound_file_id: 0,
+            sound_file: SoundFile::new(),
         }
     }
 }

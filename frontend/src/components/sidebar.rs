@@ -3,7 +3,6 @@ use yew::prelude::*;
 use yew_router::prelude::*;
 use yew_icons::{Icon, IconData};
 
-
 #[derive(Clone, Properties, PartialEq)]
 pub struct SidebarMenuItemPros {
     pub caption: String,
@@ -49,7 +48,7 @@ pub fn SidebarMenu() -> Html {
         },
         SidebarMenuItemPros {
             caption: "Announcement".to_string(),
-            route: Route::SoundRoot,
+            route: Route::AnnouncementRoot,
             onclick: onclick.clone(),
             selected: false,
             icon: None,

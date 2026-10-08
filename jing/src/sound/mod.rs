@@ -23,7 +23,7 @@ pub enum SoundCli {
     }
 }
 
-pub fn print_sounds(sounds: Vec<sound::models::Sound>) {
+pub fn print_sounds(sounds: Vec<announcement::models::Announcement>) {
     let mut table = Ctable::new();
     table.set_titles(row!["id", "name", "exten", "doamin_id", "sound_file_id"]);
     for s in sounds {
@@ -43,13 +43,13 @@ pub fn exec_sound_cmd(sound: SoundCli) {
     let domain_id = domain::get_active().unwrap();
     match sound {
         SoundCli::Add {name, exten, sound_file_id} => {
-            sound::add(domain_id, sound_file_id, name, exten).unwrap();
+            announcement::add(domain_id, sound_file_id, name, exten).unwrap();
         },
         SoundCli::Del {id} => {
-            sound::del(id).unwrap();
+            announcement::del(id).unwrap();
         },
         SoundCli::Ls => {
-            let sounds = sound::list().unwrap();
+            let sounds = announcement::list().unwrap();
             print_sounds(sounds);
         }
     }

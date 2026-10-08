@@ -1,10 +1,10 @@
 use serde::{Serialize, Deserialize};
-use crate::schema::sounds;
+use crate::schema::announcements;
 
 #[derive(Identifiable,Queryable, Debug, Serialize, Deserialize, AsChangeset)]
 #[derive(Clone)]
 #[diesel(belongs_to(SoundFile))]
-pub struct Sound {
+pub struct Announcement {
     pub id: i32,
     pub exten: String,
     pub name: String,
@@ -13,8 +13,8 @@ pub struct Sound {
 }
 
 #[derive(Insertable)]
-#[diesel(table_name=sounds)]
-pub struct NewSound {
+#[diesel(table_name=announcements)]
+pub struct NewAnnouncement {
     pub exten: String,
     pub name: String,
     pub domain_id:i32,

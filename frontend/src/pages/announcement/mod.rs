@@ -15,23 +15,24 @@ use crate::components::action_buttons::ActionButtons;
 
 use crate::store::{alert_info, alert_error, Store};
 use crate::models::Service;
-use model::{Sound, ApiSound};
+use model::{Announcement};
+use crate::pages::sound_file::model::SoundFile;
 
 #[derive(Clone, Routable, PartialEq)]
-pub enum SoundRoute {
-    #[at("/sound")]
+pub enum AnnouncementRoute {
+    #[at("/announcement")]
     Index,
-    #[at("/sound/:id")]
+    #[at("/announcement/:id")]
     Get {id: usize},
 }
 
 #[derive(Clone, PartialEq, Properties)]
-pub struct SoundDetailProps {
+pub struct AnnouncementDetailProps {
     id: usize,
 }
 
 #[derive(Clone, PartialEq, Properties)]
-pub struct SoundListItemProps {
+pub struct AnnouncementListItemProps {
     pub sound_id: usize,
     pub name: String,
     pub sound_file: String,
@@ -40,7 +41,7 @@ pub struct SoundListItemProps {
 }
 
 #[function_component]
-pub fn SoundListItem(props: &SoundListItemProps) -> Html {
+pub fn AnnouncementListItem(props: &AnnouncementListItemProps) -> Html {
     let nav = use_navigator().unwrap();
     let dialog_ref: NodeRef = use_node_ref();
     let dd_ref = dialog_ref.clone();
@@ -50,7 +51,7 @@ pub fn SoundListItem(props: &SoundListItemProps) -> Html {
     let sound_id = props.sound_id;
 
     let onedit: Callback<MouseEvent> = Callback::from(move |_e|{
-        nav.push(&SoundRoute::Get {id: sound_id});
+        nav.push(&AnnouncementRoute::Get {id: sound_id});
     });
 
     let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
@@ -91,7 +92,7 @@ pub fn SoundListItem(props: &SoundListItemProps) -> Html {
             <Dialog
                 d_ref = {dialog_ref}
                 title={"Warning!"}
-                contents={format!("Are you sure to delete sound: {}?", props.name.clone())}
+                contents={format!("Are you sure to delete announcement: {}?", props.name.clone())}
                 {onconfirm}
                 >
             </Dialog>
@@ -101,46 +102,46 @@ pub fn SoundListItem(props: &SoundListItemProps) -> Html {
 }
 
 #[function_component]
-pub fn SoundList() -> Html {
+pub fn AnnouncementList() -> Html {
     let loc = use_location().unwrap().clone();
     let nav = use_navigator().unwrap();
     let (store,_) = use_store::<Store>();
-    let sounds = use_state(||vec![]);
+    let announcements = use_state(||vec![]);
     {
-        let sounds = sounds.clone();
+        let announcements = announcements.clone();
         use_effect_with((), move|_|{
-            let sounds = sounds.clone();
+            let announcements = announcements.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_sounds: Vec<ApiSound> =
+                let fetched_sounds: Vec<Announcement> =
                     Service::index(loc.path(), store.selected_domain_id.clone())
                         .await
                         .unwrap();
-                sounds.set(fetched_sounds);
+                announcements.set(fetched_sounds);
             });
         });
     }
 
     let ondel: Callback<usize> = {
-        let sounds = sounds.clone();
+        let announcements = announcements.clone();
         Callback::from(move|id: usize|{
-            let filtered: Vec<ApiSound> = sounds
+            let filtered: Vec<Announcement> = announcements
                 .iter()
-                .filter(|s|s.sound.id != id)
-                .map(|s|s.clone())
+                .filter(|a|a.id != id)
+                .map(|a|a.clone())
                 .collect();
-            sounds.set(filtered);
+            announcements.set(filtered);
         })
     };
 
-    let sounds_html: Vec<Html> = sounds
+    let announcements_html: Vec<Html> = announcements
         .iter()
-        .map(|s| {
+        .map(|a| {
             html! {
-                <SoundListItem
-                    name={s.sound.name.clone()}
-                    exten={s.sound.exten.clone()}
-                    sound_file={s.sound_file.name.clone()}
-                    sound_id={s.sound.id}
+                <AnnouncementListItem
+                    name={a.name.clone()}
+                    exten={a.exten.clone()}
+                    sound_file={a.sound_file.name.clone()}
+                    sound_id={a.id}
                     ondel={ondel.clone()}
                 />
             }
@@ -148,12 +149,12 @@ pub fn SoundList() -> Html {
         .collect();
 
     let onadd: Callback<MouseEvent> = Callback::from(move|_e: MouseEvent|{
-        nav.push(&SoundRoute::Get {id: 0});
+        nav.push(&AnnouncementRoute::Get {id: 0});
     });
 
     html! {
         <div class="grow mr-2">
-            <Header title="Application -> Sound"></Header>
+            <Header title="Application -> Announcement"></Header>
             <div class="divider my-1"></div>
             <table class="table table-zebra">
                 <thead>
@@ -162,7 +163,7 @@ pub fn SoundList() -> Html {
                         <th>{"Name"}</th>
                         <th>{"Sound File"}</th>
                     </tr>
-                    {sounds_html}
+                    {announcements_html}
                 </thead>
                 <tbody>
 
@@ -179,26 +180,26 @@ pub fn SoundList() -> Html {
 }
 
 #[function_component]
-pub fn SoundDetails(props: &SoundDetailProps) -> Html {
+pub fn AnnouncementDetails(props: &AnnouncementDetailProps) -> Html {
     let id = props.id;
     let loc = use_location().unwrap();
     let nav = use_navigator().unwrap();
-    let sound = use_state(||Sound::new());
+    let announcement = use_state(||Announcement::new());
     let(store, dispatch) = use_store::<Store>();
 
     {
-        let sound = sound.clone();
+        let announcement = announcement.clone();
         let loc = loc.clone();
         let store = store.clone();
         use_effect_with((), move |_|{
-            let s = sound.clone();
+            let s = announcement.clone();
             let loc = loc.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_sound =
+                let fetched_announcements =
                     Service::get(loc.path(), store.selected_domain_id)
                         .await
                         .unwrap();
-                s.set(fetched_sound);
+                s.set(fetched_announcements);
             });
         });
     }
@@ -206,14 +207,14 @@ pub fn SoundDetails(props: &SoundDetailProps) -> Html {
     let form_oncancel = {
         let nav = nav.clone();
         Callback::from(move|_| {
-            nav.push(&SoundRoute::Index);
+            nav.push(&AnnouncementRoute::Index);
         })
     };
 
     let form_onsubmit = {
         let store = store.clone();
         let dispatch = dispatch.clone();
-        let sound = sound.clone();
+        let announcement = announcement.clone();
         let nav = nav.clone();
 
         Callback::from(move|e: SubmitEvent| {
@@ -221,6 +222,8 @@ pub fn SoundDetails(props: &SoundDetailProps) -> Html {
             let loc = loc.clone();
             let store = store.clone();
             let nav = nav.clone();
+            e.prevent_default();
+
 
             let form_data = FormData::new_with_form(
                 &e
@@ -228,17 +231,19 @@ pub fn SoundDetails(props: &SoundDetailProps) -> Html {
                     .unwrap()
                     .dyn_into::<HtmlFormElement>()
                     .unwrap()).unwrap();
+            let mut sound_file = SoundFile::new();
+            sound_file.id = form_data
+                .get("sound_file")
+                .as_string()
+                .unwrap()
+                .parse::<usize>()
+                .unwrap();
 
-            let s = Sound {
-                id: sound.id,
+            let s = Announcement {
+                id: announcement.id,
                 name: form_data.get("name").as_string().unwrap(),
                 domain_id: store.selected_domain_id,
-                sound_file_id: form_data
-                                    .get("sound_file")
-                                    .as_string()
-                                    .unwrap()
-                                    .parse::<usize>()
-                                    .unwrap(),
+                sound_file,
                 exten: form_data
                             .get("exten")
                             .as_string()
@@ -251,39 +256,38 @@ pub fn SoundDetails(props: &SoundDetailProps) -> Html {
 
                 match Service::post(loc.path(), store.selected_domain_id, s).await {
                     Ok(_) => {
-                        alert_info("Update sound successfully.".to_string(), dispatch);
+                        alert_info("Update announcement successfully.".to_string(), dispatch);
                     }
                     Err(_) => {
-                        alert_error("Update sound failed.".to_string(), dispatch);
+                        alert_error("Update announcement failed.".to_string(), dispatch);
                     }
                 }
-                nav.push(&SoundRoute::Index);
+                nav.push(&AnnouncementRoute::Index);
             });
 
-            e.prevent_default();
         })
     };
 
     html!{
         <div class="grow mr-2">
-            <Header title= {format!("Sound: {}", sound.exten.clone())}></Header>
+            <Header title= {format!("Announcement: {}", announcement.exten.clone())}></Header>
             <div class="divider my-1"></div>
             <form class="w-full" onsubmit={form_onsubmit}>
             <div class="grid grid-cols-3 gap-1">
                 <label class="pbx-label" hidden = {id != 0}>{"Extension"}</label>
                 <input class="pbx-input"
-                    value={sound.exten.clone()}
+                    value={announcement.exten.clone()}
                     name="exten"
                     hidden = {id != 0}
                 />
                 <label class="pbx-label">{"Name"}</label>
                 <input class="pbx-input"
-                    value={sound.name.clone()}
+                    value={announcement.name.clone()}
                     name="name"
                 />
                 <label class="pbx-label">{"Sound File"}</label>
                 <div class="col-span-2">
-                    <SelectSoundFile name="sound_file" sound_file_id={sound.sound_file_id}/>
+                    <SelectSoundFile name="sound_file" sound_file_id={announcement.sound_file.id}/>
                 </div>
             </div>
             <ActionButtons oncancel={form_oncancel}/>
@@ -292,9 +296,9 @@ pub fn SoundDetails(props: &SoundDetailProps) -> Html {
     }
 }
 
-pub fn sound_switch(route: SoundRoute) -> Html {
+pub fn announcement_switch(route: AnnouncementRoute) -> Html {
     match route {
-        SoundRoute::Index => html!{<SoundList />},
-        SoundRoute::Get { id } => html !{<SoundDetails id={id}/>}
+        AnnouncementRoute::Index => html!{<AnnouncementList />},
+        AnnouncementRoute::Get { id } => html !{<AnnouncementDetails id={id}/>}
     }
 }

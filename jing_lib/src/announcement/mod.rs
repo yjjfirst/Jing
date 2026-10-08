@@ -3,7 +3,7 @@ pub mod models;
 use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
-use crate::schema::sounds;
+use crate::schema::announcements;
 use crate::error::{Result};
 use super::extension::{add_extension, del_extension};
 use super::domain::*;
@@ -14,14 +14,14 @@ pub fn add(domain_id: i32, sound_file_id: i32, name: String, exten: String) -> R
 
     add_extension(exten.as_str(), "sound", domain.id)?;
 
-    let new_sound = NewSound {
+    let new_sound = NewAnnouncement {
         name,
         exten,
         domain_id,
         sound_file_id,
     };
 
-    diesel::insert_into(sounds::table)
+    diesel::insert_into(announcements::table)
         .values(&new_sound)
         .execute(&mut conn)?;
 
@@ -29,35 +29,35 @@ pub fn add(domain_id: i32, sound_file_id: i32, name: String, exten: String) -> R
 }
 
 pub fn del(a_id: i32) -> Result<()> {
-    use crate::schema::sounds::columns::id;
+    use crate::schema::announcements::columns::id;
     let mut conn = db_connect();
 
-    let Sound { exten, .. } = get(a_id)?;
+    let Announcement { exten, .. } = get(a_id)?;
     del_extension(&exten)?;
 
-    diesel::delete(sounds::table)
+    diesel::delete(announcements::table)
         .filter(id.eq(a_id))
         .execute(&mut conn)?;
 
     Ok(())
 }
 
-pub fn get(a_id: i32) -> Result<Sound> {
-    use crate::schema::sounds::dsl::*;
+pub fn get(a_id: i32) -> Result<Announcement> {
+    use crate::schema::announcements::dsl::*;
     let mut conn = db_connect();
 
-    let result = sounds
+    let result = announcements
         .find(a_id)
         .first(&mut conn)?;
 
     Ok(result)
 }
 
-pub fn get_by(domain: i32, ext: &str) -> Result<Sound> {
-    use crate::schema::sounds::dsl::*;
+pub fn get_by(domain: i32, ext: &str) -> Result<Announcement> {
+    use crate::schema::announcements::dsl::*;
     let mut conn = db_connect();
 
-    let result = sounds
+    let result = announcements
         .filter(domain_id.eq(domain))
         .filter(exten.eq(ext))
         .first(&mut conn)?;
@@ -65,22 +65,22 @@ pub fn get_by(domain: i32, ext: &str) -> Result<Sound> {
     Ok(result)
 }
 
-pub fn list() -> Result<Vec<Sound>> {
-    use crate::schema::sounds::dsl::*;
+pub fn list() -> Result<Vec<Announcement>> {
+    use crate::schema::announcements::dsl::*;
     let mut conn = db_connect();
-    let result = sounds
+    let result = announcements
         .order(id.asc())
-        .load::<Sound>(&mut conn)?;
+        .load::<Announcement>(&mut conn)?;
 
     Ok(result)
 }
 
-pub fn update(s: &Sound) -> Result<()> {
+pub fn update(s: &Announcement) -> Result<()> {
     let mut conn = db_connect();
-    use crate::schema::sounds;
-    use crate::schema::sounds::dsl::*;
+    use crate::schema::announcements;
+    use crate::schema::announcements::dsl::*;
 
-    diesel::update(sounds::table)
+    diesel::update(announcements::table)
         .filter(id.eq(s.id))
         .set(s)
         .execute(&mut conn)?;

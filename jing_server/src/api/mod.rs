@@ -7,7 +7,7 @@ pub mod inbound;
 pub mod cdr;
 pub mod sound_file;
 pub mod extension;
-pub mod sound;
+pub mod announcement;
 pub mod conference;
 pub mod ivr;
 pub mod callcenter;
@@ -30,7 +30,7 @@ use inbound::inbound_config;
 use sound_file::sound_file_config;
 use cdr::cdr_config;
 use extension::extension_config;
-use sound::sound_config;
+use announcement::announcement_config;
 use conference::conf_config;
 use ivr::ivr_config;
 use callcenter::cc_config;
@@ -58,7 +58,7 @@ pub fn api_config(cfg: &mut web::ServiceConfig) {
         .service(web::scope("/{domain}/cdr").configure(cdr_config))
         .service(web::scope("/{domain}/sound-file").configure(sound_file_config))
         .service(web::scope("/{domain}/extension").configure(extension_config))
-        .service(web::scope("/{domain}/sound").configure(sound_config))
+        .service(web::scope("/{domain}/announcement").configure(announcement_config))
         .service(web::scope("/{domain}/conference").configure(conf_config))
         .service(web::scope("/{domain}/ivr").configure(ivr_config))
         .service(web::scope("/{domain}/callcenter").configure(cc_config))

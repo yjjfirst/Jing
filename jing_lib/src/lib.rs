@@ -12,7 +12,7 @@ pub mod ivr;
 pub mod extension;
 pub mod fs;
 pub mod sound_file;
-pub mod sound;
+pub mod announcement;
 pub mod conference;
 pub mod callcenter;
 pub mod acl;

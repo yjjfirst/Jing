@@ -11,7 +11,7 @@ use jing_lib::route::inbound_models::{InboundRoute};
 use jing_lib::gateway;
 use jing_lib::ringgroup;
 use jing_lib::domain;
-use jing_lib::sound;
+use jing_lib::announcement;
 use jing_lib::sound_file;
 use jing_lib::conference;
 use jing_lib::callcenter::queue;
@@ -158,7 +158,7 @@ fn ringgroup<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
 
 
 fn sound<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
-    let sound = sound::get_by(domain_id, &exten);
+    let sound = announcement::get_by(domain_id, &exten);
     if let Ok(s) = sound {
         let file = sound_file::get(s.sound_file_id);
         if let Ok(f) = file {
