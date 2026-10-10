@@ -20,6 +20,7 @@ pub fn list() -> Result<Vec<UserParamHelp>> {
     let mut conn = db_connect();
 
     let results = user_param_helps
+        .order_by(id.asc())
         .load::<UserParamHelp>(&mut conn)?;
 
     Ok(results)

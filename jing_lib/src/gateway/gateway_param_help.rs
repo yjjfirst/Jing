@@ -20,6 +20,7 @@ pub fn list() -> Result<Vec<GatewayParamHelp>> {
     let mut conn = db_connect();
 
     let results = gateway_param_helps
+        .order_by(id.asc())
         .load::<GatewayParamHelp>(&mut conn)?;
 
     Ok(results)
