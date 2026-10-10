@@ -12,4 +12,4 @@ pub mod select_user;
 pub mod select_id;
 pub mod toggle;
 pub mod param_input;
-pub mod select_sound_file;
+pub mod select_recording;

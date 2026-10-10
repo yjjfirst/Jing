@@ -14,64 +14,71 @@ use crate::components::action_buttons::ActionButtons;
 use crate::components::header::Header;
 use crate::store::{alert_info, alert_error, Store};
 use crate::components::dialog::Dialog;
-use model::SoundFile;
+use model::Recording;
 use crate::models::Service;
 
 #[derive(Clone, PartialEq, Properties)]
-pub struct SoundFileProps {
-    pub sound: SoundFile,
+pub struct RecordingProps {
+    pub recording: Recording,
     pub ondel: Callback<usize>
 }
 
 #[derive(Clone, PartialEq, Properties)]
-pub struct SoundFileDetailProps {
+pub struct RecordingDetailProps {
     pub id: usize,
 }
 
 #[derive(Clone, Routable, PartialEq)]
-pub enum SoundFileRoute {
-    #[at("/sound-file")]
+pub enum RecordingRoute {
+    #[at("/recording")]
     Index,
-    #[at("/sound-file/:id")]
+    #[at("/recording/:id")]
     Get {id: usize},
 }
 #[function_component]
-pub fn SoundFileListItem(props: &SoundFileProps) -> Html {
-    let sound = props.sound.clone();
+pub fn RecordingListItem(props: &RecordingProps) -> Html {
+    let recording = props.recording.clone();
     let nav = use_navigator().unwrap();
     let dialog_ref: NodeRef = use_node_ref();
-    let dd_ref = dialog_ref.clone();
     let loc: Location = use_location().unwrap().clone();
-    let (store,_) = use_store::<Store>();
+    let (store, dispatch) = use_store::<Store>();
     let ondel = props.ondel.clone();
 
     let onedit: Callback<MouseEvent> = Callback::from(move|_e|{
-        nav.push(&SoundFileRoute::Get {id: sound.id});
+        nav.push(&RecordingRoute::Get {id: recording.id});
     });
 
-    let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
+    let handle_confirm: Callback<bool> = Callback::from(move|_e: bool|{
         let loc = loc.clone();
         let store = store.clone();
         let ondel = ondel.clone();
-
+        let dispatch = dispatch.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let path = format!("{}/{}", loc.path(), sound.id);
-            Service::delete(&path, store.clone().selected_domain_id)
+            let path = format!("{}/{}", loc.path(), recording.id);
+            match Service::delete(&path, store.clone().selected_domain_id)
                 .await
-                .unwrap();
-            ondel.emit(sound.id);
+            {
+                Ok(_) => ondel.emit(recording.id),
+                Err(_) => {
+                    alert_error("Delete recording failed".to_string(), dispatch);
+                }
+            }
         })
     });
 
-    let ondel = Callback::from(move|_e: MouseEvent|{
-        let d = dd_ref.cast::<HtmlDialogElement>().unwrap();
-        d.show_modal().unwrap();
-    });
+    let handle_del = {
+        let dialog_ref = dialog_ref.clone();
+        Callback::from(move|_e: MouseEvent|{
+            let dialog_ref = dialog_ref.clone();
+            let d = dialog_ref.cast::<HtmlDialogElement>().unwrap();
+            d.show_modal().unwrap();
+        })
+    };
 
     html! {
         <tr>
-            <th>{props.sound.name.clone()}</th>
-            <th>{props.sound.description.clone()}</th>
+            <th>{props.recording.name.clone()}</th>
+            <th>{props.recording.description.clone()}</th>
             <th class="flex justify-end">
                 <div class="mr-1">
                     <div onclick={onedit} class="btn btn-square btn-outline btn-sm">
@@ -79,16 +86,16 @@ pub fn SoundFileListItem(props: &SoundFileProps) -> Html {
                     </div>
                 </div>
                 <div>
-                    <div onclick={ondel} class="btn btn-square btn-outline btn-sm">
+                    <div onclick={handle_del} class="btn btn-square btn-outline btn-sm">
                         <Icon data={IconData::LUCIDE_TRASH}/>
                     </div>
                 </div>
             </th>
             <Dialog
-                d_ref = {dialog_ref}
+                d_ref = {dialog_ref.clone()}
                 title={"Warning!"}
-                contents={format!("Are you sure to delete sound file: {}", sound.name.clone())}
-                {onconfirm}
+                contents={format!("Are you sure to delete recording: {}", recording.name.clone())}
+                onconfirm={handle_confirm}
                 >
             </Dialog>
         </tr>
@@ -96,57 +103,60 @@ pub fn SoundFileListItem(props: &SoundFileProps) -> Html {
 }
 
 #[function_component]
-pub fn SoundFileList() -> Html {
+pub fn RecordingList() -> Html {
     let (store,_) = use_store::<Store>();
-    let sound_files: UseStateHandle<Vec<SoundFile>> = use_state(||vec![]);
-    let sound_files_1: UseStateHandle<Vec<SoundFile>> = sound_files.clone();
-    let sound_files_2 = sound_files.clone();
-
+    let recordings: UseStateHandle<Vec<Recording>> = use_state(||vec![]);
     let loc = use_location().unwrap().clone();
     let nav = use_navigator().unwrap();
 
-    use_effect_with((), move|_| {
-        let store = store.clone();
-        let sound_files = sound_files_1.clone();
-        wasm_bindgen_futures::spawn_local(async move {
-            let fetched_files: Vec<SoundFile> =
-                Service::index(loc.path(), store.selected_domain_id.clone())
-                    .await
-                    .unwrap();
-            sound_files.set(fetched_files);
+    {
+        let recordings = recordings.clone();
+        use_effect_with((), move|_| {
+            let store = store.clone();
+            let recordings = recordings.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                let fetched: Vec<Recording> =
+                    Service::index(loc.path(), store.selected_domain_id.clone())
+                        .await
+                        .unwrap();
+                recordings.set(fetched);
+            });
         });
-    });
+    }
 
     let onadd = Callback::from(move|_e: MouseEvent|{
-        nav.push(&SoundFileRoute::Get { id: 0 });
+        nav.push(&RecordingRoute::Get { id: 0 });
     });
 
-    let ondel = Callback::from(move| id: usize|{
-        let sound_files = sound_files_2.clone();
-        let filtered: Vec<SoundFile> = sound_files
-            .iter()
-            .filter(|f|f.id != id)
-            .map(|f|f.clone())
-            .collect();
+    let handle_del = {
+        let recordings = recordings.clone();
+        Callback::from(move| id: usize|{
+            let recordings = recordings.clone();
+            let filtered: Vec<Recording> = recordings
+                .iter()
+                .filter(|f|f.id != id)
+                .map(|f|f.clone())
+                .collect();
 
-        sound_files.set(filtered);
-    });
+            recordings.set(filtered);
+        })
+    };
 
     html! {
         <div class="grow mr-2">
-            <Header title="System -> Sound Files"></Header>
+            <Header title="System -> Recordings"></Header>
             <div class="divider my-1"></div>
             <table class="table table-zebra">
                 <thead>
                     <tr>
-                        <th>{"File Name"}</th>
+                        <th>{"Name"}</th>
                         <th>{"Description"}</th>
                     </tr>
                 </thead>
                 <tbody>
-                {sound_files.iter().map(move|s|{
+                {recordings.iter().map(move|s|{
                     html!{
-                        <SoundFileListItem sound={SoundFile {..s.clone()}} ondel={ondel.clone()}/>
+                        <RecordingListItem recording={Recording {..s.clone()}} ondel={handle_del.clone()}/>
                     }
                 }).collect::<Html>()}
                 </tbody>
@@ -162,60 +172,67 @@ pub fn SoundFileList() -> Html {
 }
 
 #[function_component]
-pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
+pub fn RecordingDetail(props: &RecordingDetailProps) -> Html {
     let nav = use_navigator().unwrap();
     let loc = use_location().unwrap();
-    let loc_1 = loc.clone();
     let (store,dispatch) = use_store::<Store>();
-    let store_1 = store.clone();
-    let store_2 = store.clone();
     let id = props.id;
-
-    let sound = use_state(||{
-        SoundFile {
+    let recording = use_state(||{
+        Recording {
             id: 0,
             name: "".to_string(),
             domain_id: 0,
             description: "".to_string(),
         }
     });
-    let sound_1 = sound.clone();
 
-    use_effect_with((), move |_| {
-        let sound = sound_1.clone();
+    {
+        let recording = recording.clone();
         let loc = loc.clone();
-        wasm_bindgen_futures::spawn_local(async move {
-            let fetched_out =
-                Service::get(loc.path(), store.selected_domain_id)
-                    .await
-                    .unwrap();
-            sound.set(fetched_out);
+        let store = store.clone();
+        use_effect_with((), move |_| {
+            let recording = recording.clone();
+            let loc = loc.clone();
+            let store = store.clone();
+            wasm_bindgen_futures::spawn_local(async move {
+                let fetched_out =
+                    Service::get(loc.path(), store.selected_domain_id)
+                        .await
+                        .unwrap();
+                recording.set(fetched_out);
+            });
         });
-    });
+    }
 
     let form_oncancel = {
         let nav = nav.clone();
         Callback::from(move|_| {
-            nav.push(&SoundFileRoute::Index);
+            nav.push(&RecordingRoute::Index);
         })
     };
 
     let form_onsubmit = {
+        let loc = loc.clone();
+        let store = store.clone();
+        let dispatch = dispatch.clone();
         Callback::from(move|event: SubmitEvent| {
             let target: Option<EventTarget> = event.target();
             let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();
             let form_data = FormData::new_with_form(&form).unwrap();
             let dispatch = dispatch.clone();
-            let loc = loc_1.clone();
+            let loc = loc.clone();
             let nav = nav.clone();
-            let store = store_1.clone();
+            let store = store.clone();
 
-            let sound_file = SoundFile {
+            event.prevent_default();
+
+            let recording = Recording {
                 id: form_data.get("id").as_string().unwrap().parse::<usize>().unwrap(),
                 name: "".to_string(),
                 domain_id: 0,
                 description: form_data.get("description").as_string().unwrap(),
             };
+
             if id == 0 {
                 wasm_bindgen_futures::spawn_local(async move {
                     let dispatch = dispatch.clone();
@@ -223,11 +240,11 @@ pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
                     match Service::post_form(loc.path(), store.selected_domain_id, form_data)
                         .await {
                             Ok(_) => {
-                                alert_info("Create sound file successfully".to_string(), dispatch);
-                                nav.push(&SoundFileRoute::Index);
+                                alert_info("Create recording successfully".to_string(), dispatch);
+                                nav.push(&RecordingRoute::Index);
                             }
                             Err(_) => {
-                                alert_error("Create sound file failed".to_string(), dispatch);
+                                alert_error("Create recording failed".to_string(), dispatch);
                             }
                         }
                 });
@@ -236,41 +253,40 @@ pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
                     let dispatch = dispatch.clone();
                     let loc = loc.clone();
 
-                    match Service::patch(loc.path(), store.selected_domain_id, sound_file)
+                    match Service::patch(loc.path(), store.selected_domain_id, recording)
                         .await {
                             Ok(_) => {
-                                alert_info("Update sound file successfully".to_string(), dispatch);
-                                nav.push(&SoundFileRoute::Index);
+                                alert_info("Update recording successfully".to_string(), dispatch);
+                                nav.push(&RecordingRoute::Index);
                             }
                             Err(_) => {
-                                alert_error("Update sound file failed".to_string(), dispatch);
+                                alert_error("Update recording failed".to_string(), dispatch);
                             }
                         }
                 });
             }
-            event.prevent_default();
         })
     };
 
     html!{
         <div class="grow mr-2">
-            <Header title= {format!("Sound File: {}", sound.name)}></Header>
+            <Header title= {format!("Recording: {}", recording.name)}></Header>
             <div class="divider my-1"></div>
             <form class="w-full" onsubmit={form_onsubmit} method="POST">
             <div class="grid grid-cols-3 gap-1">
-                <input value={sound.id.to_string()} id="id" hidden=true />
-                <input value={store_2.selected_domain_id.to_string()} id="domain_id" hidden=true />
-                <label class="pbx-label">{"File Name"}</label>
+                <input value={recording.id.to_string()} name="id" hidden=true />
+                <input value={store.selected_domain_id.to_string()} name="domain_id" hidden=true />
+                <label class="pbx-label">{"Name"}</label>
                 if id == 0 {
                     <FileInput
                     id="file_name"
                     value=""
                     input_type="file"/>
                 } else {
-                    <input class="pbx-input" value={sound.name.clone()} id="name" disabled=true />
+                    <input class="pbx-input" value={recording.name.clone()} name="name" disabled=true />
                 }
                 <label class="pbx-label">{"Description"}</label>
-                <input class="pbx-input" value={sound.description.clone()} id="description" />
+                <input class="pbx-input" value={recording.description.clone()} name="description" />
                 </div>
                 <ActionButtons oncancel={form_oncancel}/>
             </form>
@@ -278,9 +294,9 @@ pub fn SoundFileDetail(props: &SoundFileDetailProps) -> Html {
     }
 }
 
-pub fn sound_file_switch(route: SoundFileRoute) -> Html {
+pub fn recording_switch(route: RecordingRoute) -> Html {
     match route {
-        SoundFileRoute::Index => html!{<SoundFileList />},
-        SoundFileRoute::Get {id} => html !{<SoundFileDetail id={id}/>}
+        RecordingRoute::Index => html!{<RecordingList />},
+        RecordingRoute::Get {id} => html !{<RecordingDetail id={id}/>}
     }
 }

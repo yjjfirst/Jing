@@ -1,5 +1,5 @@
 use serde::{Serialize, Deserialize};
-use crate::pages::sound_file::model::SoundFile;
+use crate::pages::recording::model::Recording;
 
 #[derive(Clone, PartialEq, Deserialize, Serialize, Debug)]
 pub struct Announcement {
@@ -7,7 +7,7 @@ pub struct Announcement {
     pub name: String,
     pub exten: String,
     pub domain_id: usize,
-    pub sound_file: SoundFile
+    pub recording: Recording
 }
 
 impl Announcement {
@@ -17,7 +17,7 @@ impl Announcement {
             name: "".to_string(),
             exten: "".to_string(),
             domain_id: 0,
-            sound_file: SoundFile::new(),
+            recording: Recording::new(),
         }
     }
 }

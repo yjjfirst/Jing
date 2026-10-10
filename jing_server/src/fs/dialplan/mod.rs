@@ -12,7 +12,7 @@ use jing_lib::gateway;
 use jing_lib::ringgroup;
 use jing_lib::domain;
 use jing_lib::announcement;
-use jing_lib::sound_file;
+use jing_lib::recording;
 use jing_lib::conference;
 use jing_lib::callcenter::queue;
 use jing_lib::ivr;
@@ -55,8 +55,8 @@ fn dialplan<W: Write>(w: &mut EventWriter<W>, fs_req: FsRequest) {
                 user(w);
             } else if e.exten_type == "ringgroup" {
                 ringgroup(w, domain.id, dest_exten);
-            } else if e.exten_type == "sound" {
-                sound(w, domain.id, dest_exten);
+            } else if e.exten_type == "announcement" {
+                announcement(w, domain.id, dest_exten);
             } else if e.exten_type == "conference" {
                 conference(w, domain.id, dest_exten);
             } else if e.exten_type == "queue" {
@@ -157,14 +157,14 @@ fn ringgroup<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
 }
 
 
-fn sound<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
-    let sound = announcement::get_by(domain_id, &exten);
-    if let Ok(s) = sound {
-        let file = sound_file::get(s.sound_file_id);
-        if let Ok(f) = file {
+fn announcement<W: Write>(w: &mut EventWriter<W>, domain_id: i32, exten: String) {
+    let recording = announcement::get_by(domain_id, &exten);
+    if let Ok(a) = recording {
+        let recording = recording::get(a.recording_id);
+        if let Ok(r) = recording {
             action(w, "answer","");
             action(w, "sleep", "1000");
-            action(w, "playback", &f.name);
+            action(w, "playback", &r.name);
         }
     };
 }

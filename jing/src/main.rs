@@ -2,8 +2,8 @@ mod customtable;
 mod ringgroup;
 mod ivr;
 mod domain;
-mod sound_file;
-mod sound;
+mod recording;
+mod announcement;
 mod conference;
 mod queue;
 mod agent;
@@ -72,13 +72,13 @@ enum Cli {
         #[structopt(subcommand)]
         ivr: ivr::IvrCli
     },
-    SoundFile {
+    Recording {
         #[structopt(subcommand)]
-        soundfile: sound_file::SoundFileCli
+        recording: recording::RecordingCli
     },
-    Sound {
+    Announcement {
         #[structopt(subcommand)]
-        sound: sound::SoundCli
+        announcement: announcement::AnnouncementCli
     },
     Conference {
         #[structopt(subcommand)]
@@ -234,11 +234,11 @@ fn main() {
         Cli::Ivr { ivr } => {
             ivr::exec_ivr_cmd(ivr);
         },
-        Cli::SoundFile {soundfile} => {
-            sound_file::exec_soundfile_cmd(soundfile);
+        Cli::Recording {recording} => {
+            recording::exec_recording_cmd(recording);
         },
-        Cli::Sound {sound} => {
-            sound::exec_sound_cmd(sound);
+        Cli::Announcement {announcement} => {
+            announcement::exec_announcement_cmd(announcement);
         },
         Cli::Conference {conference} => {
             conference::exec_conference_cmd(conference);

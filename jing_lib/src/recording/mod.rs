@@ -8,28 +8,28 @@ use uuid::Uuid;
 use models::*;
 use diesel::prelude::*;
 use crate::db_connect;
-use crate::schema::sound_files;
+use crate::schema::recordings;
 use crate::fs;
 use crate::error::{Result, Error};
 
 pub fn import(domain_id: i32, path: String) -> Result<()> {
     let mut conn = db_connect();
     let parts: Vec<&str> = path.split('/').collect();
-    let sound_dir = fs::eval("$${sounds_dir}");
-    let full_path = format!("{}/en/us/callie/{}/8000/{}", sound_dir, parts[0], parts[1]);
+    let recording_dir = fs::eval("$${sounds_dir}");
+    let full_path = format!("{}/en/us/callie/{}/8000/{}", recording_dir, parts[0], parts[1]);
 
     if !Path::new(&full_path).exists() {
         return Err(Error::Fslib("Import file dosen't exist".to_string()));
     }
 
-    let soundfile = NewSoundFile {
+    let recording = NewRecording {
         name: &path,
         domain_id: domain_id,
-        description: Some("FS sound imported"),
+        description: Some("FS recording imported"),
     };
 
-    diesel::insert_into(sound_files::table)
-        .values(&soundfile)
+    diesel::insert_into(recordings::table)
+        .values(&recording)
         .execute(&mut conn)?;
 
     Ok(())
@@ -39,41 +39,41 @@ pub fn add(domain: i32,name: String, path: String, desc: String) -> Result<()>{
     let mut conn = db_connect();
     let name = format!("{}-{}.wav", name, domain);
 
-    match install_file(&path, &name) {
+    match install_recording(&path, &name) {
         Ok(()) => {
-            let new_soundfile = NewSoundFile {
+            let new_recording = NewRecording {
                 name: &name,
                 domain_id: domain,
                 description: Some(&desc)
             };
-            diesel::insert_into(sound_files::table)
-                .values(&new_soundfile)
+            diesel::insert_into(recordings::table)
+                .values(&new_recording)
                 .execute(&mut conn)?;
         },
         Err(e) => {
             println!("{:?}", e);
-            return Err(Error::Fslib("Install sound file failed".to_string()));
+            return Err(Error::Fslib("Install recording failed".to_string()));
         }
     }
 
     Ok(())
 }
 
-pub fn list() -> Result<Vec<SoundFile>>{
-    use crate::schema::sound_files::dsl::*;
+pub fn list() -> Result<Vec<Recording>>{
+    use crate::schema::recordings::dsl::*;
 
     let mut conn = db_connect();
-    let result = sound_files
-        .load::<SoundFile>(&mut conn)?;
+    let result = recordings
+        .load::<Recording>(&mut conn)?;
 
     Ok(result)
 }
 
 pub fn del(a_id: i32) -> Result<()>{
-    use crate::schema::sound_files::columns::id;
+    use crate::schema::recordings::columns::id;
 
     let mut conn = db_connect();
-    diesel::delete(sound_files::table)
+    diesel::delete(recordings::table)
         .filter(id.eq(a_id))
         .execute(&mut conn)?;
 
@@ -81,27 +81,27 @@ pub fn del(a_id: i32) -> Result<()>{
 }
 
 
-pub fn get(a_id: i32) -> Result<SoundFile> {
-    use crate::schema::sound_files::dsl::*;
+pub fn get(a_id: i32) -> Result<Recording> {
+    use crate::schema::recordings::dsl::*;
     let mut conn = db_connect();
 
-    let result = sound_files
+    let result = recordings
         .find(a_id)
         .first(&mut conn)?;
 
     Ok(result)
 }
 
-pub fn update(f: SoundFile) -> Result<()> {
-    use crate::schema::sound_files;
-    use crate::schema::sound_files::dsl::*;
+pub fn update(r: Recording) -> Result<()> {
+    use crate::schema::recordings;
+    use crate::schema::recordings::dsl::*;
 
     let mut conn = db_connect();
-    let mut pre = get(f.id)?;
+    let mut pre = get(r.id)?;
 
-    pre.description = f.description.clone();
-    diesel::update(sound_files::table)
-        .filter(id.eq(f.id))
+    pre.description = r.description.clone();
+    diesel::update(recordings::table)
+        .filter(id.eq(r.id))
         .set(&pre)
         .execute(&mut conn)?;
 
@@ -116,10 +116,10 @@ fn make_tmp_name() -> String {
     file_name
 }
 
-fn install_file(path: &str, name: &str) -> Result<()> {
+fn install_recording(path: &str, name: &str) -> Result<()> {
     let tmp_file = make_tmp_name();
-    let sound_dir = fs::eval("$${sounds_dir}");
-    let target_path = format!("{}/en/us/callie/{}", sound_dir, name);
+    let recording_dir = fs::eval("$${sounds_dir}");
+    let target_path = format!("{}/en/us/callie/{}", recording_dir, name);
 
     let mut status = Command::new("mpg123")
         .arg("-w")
@@ -129,7 +129,7 @@ fn install_file(path: &str, name: &str) -> Result<()> {
         .unwrap();
 
     if !status.success() {
-        return Err(Error::Fslib("Add sound file failed".to_string()));
+        return Err(Error::Fslib("Add recording failed".to_string()));
     }
 
     status = Command::new("sox")
@@ -143,7 +143,7 @@ fn install_file(path: &str, name: &str) -> Result<()> {
         .unwrap();
 
     if !status.success() {
-        return Err(Error::Fslib("Add sound file failed".to_string()));
+        return Err(Error::Fslib("Add recording failed".to_string()));
     }
 
     status = Command::new("rm")
@@ -153,7 +153,7 @@ fn install_file(path: &str, name: &str) -> Result<()> {
         .unwrap();
 
     if !status.success() {
-        return Err(Error::Fslib("Add sound file failed".to_string()));
+        return Err(Error::Fslib("Add recording failed".to_string()));
     }
 
     return Ok(())

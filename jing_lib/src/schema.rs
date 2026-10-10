@@ -51,7 +51,7 @@ diesel::table! {
         #[max_length = 32]
         name -> Varchar,
         domain_id -> Int4,
-        sound_file_id -> Int4,
+        recording_id -> Int4,
     }
 }
 
@@ -339,6 +339,17 @@ diesel::table! {
 }
 
 diesel::table! {
+    recordings (id) {
+        id -> Int4,
+        #[max_length = 256]
+        name -> Varchar,
+        domain_id -> Int4,
+        #[max_length = 1024]
+        description -> Nullable<Varchar>,
+    }
+}
+
+diesel::table! {
     ringing_group_members (id) {
         id -> Int4,
         ringing_group_id -> Int4,
@@ -359,17 +370,6 @@ diesel::table! {
         ring_time -> Int4,
         #[max_length = 32]
         ring_strategy -> Varchar,
-    }
-}
-
-diesel::table! {
-    sound_files (id) {
-        id -> Int4,
-        #[max_length = 256]
-        name -> Varchar,
-        domain_id -> Int4,
-        #[max_length = 1024]
-        description -> Nullable<Varchar>,
     }
 }
 
@@ -466,7 +466,7 @@ diesel::joinable!(agent_params -> agents (agent_id));
 diesel::joinable!(agents -> domains (domain_id));
 diesel::joinable!(agents -> users (user_id));
 diesel::joinable!(announcements -> domains (domain_id));
-diesel::joinable!(announcements -> sound_files (sound_file_id));
+diesel::joinable!(announcements -> recordings (recording_id));
 diesel::joinable!(conference_control_details -> conference_controls (conference_control_id));
 diesel::joinable!(conference_profile_params -> conference_profiles (conference_profile_id));
 diesel::joinable!(conferences -> conference_profiles (conference_profile_id));
@@ -482,10 +482,10 @@ diesel::joinable!(portal_tokens -> portal_users (portal_user_id));
 diesel::joinable!(profile_params -> profiles (profile_id));
 diesel::joinable!(queue_params -> queues (queue_id));
 diesel::joinable!(queues -> domains (domain_id));
+diesel::joinable!(recordings -> domains (domain_id));
 diesel::joinable!(ringing_group_members -> ringing_groups (ringing_group_id));
 diesel::joinable!(ringing_group_members -> users (user_id));
 diesel::joinable!(ringing_groups -> domains (domain_id));
-diesel::joinable!(sound_files -> domains (domain_id));
 diesel::joinable!(tiers -> agents (agent_id));
 diesel::joinable!(tiers -> queues (queue_id));
 diesel::joinable!(user_params -> users (user_id));
@@ -525,9 +525,9 @@ diesel::allow_tables_to_appear_in_same_query!(
     profiles,
     queue_params,
     queues,
+    recordings,
     ringing_group_members,
     ringing_groups,
-    sound_files,
     system_settings,
     tiers,
     user_param_helps,

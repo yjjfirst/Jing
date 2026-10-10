@@ -2,8 +2,8 @@ use std::ops::Deref;
 use actix_web::{web, Responder};
 use actix_multipart::form::{text::Text, tempfile::TempFile, MultipartForm};
 
-use jing_lib::sound_file;
-use jing_lib::sound_file::models::{SoundFile};
+use jing_lib::recording;
+use jing_lib::recording::models::{Recording};
 use super::Status;
 
 #[derive(Debug, MultipartForm)]
@@ -14,7 +14,7 @@ struct UploadForm {
     domain_id: Text<i32>
 }
 
-pub fn sound_file_config(cfg: &mut web::ServiceConfig) {
+pub fn recording_config(cfg: &mut web::ServiceConfig) {
     cfg
         .service(
             web::resource("")
@@ -29,13 +29,13 @@ pub fn sound_file_config(cfg: &mut web::ServiceConfig) {
 }
 
 async fn index() -> impl Responder {
-    let files = sound_file::list().unwrap();
+    let files = recording::list().unwrap();
     web::Json(files)
 }
 
 async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
     let (_,id) =path.into_inner();
-    let s = sound_file::get(id).unwrap_or(SoundFile {
+    let s = recording::get(id).unwrap_or(Recording {
         id: 0,
         domain_id: 0,
         name:"".to_string(),
@@ -47,7 +47,7 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
 
 async fn delete(path: web::Path<(i32, i32)>) -> impl Responder {
     let (_,id) =path.into_inner();
-    sound_file::del(id).unwrap();
+    recording::del(id).unwrap();
 
     web::Json(Status{status: "Ok".to_string()})
 }
@@ -57,7 +57,7 @@ async fn post(MultipartForm(form): MultipartForm<UploadForm>) -> impl Responder 
     let path = format!("/tmp/{}", f.file_name.clone().unwrap());
 
     f.file.persist(path.clone()).unwrap();
-    sound_file::add(
+    recording::add(
         form.domain_id.into_inner(),
         f.file_name.unwrap(),
         path,
@@ -67,9 +67,9 @@ async fn post(MultipartForm(form): MultipartForm<UploadForm>) -> impl Responder 
 }
 
 
-async fn patch(s: web::Json<SoundFile>) -> impl Responder {
-    let f = s.deref();
-    sound_file::update(f.clone()).unwrap();
+async fn patch(s: web::Json<Recording>) -> impl Responder {
+    let r = s.deref();
+    recording::update(r.clone()).unwrap();
 
     web::Json(Status {status: "Ok".to_string()})
 }

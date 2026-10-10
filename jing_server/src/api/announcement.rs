@@ -4,8 +4,8 @@ use super::Status;
 use serde::{Serialize, Deserialize};
 
 use jing_lib::announcement;
-use jing_lib::sound_file;
-use jing_lib::sound_file::models::{SoundFile};
+use jing_lib::recording;
+use jing_lib::recording::models::{Recording};
 use jing_lib::announcement::models;
 
 #[derive(Serialize, Deserialize)]
@@ -14,7 +14,7 @@ struct Announcement {
     pub exten: String,
     pub name: String,
     pub domain_id: i32,
-    pub sound_file: SoundFile,
+    pub recording: Recording,
 }
 
 pub fn announcement_config(cfg: &mut web::ServiceConfig) {
@@ -36,13 +36,13 @@ async fn index(_path: web::Path<i32>) -> impl Responder {
     let res: Vec<Announcement> = announcements
         .iter()
         .map(|a|{
-            let f = sound_file::get(a.sound_file_id).unwrap();
+            let r = recording::get(a.recording_id).unwrap();
             Announcement {
                 id: a.id,
                 exten: a.exten.clone(),
                 name: a.name.clone(),
                 domain_id: a.domain_id,
-                sound_file: f.clone()
+                recording: r.clone()
             }
         })
         .collect();
@@ -59,11 +59,11 @@ async fn post(s: web::Json<Announcement>) -> impl Responder {
             name: announcement.name.clone(),
             exten: announcement.exten.clone(),
             domain_id: announcement.domain_id,
-            sound_file_id: announcement.sound_file.id,
+            recording_id: announcement.recording.id,
         }).unwrap();
     } else {
         announcement::add(announcement.domain_id,
-                   announcement.sound_file.id,
+                   announcement.recording.id,
                    announcement.name.clone(),
                    announcement.exten.clone()).unwrap();
     }
@@ -79,7 +79,7 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
         name: "".to_string(),
         exten: "".to_string(),
         domain_id: 0,
-        sound_file_id: 0,
+        recording_id: 0,
     });
 
     web::Json(Announcement {
@@ -87,7 +87,7 @@ async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
         exten: announcement.exten,
         name: announcement.name,
         domain_id: announcement.domain_id,
-        sound_file: sound_file::get(announcement.sound_file_id).unwrap(),
+        recording: recording::get(announcement.recording_id).unwrap(),
     })
 }
 

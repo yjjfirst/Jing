@@ -8,17 +8,17 @@ use crate::error::{Result};
 use super::extension::{add_extension, del_extension};
 use super::domain::*;
 
-pub fn add(domain_id: i32, sound_file_id: i32, name: String, exten: String) -> Result<()> {
+pub fn add(domain_id: i32, recording_id: i32, name: String, exten: String) -> Result<()> {
     let mut conn = db_connect();
     let domain = get_domain(domain_id).unwrap();
 
-    add_extension(exten.as_str(), "sound", domain.id)?;
+    add_extension(exten.as_str(), "announcement", domain.id)?;
 
     let new_sound = NewAnnouncement {
         name,
         exten,
         domain_id,
-        sound_file_id,
+        recording_id,
     };
 
     diesel::insert_into(announcements::table)

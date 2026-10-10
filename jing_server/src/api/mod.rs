@@ -5,7 +5,7 @@ pub mod gateway;
 pub mod outbound;
 pub mod inbound;
 pub mod cdr;
-pub mod sound_file;
+pub mod recording;
 pub mod extension;
 pub mod announcement;
 pub mod conference;
@@ -27,7 +27,7 @@ use gateway::gateway_config;
 use user::user_config;
 use outbound::outbound_config;
 use inbound::inbound_config;
-use sound_file::sound_file_config;
+use recording::recording_config;
 use cdr::cdr_config;
 use extension::extension_config;
 use announcement::announcement_config;
@@ -56,7 +56,7 @@ pub fn api_config(cfg: &mut web::ServiceConfig) {
         .service(web::scope("/{domain}/outbound").configure(outbound_config))
         .service(web::scope("/{domain}/inbound").configure(inbound_config))
         .service(web::scope("/{domain}/cdr").configure(cdr_config))
-        .service(web::scope("/{domain}/sound-file").configure(sound_file_config))
+        .service(web::scope("/{domain}/recording").configure(recording_config))
         .service(web::scope("/{domain}/extension").configure(extension_config))
         .service(web::scope("/{domain}/announcement").configure(announcement_config))
         .service(web::scope("/{domain}/conference").configure(conf_config))

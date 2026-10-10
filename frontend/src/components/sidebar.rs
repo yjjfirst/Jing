@@ -123,8 +123,8 @@ pub fn SidebarMenu() -> Html {
             icon: None,
         },
         SidebarMenuItemPros {
-            caption: "Sound File".to_string(),
-            route: Route::SoundFileRoot,
+            caption: "Recording".to_string(),
+            route: Route::RecordingRoot,
             onclick: onclick.clone(),
             selected: false,
             icon: None,

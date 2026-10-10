@@ -11,7 +11,7 @@ pub mod ringgroup;
 pub mod ivr;
 pub mod extension;
 pub mod fs;
-pub mod sound_file;
+pub mod recording;
 pub mod announcement;
 pub mod conference;
 pub mod callcenter;

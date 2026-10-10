@@ -10,13 +10,13 @@ use yew_icons::{Icon, IconData};
 
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
-use crate::components::select_sound_file::SelectSoundFile;
+use crate::components::select_recording::SelectRecording;
 use crate::components::action_buttons::ActionButtons;
 
 use crate::store::{alert_info, alert_error, Store};
 use crate::models::Service;
 use model::{Announcement};
-use crate::pages::sound_file::model::SoundFile;
+use crate::pages::recording::model::Recording;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum AnnouncementRoute {
@@ -33,9 +33,9 @@ pub struct AnnouncementDetailProps {
 
 #[derive(Clone, PartialEq, Properties)]
 pub struct AnnouncementListItemProps {
-    pub sound_id: usize,
+    pub id: usize,
     pub name: String,
-    pub sound_file: String,
+    pub recording: String,
     pub exten: String,
     pub ondel: Callback<usize>
 }
@@ -48,22 +48,22 @@ pub fn AnnouncementListItem(props: &AnnouncementListItemProps) -> Html {
     let loc: Location = use_location().unwrap().clone();
     let (store,_) = use_store::<Store>();
     let ondel = props.ondel.clone();
-    let sound_id = props.sound_id;
+    let id = props.id;
 
     let onedit: Callback<MouseEvent> = Callback::from(move |_e|{
-        nav.push(&AnnouncementRoute::Get {id: sound_id});
+        nav.push(&AnnouncementRoute::Get {id: id});
     });
 
-    let onconfirm: Callback<bool> = Callback::from(move|_e: bool|{
+    let handle_confirm: Callback<bool> = Callback::from(move|_e: bool|{
         let loc = loc.clone();
         let store = store.clone();
         let ondel = ondel.clone();
         wasm_bindgen_futures::spawn_local(async move {
-            let path = format!("{}/{}", loc.path(), sound_id);
+            let path = format!("{}/{}", loc.path(), id);
             Service::delete(&path, store.clone().selected_domain_id)
                 .await
                 .unwrap();
-            ondel.emit(sound_id);
+            ondel.emit(id);
         });
     });
 
@@ -76,7 +76,7 @@ pub fn AnnouncementListItem(props: &AnnouncementListItemProps) -> Html {
         <tr>
             <th>{props.exten.clone()}</th>
             <th>{props.name.clone()}</th>
-            <th>{props.sound_file.clone()}</th>
+            <th>{props.recording.clone()}</th>
             <th class="flex justify-end">
                 <div class="mr-1">
                     <div onclick={onedit} class="btn btn-square btn-outline btn-sm">
@@ -93,7 +93,7 @@ pub fn AnnouncementListItem(props: &AnnouncementListItemProps) -> Html {
                 d_ref = {dialog_ref}
                 title={"Warning!"}
                 contents={format!("Are you sure to delete announcement: {}?", props.name.clone())}
-                {onconfirm}
+                onconfirm={handle_confirm}
                 >
             </Dialog>
 
@@ -112,11 +112,11 @@ pub fn AnnouncementList() -> Html {
         use_effect_with((), move|_|{
             let announcements = announcements.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_sounds: Vec<Announcement> =
+                let fetched: Vec<Announcement> =
                     Service::index(loc.path(), store.selected_domain_id.clone())
                         .await
                         .unwrap();
-                announcements.set(fetched_sounds);
+                announcements.set(fetched);
             });
         });
     }
@@ -140,8 +140,8 @@ pub fn AnnouncementList() -> Html {
                 <AnnouncementListItem
                     name={a.name.clone()}
                     exten={a.exten.clone()}
-                    sound_file={a.sound_file.name.clone()}
-                    sound_id={a.id}
+                    recording={a.recording.name.clone()}
+                    id={a.id}
                     ondel={ondel.clone()}
                 />
             }
@@ -161,7 +161,7 @@ pub fn AnnouncementList() -> Html {
                     <tr>
                         <th>{"Extension"}</th>
                         <th>{"Name"}</th>
-                        <th>{"Sound File"}</th>
+                        <th>{"Recording"}</th>
                     </tr>
                     {announcements_html}
                 </thead>
@@ -231,9 +231,9 @@ pub fn AnnouncementDetails(props: &AnnouncementDetailProps) -> Html {
                     .unwrap()
                     .dyn_into::<HtmlFormElement>()
                     .unwrap()).unwrap();
-            let mut sound_file = SoundFile::new();
-            sound_file.id = form_data
-                .get("sound_file")
+            let mut recording = Recording::new();
+            recording.id = form_data
+                .get("recording")
                 .as_string()
                 .unwrap()
                 .parse::<usize>()
@@ -243,11 +243,11 @@ pub fn AnnouncementDetails(props: &AnnouncementDetailProps) -> Html {
                 id: announcement.id,
                 name: form_data.get("name").as_string().unwrap(),
                 domain_id: store.selected_domain_id,
-                sound_file,
+                recording,
                 exten: form_data
-                            .get("exten")
-                            .as_string()
-                            .unwrap()
+                    .get("exten")
+                    .as_string()
+                    .unwrap()
             };
 
             wasm_bindgen_futures::spawn_local(async move {
@@ -285,9 +285,9 @@ pub fn AnnouncementDetails(props: &AnnouncementDetailProps) -> Html {
                     value={announcement.name.clone()}
                     name="name"
                 />
-                <label class="pbx-label">{"Sound File"}</label>
+                <label class="pbx-label">{"Recording"}</label>
                 <div class="col-span-2">
-                    <SelectSoundFile name="sound_file" sound_file_id={announcement.sound_file.id}/>
+                    <SelectRecording name="recording" recording_id={announcement.recording.id}/>
                 </div>
             </div>
             <ActionButtons oncancel={form_oncancel}/>

@@ -2,7 +2,7 @@ use yew::prelude::*;
 use crate::store::Store;
 use yewdux::prelude::*;
 use crate::models::Service;
-use crate::pages::sound_file::model::SoundFile;
+use crate::pages::recording::model::Recording;
 use crate::components::select_id::SelectId;
 
 #[derive(Properties, PartialEq)]
@@ -10,25 +10,25 @@ pub struct Props {
     pub name: String,
     #[prop_or(classes!("w-80"))]
     pub label_width: Classes,
-    pub sound_file_id: usize
+    pub recording_id: usize
 }
 #[function_component]
-pub fn SelectSoundFile(props: &Props) -> Html {
+pub fn SelectRecording(props: &Props) -> Html {
     let name = props.name.clone();
-    let sound_file_id = props.sound_file_id;
+    let recording_id = props.recording_id;
     let(store,_) = use_store::<Store>();
-    let sound_files: UseStateHandle<Vec<SoundFile>> = use_state(||vec![]);
+    let recordings: UseStateHandle<Vec<Recording>> = use_state(||vec![]);
     {
-        let sound_files = sound_files.clone();
+        let recordings = recordings.clone();
         use_effect_with((), move|_| {
             let store = store.clone();
-            let sound_files = sound_files.clone();
+            let recordings = recordings.clone();
             wasm_bindgen_futures::spawn_local(async move {
-                let fetched_files: Vec<SoundFile> =
-                    Service::index("/sound-file", store.selected_domain_id.clone())
+                let fetched_recordings: Vec<Recording> =
+                    Service::index("/recording", store.selected_domain_id.clone())
                         .await
                         .unwrap();
-                sound_files.set(fetched_files);
+                recordings.set(fetched_recordings);
             });
         });
     }
@@ -36,18 +36,18 @@ pub fn SelectSoundFile(props: &Props) -> Html {
         <SelectId
             name={name.clone()}
             options={
-                sound_files
+                recordings
                     .iter()
-                    .map(|s|{s.name.clone()})
+                    .map(|r|{r.name.clone()})
                     .collect::<Vec<String>>()
             }
             options_id={
-                sound_files
+                recordings
                     .iter()
-                    .map(|s|{s.id.clone()})
+                    .map(|r|{r.id.clone()})
                     .collect::<Vec<usize>>()
             }
-            selected={sound_file_id}
+            selected={recording_id}
         >
         </SelectId>
     }

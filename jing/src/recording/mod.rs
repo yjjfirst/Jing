@@ -6,7 +6,7 @@ use super::domain;
 #[derive(StructOpt)]
 #[derive(Debug)]
 
-pub enum SoundFileCli {
+pub enum RecordingCli {
     Ls,
     Add {
         #[structopt(short, long)]
@@ -26,12 +26,12 @@ pub enum SoundFileCli {
     }
 }
 
-pub fn print_soundfiles(sounds: Vec<sound_file::models::SoundFile>)
+pub fn print_recordings(recordings: Vec<recording::models::Recording>)
 {
     let mut table = Ctable::new();
 
     table.set_titles(row!["id", "name", "domain id","description"]);
-    for s in sounds {
+    for s in recordings {
         table.add_row(row![s.id,
                            s.name,
                            s.domain_id,
@@ -41,21 +41,21 @@ pub fn print_soundfiles(sounds: Vec<sound_file::models::SoundFile>)
     table.print();
 }
 
-pub fn exec_soundfile_cmd(soundfile: SoundFileCli) {
+pub fn exec_recording_cmd(recording: RecordingCli) {
     let domain_id = domain::get_active().unwrap();
-    match soundfile {
-        SoundFileCli::Add {name, path, desc} => {
-            sound_file::add(domain_id, name, path, desc).unwrap();
+    match recording {
+        RecordingCli::Add {name, path, desc} => {
+            recording::add(domain_id, name, path, desc).unwrap();
         },
-        SoundFileCli::Import {path} => {
-            sound_file::import(domain_id, path).unwrap();
+        RecordingCli::Import {path} => {
+            recording::import(domain_id, path).unwrap();
         },
-        SoundFileCli::Del {id} =>{
-            sound_file::del(id).unwrap();
+        RecordingCli::Del {id} =>{
+            recording::del(id).unwrap();
         },
-        SoundFileCli::Ls => {
-            let soundfiles = sound_file::list().unwrap();
-            print_soundfiles(soundfiles);
+        RecordingCli::Ls => {
+            let recordings = recording::list().unwrap();
+            print_recordings(recordings);
         }
     }
 }

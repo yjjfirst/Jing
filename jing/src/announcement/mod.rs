@@ -6,7 +6,7 @@ use super::domain;
 
 #[derive(StructOpt)]
 #[derive(Debug)]
-pub enum SoundCli {
+pub enum AnnouncementCli {
     Ls,
     Add
     {
@@ -15,7 +15,7 @@ pub enum SoundCli {
         #[structopt(short, long)]
         exten: String,
         #[structopt(short, long)]
-        sound_file_id: i32
+        recording_id: i32
     },
     Del {
         #[structopt(short, long)]
@@ -23,34 +23,34 @@ pub enum SoundCli {
     }
 }
 
-pub fn print_sounds(sounds: Vec<announcement::models::Announcement>) {
+pub fn print_announcements(announcements: Vec<announcement::models::Announcement>) {
     let mut table = Ctable::new();
-    table.set_titles(row!["id", "name", "exten", "doamin_id", "sound_file_id"]);
-    for s in sounds {
+    table.set_titles(row!["id", "name", "exten", "doamin_id", "recording_id"]);
+    for s in announcements {
         table.add_row(row![
             s.id,
             s.name,
             s.exten,
             s.domain_id,
-            s.sound_file_id
+            s.recording_id
         ]);
     }
 
     table.print();
 }
 
-pub fn exec_sound_cmd(sound: SoundCli) {
+pub fn exec_announcement_cmd(announcement: AnnouncementCli) {
     let domain_id = domain::get_active().unwrap();
-    match sound {
-        SoundCli::Add {name, exten, sound_file_id} => {
-            announcement::add(domain_id, sound_file_id, name, exten).unwrap();
+    match announcement {
+        AnnouncementCli::Add {name, exten, recording_id} => {
+            announcement::add(domain_id, recording_id, name, exten).unwrap();
         },
-        SoundCli::Del {id} => {
+        AnnouncementCli::Del {id} => {
             announcement::del(id).unwrap();
         },
-        SoundCli::Ls => {
-            let sounds = announcement::list().unwrap();
-            print_sounds(sounds);
+        AnnouncementCli::Ls => {
+            let announcements = announcement::list().unwrap();
+            print_announcements(announcements);
         }
     }
 }

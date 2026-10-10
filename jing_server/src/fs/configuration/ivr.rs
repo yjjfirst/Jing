@@ -1,7 +1,7 @@
 use xml::writer::{EventWriter};
 use std::io::Write;
 use jing_lib::ivr;
-use jing_lib::sound_file;
+use jing_lib::recording;
 use crate::fs::xml_utils::{start_element, end_element, attrs, entry};
 
 pub fn serve<W: Write>(w: &mut EventWriter<W>) {
@@ -32,7 +32,7 @@ pub fn ivr<W: Write>(w: &mut EventWriter<W>, ivr: ivr::Ivr) {
             || a.name == "exit-sound"
             || a.name == "invalid-sound" {
             let sound_file_id = a.value.parse::<i32>().unwrap();
-            let sound_file = sound_file::get(sound_file_id).unwrap();
+            let sound_file = recording::get(sound_file_id).unwrap();
             a.value = sound_file.name.clone();
         }
 

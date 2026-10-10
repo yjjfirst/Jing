@@ -13,7 +13,7 @@ use crate::pages::route_out::{OutboundRoute, outbound_switch};
 use crate::pages::route_in::{InboundRoute, inbound_switch};
 use crate::pages::cdr::{CdrRoute, cdr_switch};
 use crate::pages::dashboard::Dashboard;
-use crate::pages::sound_file::{SoundFileRoute, sound_file_switch};
+use crate::pages::recording::{RecordingRoute, recording_switch};
 use crate::pages::announcement::{AnnouncementRoute, announcement_switch};
 use crate::pages::conference::{ConfRoute, conf_switch};
 use crate::pages::ivr::{IvrRoute, ivr_switch};
@@ -58,10 +58,10 @@ pub enum Route {
     Inbounds,
     #[at("/cdr")]
     Cdr,
-    #[at("/sound-file")]
-    SoundFileRoot,
-    #[at("/sound-file/*")]
-    SoundFile,
+    #[at("/recording")]
+    RecordingRoot,
+    #[at("/recording/*")]
+    Recording,
     #[at("/announcement")]
     AnnouncementRoot,
     #[at("/announcement/*")]
@@ -217,11 +217,11 @@ fn switch(routes: Route) -> Html {
         Route::Cdr => html! {
             <Switch<CdrRoute> render={cdr_switch} />
         },
-        Route::SoundFileRoot => html! {
-            <Switch<SoundFileRoute> render={sound_file_switch} />
+        Route::RecordingRoot => html! {
+            <Switch<RecordingRoute> render={recording_switch} />
         },
-        Route::SoundFile => html! {
-            <Switch<SoundFileRoute> render={sound_file_switch} />
+        Route::Recording => html! {
+            <Switch<RecordingRoute> render={recording_switch} />
         },
         Route::ConferenceRoot => html! {
             <Switch<ConfRoute> render={conf_switch}/>
