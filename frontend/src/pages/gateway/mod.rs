@@ -275,15 +275,15 @@ pub fn GatewayDetails(props: &GatewayDetailProps) -> Html {
                     name="name"
                 />
                 {
-                for gateway.param_helps.iter().map(|p|{
+                for gateway.param_helps.iter().map(|h|{
                     html!{
                         <>
-                            <label class="pbx-label">{p.name.clone()}</label>
+                            <label class="pbx-label">{h.name.clone()}</label>
                             <ParamInput
-                                value={Param::get(&p.name, &gateway.params)}
-                                name={p.name.clone()}
-                                range_text={p.range_text.clone()}
-                                help_text={p.help_text.clone()}
+                                value={Param::get(&h.name, &gateway.params)}
+                                name={h.name.clone()}
+                                range_text={h.range_text.clone()}
+                                help_text={h.help_text.clone()}
                             />
                         </>
                     }
