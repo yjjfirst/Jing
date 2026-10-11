@@ -32,11 +32,19 @@ pub fn ParamInput(props: &ParamInputProps) -> Html {
     };
 
     html! {
-        if range_text == "string" || range_text == "domain" || range_text == "digits" {
+        if range_text == "string" || range_text == "domain" {
             <div class="pbx-input-container tooltip tooltip-info" data-tip={help_text}>
                 <input class="pbx-input"
                     value={value}
                     name={name}
+                />
+            </div>
+        } else if range_text == "digits" {
+            <div class="pbx-input-container tooltip tooltip-info" data-tip={help_text}>
+                <input class="pbx-input"
+                    value={value}
+                    name={name}
+                    type="number"
                 />
             </div>
         } else if range_text == "bool" {
