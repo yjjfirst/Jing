@@ -5,11 +5,13 @@ use actix_web::{web, Responder};
 use jing_lib::profile;
 use jing_lib::profile::models::ProfileParam;
 use jing_lib::fs;
+use jing_lib::profile::profile_param_help::{ProfileParamHelp, list as list_param_help};
 
 #[derive(Serialize, Deserialize)]
 pub struct Profile {
     id: i32,
     name: String,
+    param_helps: Vec<ProfileParamHelp>,
     params: HashMap<String, ProfileParam>
 }
 
@@ -31,6 +33,7 @@ async fn index(_path: web::Path<i32>) -> impl Responder {
         Profile {
             id: p.id,
             name: p.name.clone(),
+            param_helps: vec![],
             params: HashMap::new()
         }
     }).collect::<Vec<Profile>>())
@@ -44,6 +47,7 @@ async fn get(path: web::Path<(i32,i32)>) -> impl Responder {
     web::Json(Profile {
         id: profile.id,
         name: profile.name.clone(),
+        param_helps: list_param_help().unwrap(),
         params: params
             .into_iter()
             .map(|p| {
@@ -59,7 +63,7 @@ async fn post(path: web::Path<(i32,i32)>, prof: web::Json<Profile>) -> impl Resp
     let profile = profile::get_profile(id).unwrap();
 
     for (name, param) in params {
-        profile::set_profile_param(param.id, &name, &param.value).unwrap();
+        profile::set_profile_param(param.id, id, &name, &param.value).unwrap();
     }
 
     fs::reload_mod("mod_sofia");

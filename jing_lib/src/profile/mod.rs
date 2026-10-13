@@ -1,4 +1,5 @@
 pub mod models;
+pub mod profile_param_help;
 
 use models::*;
 use diesel::prelude::*;
@@ -51,16 +52,25 @@ pub fn get_profile_params(prof_id: i32) -> Result<Vec<ProfileParam>> {
     Ok(results)
 }
 
-pub fn set_profile_param(param_id: i32, _: &str, param_value: &str) -> Result<()> {
+pub fn set_profile_param(param_id: i32, pro_id: i32, param_name: &str, param_value: &str) -> Result<()> {
     use crate::schema::profile_params;
     use crate::schema::profile_params::dsl::*;
     let mut conn = db_connect();
 
-    diesel::update(profile_params::table)
-        .filter(id.eq(param_id))
-        .set(value.eq(param_value))
-        .execute(&mut conn)?;
-
+    if param_id == 0 {
+        diesel::insert_into(profile_params::table)
+            .values((
+                profile_id.eq(pro_id),
+                name.eq(param_name),
+                value.eq(param_value)))
+            .execute(&mut conn)?;
+    }
+    else {
+        diesel::update(profile_params::table)
+            .filter(id.eq(param_id))
+            .set(value.eq(param_value))
+            .execute(&mut conn)?;
+    }
     Ok(())
 }
 

@@ -12,6 +12,7 @@ use yew_icons::{Icon, IconData};
 
 use crate::components::header::Header;
 use crate::components::action_buttons::ActionButtons;
+use crate::components::param_input::ParamInput;
 
 use crate::models::Service;
 use model::{Profile, Param};
@@ -86,54 +87,72 @@ pub struct ProfileDetailProps {
 pub fn ProfileDetails(props: &ProfileDetailProps) -> Html {
     let id = props.id;
     let profile = use_state(|| Profile::new());
-    let p = profile.clone();
     let (store, dispatch) = use_store::<Store>();
     let loc = use_location().unwrap();
-    let loc_clone = loc.clone();
+    let nav = use_navigator().unwrap();
 
-    let store_for_effect = store.clone();
-    use_effect_with((), move |_|{
-        let profile = p.clone();
-        let loc = loc_clone.clone();
-        let store_for_effect = store_for_effect.clone();
-        spawn_local(async move {
-            let fetched: Profile = Service::get(loc.path(), store_for_effect.selected_domain_id).await.unwrap_or(Profile::new());
-            profile.set(fetched);
+    {
+        let store = store.clone();
+        let profile = profile.clone();
+        let loc = loc.clone();
+        use_effect_with((), move |_|{
+            let profile = profile.clone();
+            let loc = loc.clone();
+            let store = store.clone();
+            spawn_local(async move {
+                let fetched: Profile = Service::get(loc.path(), store.selected_domain_id).await.unwrap_or(Profile::new());
+                profile.set(fetched);
+            });
         });
-    });
+    }
 
     let form_oncancel = {
-        let nav = use_navigator().unwrap();
-        Callback::from(move |_| { nav.push(&ProfileRoute::Index); })
+        let nav = nav.clone();
+        Callback::from(move |_| {
+            let nav = nav.clone();
+            nav.push(&ProfileRoute::Index);
+        })
     };
 
-    let store_cloned = store.clone();
-    let profile_state = profile.clone();
-    let dispatch = dispatch.clone();
-    let loc = loc.clone();
     let form_onsubmit = {
-        let profile_state = profile_state.clone();
+        let nav = nav.clone();
+        let profile= profile.clone();
         let dispatch = dispatch.clone();
         let loc = loc.clone();
-        let store_cloned = store_cloned.clone();
+        let store = store.clone();
         Callback::from(move |e: SubmitEvent| {
-            let store = store_cloned.clone();
+            let nav = nav.clone();
+            let store = store.clone();
             let target: Option<EventTarget> = e.target();
             let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();
             let form_data = FormData::new_with_form(&form).unwrap();
             let dispatch = dispatch.clone();
             let loc = loc.clone();
 
-            let params = profile_state.params.clone().into_iter().map(|p|{
-                let key = p.0;
-                let mut param = p.1;
-                param.value = form_data.get(&key).as_string().unwrap_or_default();
-                (key, param)
-            }).collect::<HashMap<String, Param>>();
+            e.prevent_default();
 
+            let params = profile.param_helps.iter()
+                .filter(|h| !h.readonly && !Param::ignored(&h.name, &profile.params))
+                .map(|h|{
+                    let key = h.name.clone();
+                    match profile.params.get(&key) {
+                        Some(p) => {
+                            let mut param = p.clone();
+                            param.value = form_data.get(&key).as_string().unwrap_or_default();
+                            (key, param)
+                        },
+                        None => {
+                            let mut param = Param::new();
+                            param.name = key.clone();
+                            param.value = form_data.get(&key).as_string().unwrap_or_default();
+                            (key.clone(), param)
+                        }
+                    }
+                }).collect::<HashMap<String, Param>>();
             let updated = Profile {
                 id,
                 name: form_data.get("name").as_string().unwrap_or_default(),
+                param_helps: vec![],
                 params,
             };
 
@@ -144,9 +163,8 @@ pub fn ProfileDetails(props: &ProfileDetailProps) -> Html {
                     Ok(_) => alert_info("Update profile successfully.".to_string(), dispatch),
                     Err(_) => alert_error("Update profile failed.".to_string(), dispatch),
                 }
+                nav.push(&ProfileRoute::Index);
             });
-
-            e.prevent_default();
         })
     };
 
@@ -158,14 +176,22 @@ pub fn ProfileDetails(props: &ProfileDetailProps) -> Html {
                 <div class="grid grid-cols-3 gap-1">
                     <label class="pbx-label">{"name"}</label>
                     <input class="pbx-input" value={profile.name.clone()} name="name" />
-                    { for profile.params.iter().map(|p| {
-                        html!{
-                            <>
-                                <label class="pbx-label">{p.0.clone()}</label>
-                                <input class="pbx-input" value={p.1.value.clone()} name={p.0.clone()} />
-                            </>
-                        }
-                    }) }
+                    { for profile.param_helps
+                        .iter()
+                        .filter(|h| !h.readonly &&!Param::ignored(&h.name, &profile.params))
+                        .map(|h| {
+                            html!{
+                                <>
+                                    <label class="pbx-label">{h.name.clone()}</label>
+                                    <ParamInput
+                                        value={Param::get(&h.name, &profile.params)}
+                                        name={h.name.clone()}
+                                        range_text={h.range_text.clone()}
+                                        help_text={h.help_text.clone()}
+                                    />
+                                </>
+                            }
+                    })}
                 </div>
                 <ActionButtons oncancel={form_oncancel}/>
             </form>

@@ -7,7 +7,8 @@ pub struct ProfileParam {
     pub id: i32,
     pub profile_id: i32,
     pub name: String,
-    pub value: String
+    pub value: String,
+    pub ignored: bool,
 }
 
 #[derive(Queryable, Identifiable, PartialEq, Debug, Serialize, Deserialize)]

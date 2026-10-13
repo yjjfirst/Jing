@@ -298,6 +298,19 @@ diesel::table! {
 }
 
 diesel::table! {
+    profile_param_helps (id) {
+        id -> Int4,
+        #[max_length = 128]
+        name -> Varchar,
+        #[max_length = 1024]
+        range_text -> Varchar,
+        #[max_length = 1024]
+        help_text -> Varchar,
+        readonly -> Bool,
+    }
+}
+
+diesel::table! {
     profile_params (id) {
         id -> Int4,
         profile_id -> Int4,
@@ -305,6 +318,7 @@ diesel::table! {
         name -> Varchar,
         #[max_length = 256]
         value -> Varchar,
+        ignored -> Bool,
     }
 }
 
@@ -521,6 +535,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     outbound_routes,
     portal_tokens,
     portal_users,
+    profile_param_helps,
     profile_params,
     profiles,
     queue_params,
