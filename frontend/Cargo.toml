@@ -31,7 +31,7 @@ charming = {version = "0.4.0", features = ["wasm"] }
 util_macro = {version = "0.1.0", path = "../util_macro"}
 
 [dependencies.web-sys]
-version = "0.3.66"
+version = "0.3.106"
 features = [
     "console",
     "HtmlElement",
@@ -43,5 +43,7 @@ features = [
     "HtmlDialogElement",
     "File",
     "DataTransfer",
-    "HtmlSelectElement"
+    "HtmlSelectElement",
+    "XmlHttpRequest",
+    "XmlHttpRequestUpload",
 ]

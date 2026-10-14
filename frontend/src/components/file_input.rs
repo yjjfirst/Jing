@@ -14,11 +14,11 @@ pub struct Props {
     #[prop_or(false)]
     pub disabled: bool,
     #[prop_or(classes!("col-span-2"))]
-    pub classes: Classes,    
+    pub classes: Classes,
 }
 
 #[function_component]
-pub fn FileInput(props: &Props) -> Html {    
+pub fn FileInput(props: &Props) -> Html {
     let input_type = props
         .input_type
         .clone();
@@ -38,9 +38,9 @@ pub fn FileInput(props: &Props) -> Html {
         hidden.push("hidden");
     }
 
-    let input_class = classes!("file-input", 
-        "file-input-bordered", 
-        "w-full", 
+    let input_class = classes!("file-input",
+        "file-input-bordered",
+        "w-full",
         props.classes.clone());
 
     let onchange = Callback::from( move |e: Event| {
@@ -56,9 +56,9 @@ pub fn FileInput(props: &Props) -> Html {
 
             for file in files {
                 wasm_bindgen_futures::spawn_local(async move {
-                let _data = gloo_file::futures::read_as_bytes(&file)
-                    .await
-                    .expect_throw("read file");
+                    let _data = gloo_file::futures::read_as_bytes(&file)
+                        .await
+                        .expect_throw("read file");
 
                 })
             }

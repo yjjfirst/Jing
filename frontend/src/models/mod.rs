@@ -5,7 +5,11 @@ use gloo_net::http::Request;
 use gloo_net::Error;
 use serde::{Serialize, de::DeserializeOwned, Deserialize};
 use web_sys::FormData;
+use wasm_bindgen::prelude::*;
+use wasm_bindgen::JsCast;
+use web_sys::{XmlHttpRequest, XmlHttpRequestUpload};
 use yewdux::prelude::*;
+use yew::prelude::*;
 
 use crate::store::{Store};
 
@@ -43,10 +47,10 @@ impl Service {
         let response = Request::get(&endpoint)
             .send()
             .await?;
-        
+
         if response.status() == 401 {
             dispatch.reduce_mut(|store| {
-                store.is_authenticated = false;                    
+                store.is_authenticated = false;
             });
         }
 
@@ -64,7 +68,7 @@ impl Service {
 
         if response.status() == 401 {
             dispatch.reduce_mut(|store| {
-                store.is_authenticated = false;                    
+                store.is_authenticated = false;
             });
         }
 
@@ -88,9 +92,9 @@ impl Service {
 
         if response.status() == 401 {
             dispatch.reduce_mut(|store| {
-                store.is_authenticated = false;                    
+                store.is_authenticated = false;
             });
-        }            
+        }
 
         response
             .json()
@@ -109,36 +113,58 @@ impl Service {
 
         if response.status() == 401 {
             dispatch.reduce_mut(|store| {
-                store.is_authenticated = false;                    
+                store.is_authenticated = false;
             });
-        }             
+        }
 
         response
             .json()
             .await
     }
 
-    pub async fn post_form(path: &str, domain: usize, form_data: FormData)
-    -> Result<EmptyJson, Error>{
-        let dispatch = Dispatch::<Store>::global();
-        let endpoint = Self::endpoint(path, domain);
-        let request = Request::post(&endpoint)
-            .body(form_data)?;
+   pub fn post_with_progress(path: &str,
+            domain: usize,
+            form_data: &FormData,
+            uploading: UseStateHandle<bool>,
+            percentage: UseStateHandle<f64>) -> Result<(), JsValue> {
+        let url = Self::endpoint(path, domain);
+        let xhr = XmlHttpRequest::new()?;
 
-            let response = request
-            .send()
-            .await?;
+        xhr.open("POST", &url)?;
+        let upload: XmlHttpRequestUpload = xhr.upload()?;
 
-        if response.status() == 401 {
-            dispatch.reduce_mut(|store| {
-                store.is_authenticated = false;                    
-            });
-        } 
+        let progress_callback = {
+            let percentage = percentage.clone();
+            Closure::<dyn FnMut(web_sys::ProgressEvent)>::new(move |e: web_sys::ProgressEvent| {
+                let percentage = percentage.clone();
+                if e.length_computable() {
+                    let loaded = e.loaded();
+                    let total = e.total();
+                    percentage.set((loaded as f64 / total as f64) * 100.0);
+                    gloo_console::log!(&format!("Upload progress: {:.2}%", *percentage));
+                }
+            })
+        };
 
-        response
-            .json()
-            .await
+        let load_callback = {
+            let uploading = uploading.clone();
+            Closure::<dyn FnMut(web_sys::Event)>::new(move |_e: web_sys::Event| {
+                let uploading = uploading.clone();
+                uploading.set(false);
+                gloo_console::log!("Upload complete");
+            })
+        };
+
+        upload.add_event_listener_with_callback("progress", progress_callback.as_ref().unchecked_ref())?;
+        upload.add_event_listener_with_callback("load", load_callback.as_ref().unchecked_ref())?;
+        progress_callback.forget();
+        load_callback.forget();
+
+        xhr.send_with_opt_form_data(Some(form_data))?;
+
+        Ok(())
     }
+
     pub async fn delete(path: &str, domain: usize) -> Result<EmptyJson, Error> {
         let dispatch = Dispatch::<Store>::global();
         let endpoint = Self::endpoint(path, domain);
@@ -148,9 +174,9 @@ impl Service {
 
         if response.status() == 401 {
             dispatch.reduce_mut(|store| {
-                store.is_authenticated = false;                    
+                store.is_authenticated = false;
             });
-        } 
+        }
 
         response
             .json()

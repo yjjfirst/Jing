@@ -176,6 +176,8 @@ pub fn RecordingDetail(props: &RecordingDetailProps) -> Html {
     let nav = use_navigator().unwrap();
     let loc = use_location().unwrap();
     let (store,dispatch) = use_store::<Store>();
+    let uploading = use_state(|| false);
+    let percentage = use_state(|| 0.0);
     let id = props.id;
     let recording = use_state(||{
         Recording {
@@ -215,6 +217,8 @@ pub fn RecordingDetail(props: &RecordingDetailProps) -> Html {
         let loc = loc.clone();
         let store = store.clone();
         let dispatch = dispatch.clone();
+        let uploading = uploading.clone();
+        let percentage = percentage.clone();
         Callback::from(move|event: SubmitEvent| {
             let target: Option<EventTarget> = event.target();
             let form = target.unwrap().dyn_into::<HtmlFormElement>().unwrap();
@@ -223,6 +227,8 @@ pub fn RecordingDetail(props: &RecordingDetailProps) -> Html {
             let loc = loc.clone();
             let nav = nav.clone();
             let store = store.clone();
+            let uploading = uploading.clone();
+            let percentage = percentage.clone();
 
             event.prevent_default();
 
@@ -237,16 +243,19 @@ pub fn RecordingDetail(props: &RecordingDetailProps) -> Html {
                 wasm_bindgen_futures::spawn_local(async move {
                     let dispatch = dispatch.clone();
                     let loc = loc.clone();
-                    match Service::post_form(loc.path(), store.selected_domain_id, form_data)
-                        .await {
-                            Ok(_) => {
-                                alert_info("Create recording successfully".to_string(), dispatch);
-                                nav.push(&RecordingRoute::Index);
-                            }
-                            Err(_) => {
-                                alert_error("Create recording failed".to_string(), dispatch);
-                            }
+                    uploading.set(true);
+                    match Service::post_with_progress(loc.path(),
+                            store.selected_domain_id,
+                            &form_data,
+                            uploading.clone(), percentage.clone()) {
+                        Ok(_) => {
+                            alert_info("Create recording successfully".to_string(), dispatch);
+                            //nav.push(&RecordingRoute::Index);
                         }
+                        Err(_) => {
+                            alert_error("Create recording failed".to_string(), dispatch);
+                        }
+                    }
                 });
             } else {
                 wasm_bindgen_futures::spawn_local(async move {
@@ -257,7 +266,7 @@ pub fn RecordingDetail(props: &RecordingDetailProps) -> Html {
                         .await {
                             Ok(_) => {
                                 alert_info("Update recording successfully".to_string(), dispatch);
-                                nav.push(&RecordingRoute::Index);
+                                //nav.push(&RecordingRoute::Index);
                             }
                             Err(_) => {
                                 alert_error("Update recording failed".to_string(), dispatch);
@@ -273,20 +282,26 @@ pub fn RecordingDetail(props: &RecordingDetailProps) -> Html {
             <Header title= {format!("Recording: {}", recording.name)}></Header>
             <div class="divider my-1"></div>
             <form class="w-full" onsubmit={form_onsubmit} method="POST">
-            <div class="grid grid-cols-3 gap-1">
-                <input value={recording.id.to_string()} name="id" hidden=true />
-                <input value={store.selected_domain_id.to_string()} name="domain_id" hidden=true />
-                <label class="pbx-label">{"Name"}</label>
-                if id == 0 {
-                    <FileInput
-                    id="file_name"
-                    value=""
-                    input_type="file"/>
-                } else {
-                    <input class="pbx-input" value={recording.name.clone()} name="name" disabled=true />
-                }
-                <label class="pbx-label">{"Description"}</label>
-                <input class="pbx-input" value={recording.description.clone()} name="description" />
+                <div class="grid grid-cols-3 gap-1">
+                    <input value={recording.id.to_string()} name="id" hidden=true />
+                    <input value={store.selected_domain_id.to_string()} name="domain_id" hidden=true />
+                    <label class="pbx-label">{"Name"}</label>
+                    if id == 0 {
+                        <FileInput
+                        id="file_name"
+                        value=""
+                        input_type="file"/>
+                    } else {
+                        <input class="pbx-input" value={recording.name.clone()} name="name" disabled=true />
+                    }
+                    <label class="pbx-label">{"Description"}</label>
+                    <input class="pbx-input" value={recording.description.clone()} name="description" />
+                    if *uploading {
+                        <progress class="progress progress-primary w-full col-span-3"
+                            value={format!("{:.2}", *percentage)}
+                            max="100">
+                        </progress>
+                    }
                 </div>
                 <ActionButtons oncancel={form_oncancel}/>
             </form>
