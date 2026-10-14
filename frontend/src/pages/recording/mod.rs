@@ -247,10 +247,10 @@ pub fn RecordingDetail(props: &RecordingDetailProps) -> Html {
                     match Service::post_with_progress(loc.path(),
                             store.selected_domain_id,
                             &form_data,
-                            uploading.clone(), percentage.clone()) {
+                            uploading.clone(), percentage.clone()).await {
                         Ok(_) => {
                             alert_info("Create recording successfully".to_string(), dispatch);
-                            //nav.push(&RecordingRoute::Index);
+                            nav.push(&RecordingRoute::Index);
                         }
                         Err(_) => {
                             alert_error("Create recording failed".to_string(), dispatch);
@@ -266,7 +266,7 @@ pub fn RecordingDetail(props: &RecordingDetailProps) -> Html {
                         .await {
                             Ok(_) => {
                                 alert_info("Update recording successfully".to_string(), dispatch);
-                                //nav.push(&RecordingRoute::Index);
+                                nav.push(&RecordingRoute::Index);
                             }
                             Err(_) => {
                                 alert_error("Update recording failed".to_string(), dispatch);

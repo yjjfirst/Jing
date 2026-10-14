@@ -10,6 +10,7 @@ use wasm_bindgen::JsCast;
 use web_sys::{XmlHttpRequest, XmlHttpRequestUpload};
 use yewdux::prelude::*;
 use yew::prelude::*;
+use futures::channel::oneshot;
 
 use crate::store::{Store};
 
@@ -80,7 +81,7 @@ impl Service {
     }
 
     pub async fn post<T: Serialize + DeserializeOwned>(path: &str, domain: usize, data: T)
-    -> Result<EmptyJson, Error> {
+            -> Result<EmptyJson, Error> {
         let dispatch = Dispatch::<Store>::global();
         let endpoint = Self::endpoint(path, domain);
         let request = Request::post(&endpoint)
@@ -102,7 +103,7 @@ impl Service {
     }
 
     pub async fn patch<T: Serialize + DeserializeOwned>(path: &str, domain: usize, data: T)
-    -> Result<EmptyJson, Error>{
+            -> Result<EmptyJson, Error> {
         let dispatch = Dispatch::<Store>::global();
         let endpoint = Self::endpoint(path, domain);
         let request = Request::patch(&endpoint)
@@ -122,13 +123,14 @@ impl Service {
             .await
     }
 
-   pub fn post_with_progress(path: &str,
+   pub async fn post_with_progress(path: &str,
             domain: usize,
             form_data: &FormData,
             uploading: UseStateHandle<bool>,
             percentage: UseStateHandle<f64>) -> Result<(), JsValue> {
         let url = Self::endpoint(path, domain);
         let xhr = XmlHttpRequest::new()?;
+        let (tx, rx) = oneshot::channel::<Result<(), ()>>();
 
         xhr.open("POST", &url)?;
         let upload: XmlHttpRequestUpload = xhr.upload()?;
@@ -141,17 +143,19 @@ impl Service {
                     let loaded = e.loaded();
                     let total = e.total();
                     percentage.set((loaded as f64 / total as f64) * 100.0);
-                    gloo_console::log!(&format!("Upload progress: {:.2}%", *percentage));
                 }
             })
         };
 
+        let mut tx_opt = Some(tx);
         let load_callback = {
             let uploading = uploading.clone();
             Closure::<dyn FnMut(web_sys::Event)>::new(move |_e: web_sys::Event| {
                 let uploading = uploading.clone();
                 uploading.set(false);
-                gloo_console::log!("Upload complete");
+                if let Some(tx) = tx_opt.take() {
+                    tx.send(Ok(())).unwrap();
+                }
             })
         };
 
@@ -161,7 +165,7 @@ impl Service {
         load_callback.forget();
 
         xhr.send_with_opt_form_data(Some(form_data))?;
-
+        let _ = rx.await.unwrap();
         Ok(())
     }
 

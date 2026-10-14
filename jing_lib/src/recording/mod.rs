@@ -64,6 +64,7 @@ pub fn list() -> Result<Vec<Recording>>{
 
     let mut conn = db_connect();
     let result = recordings
+        .order_by(id.asc())
         .load::<Recording>(&mut conn)?;
 
     Ok(result)
