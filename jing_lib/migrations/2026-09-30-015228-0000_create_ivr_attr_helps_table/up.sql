@@ -8,10 +8,10 @@ CREATE TABLE ivr_attr_helps (
 );
 
 INSERT INTO ivr_attr_helps(name, range_text, help_text) VALUES
-('greet-long','sound','Audio or TTS played on the first entry into the menu.'),
-('greet-short', 'sound','Audio or TTS played on re-entry (after returning from a submenu or looping).'),
-('invalid-sound', 'sound','Audio or TTS played when the caller presses digits that do not match any entry.'),
-('exit-sound','sound','Audio or TTS played when the menu exits normally (max failures, max timeouts, or menu-exit).'),
+('greet-long','recording','Audio or TTS played on the first entry into the menu.'),
+('greet-short', 'recording','Audio or TTS played on re-entry (after returning from a submenu or looping).'),
+('invalid-sound', 'recording','Audio or TTS played when the caller presses digits that do not match any entry.'),
+('exit-sound','recording','Audio or TTS played when the menu exits normally (max failures, max timeouts, or menu-exit).'),
 ('timeout','digits','Milliseconds to wait for the first digit before incrementing the timeout counter.'),
 ('inter-digit-timeout','digits','Milliseconds to wait between digits after the first digit has been received.'),
 ('max-failures','digits','Number of invalid-digit events tolerated before the menu exits.'),
