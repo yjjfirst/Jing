@@ -22,6 +22,18 @@ diesel::table! {
 }
 
 diesel::table! {
+    agent_param_helps (id) {
+        id -> Int4,
+        #[max_length = 128]
+        name -> Varchar,
+        #[max_length = 1024]
+        range_text -> Varchar,
+        #[max_length = 1024]
+        help_text -> Varchar,
+    }
+}
+
+diesel::table! {
     agent_params (id) {
         id -> Int4,
         agent_id -> Int4,
@@ -331,6 +343,18 @@ diesel::table! {
 }
 
 diesel::table! {
+    queue_param_helps (id) {
+        id -> Int4,
+        #[max_length = 128]
+        name -> Varchar,
+        #[max_length = 1024]
+        range_text -> Varchar,
+        #[max_length = 1024]
+        help_text -> Varchar,
+    }
+}
+
+diesel::table! {
     queue_params (id) {
         id -> Int4,
         queue_id -> Int4,
@@ -510,6 +534,7 @@ diesel::joinable!(voicemails -> users (user_id));
 diesel::allow_tables_to_appear_in_same_query!(
     acl_lists,
     acl_nodes,
+    agent_param_helps,
     agent_params,
     agents,
     announcements,
@@ -538,6 +563,7 @@ diesel::allow_tables_to_appear_in_same_query!(
     profile_param_helps,
     profile_params,
     profiles,
+    queue_param_helps,
     queue_params,
     queues,
     recordings,
