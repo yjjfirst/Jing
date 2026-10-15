@@ -1,6 +1,8 @@
 use yew::prelude::*;
 use web_sys::HtmlInputElement;
+use regex::Regex;
 use crate::components::select_recording::SelectRecording;
+use crate::components::select::Select;
 
 #[derive(Properties, PartialEq)]
 pub struct ParamInputProps {
@@ -16,6 +18,7 @@ pub fn ParamInput(props: &ParamInputProps) -> Html {
     let range_text = props.range_text.clone();
     let help_text = props.help_text.clone();
     let input_ref = use_node_ref();
+    let enum_re = Regex::new(r"enum\((.*?)\)").unwrap();
 
     let handle_checkbox_change = {
         let input_ref = input_ref.clone();
@@ -29,6 +32,20 @@ pub fn ParamInput(props: &ParamInputProps) -> Html {
                 }
             }
         })
+    };
+
+    let options = {
+        if enum_re.is_match(&range_text) {
+            let caps = enum_re.captures(&range_text).unwrap();
+            caps.get(1)
+                .unwrap()
+                .as_str()
+                .split(',')
+                .map(|s| s.trim().to_string())
+                .collect::<Vec<String>>()
+        } else {
+            vec![]
+        }
     };
 
     html! {
@@ -83,6 +100,14 @@ pub fn ParamInput(props: &ParamInputProps) -> Html {
                 <SelectRecording
                     name={name}
                     recording_id={value.clone().parse::<usize>().unwrap_or(0)} />
+            </div>
+        } else if enum_re.is_match(&range_text) {
+            <div class="pbx-input-container tooltip tooltip-info" data-tip={help_text}>
+                <Select
+                    name={name}
+                    options={options}
+                    selected={value.clone()}
+                />
             </div>
         }
     }
