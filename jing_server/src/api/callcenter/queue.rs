@@ -7,6 +7,7 @@ use std::collections::HashMap;
 use jing_lib::callcenter::queue;
 use jing_lib::callcenter::queue_param;
 use jing_lib::callcenter::queue_param::QueueParam;
+use jing_lib::callcenter::queue_param_help::{QueueParamHelp, list as list_queue_helps};
 
 #[derive(Serialize, Deserialize)]
 pub struct Queue {
@@ -15,6 +16,7 @@ pub struct Queue {
     pub name: String,
     pub domain_id: i32,
     pub params: HashMap<String, QueueParam>,
+    pub param_helps: Vec<QueueParamHelp>,
 }
 
 pub async fn index(path: web::Path<i32>) -> impl Responder {
@@ -27,7 +29,8 @@ pub async fn index(path: web::Path<i32>) -> impl Responder {
             exten: q.exten,
             name: q.name,
             domain_id: q.domain_id,
-            params: HashMap::new()
+            params: HashMap::new(),
+            param_helps: vec![],
         }
     }).collect::<Vec<Queue>>())
 }
@@ -45,7 +48,8 @@ pub async fn get(path: web::Path<(i32, i32)>)-> impl Responder {
             domain_id: queue.domain_id,
             params: params.into_iter().map(|p|{
                 (p.name.clone(), p.clone())
-            }).collect()
+            }).collect(),
+            param_helps: list_queue_helps().unwrap(),
         })
     } else {
         let params = queue_param::default_params();
@@ -62,7 +66,8 @@ pub async fn get(path: web::Path<(i32, i32)>)-> impl Responder {
             exten: "".to_string(),
             name: "".to_string(),
             domain_id: domain_id,
-            params: params_hash
+            params: params_hash,
+            param_helps: list_queue_helps().unwrap(),
         })
     }
 }

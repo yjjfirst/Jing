@@ -13,7 +13,16 @@ pub struct Queue {
     pub domain_id: i32,
     pub exten: String,
     pub name: String,
-    pub params: HashMap<String, QueueParam>
+    pub params: HashMap<String, QueueParam>,
+    pub param_helps: Vec<QueueParamHelp>,
+}
+
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct QueueParamHelp {
+    pub id: i32,
+    pub name: String,
+    pub range_text: String,
+    pub help_text: String
 }
 
 impl Queue {
@@ -24,6 +33,7 @@ impl Queue {
             exten: "".to_string(),
             name: "".to_string(),
             params: HashMap::new(),
+            param_helps: Vec::new(),
         }
     }
 
@@ -46,10 +56,10 @@ pub struct QueueParam {
 
 impl QueueParam {
     pub fn _new() -> QueueParam {
-        QueueParam { 
-            id: 0, 
-            queue_id: 0, 
-            name: "".to_string(), 
+        QueueParam {
+            id: 0,
+            queue_id: 0,
+            name: "".to_string(),
             value: "".to_string(),
         }
     }

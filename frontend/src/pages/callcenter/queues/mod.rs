@@ -15,7 +15,7 @@ use crate::models::Service;
 
 use crate::components::header::Header;
 use crate::components::dialog::Dialog;
-use crate::components::select::Select;
+use crate::components::param_input::ParamInput;
 use crate::components::action_buttons::ActionButtons;
 
 #[derive(Clone, Routable, PartialEq)]
@@ -227,14 +227,24 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
             let store = store.clone();
             let id = queue.id;
 
-            let params = queue.params
-                .clone()
-                .into_iter()
-                .map(|p| {
-                    let key = p.0;
-                    let mut param = p.1;
-                    param.value = form_data.get(&key).as_string().unwrap();
-                    (key, param)
+            event.prevent_default();
+
+            let params = queue.param_helps
+                .iter()
+                .map(|h| {
+                    let key = h.name.clone();
+                    match queue.params.get(&key) {
+                        Some(p) => {
+                            let mut param = p.clone();
+                            param.value = form_data.get(&key).as_string().unwrap();
+                            (key, param)
+                        }
+                        None => {
+                            let mut param = QueueParam::_new();
+                            param.value = form_data.get(&key).as_string().unwrap();
+                            (key, param)
+                        }
+                    }
                 })
                 .collect::<HashMap<String, QueueParam>>();
 
@@ -243,7 +253,8 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
                 domain_id: queue.domain_id,
                 exten: form_data.get("extension").as_string().unwrap(),
                 name: form_data.get("name").as_string().unwrap(),
-                params: params
+                params: params,
+                param_helps: vec![],
             };
 
             wasm_bindgen_futures::spawn_local(async move {
@@ -266,8 +277,6 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
                 }
                 nav.push(&QueueRoute::Index);
             });
-
-            event.prevent_default();
         })
     };
 
@@ -288,84 +297,19 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
                         value={queue.name.clone()}
                         name="name"
                     />
-                    <label class="pbx-label">{"strategy"}</label>
-                    <Select
-                        options={
-                            vec![
-                                "ring-all".to_string(),
-                                "longest-idle-agent".to_string(),
-                                "round-robin".to_string(),
-                                "top-down".to_string(),
-                                "agent-with-least-talk-time".to_string(),
-                                "agent-with-fewest-calls".to_string(),
-                                "sequentially-by-agent-order".to_string(),
-                                "random".to_string(),
-                                "ring-progressively".to_string(),
-                            ]
+                    {for queue.param_helps.iter().map(|help| {
+                        html! {
+                            <>
+                                <label class="pbx-label">{help.name.clone()}</label>
+                                <ParamInput
+                                    value={queue.params.get(&help.name).map(|p| p.value.clone()).unwrap_or_default()}
+                                    name={help.name.clone()}
+                                    range_text={help.range_text.clone()}
+                                    help_text={help.help_text.clone()}
+                                />
+                            </>
                         }
-                        selected = {QueueParam::get("strategy", &queue.params)}
-                        name="strategy"
-                    />
-                    <label class="pbx-label">{"moh"}</label>
-                    <input class="pbx-input"
-                        value = {QueueParam::get("moh-sound", &queue.params)}
-                        name="moh-sound"
-                    />
-                    <label class="pbx-label">{"Time base score"}</label>
-                    <Select
-                        options={vec!["system".to_string(), "queue".to_string()]}
-                        selected = {QueueParam::get("time-base-score", &queue.params)}
-                        name="time-base-score"
-                    />
-                    <label class="pbx-label">{"Max wait time"}</label>
-                    <input class="pbx-input"
-                        value = {QueueParam::get("max-wait-time", &queue.params)}
-                        name="max-wait-time"
-                    />
-                    <label class="pbx-label">{"Max wait time with no agent"}</label>
-                    <input class="pbx-input"
-                        value = {QueueParam::get("max-wait-time-with-no-agent", &queue.params)}
-                        name="max-wait-time-with-no-agent"
-                    />
-                    <label class="pbx-label">{"Max wait time with no agent time reached"}</label>
-                    <input class="pbx-input"
-                        value = {QueueParam::get("max-wait-time-with-no-agent-time-reached", &queue.params)}
-                        name="max-wait-time-with-no-agent-time-reached"
-                    />
-                    <label class="pbx-label">{"Tier rules apply"}</label>
-                    <Select
-                        options={vec!["true".to_string(), "false".to_string()]}
-                        selected = {QueueParam::get("tier-rules-apply", &queue.params)}
-                        name="tier-rules-apply"
-                    />
-                    <label class="pbx-label">{"Tier rule wait second"}</label>
-                    <input class="pbx-input"
-                        value = {QueueParam::get("tier-rule-wait-second", &queue.params)}
-                        name="tier-rule-wait-second"
-                    />
-                    <label class="pbx-label">{"Tier rule wait multiply level"}</label>
-                    <Select
-                        options={vec!["true".to_string(), "false".to_string()]}
-                        selected = {QueueParam::get("tier-rule-wait-multiply-level", &queue.params)}
-                        name="tier-rule-wait-multiply-level"
-                    />
-                    <label class="pbx-label">{"Tier rule no agent no wait"}</label>
-                    <Select
-                        options={vec!["true".to_string(), "false".to_string()]}
-                        selected = {QueueParam::get("tier-rule-no-agent-no-wait", &queue.params)}
-                        name="tier-rule-no-agent-no-wait"
-                    />
-                    <label class="pbx-label">{"Discard abandoned after"}</label>
-                    <input class="pbx-input"
-                        value = {QueueParam::get("discard-abandoned-after", &queue.params)}
-                        name="discard-abandoned-after"
-                    />
-                    <label class="pbx-label">{"Abandoned resume allowed"}</label>
-                    <Select
-                        options={vec!["true".to_string(), "false".to_string()]}
-                        selected = {QueueParam::get("abandoned-resume-allowed", &queue.params)}
-                        name="abandoned-resume-allowed"
-                    />
+                    })}
                 </div>
                 <ActionButtons oncancel={handle_cancel}/>
             </form>
