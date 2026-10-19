@@ -43,7 +43,8 @@ pub async fn index(info: web::Query<Info>) -> impl Responder {
                 name: a.name.clone(),
                 contact: user.user_id.clone(),
                 leg_timeout: a.leg_timeout,
-                params: HashMap::new()
+                params: HashMap::new(),
+                param_helps: vec![],
             }
         }
     }).collect::<Vec<Tier>>())

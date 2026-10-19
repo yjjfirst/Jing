@@ -6,6 +6,7 @@ use actix_web::{web, Responder};
 use jing_lib::callcenter::agent;
 use jing_lib::callcenter::agent_param;
 use jing_lib::callcenter::agent_param::AgentParam;
+use jing_lib::callcenter::agent_param_help::{AgentParamHelp, list as agent_param_helps};
 use jing_lib::user::{get_user, ByField};
 
 use super::Status;
@@ -18,7 +19,8 @@ pub struct Agent {
     pub contact: String,
     pub name: String,
     pub leg_timeout: i32,
-    pub params: HashMap<String, AgentParam>
+    pub params: HashMap<String, AgentParam>,
+    pub param_helps: Vec<AgentParamHelp>
 }
 
 pub async fn index(path: web::Path<i32>) -> impl Responder {
@@ -34,7 +36,8 @@ pub async fn index(path: web::Path<i32>) -> impl Responder {
             name: a.name.clone(),
             contact: user.user_id.clone(),
             leg_timeout: a.leg_timeout,
-            params: HashMap::new()
+            params: HashMap::new(),
+            param_helps: vec![],
         }
     }).collect::<Vec<Agent>>())
 }
@@ -56,7 +59,8 @@ pub async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
             leg_timeout: agent.leg_timeout,
             params: params.into_iter().map(|a| {
                 (a.name.clone(), a.clone())
-            }).collect()
+            }).collect(),
+            param_helps: agent_param_helps().unwrap(),
         })
     } else {
         let params = agent_param::default_params();
@@ -75,7 +79,8 @@ pub async fn get(path: web::Path<(i32, i32)>) -> impl Responder {
             name: "".to_string(),
             contact: "".to_string(),
             leg_timeout: 15,
-            params: params_hash
+            params: params_hash,
+            param_helps: agent_param_helps().unwrap(),
         })
     }
 }

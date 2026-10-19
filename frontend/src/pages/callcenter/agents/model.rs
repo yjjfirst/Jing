@@ -14,7 +14,8 @@ pub struct Agent {
     pub name: String,
     pub contact: String,
     pub leg_timeout: i32,
-    pub params: HashMap<String, AgentParam>
+    pub params: HashMap<String, AgentParam>,
+    pub param_helps: Vec<AgentParamHelp>,
 }
 
 impl Agent {
@@ -26,7 +27,8 @@ impl Agent {
             name: "".to_string(),
             contact: "".to_string(),
             leg_timeout: 30,
-            params: HashMap::new()
+            params: HashMap::new(),
+            param_helps: vec![]
         }
     }
 
@@ -36,7 +38,7 @@ impl Agent {
         let agents: Vec<Agent> = response.json().await.unwrap();
 
         agents
-    }    
+    }
 }
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize, HashMapHelper)]
@@ -47,12 +49,20 @@ pub struct AgentParam {
     pub value: String,
 }
 
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct AgentParamHelp {
+    pub id: i32,
+    pub name: String,
+    pub range_text: String,
+    pub help_text: String
+}
+
 impl AgentParam {
     pub fn _new() -> AgentParam {
-        AgentParam { 
-            id: 0, 
-            agent_id: 0, 
-            name: "".to_string(), 
+        AgentParam {
+            id: 0,
+            agent_id: 0,
+            name: "".to_string(),
             value: "".to_string(),
         }
     }

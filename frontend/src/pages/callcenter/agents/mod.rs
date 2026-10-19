@@ -14,7 +14,7 @@ use crate::models::Service;
 use crate::components::header::Header;
 use crate::components::action_buttons::ActionButtons;
 use crate::components::select_user::SelectUser;
-use crate::components::select::Select;
+use crate::components::param_input::ParamInput;
 use crate::components::dialog::Dialog;
 
 use model::{Agent, AgentParam};
@@ -233,14 +233,23 @@ pub fn AgentDetails(_props: &AgentDetailsProps) -> Html {
 
             event.prevent_default();
 
-            let params = agent.params.clone()
-                .into_iter()
-                .map(|p|{
-                    let key = p.0;
-                    let mut param = p.1;
-                    gloo_console::log!("Key:", &key);
-                    param.value = form_data.get(&key).as_string().unwrap();
-                    (key, param)
+            let params = agent.param_helps
+                .iter()
+                .map(|h|{
+                    let key = h.name.clone();
+                    match agent.params.get(&key) {
+                        Some(p) => {
+                            let mut param = p.clone();
+                            param.value = form_data.get(&key).as_string().unwrap();
+                            (key, param.clone())
+                        },
+                        None => {
+                            let mut param = AgentParam::_new();
+                            param.name = key.clone();
+                            param.value = form_data.get(&key).as_string().unwrap();
+                            (key, param)
+                        }
+                    }
                 })
                 .collect::<HashMap<String, AgentParam>>();
 
@@ -251,7 +260,8 @@ pub fn AgentDetails(_props: &AgentDetailsProps) -> Html {
                 name: form_data.get("name").as_string().unwrap(),
                 contact: form_data.get("user").as_string().unwrap(),
                 leg_timeout: form_data.get("leg-timeout").as_string().unwrap().parse::<i32>().unwrap(),
-                params
+                params,
+                param_helps: vec![],
             };
 
             wasm_bindgen_futures::spawn_local(async move {
@@ -295,36 +305,21 @@ pub fn AgentDetails(_props: &AgentDetailsProps) -> Html {
                     <input class="pbx-input"
                         value={agent.leg_timeout.to_string()}
                         name="leg-timeout"/>
-                    <label class="pbx-label">{"Wrap Up Time"}</label>
-                    <input class="pbx-input"
-                        value={AgentParam::get("wrap-up-time", &agent.params)}
-                        name="wrap-up-time" />
-                    <label class="pbx-label">{"Max no answer"}</label>
-                    <input class="pbx-input"
-                        value={AgentParam::get("max-no-answer", &agent.params)}
-                        name="max-no-answer" />
-                    <label class="pbx-label">{"Reject delay time"}</label>
-                    <input class="pbx-input"
-                        value={AgentParam::get("reject-delay-time", &agent.params)}
-                        name="reject-delay-time" />
-                    <label class="pbx-label">{"Busy delay time"}</label>
-                    <input class="pbx-input"
-                        value={AgentParam::get("busy-delay-time", &agent.params)}
-                        name="busy-delay-time" />
-                    <label class="pbx-label">{"Type"}</label>
-                    <input class="pbx-input"
-                        value={AgentParam::get("type", &agent.params)}
-                        name="type" />
-                    <label class="pbx-label">{"Status"}</label>
-                    <Select
-                        name="status"
-                        selected={AgentParam::get("status", &agent.params)}
-                        options={vec![
-                            "Logged Out".to_string(),
-                            "Available".to_string(),
-                            "Available (On Demand)".to_string(),
-                            "On Break".to_string()]} >
-                    </Select>
+                    {
+                    for agent.param_helps.iter().map(|h| {
+                        html! {
+                            <>
+                                <label class="pbx-label">{h.name.clone()}</label>
+                                <ParamInput
+                                    value={AgentParam::get(&h.name, &agent.params)}
+                                    name={h.name.clone()}
+                                    range_text={h.range_text.clone()}
+                                    help_text={h.help_text.clone()}
+                                />
+                            </>
+                        }
+                    })
+                    }
                 </div>
                 <ActionButtons oncancel={handle_cancel}/>
             </form>
