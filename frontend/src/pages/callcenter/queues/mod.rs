@@ -17,6 +17,7 @@ use crate::components::header::Header;
 use crate::components::dialog::Dialog;
 use crate::components::param_input::ParamInput;
 use crate::components::action_buttons::ActionButtons;
+use super::tiers::Tiers;
 
 #[derive(Clone, Routable, PartialEq)]
 pub enum QueueRoute {
@@ -310,6 +311,11 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
                             </>
                         }
                     })}
+                    <label class="pbx-label">{"Agents"}</label>
+                    <Tiers
+                        queue_name={queue.name.clone()}
+                        queue_id={queue.id}
+                    />
                 </div>
                 <ActionButtons oncancel={handle_cancel}/>
             </form>

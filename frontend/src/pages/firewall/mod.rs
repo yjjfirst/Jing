@@ -36,11 +36,11 @@ pub fn FirewallList() -> Html {
             });
         });
     }
-    
+
     let handle_changed = {
         let store = store.clone();
         let dispatch = dispatch.clone();
-        
+
         move |id: i32,checked: bool| {
            let store = store.clone();
            let dispatch = dispatch.clone();
@@ -83,7 +83,7 @@ pub fn FirewallList() -> Html {
                                                 let handle_changed = handle_changed.clone();
                                                 handle_changed(id, checked);
                                             })
-                                        } 
+                                        }
                                         checked={rule.action == "deny"} />
                                     </td>
                                     <td>{rule.created_at.format("%Y-%m-%d %H:%M:%S").to_string()}</td>

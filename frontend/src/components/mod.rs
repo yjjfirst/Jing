@@ -13,3 +13,4 @@ pub mod select_id;
 pub mod toggle;
 pub mod param_input;
 pub mod select_recording;
+pub mod icon;

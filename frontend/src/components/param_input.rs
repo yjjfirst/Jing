@@ -3,6 +3,7 @@ use web_sys::HtmlInputElement;
 use regex::Regex;
 use crate::components::select_recording::SelectRecording;
 use crate::components::select::Select;
+use crate::components::icon::{CheckedIcon, CrossIcon};
 
 #[derive(Properties, PartialEq)]
 pub struct ParamInputProps {
@@ -69,30 +70,8 @@ pub fn ParamInput(props: &ParamInputProps) -> Html {
                 <input type="text" class="hidden" name={name} value={value.clone()} ref={input_ref}/>
                 <label class="toggle text-base-content">
                     <input type="checkbox" checked={value == "false"} onchange={handle_checkbox_change}/>
-                    <svg aria-label="enabled" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                        <g
-                            stroke-linejoin="round"
-                            stroke-linecap="round"
-                            stroke-width="4"
-                            fill="none"
-                            stroke="currentColor"
-                        >
-                            <path d="M20 6 9 17l-5-5"></path>
-                        </g>
-                    </svg>
-                    <svg
-                        aria-label="disabled"
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="4"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                    >
-                        <path d="M18 6 6 18" />
-                        <path d="m6 6 12 12" />
-                    </svg>
+                    <CheckedIcon />
+                    <CrossIcon />
                 </label>
             </div>
         } else if range_text == "recording" {

@@ -5,7 +5,6 @@ pub mod tiers;
 
 use queues::{QueueRoute, queue_switch};
 use agents::{AgentRoute, agent_switch};
-use tiers::{TierRoute,tier_switch};
 
 use web_sys::HtmlInputElement;
 use yew::prelude::*;
@@ -22,17 +21,17 @@ pub enum CallcenterRootRoute {
     #[at("/callcenter/agent")]
     AgentRoot,
     #[at("/callcenter/agent/*")]
-    Agent,    
+    Agent,
     #[at("/callcenter/tier")]
     Tier,
 }
 
 #[function_component]
 pub fn Callcenter() -> Html {
-    let nav = use_navigator().unwrap();    
+    let nav = use_navigator().unwrap();
     let loc = use_location().unwrap().clone();
 
-    let handle_change = Callback::from( move |e: Event| { 
+    let handle_change = Callback::from( move |e: Event| {
         let i = e
             .target_dyn_into::<HtmlInputElement>()
             .unwrap();
@@ -49,9 +48,9 @@ pub fn Callcenter() -> Html {
             <Header title="Application -> Call Center"></Header>
             <div class="divider my-1"></div>
             <div class="tabs tabs-border">
-                <input type="radio" 
-                    name="callcenter_tab" 
-                    class="tab" 
+                <input type="radio"
+                    name="callcenter_tab"
+                    class="tab"
                     aria-label={"Queues"}
                     value="queue"
                     onchange={handle_change.clone()}
@@ -60,29 +59,18 @@ pub fn Callcenter() -> Html {
                     <Switch<QueueRoute> render={queue_switch} />
                 </div>
 
-                <input type="radio" 
-                    name="callcenter_tab" 
-                    class="tab" 
+                <input type="radio"
+                    name="callcenter_tab"
+                    class="tab"
                     value="agent"
                     onchange={handle_change.clone()}
-                    aria-label={"Agents"}  
+                    aria-label={"Agents"}
                     checked={loc.path().contains("agent")}/>
                 <div class="tab-content">
                     <Switch<AgentRoute> render={agent_switch} />
                 </div>
-
-                <input type="radio" 
-                    name="callcenter_tab" 
-                    class="tab"
-                    value="tier"
-                    onchange={handle_change.clone()}
-                    aria-label={"Tiers"} 
-                    checked={loc.path().contains("tier")}/>
-                <div class="tab-content">
-                    <Switch<TierRoute> render={tier_switch} />
-                </div>                    
             </div>
-        </div>            
+        </div>
     }
 }
 

@@ -289,7 +289,7 @@ pub fn AgentDetails(_props: &AgentDetailsProps) -> Html {
 
     html! {
         <div class="grow mt-1">
-            <Header title= {format!("Agent")}></Header>
+            <Header title= {format!("Agent -> {}", agent.name.clone())}></Header>
             <div class="divider my-1"></div>
             <form class="w-full" onsubmit={handle_submit}>
                 <div class="grid grid-cols-3 gap-1">

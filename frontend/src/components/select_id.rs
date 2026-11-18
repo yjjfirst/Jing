@@ -11,6 +11,8 @@ pub struct Props {
     pub options_id: Vec<usize>,
     #[prop_or(0)]
     pub selected: usize,
+    #[prop_or_default]
+    pub onchange: Callback<String>,
 }
 
 #[function_component]
@@ -28,8 +30,10 @@ pub fn SelectId(props: &Props) -> Html {
 
     let handle_change = {
         let input_ref = input_ref.clone();
+        let onchange = props.onchange.clone();
         Callback::from(move |e: Event| {
             let input_ref = input_ref.clone();
+            let onchange = onchange.clone();
             let input = input_ref
                 .cast::<HtmlInputElement>()
                 .unwrap();
@@ -37,6 +41,7 @@ pub fn SelectId(props: &Props) -> Html {
             let target = e.target_dyn_into::<HtmlSelectElement>().unwrap();
             let selected = target.selected_options().item(0).unwrap();
             input.set_value(&selected.id());
+            onchange.emit(selected.id());
         })
     };
 
