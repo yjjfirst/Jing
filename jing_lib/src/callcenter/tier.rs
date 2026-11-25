@@ -55,13 +55,10 @@ pub fn list(q_id: i32) -> Result<Vec<Tier>> {
     use crate::schema::tiers::dsl::*;
     let mut conn = db_connect();
 
-    let mut result = tiers
+    let result = tiers
+        .filter(queue_id.eq(q_id))
         .order(id.asc())
         .load::<Tier>(&mut conn)?;
-
-    if q_id != 0 {
-        result.retain(|t| t.queue_id == q_id);
-    }
 
     Ok(result)
 }

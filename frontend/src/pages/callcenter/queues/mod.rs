@@ -184,6 +184,7 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
     let nav = use_navigator().unwrap();
     let(store, dispatch) = use_store::<Store>();
     let queue = use_state(||Queue::new());
+    let queue_id = props.id;
 
     {
         let store = store.clone();
@@ -314,7 +315,7 @@ pub fn QueueDetails(props: &QueueDetailsProps) -> Html {
                     <label class="pbx-label">{"Agents"}</label>
                     <Tiers
                         queue_name={queue.name.clone()}
-                        queue_id={queue.id}
+                        queue_id={queue_id}
                     />
                 </div>
                 <ActionButtons oncancel={handle_cancel}/>
